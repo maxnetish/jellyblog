@@ -7,7 +7,10 @@ block content
             span.fullname.caption Full name
         <!-- ko foreach: userList -->
         div.user-item.table-row
-            span.username.table-cell(data-bind="text: username")
-            span.fullname.table-cell(data-bind="text: fullname")
+            span.username.table-cell
+                input.inline-edit(type="text", data-bind="value: username")
+            span.fullname.table-cell
+                input.inline-edit(type="text", data-bind="value: fullname")
         <!-- /ko -->
+    button(data-bind="click: save") Save
     script(src="javascripts/require.js", data-main="javascripts/main.admin.js")
