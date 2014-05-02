@@ -2,6 +2,8 @@
  * Created by Gordeev on 23.03.14.
  */
 
+var express = require('express');
+var router = express.Router();
 var model = require('../models').model;
 
 var loginGet = function (req, res, errorMessage) {
