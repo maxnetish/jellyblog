@@ -13,10 +13,10 @@ var createUserModel = function (mongoose) {
             .update(password)
             .digest('hex');
         return result;
-    }
+    };
 
     var userSchema = new Schema({
-        login: { type: [String], unique: true },
+        login: { type: String, unique: true },
         fullName: String,
         passwordHash: String,
         salt: String

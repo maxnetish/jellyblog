@@ -1,9 +1,11 @@
 extends layout
 block content
+    div.error-message= errorMessage
     form(action="login", method="post", )
         label(for="username") User name
         input(type="text", placeholder="Enter your login", name="username")
         label(for="password") Password
         input(type="password", placeholder="Enter your password", name="password")
         button(type="submit") OK
+
 

@@ -5,3 +5,19 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     block content
+  script.
+      requirejs.config({
+        //By default load any module IDs from...
+        baseUrl: 'javascripts',
+        paths: {
+            jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery",
+            underscore: "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore",
+            ko: "//ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.debug"
+        },
+        shim: {
+            underscore: {
+                exports: '_'
+            }
+        },
+        waitSeconds: 60
+      });
