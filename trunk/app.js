@@ -33,7 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var loadUser = function (req, res, next) {
     var User = model.User;
-    if (req.session.userId) {
+    if (req.session && req.session.userId) {
         User.findById(req.session.userId, function (error, user) {
             if (user) {
                 req.currentUser = user;
@@ -54,6 +54,10 @@ app.get('/', loadUser, routes.index);
 
 app.get('/login', routes.login);
 app.post('/login', routes.login);
+app.get('/logout', routes.logout);
+app.get('/admin', loadUser, routes.admin);
+
+app.get('/api/userlist', loadUser, routes.apiUserList);
 //app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function () {

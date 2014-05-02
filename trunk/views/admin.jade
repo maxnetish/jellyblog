@@ -1,0 +1,13 @@
+extends layout
+block content
+    div.error-message= errorMessage
+    div.user-list.table
+        div.table-caption
+            span.username.caption Login
+            span.fullname.caption Full name
+        <!-- ko foreach: userList -->
+        div.user-item.table-row
+            span.username.table-cell(data-bind="text: username")
+            span.fullname.table-cell(data-bind="text: fullname")
+        <!-- /ko -->
+    script(src="javascripts/require.js", data-main="javascripts/main.admin.js")

@@ -7,3 +7,7 @@ exports.index = function (req, res) {
 };
 
 exports.login = require('./login').login;
+exports.logout = require('./login').logout;
+exports.admin = require('./admin').admin;
+
+exports.apiUserList = require('./admin').apiUserlist;

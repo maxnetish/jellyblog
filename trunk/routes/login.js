@@ -4,30 +4,30 @@
 
 var model = require('../models').model;
 
-var loginGet = function (req, res) {
-    res.render('login', { title: 'Login to jelly blog' });
+var loginGet = function (req, res, errorMessage) {
+    res.render('login', { title: 'Login to jelly blog', errorMessage: errorMessage });
 };
 
 var loginPost = function (req, res) {
     var User;
-    if(req.body && req.body.username && req.body.password){
-        User=model.User;
-        User.findOne({login: req.body.username}, function(error, result){
-            if(error){
-                loginGet(req, res);
+    if (req.body && req.body.username && req.body.password) {
+        User = model.User;
+        User.findOne({login: req.body.username}, function (error, result) {
+            if (error) {
+                loginGet(req, res, "Internal server error");
                 return;
             }
-            if(result && result.checkPassword(req.body.password)){
-                req.session.userId=result._id.toHexString();
+            if (result && result.checkPassword(req.body.password)) {
+                req.session.userId = result._id.toHexString();
                 res.redirect('/');
                 return;
-            }else{
-                loginGet(req, res);
+            } else {
+                loginGet(req, res, "Authentication failed, access denied");
                 return;
             }
         });
         return;
-    }else{
+    } else {
         loginGet(req, res);
     }
 };
@@ -38,4 +38,10 @@ exports.login = function (req, res) {
     } else if (req.method === "POST") {
         loginPost(req, res);
     }
+};
+exports.logout = function (req, res) {
+    if (req.session) {
+        req.session.userId = null;
+    }
+    loginGet(req, res);
 };
