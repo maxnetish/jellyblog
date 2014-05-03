@@ -1,3 +1,5 @@
+@navMargin: 0.5em;
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -13,7 +15,9 @@ a {
 
 .table {
   display: table;
-  width: 100%;
+  min-width: 240px;
+  max-width: 320px;
+  /*width: 100%;*/
 
   .table-caption {
     display: table-row;
@@ -28,12 +32,22 @@ a {
 
     .table-cell {
       display: table-cell;
+      .navlink {
+        margin: 0 @navMargin;
+
+        &:first-child {
+          margin: 0 @navMargin 0 0;
+        }
+        &:last-child {
+          margin: 0 0 0 @navMargin;
+        }
+      }
     }
   }
 }
 
-input{
-  &.inline-edit{
+input {
+  &.inline-edit {
     /* Eliminate borders and padding */
     border: none;
     padding: 0;
@@ -56,9 +70,39 @@ input{
     transition: background-color 0.5s;
 
     &:hover,
-    &:focus{
+    &:focus {
       /* Change the background to a light yellow */
       background-color: #FFD;
     }
   }
 }
+
+nav {
+  .navlink {
+    margin: 0 @navMargin;
+
+    &:first-child {
+      margin: 0 @navMargin 0 0;
+    }
+    &:last-child {
+      margin: 0 0 0 @navMargin;
+    }
+  }
+}
+
+.modal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(70, 70, 70, 0.2);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  .modal-content{
+    width: 360px;
+    padding: 36px;
+    background: white;
+  }
+}
+
+
