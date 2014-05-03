@@ -4,6 +4,9 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    nav
+      each link in navlinks
+        a.navlink(href='#{link.url}')= link.label
     block content
   script.
       requirejs.config({

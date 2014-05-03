@@ -1,16 +1,29 @@
 extends layout
 block content
     div.error-message= errorMessage
+    a.navlink(href='javascript:void(0)', data-bind='click: create') Create new user
     div.user-list.table
         div.table-caption
             span.username.caption Login
             span.fullname.caption Full name
         <!-- ko foreach: userList -->
         div.user-item.table-row
-            span.username.table-cell
-                input.inline-edit(type="text", data-bind="value: username")
-            span.fullname.table-cell
-                input.inline-edit(type="text", data-bind="value: fullname")
+            span.username.table-cell(data-bind='text: username')
+            span.fullname.table-cell(data-bind='text: fullname')
+            span.buttonset.table-cell
+                a.navlink(href='javascript:void(0)', data-bind='click: $parent.edit') Edit
+                a.navlink(href='javascript:void(0)', data-bind='click: $parent.remove') Remove
         <!-- /ko -->
-    button(data-bind="click: save") Save
+    div.user-edit.modal(data-bind='visible: editedUser', style='display: none;')
+        div.modal-content(data-bind='with: editedUser')
+            label(for='username') Login
+            input#username(data-bind='value: username', type='text')
+            label(for='fullname') Full name
+            input#fullname(data-bind='value: fullname', type='text')
+            label(for='sec1') Password
+            input#sec1(data-bind='value: sec1', type='password')
+            label(for='sec2') Retype
+            input#sec2(data-bind='value: sec2', type='password')
+            button OK
+            button Cancel
     script(src="javascripts/require.js", data-main="javascripts/main.admin.js")

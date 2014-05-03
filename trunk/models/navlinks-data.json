@@ -1,0 +1,21 @@
+[
+    {
+        "label": "Home",
+        "url": "/"
+    },
+    {
+        "label": "Login",
+        "url": "/login",
+        "noauth": true
+    },
+    {
+        "label": "Logout",
+        "url": "/logout",
+        "auth": true
+    },
+    {
+        "label": "Administration",
+        "url": "/admin",
+        "auth": true
+    }
+]

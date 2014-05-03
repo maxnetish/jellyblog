@@ -5,9 +5,17 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../models').model;
+var navlinks = require('../models/navlinks');
 
 var loginGet = function (req, res, errorMessage) {
-    res.render('login', { title: 'Login to jelly blog', errorMessage: errorMessage });
+    res.render('login', {
+        title: 'Login to jelly blog',
+        errorMessage: errorMessage,
+        navlinks: navlinks.createLinks({
+            auth: !!req.currentUser,
+            currentUrl: req.url
+        })
+    });
 };
 
 var loginPost = function (req, res) {
@@ -45,5 +53,5 @@ exports.logout = function (req, res) {
     if (req.session) {
         req.session.userId = null;
     }
-    loginGet(req, res);
+    res.redirect('/');
 };

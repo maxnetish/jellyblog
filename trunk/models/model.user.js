@@ -31,6 +31,14 @@ var createUserModel = function (mongoose) {
         this.passwordHash = encryptPassword(plainPassword, this);
     };
 
+    userSchema.methods.toPlainObject = function () {
+        return{
+            username: this.login,
+            fullname: this.fullName,
+            id: this._id.toHexString()
+        };
+    };
+
     return mongoose.model("User", userSchema);
 };
 exports.createUserModel = createUserModel;
