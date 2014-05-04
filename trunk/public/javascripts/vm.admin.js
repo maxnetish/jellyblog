@@ -13,17 +13,55 @@ define(["jquery", "ko", "underscore", "model.user"], function ($, ko, _, modelUs
 
         },
         edit = function () {
-            this.sec1 = ko.observable();
-            this.sec2 = ko.observable();
-            editedUser(this);
+            var cloneForEdit = this.clone();
+            editedUser(cloneForEdit);
         },
         remove = function () {
-
+            this.delete(function(error, result){
+                var finded;
+                if(!error){
+                    finded= _.find(userList(), function(item){
+                        return item.id()===result.id();
+                    });
+                    if(finded){
+                        userList.remove(function(item){
+                            return item.id()===finded.id();
+                        })
+                    }
+                }else{
+                    alert(error);
+                }
+            });
         },
         create = function () {
-
+            var newModel=new modelUser.ModelUser();
+            editedUser(newModel);
+        },
+        editOK = function () {
+            if(!this.allValid()){
+                return;
+            }
+            this.update(function (error, result) {
+                var finded;
+                if (!error) {
+                    finded = _.find(userList(), function (item) {
+                        return item.id() === result.id();
+                    });
+                    if (finded) {
+                        finded.fullname(result.fullname());
+                        finded.username(result.username());
+                    } else {
+                        userList.push(result);
+                    }
+                } else {
+                    alert(error && error.err);
+                }
+                editedUser(null);
+            });
+        },
+        editCancel = function () {
+            editedUser(null);
         };
-
 
     init();
 
@@ -32,6 +70,8 @@ define(["jquery", "ko", "underscore", "model.user"], function ($, ko, _, modelUs
         edit: edit,
         remove: remove,
         create: create,
-        editedUser: editedUser
+        editedUser: editedUser,
+        editOK: editOK,
+        editCancel: editCancel
     };
 });

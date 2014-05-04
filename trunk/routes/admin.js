@@ -72,7 +72,7 @@ var userCreate = function (req, res) {
 
     User.create({
         login: req.body.username,
-        fullName: req.fullname
+        fullName: req.body.fullname
     }, function (error, result) {
         if (!error) {
             result.setPassword(req.body.secret);
@@ -89,7 +89,7 @@ var userCreate = function (req, res) {
             });
         } else {
             res.json({
-                error: "Cannot create user.",
+                error: error,
                 data: req.body
             });
         }

@@ -1,29 +1,37 @@
 extends layout
 block content
     div.error-message= errorMessage
-    a.navlink(href='javascript:void(0)', data-bind='click: create') Create new user
-    div.user-list.table
-        div.table-caption
-            span.username.caption Login
-            span.fullname.caption Full name
-        <!-- ko foreach: userList -->
-        div.user-item.table-row
-            span.username.table-cell(data-bind='text: username')
-            span.fullname.table-cell(data-bind='text: fullname')
-            span.buttonset.table-cell
-                a.navlink(href='javascript:void(0)', data-bind='click: $parent.edit') Edit
-                a.navlink(href='javascript:void(0)', data-bind='click: $parent.remove') Remove
-        <!-- /ko -->
+    section.admin-section
+        h2 Registered users
+        a.navlink(href='javascript:void(0)', data-bind='click: create') Create new user
+        div.user-list.table
+            div.table-caption
+                span.username.caption Login
+                span.fullname.caption Full name
+                span.buttonset.caption
+            <!-- ko foreach: userList -->
+            div.user-item.table-row
+                span.username.table-cell(data-bind='text: username')
+                span.fullname.table-cell(data-bind='text: fullname')
+                span.buttonset.table-cell
+                    a.navlink(href='javascript:void(0)', data-bind='click: $parent.edit') Edit
+                    a.navlink(href='javascript:void(0)', data-bind='click: $parent.remove') Remove
+            <!-- /ko -->
     div.user-edit.modal(data-bind='visible: editedUser', style='display: none;')
         div.modal-content(data-bind='with: editedUser')
-            label(for='username') Login
-            input#username(data-bind='value: username', type='text')
-            label(for='fullname') Full name
-            input#fullname(data-bind='value: fullname', type='text')
-            label(for='sec1') Password
-            input#sec1(data-bind='value: sec1', type='password')
-            label(for='sec2') Retype
-            input#sec2(data-bind='value: sec2', type='password')
-            button OK
-            button Cancel
+            div
+                label(for='username') Login
+                input#username(data-bind='value: username, valueUpdate: "afterkeydown", css: {valid: usernameValid}', type='text')
+            div
+                label(for='fullname') Full name
+                input#fullname(data-bind='value: fullname, valueUpdate: "afterkeydown", css: {valid: fullnameValid}', type='text')
+            div
+                label(for='sec1') Password
+                input#sec1(data-bind='value: sec1, valueUpdate: "afterkeydown", css: {valid: sec1Valid}', type='password')
+            div
+                label(for='sec2') Retype
+                input#sec2(data-bind='value: sec2, valueUpdate: "afterkeydown", css: {valid: sec2Valid}', type='password')
+            div
+                button(data-bind='click: $parent.editOK, enable: allValid') OK
+                button(data-bind='click: $parent.editCancel') Cancel
     script(src="javascripts/require.js", data-main="javascripts/main.admin.js")
