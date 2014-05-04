@@ -1,4 +1,6 @@
 @navMargin: 0.5em;
+@tableBorder: solid 1px lightgray;
+@tableBorderHover: solid 1px gray;
 
 body {
   padding: 50px;
@@ -15,23 +17,48 @@ a {
 
 .table {
   display: table;
-  min-width: 240px;
-  max-width: 320px;
-  /*width: 100%;*/
+  width: 360px;
 
   .table-caption {
     display: table-row;
 
     .caption {
       display: table-cell;
+      border-top: @tableBorder;
+      border-bottom: @tableBorder;
+      font-weight: 700;
+      padding: 0 1em;
+      line-height: 2em;
+      &:first-child{
+        padding: 0 1em 0 0;
+      }
+      &:last-child{
+        padding: 0 0 0 1em;
+      }
     }
   }
 
   .table-row {
     display: table-row;
 
+    &:hover{
+      .table-cell{
+        border-bottom: @tableBorderHover;
+      }
+    }
+
     .table-cell {
       display: table-cell;
+      border-bottom: @tableBorder;
+      padding: 0 1em;
+      line-height: 2em;
+      &:first-child{
+        padding: 0 1em 0 0;
+      }
+      &:last-child{
+        padding: 0 0 0 1em;
+      }
+
       .navlink {
         margin: 0 @navMargin;
 
@@ -94,7 +121,7 @@ nav {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(70, 70, 70, 0.2);
+  background-color: rgba(70, 70, 70, 0.4);
   top: 0;
   left: 0;
   z-index: 10;
@@ -102,6 +129,25 @@ nav {
     width: 360px;
     padding: 36px;
     background: white;
+    position: relative;
+    top: 100px;
+    left: calc(~'50% - 216px');
+  }
+}
+
+.user-edit{
+  label{
+    display: inline-block;
+    width: 160px;
+  }
+  input[type='text'],
+  input[type='password']{
+    width: calc(~'100% - 164px');
+    border-color: lightpink;
+    border-style: solid;
+    &.valid{
+      border-color: lightgreen;
+    }
   }
 }
 
