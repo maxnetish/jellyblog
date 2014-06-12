@@ -1,37 +1,20 @@
-extends layout
-block content
-    div.error-message= errorMessage
-    section.admin-section
-        h2 Registered users
-        a.navlink(href='javascript:void(0)', data-bind='click: create') Create new user
-        div.user-list.table
-            div.table-caption
-                span.username.caption Login
-                span.fullname.caption Full name
-                span.buttonset.caption
-            <!-- ko foreach: userList -->
-            div.user-item.table-row
-                span.username.table-cell(data-bind='text: username')
-                span.fullname.table-cell(data-bind='text: fullname')
-                span.buttonset.table-cell
-                    a.navlink(href='javascript:void(0)', data-bind='click: $parent.edit') Edit
-                    a.navlink(href='javascript:void(0)', data-bind='click: $parent.remove') Remove
-            <!-- /ko -->
-    div.user-edit.modal(data-bind='visible: editedUser', style='display: none;')
-        div.modal-content(data-bind='with: editedUser')
-            div
-                label(for='username') Login
-                input#username(data-bind='value: username, valueUpdate: "afterkeydown", css: {valid: usernameValid}', type='text')
-            div
-                label(for='fullname') Full name
-                input#fullname(data-bind='value: fullname, valueUpdate: "afterkeydown", css: {valid: fullnameValid}', type='text')
-            div
-                label(for='sec1') Password
-                input#sec1(data-bind='value: sec1, valueUpdate: "afterkeydown", css: {valid: sec1Valid}', type='password')
-            div
-                label(for='sec2') Retype
-                input#sec2(data-bind='value: sec2, valueUpdate: "afterkeydown", css: {valid: sec2Valid}', type='password')
-            div
-                button(data-bind='click: $parent.editOK, enable: allValid') OK
-                button(data-bind='click: $parent.editCancel') Cancel
-    script(src="javascripts/require.js", data-main="javascripts/main.admin.js")
+doctype html
+html
+    head
+        title= Admin
+        link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+        link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+        nav.navbar.navbar-default.navbar-static-top(role='navigation')
+            div.container-fluid
+                ul.nav.navbar-nav
+                    li
+                        p.navbar-text Welcome, #{user.displayName}
+                    li
+                        a(href='/', target='_blank') Blog
+                    li
+                        a(href='/auth/logout') Logout
+                    li
+                        button.btn.btn-default.navbar-btn Запилить
+

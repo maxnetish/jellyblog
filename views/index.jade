@@ -1,7 +1,12 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  p current user: #{userId}
-  script(src="javascripts/require.js", data-main="javascripts/main.index.js")
+    h1= title
+    p Welcome to #{title}
+    p Sign in as &nbsp;
+        span= user.displayName
+    p Admin:&nbsp;
+        span= admin
+    a(href='/auth/google') Sign in with google openID
+    br
+    a(href='/auth/logout') Logout

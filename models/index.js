@@ -1,10 +1,10 @@
 /**
- * Created by Gordeev on 23.03.14.
+ * Created by Gordeev on 12.06.2014.
  */
 var mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/jellyblog');
 
 exports.model={
-    User: require('./model.user').createUserModel(mongoose)
+    User: require('./user').createUserModel(mongoose)
 };

@@ -1,22 +1,21 @@
 {
-    "name": "jelly-blog",
+    "name": "jellyblog",
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "start": "node app.js"
+        "start": "node ./bin/www"
     },
     "dependencies": {
-        "passport": "*",
-        "passport-local": "*",
-        "express": "~4.0.0",
-        "static-favicon": "*",
+        "express": "~4.2.0",
+        "static-favicon": "~1.0.0",
         "morgan": "~1.0.0",
-        "cookie-parser": "*",
-        "body-parser": "*",
+        "cookie-parser": "~1.0.1",
+        "body-parser": "~1.0.0",
         "debug": "~0.7.4",
-        "jade": "*",
-        "less-middleware": "*",
-        "connect-redis": "*",
+        "jade": "~1.3.0",
+        "less-middleware": "1.0.x",
+        "passport": "*",
+        "passport-google": "*",
         "express-session": "*",
         "mongoose": "*",
         "underscore": "*"
