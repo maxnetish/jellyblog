@@ -27,23 +27,6 @@ router.get('/google/return', function (req, res, next) {
         })
     })(req, res, next);
 });
-/*
- router.get('/google/return', passport.authenticate('google', {
- successRedirect: '/',
- failureRedirect: '/'
- }));
-
- app.get('/login', function(req, res, next) {
- passport.authenticate('local', function(err, user, info) {
- if (err) { return next(err); }
- if (!user) { return res.redirect('/login'); }
- req.logIn(user, function(err) {
- if (err) { return next(err); }
- return res.redirect('/users/' + user.username);
- });
- })(req, res, next);
- });
- */
 
 router.get('/logout', function (req, res) {
     if (req.user) {

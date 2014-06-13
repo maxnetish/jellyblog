@@ -18,6 +18,7 @@
         "passport-google": "*",
         "express-session": "*",
         "mongoose": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "q": "*"
     }
 }
