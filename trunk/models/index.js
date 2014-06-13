@@ -6,5 +6,6 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/jellyblog');
 
 exports.model={
-    User: require('./user').createUserModel(mongoose)
+    User: require('./user').createUserModel(mongoose),
+    Post: require('./post').createPostModel(mongoose)
 };
