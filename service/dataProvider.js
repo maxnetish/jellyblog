@@ -5,6 +5,41 @@
 var model = require('../models').model,
     _ = require('underscore');
 
+var sanitizeDate = function (row) {
+    var result;
+
+    if (row) {
+        if (_.isDate(row)) {
+            result = row;
+        } else if (_.isString(row)) {
+            result = Date.parse(row);
+        } else if (_.isNumber(row)) {
+            result = new Date(row);
+        }
+    }
+
+    return result;
+};
+
+var sanitizeBoolean = function (row) {
+    var result = false;
+
+    if (_.isNull(row) || _.isUndefined(row)) {
+        return null;
+    }
+
+    if (row == 'on' || row == 'true') {
+        result = true;
+    }
+    else if (row) {
+        try {
+            result = new Boolean(parseInt(row)).valueOf();
+        } catch (err) {
+        }
+    }
+    return result;
+}
+
 var promisePostRemove = function (id) {
     return model.Post.findByIdAndRemove(id);
 }
@@ -44,43 +79,116 @@ var promisePostGetBySlug = function (slug) {
 
 var promisePostsList = function (queryParams) {
     var query,
+        aggregate,
         condition = {},
         fromDate,
-        fields = 'id title slug featured draft date';
+        toDate,
+        tag,
+        search,
+        limit,
+        featured,
+        includeDraft;
 
     queryParams = queryParams || {};
 
-    if (queryParams.fromDate) {
-        if (_.isDate(queryParams.fromDate)) {
-            fromDate = queryParams.fromDate;
-        } else if (_.isString(queryParams.fromDate)) {
-            fromDate = Date.parse(queryParams.fromDate);
-        } else if (_.isNumber(queryParams.fromDate)) {
-            fromDate = new Date(queryParams.fromDate);
-        }
-    }
+    fromDate = sanitizeDate(queryParams.fromDate);
+    toDate = sanitizeDate(queryParams.toDate);
+    tag = queryParams.tag;
+    search = queryParams.search;
+    featured = sanitizeBoolean(queryParams.featured);
+    includeDraft = sanitizeBoolean(queryParams.includeDraft);
+    limit = parseInt(queryParams.limit, 10);
 
+    if (fromDate || toDate) {
+        condition.date = {};
+    }
     if (fromDate) {
-        condition.date = {
-            $gt: fromDate
-        };
+        condition.date.$gte = fromDate;
+    }
+    if (toDate) {
+        condition.date.$lte = toDate;
+    }
+    if (tag) {
+        condition.tag = tag;
+    }
+    if (search) {
+        condition.content = /search/;
+    }
+    if (_.isBoolean(featured)) {
+        condition.featured = featured;
+    }
+    if (!includeDraft) {
+        condition.draft = false;
     }
 
-    if (!queryParams.uncludeDraft) {
-        condition.draft = true
-    }
+    aggregate = model.Post.aggregate({
+            $match: condition
+        }, {
+            $project: {
+                title: 1,
+                slug: 1,
+                featured: 1,
+                draft: 1,
+                date: 1
+            }
+        }
+    );
 
-    query = model.Post.find(condition, fields);
-
-    if (queryParams.limit) {
-        if (_.isNumber(queryParams.limit)) {
-            query = query.limit(queryParams.limit);
-        } else {
-            query = query.limit(parseInt(queryParams.limit, 10));
+    if (fromDate && limit) {
+        //reverse req:
+        aggregate = aggregate
+            .sort('date')
+            .limit(limit)
+            .sort('-date');
+    } else {
+        aggregate = aggregate
+            .sort('-date');
+        if (limit) {
+            aggregate = aggregate
+                .limit(limit);
         }
     }
 
-    return query.exec();
+    return aggregate.exec();
+
+    /*
+     queryParams = queryParams || {};
+
+     fromDate = sanitizeDate(queryParams.fromDate);
+     toDate = sanitizeDate(queryParams.toDate);
+
+     if (fromDate || toDate) {
+     condition.date = {};
+     }
+     if (fromDate) {
+     condition.date.$gt = fromDate;
+     }
+     if (toDate) {
+     condition.date.$lte = toDate;
+     }
+
+     if (!queryParams.includeDraft) {
+     condition.draft = true;
+     }
+
+     query = model.Post.find(condition, fields);
+
+     if (toDate && !fromDate && queryParams.limit) {
+     query = query.sort('date');
+     }
+
+     if (queryParams.limit) {
+     if (_.isNumber(queryParams.limit)) {
+     query = query.limit(queryParams.limit);
+     } else {
+     query = query.limit(parseInt(queryParams.limit, 10));
+     }
+     }
+
+     query = query.sort('-date')
+
+     return query.exec();
+     */
 };
 
 module.exports = {

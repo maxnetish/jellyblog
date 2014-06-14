@@ -1,0 +1,6 @@
+ul
+    li(ng-repeat='post in posts')
+        span {{post.title}}
+        span {{post.date | jellydate}}
+        a(ng-href='#!/edit/{{post._id}}') {{'EDIT' | translate}}
+
