@@ -11,5 +11,11 @@
     "PREVIEW": "Preview",
     "WELCOME": "Welcome",
     "BLOG": "Blog",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "FEATURED": "Featured",
+    "DRAFT": "Draft",
+    "SLUG": "Custom URL",
+    "METATITLE": "Meta title",
+    "METADESCRIPTION": "Meta description",
+    "POST_IMAGE": "Url of image"
 }
