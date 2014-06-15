@@ -12,7 +12,7 @@ angular.module('dataServiceModule',
         function ($http, $cacheFactory, logger) {
             var PostBrief = function (row) {
                     row = row || {};
-                    this._id = row._id || null;
+                    this._id = row._id || undefined;
                     this.title = row.title || "";
                     this.date = row.date ? new Date(row.date) : new Date();
                     this.slug = row.slug || "";
@@ -21,10 +21,10 @@ angular.module('dataServiceModule',
                 },
                 PostDetails = function (row) {
                     row = row || {};
-                    this._id = row._id || null;
+                    this._id = row._id || undefined;
                     this.title = row.title || "";
                     this.date = row.date ? new Date(row.date) : new Date();
-                    this.slug = row.slug || "";
+                    this.slug = row.slug;
                     this.featured = row.featured || false;
                     this.draft = row.draft || true;
                     this.content = row.content || "";
@@ -86,6 +86,7 @@ angular.module('dataServiceModule',
                     });
                 },
                 postSave = function (postDetails) {
+                    postDetails.clearEmptyStrings();
                     return $http({
                         method: 'POST',
                         url: '/api/post',
@@ -98,6 +99,8 @@ angular.module('dataServiceModule',
                             // reset default cache
                             var cache = $cacheFactory.get('$http');
                             cache.removeAll();
+
+                            return response;
                         });
                 },
                 postRemove = function (idOrPostBrief) {
@@ -120,9 +123,18 @@ angular.module('dataServiceModule',
                             // reset default cache
                             var cache = $cacheFactory.get('$http');
                             cache.removeAll();
+                            return response;
                         });
                 };
 
+            PostDetails.prototype.clearEmptyStrings = function () {
+                var prop;
+                for (prop in this) {
+                    if (angular.isString(this[prop]) && this[prop].length === 0) {
+                        this[prop] = undefined;
+                    }
+                }
+            };
             return{
                 postProvider: {
                     query: postsQuery,

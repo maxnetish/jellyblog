@@ -3,7 +3,7 @@
  */
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/jellyblog');
+mongoose.connect('mongodb://localhost/jellyblogdb');
 
 exports.model={
     User: require('./user').createUserModel(mongoose),

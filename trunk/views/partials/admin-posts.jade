@@ -1,3 +1,12 @@
+a.btn.btn-primary(href='#!/edit')
+    span.glyphicon.glyphicon-plus
+    span &nbsp;{{'NEW_POST' | translate}}
+a.btn.btn-primary(ng-href='#!/posts/{{state.backPageQuery}}', ng-class='{"disabled": state.backDisable}')
+    span.glyphicon.glyphicon-backward
+    span &nbsp;Back
+a.btn.btn-primary(ng-href='#!/posts/{{state.nextPageQuery}}', ng-class='{"disabled": state.nextDisable}')
+    span.glyphicon.glyphicon-forward
+    span &nbsp;Next
 ul
     li(ng-repeat='post in posts')
         span {{post.title}}

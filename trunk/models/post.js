@@ -11,7 +11,7 @@ var createPostModel = function (mongoose) {
         },
         slug: {
             type: String,
-            unique: true
+            index: true
         },
         content: {
             type: String
