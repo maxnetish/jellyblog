@@ -98,7 +98,7 @@ router.get('/posts', function (req, res) {
 
 router.get('/locale', function (req, res) {
     var langCode = req.query.lang || 'en',
-        localeTable = locales[langCode] || locales.en;
+        localeTable = locales[langCode] || locales[langCode.slice(0, 2)] || locales.en;
 
     res.send(localeTable);
 });

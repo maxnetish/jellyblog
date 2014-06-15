@@ -12,7 +12,7 @@ var sanitizeDate = function (row) {
         if (_.isDate(row)) {
             result = row;
         } else if (_.isString(row)) {
-            result = Date.parse(row);
+            result = new Date(row);
         } else if (_.isNumber(row)) {
             result = new Date(row);
         }
@@ -45,9 +45,11 @@ var promisePostRemove = function (id) {
 }
 
 var promisePostUpdate = function (post) {
-    var query;
+    var query,
+        id = post._id;
 
-    query = model.Post.findByIdAndUpdate(post._id, post);
+    delete post._id;
+    query = model.Post.findByIdAndUpdate(id, post);
     return query.exec();
 };
 
@@ -55,7 +57,6 @@ var promisePostCreate = function (post) {
     var promise;
 
     // some post validation?
-
     promise = model.Post.create(post);
     return promise;
 };
@@ -103,10 +104,10 @@ var promisePostsList = function (queryParams) {
         condition.date = {};
     }
     if (fromDate) {
-        condition.date.$gte = fromDate;
+        condition.date.$gt = fromDate;
     }
     if (toDate) {
-        condition.date.$lte = toDate;
+        condition.date.$lt = toDate;
     }
     if (tag) {
         condition.tag = tag;
@@ -150,45 +151,6 @@ var promisePostsList = function (queryParams) {
     }
 
     return aggregate.exec();
-
-    /*
-     queryParams = queryParams || {};
-
-     fromDate = sanitizeDate(queryParams.fromDate);
-     toDate = sanitizeDate(queryParams.toDate);
-
-     if (fromDate || toDate) {
-     condition.date = {};
-     }
-     if (fromDate) {
-     condition.date.$gt = fromDate;
-     }
-     if (toDate) {
-     condition.date.$lte = toDate;
-     }
-
-     if (!queryParams.includeDraft) {
-     condition.draft = true;
-     }
-
-     query = model.Post.find(condition, fields);
-
-     if (toDate && !fromDate && queryParams.limit) {
-     query = query.sort('date');
-     }
-
-     if (queryParams.limit) {
-     if (_.isNumber(queryParams.limit)) {
-     query = query.limit(queryParams.limit);
-     } else {
-     query = query.limit(parseInt(queryParams.limit, 10));
-     }
-     }
-
-     query = query.sort('-date')
-
-     return query.exec();
-     */
 };
 
 module.exports = {
