@@ -12,38 +12,51 @@ angular.module('jellyControllers',
         'dataService',
         'jellyLogger',
         function ($scope, $routeParams, dataService, logger) {
-            var query = $routeParams.query ? JSON.parse($routeParams.query) : {};
+            var query = $routeParams.query ? angular.fromJson($routeParams.query) : {},
+                skip = parseInt(query.skip, 10) || 0,
+                limit = parseInt(query.limit, 10) || 5,
+                nextQuery,
+                backQuery,
+                startQuery;
 
             if (window.admin) {
                 query.includeDraft = 1;
             }
-            query.limit = 5;
+            query.limit = limit;
+            query.skip = skip;
 
             dataService.postProvider.query(query)
                 .then(function (result) {
-                    var toDate, fromDate;
-                    if (result.data && result.data.length == query.limit) {
-                        toDate = result.data[result.data.length - 1].date;
-                        fromDate=result.data[0].date;
-                        $scope.state.nextPageQuery = angular.toJson({
-                            toDate: toDate
-                        });
-                        $scope.state.backPageQuery=angular.toJson({
-                            fromDate: fromDate
-                        })
-                    } else {
-                        $scope.state.nextDisable = true;
-                    }
                     $scope.posts = result.data;
+                    $scope.state.nextDisable = result.data.length < limit;
+                    $scope.state.backDisable = !query.skip;
+                    $scope.state.startDisabled = !query.skip;
                 });
 
+            nextQuery = angular.copy(query);
+            nextQuery.skip = (query.skip || 0) + limit;
+            nextQuery.limit = limit;
+            backQuery = angular.copy(query);
+            backQuery.skip = (query.skip || 0) - limit;
+            if (backQuery.skip <= 0) {
+                backQuery.skip = 0;
+            }
+            backQuery.limit = limit;
+            startQuery = angular.copy(query);
+            startQuery.skip = 0;
             $scope.state = {
-                nextPageQuery: ""
+                nextQuery: angular.toJson(nextQuery),
+                backQuery: angular.toJson(backQuery),
+                startQuery: angular.toJson(startQuery),
+                backDisable: true,
+                nextDisable: true,
+                startDisabled: true
             };
 
         }
     ])
-    .controller('postController',
+    .
+    controller('postController',
     [
         '$scope',
         '$routeParams',

@@ -16,8 +16,8 @@ html
                     li
                         a(href='/auth/logout') {{'LOGOUT' | translate}}
                     li
-                        button.btn.btn-default.navbar-btn Запилить
-        p Localized string: [{{'LIST' | translate}}]
+                        a(href='#!/edit')
+                            span.glyphicon.glyphicon-plus
+                            span &nbsp;{{'NEW_POST' | translate}}
         div.app-view(ng-view)
-
         include admin-scripts
