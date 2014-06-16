@@ -1,15 +1,45 @@
-a.btn.btn-primary(href='#!/edit')
-    span.glyphicon.glyphicon-plus
-    span &nbsp;{{'NEW_POST' | translate}}
-a.btn.btn-primary(ng-href='#!/posts/{{state.backPageQuery}}', ng-class='{"disabled": state.backDisable}')
-    span.glyphicon.glyphicon-backward
-    span &nbsp;Back
-a.btn.btn-primary(ng-href='#!/posts/{{state.nextPageQuery}}', ng-class='{"disabled": state.nextDisable}')
-    span.glyphicon.glyphicon-forward
-    span &nbsp;Next
-ul
-    li(ng-repeat='post in posts')
-        span {{post.title}}
-        span {{post.date | jellydate}}
-        a(ng-href='#!/edit/{{post._id}}') {{'EDIT' | translate}}
-
+div.container-fluid
+    div.row
+        div.col-md-6
+            div.btn-group.btn-group-xs
+                a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.startQuery}}', ng-class='{"disabled": state.startDisabled}')
+                    span.glyphicon.glyphicon-fast-backward
+                    span &nbsp;Begin
+                a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.backQuery}}', ng-class='{"disabled": state.backDisable}')
+                    span.glyphicon.glyphicon-backward
+                    span &nbsp;Back
+                a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.nextQuery}}', ng-class='{"disabled": state.nextDisable}')
+                    span.glyphicon.glyphicon-forward
+                    span &nbsp;Next
+    div.row
+        div.col-md-6
+            div.table-responsive
+                table.table.table-hover
+                    thead
+                        tr
+                            td Title
+                            td Date
+                            td Draft
+                            td Featured
+                            td Actions
+                    tbody
+                        tr(ng-repeat='post in posts')
+                            td
+                                a(ng-href='#!/edit/{{post._id}}') {{post.title}}
+                            td {{post.date | jellydate}}
+                            td {{post.draft}}
+                            td {{post.featured}}
+                            td Bla-bla
+    div.row
+        div.col-md-6
+            div
+                div.btn-group.btn-group-xs.center-block
+                    a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.startQuery}}', ng-class='{"disabled": state.startDisabled}')
+                        span.glyphicon.glyphicon-fast-backward
+                        span &nbsp;Begin
+                    a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.backQuery}}', ng-class='{"disabled": state.backDisable}')
+                        span.glyphicon.glyphicon-backward
+                        span &nbsp;Back
+                    a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.nextQuery}}', ng-class='{"disabled": state.nextDisable}')
+                        span.glyphicon.glyphicon-forward
+                        span &nbsp;Next

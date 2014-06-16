@@ -28,21 +28,63 @@ var sanitizeBoolean = function (row) {
         return null;
     }
 
-    if (row == 'on' || row == 'true') {
+    if (row === 'on' || row === 'true') {
         result = true;
-    }
-    else if (row) {
+    } else if (row) {
         try {
-            result = new Boolean(parseInt(row)).valueOf();
-        } catch (err) {
+            result = !!parseInt(row, 10);
+        } catch (ignore) {
         }
     }
     return result;
-}
+};
+
+var createCondition = function (queryParams) {
+    var condition = {},
+        fromDate,
+        toDate,
+        tag,
+        search,
+        featured,
+        includeDraft;
+
+    queryParams = queryParams || {};
+
+    fromDate = sanitizeDate(queryParams.fromDate);
+    toDate = sanitizeDate(queryParams.toDate);
+    tag = queryParams.tag;
+    search = queryParams.search;
+    featured = sanitizeBoolean(queryParams.featured);
+    includeDraft = sanitizeBoolean(queryParams.includeDraft);
+
+    if (fromDate || toDate) {
+        condition.date = {};
+    }
+    if (fromDate) {
+        condition.date.$gt = fromDate;
+    }
+    if (toDate) {
+        condition.date.$lt = toDate;
+    }
+    if (tag) {
+        condition.tag = tag;
+    }
+    if (search) {
+        condition.content = /search/;
+    }
+    if (_.isBoolean(featured)) {
+        condition.featured = featured;
+    }
+    if (!includeDraft) {
+        condition.draft = false;
+    }
+
+    return condition;
+};
 
 var promisePostRemove = function (id) {
     return model.Post.findByIdAndRemove(id);
-}
+};
 
 var promisePostUpdate = function (post) {
     var query,
@@ -80,77 +122,26 @@ var promisePostGetBySlug = function (slug) {
 
 var promisePostsList = function (queryParams) {
     var query,
-        aggregate,
-        condition = {},
-        fromDate,
-        toDate,
-        tag,
-        search,
+        condition,
         limit,
-        featured,
-        includeDraft;
+        skip,
+        fields="title slug featured draft date",
+        options,
+        sort;
 
     queryParams = queryParams || {};
+    condition = createCondition(queryParams);
+    limit = parseInt(queryParams.limit, 10) || undefined;
+    skip = parseInt(queryParams.skip, 10) || undefined;
+    sort=queryParams.sort || '-date';
+    options={
+        sort: sort,
+        skip: skip,
+        limit: limit
+    };
 
-    fromDate = sanitizeDate(queryParams.fromDate);
-    toDate = sanitizeDate(queryParams.toDate);
-    tag = queryParams.tag;
-    search = queryParams.search;
-    featured = sanitizeBoolean(queryParams.featured);
-    includeDraft = sanitizeBoolean(queryParams.includeDraft);
-    limit = parseInt(queryParams.limit, 10);
-
-    if (fromDate || toDate) {
-        condition.date = {};
-    }
-    if (fromDate) {
-        condition.date.$gt = fromDate;
-    }
-    if (toDate) {
-        condition.date.$lt = toDate;
-    }
-    if (tag) {
-        condition.tag = tag;
-    }
-    if (search) {
-        condition.content = /search/;
-    }
-    if (_.isBoolean(featured)) {
-        condition.featured = featured;
-    }
-    if (!includeDraft) {
-        condition.draft = false;
-    }
-
-    aggregate = model.Post.aggregate({
-            $match: condition
-        }, {
-            $project: {
-                title: 1,
-                slug: 1,
-                featured: 1,
-                draft: 1,
-                date: 1
-            }
-        }
-    );
-
-    if (fromDate && limit) {
-        //reverse req:
-        aggregate = aggregate
-            .sort('date')
-            .limit(limit)
-            .sort('-date');
-    } else {
-        aggregate = aggregate
-            .sort('-date');
-        if (limit) {
-            aggregate = aggregate
-                .limit(limit);
-        }
-    }
-
-    return aggregate.exec();
+    query=model.Post.find(condition, fields, options);
+    return query.exec();
 };
 
 module.exports = {
