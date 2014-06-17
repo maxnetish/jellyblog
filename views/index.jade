@@ -1,12 +1,43 @@
 extends layout
 
 block content
-    h1= title
-    p Welcome to #{title}
-    p Sign in as &nbsp;
-        span= user.displayName
-    p Admin:&nbsp;
-        span= admin
-    a(href='/auth/google') Sign in with google openID
-    br
-    a(href='/auth/logout') Logout
+    div(ng-app='jellyApp')
+        div.center-block.main-wrapper
+            div.container-fluid
+                div.row
+                    div.col-md-12
+                        div.main-image
+                div.row
+                    div.col-md-12
+                        h1 Пока мы строим другие планы
+                div.row
+                    div.col-md-12
+                        nav
+                            ul.list-unstyled.list-inline
+                                li
+                                    a(href='http://google.com')
+                                        b Google
+                                li
+                                    a(href='http://yandex.ru')
+                                        b Yandex
+                div.row
+                    div.col-md-12
+                        article
+                            div.container-fluid
+                                div.row
+                                    div.col-md-12
+                                        h2 Заголовок поста
+                                div.row
+                                    div.col-md-offset-10.col-md-2
+                                        span 22 декабря 2014
+                                div.row
+                                    div.col-md-12
+                                        div.post-content
+                                            p Bla bla bla...
+                                div.row
+                                    div.col-md-12
+                                        a.pull-right(href='#') Читать
+block specific
+    script(src='/js/app/app.js')
+    script(src='/js/app/controllers.js')
+    script(src='/js/app/routes.js')

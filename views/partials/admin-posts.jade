@@ -4,42 +4,46 @@ div.container-fluid
             div.btn-group.btn-group-xs
                 a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.startQuery}}', ng-class='{"disabled": state.startDisabled}')
                     span.glyphicon.glyphicon-fast-backward
-                    span &nbsp;Begin
+                    span &nbsp;{{'BEGIN' | translate}}
                 a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.backQuery}}', ng-class='{"disabled": state.backDisable}')
                     span.glyphicon.glyphicon-backward
-                    span &nbsp;Back
+                    span &nbsp;{{'BACK' | translate}}
                 a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.nextQuery}}', ng-class='{"disabled": state.nextDisable}')
                     span.glyphicon.glyphicon-forward
-                    span &nbsp;Next
+                    span &nbsp;{{'NEXT' | translate}}
     div.row
         div.col-md-6
-            div.table-responsive
-                table.table.table-hover
-                    thead
-                        tr
-                            td Title
-                            td Date
-                            td Draft
-                            td Featured
-                            td Actions
-                    tbody
-                        tr(ng-repeat='post in posts')
-                            td
-                                a(ng-href='#!/edit/{{post._id}}') {{post.title}}
-                            td {{post.date | jellydate}}
-                            td {{post.draft}}
-                            td {{post.featured}}
-                            td Bla-bla
+            table.table.table-hover.table-fixed
+                colgroup
+                    col.col-md-5
+                    col.col-md-3
+                    col.col-md-2
+                    col.col-md-2
+                thead
+                    tr
+                        td {{'TITLE' | translate}}
+                        td {{'DATE' | translate}}
+                        td {{'DRAFT' | translate}}
+                        td {{'FEATURED' | translate}}
+                tbody
+                    tr(ng-repeat='post in posts')
+                        td
+                            a(ng-href='#!/edit/{{post._id}}') {{post.title}}
+                        td {{post.date | jellydate}}
+                        td
+                            span.glyphicon(ng-class='{"glyphicon-ok": post.draft}')
+                        td
+                            span.glyphicon(ng-class='{"glyphicon-ok": post.featured}')
     div.row
         div.col-md-6
             div
                 div.btn-group.btn-group-xs.center-block
                     a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.startQuery}}', ng-class='{"disabled": state.startDisabled}')
                         span.glyphicon.glyphicon-fast-backward
-                        span &nbsp;Begin
+                        span &nbsp;{{'BEGIN' | translate}}
                     a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.backQuery}}', ng-class='{"disabled": state.backDisable}')
                         span.glyphicon.glyphicon-backward
-                        span &nbsp;Back
+                        span &nbsp;{{'BACK' | translate}}
                     a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.nextQuery}}', ng-class='{"disabled": state.nextDisable}')
                         span.glyphicon.glyphicon-forward
-                        span &nbsp;Next
+                        span &nbsp;{{'NEXT' | translate}}

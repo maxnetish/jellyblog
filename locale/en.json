@@ -17,5 +17,9 @@
     "SLUG": "Custom URL",
     "METATITLE": "Meta title",
     "METADESCRIPTION": "Meta description",
-    "POST_IMAGE": "Url of image"
+    "POST_IMAGE": "Url of image",
+    "BEGIN": "Begin",
+    "BACK": "Back",
+    "NEXT": "Next",
+    "POSTS": "Posts"
 }
