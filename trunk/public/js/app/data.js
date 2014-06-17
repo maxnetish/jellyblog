@@ -16,8 +16,8 @@ angular.module('dataServiceModule',
                     this.title = row.title || "";
                     this.date = row.date ? new Date(row.date) : new Date();
                     this.slug = row.slug || "";
-                    this.featured = row.featured || false;
-                    this.draft = row.draft || true;
+                    this.featured = !!row.featured;
+                    this.draft = !!row.draft;
                 },
                 PostDetails = function (row) {
                     row = row || {};
@@ -25,8 +25,8 @@ angular.module('dataServiceModule',
                     this.title = row.title || "";
                     this.date = row.date ? new Date(row.date) : new Date();
                     this.slug = row.slug;
-                    this.featured = row.featured || false;
-                    this.draft = row.draft || true;
+                    this.featured = !!row.featured;
+                    this.draft = !!row.draft;
                     this.content = row.content || "";
                     this.image = row.image || null;
                     this.metaTitle = row.metaTitle || "";
@@ -104,7 +104,7 @@ angular.module('dataServiceModule',
                         });
                 },
                 postRemove = function (idOrPostBrief) {
-                    var params;
+                    var params = {};
 
                     if (idOrPostBrief instanceof PostBrief) {
                         params.id = idOrPostBrief._id;

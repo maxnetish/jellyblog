@@ -1,11 +1,6 @@
-doctype html
-html
-    head
-        title= Admin
-        link(rel='stylesheet', href='/stylesheets/bootstrap.css')
-        link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
-        link(rel='stylesheet', href='/stylesheets/style.css')
-    body(ng-app='jellyApp')
+extends layout
+block content
+    div(ng-app='jellyApp')
         nav.navbar.navbar-default.navbar-static-top(role='navigation')
             div.container-fluid
                 ul.nav.navbar-nav
@@ -16,8 +11,15 @@ html
                     li
                         a(href='/auth/logout') {{'LOGOUT' | translate}}
                     li
+                        a(href='#!/posts')
+                            span.glyphicon.glyphicon-th-list
+                            span &nbsp;{{'POSTS' | translate}}
+                    li
                         a(href='#!/edit')
                             span.glyphicon.glyphicon-plus
                             span &nbsp;{{'NEW_POST' | translate}}
         div.app-view(ng-view)
-        include admin-scripts
+block specific
+    script(src='/js/app/app-admin.js')
+    script(src='/js/app/routes-admin.js')
+    script(src='/js/app/controllers-admin.js')

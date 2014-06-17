@@ -83,7 +83,7 @@ var createCondition = function (queryParams) {
 };
 
 var promisePostRemove = function (id) {
-    return model.Post.findByIdAndRemove(id);
+    return model.Post.findByIdAndRemove(id).exec();
 };
 
 var promisePostUpdate = function (post) {

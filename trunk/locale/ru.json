@@ -17,5 +17,9 @@
     "SLUG": "Свой адрес",
     "METATITLE": "Мета заголовок",
     "METADESCRIPTION": "Мета описание",
-    "POST_IMAGE": "Url картинки"
+    "POST_IMAGE": "Url картинки",
+    "BEGIN": "К началу",
+    "BACK": "Назад",
+    "NEXT": "Вперёд",
+    "POSTS": "Список"
 }

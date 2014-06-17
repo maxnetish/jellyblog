@@ -2,6 +2,22 @@ doctype html
 html
   head
     title= title
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     block content
+    script.
+        window.admin = !{admin};
+    script(src='/js/lib/angular.js')
+    script(src='/js/lib/angular-route.js')
+    script(src='/js/lib/angular-sanitize.js')
+    script(src='/js/lib/angular-translate.js')
+    script(src='/js/lib/angular-translate-loader-url.js')
+    script(src='/js/lib/moment/moment.js')
+    script(src='/js/lib/moment/langs.min.js')
+    // script(src='/js/app/app.js')
+    script(src='/js/app/services.js')
+    script(src='/js/app/data.js')
+    // script(src='/js/app/controllers.js')
+    block specific
