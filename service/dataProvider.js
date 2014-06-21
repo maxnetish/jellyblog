@@ -125,7 +125,7 @@ var promisePostsList = function (queryParams) {
         condition,
         limit,
         skip,
-        fields="title slug featured draft date",
+        fields = "title slug featured draft date",
         options,
         sort;
 
@@ -133,15 +133,49 @@ var promisePostsList = function (queryParams) {
     condition = createCondition(queryParams);
     limit = parseInt(queryParams.limit, 10) || undefined;
     skip = parseInt(queryParams.skip, 10) || undefined;
-    sort=queryParams.sort || '-date';
-    options={
+    sort = queryParams.sort || '-date';
+    options = {
         sort: sort,
         skip: skip,
         limit: limit
     };
 
-    query=model.Post.find(condition, fields, options);
+    query = model.Post.find(condition, fields, options);
     return query.exec();
+};
+
+var promiseNavlinkList = function (category) {
+    var query;
+
+    category = category || 'main';
+
+    query = model.Navlink.find({
+        category: category
+    }, null, {
+        sort: 'order'
+    });
+    return query.exec();
+};
+
+var promiseNavlinkCreate = function (navlink) {
+    var promise;
+
+    // some post validation?
+    promise = model.Navlink.create(navlink);
+    return promise;
+};
+
+var promiseNavlinkUpdate = function (navlink) {
+    var query,
+        id = navlink._id;
+
+    delete navlink._id;
+    query = model.Navlink.findByIdAndUpdate(id, navlink);
+    return query.exec();
+};
+
+var promiseNavlinkRemove = function (id) {
+    return model.Navlink.findByIdAndRemove(id).exec();
 };
 
 module.exports = {
@@ -150,5 +184,9 @@ module.exports = {
     promisePostGetById: promisePostGetById,
     promisePostCreate: promisePostCreate,
     promisePostUpdate: promisePostUpdate,
-    promisePostRemove: promisePostRemove
+    promisePostRemove: promisePostRemove,
+    promiseNavlinkCreate: promiseNavlinkCreate,
+    promiseNavlinkUpdate: promiseNavlinkUpdate,
+    promiseNavlinkRemove: promiseNavlinkRemove,
+    promiseNavlinkList: promiseNavlinkList
 };

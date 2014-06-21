@@ -12,6 +12,22 @@ angular.module('jellyServices',
         $translateProvider.determinePreferredLanguage();
         $translateProvider.fallbackLanguage('en');
     }])
+    .factory('utils', function () {
+        var findIndex = function (arr, predicat) {
+            var result, ind, arrLen;
+            for (ind = 0, arrLen = arr.length; ind < arrLen; ind++) {
+                if (predicat(arr[ind], ind)) {
+                    result = ind;
+                    break;
+                }
+            }
+            return result;
+        };
+
+        return{
+            findIndex: findIndex
+        };
+    })
     .factory('jellyLogger',
     [
         '$http',

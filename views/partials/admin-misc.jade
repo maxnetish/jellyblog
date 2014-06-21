@@ -1,0 +1,61 @@
+div.container-fluid
+    div.row
+        div.col-sm-12
+            h3 {{'MAIN_MENU' | translate}}
+    div.row
+        div.col-sm-12
+            div.btn-group.btn-group-sm
+                button.btn.btn-info(ng-click='addMainNavlink()')
+                    span.glyphicon.glyphicon-plus
+                    span &nbsp;{{'ADD' | translate}}
+                button.btn.btn-primary(ng-click='save()', ng-disabled='mainNavlinksForm.$invalid || mainNavlinksForm.$pristine')
+                    span.glyphicon.glyphicon-save
+                    span &nbsp;{{'SAVE' | translate}}
+    form.form(role='form', name='mainNavlinksForm')
+        div.border-bottom(ng-repeat='navlink in mainNavlinks | filter: {willRemove: false}')
+            div.row.padding-vert-10
+                div.col-sm-5
+                    input.form-control(type='text', required, ng-model='navlink.text', placeholder='{{"TOOLTIP_LINKTEXT" | translate}}')
+                div.col-sm-5
+                    input.form-control(type='text', required, ng-model='navlink.url', placeholder='Url')
+                div.col-sm-2
+                    div.btn-group.btn-group-xs
+                        button.btn.btn-danger(ng-click='removeMainNavlink(navlink)', title='{{"DELETE" | translate}}')
+                            span.glyphicon.glyphicon-remove
+                        button.btn.btn-primary(ng-click='upMainNavlink(navlink)', ng-disabled='$first', title='{{"UP" | translate}}')
+                            span.glyphicon.glyphicon-arrow-up
+                        button.btn.btn-primary(ng-click='downMainNavlink(navlink)', ng-disabled='$last', title='{{"DOWN" | translate}}')
+                            span.glyphicon.glyphicon-arrow-down
+            div.row.padding-vert-10
+                div.col-sm-5
+                    input.form-control(type='text', name='icon', ng-model='navlink.icon', placeholder='{{"ICON" | translate}}')
+                div.col-sm-7
+                    label.checkbox-inline
+                        input(type='checkbox', ng-model='navlink.disabled')
+                        {{'DISABLED' | translate}}
+                    label.checkbox-inline
+                        input(type='checkbox', ng-model='navlink.visible')
+                        {{'VISIBLE' | translate}}
+                    label.checkbox-inline
+                        input(type='checkbox', ng-model='navlink.newWindow')
+                        {{'LINK_NEW_WINDOW' | translate}}
+    div.row
+        div.col-sm-12
+            div.btn-group.btn-group-sm
+                button.btn.btn-info(ng-click='addMainNavlink()')
+                    span.glyphicon.glyphicon-plus
+                    span &nbsp;{{'ADD' | translate}}
+                button.btn.btn-primary(ng-click='save()', ng-disabled='mainNavlinksForm.$invalid || mainNavlinksForm.$pristine')
+                    span.glyphicon.glyphicon-save
+                    span &nbsp;{{'SAVE' | translate}}
+    div.row
+        div.col-sm-12
+        h4 {{'PREVIEW' | translate}}
+    div.row
+        div.col-sm-12
+            nav
+                ul.list-unstyled.list-inline
+                    li(ng-repeat='navlink in mainNavlinks | filter: {willRemove: false, visible: true}')
+                        a.btn(ng-href='{{navlink.url}}', ng-class='{"disabled": navlink.disabled}', target='{{navlink.newWindow? "_blank":""}}')
+                            span.glyphicon(class='{{navlink.icon}}')
+                            b &nbsp;{{navlink.text}}

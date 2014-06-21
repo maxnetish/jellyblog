@@ -8,7 +8,6 @@ var locales = require('../locale');
 var dataProvider = require('../service/dataProvider');
 
 
-
 router.delete('/post', function (req, res) {
     var id = req.query.id,
         promise;
@@ -93,6 +92,64 @@ router.get('/posts', function (req, res) {
         })
         .then(null, function (err) {
             res.send(err);
+        });
+});
+
+router.get('/navlinks', function (req, res) {
+    var query = req.query;
+    dataProvider.promiseNavlinkList(query.category)
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, function (errRespnse) {
+            return  res.send(500, errRespnse);
+        });
+});
+
+router.post('/navlink', function (req, res) {
+    var formData = req.body,
+        id = formData._id,
+        promise;
+
+    if (!req.userHasAdminRights) {
+        return res.send(401);
+    }
+
+    if (id) {
+        promise = dataProvider.promiseNavlinkUpdate(formData);
+    } else {
+        promise = dataProvider.promiseNavlinkCreate(formData);
+    }
+
+    promise
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, function (err) {
+            return res.send(500, err);
+        });
+});
+
+router.delete('/navlink', function (req, res) {
+    var id = req.query.id,
+        promise;
+
+    if (!id) {
+        return res.send(400);
+    }
+
+    if (!req.userHasAdminRights) {
+        return res.send(401);
+    }
+
+    promise = dataProvider.promiseNavlinkRemove(id);
+
+    promise
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, function (err) {
+            return res.send(500, err);
         });
 });
 

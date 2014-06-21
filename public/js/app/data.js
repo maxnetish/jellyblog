@@ -33,6 +33,20 @@ angular.module('dataServiceModule',
                     this.metaDescription = row.metaDescription || "";
                     this.tags = row.tags || [];
                 },
+                Navlink = function (row) {
+                    row = row || {};
+
+                    this._id = row._id || undefined;
+                    this.text = row.text || "";
+                    this.url = row.url || "";
+                    this.category = row.category || 'main';
+                    this.disabled = row.disabled || false;
+                    this.visible = row.visible || true;
+                    this.icon = row.icon || "";
+                    this.order = row.order || 0;
+                    this.willRemove = false;
+                    this.newWindow=row.newWindow || false;
+                },
                 responseMapper = function (Model) {
                     return function (data) {
                         var rowData,
@@ -58,6 +72,54 @@ angular.module('dataServiceModule',
                         }
                         return mappedData;
                     };
+                },
+                navlinkQuery = function (category) {
+                    return $http({
+                        method: 'GET',
+                        url: '/api/navlinks',
+                        params: {
+                            category: category
+                        },
+                        data: {},
+                        transformResponse: responseMapper(Navlink),
+                        cache: true
+                    })
+                },
+                navlinkSave = function (navlink) {
+                    navlink.clearEmptyStrings();
+                    return $http({
+                        method: 'POST',
+                        url: '/api/navlink',
+                        params: {},
+                        data: navlink,
+                        transformResponse: responseMapper(Navlink),
+                        cache: false
+                    })
+                        .then(function (response) {
+                            // reset default cache
+                            var cache = $cacheFactory.get('$http');
+                            cache.removeAll();
+
+                            return response;
+                        });
+                },
+                navlinkRemove = function (navlink) {
+                    var params = {};
+                    params.id = navlink._id;
+
+                    return $http({
+                        method: 'DELETE',
+                        url: '/api/navlink',
+                        params: params,
+                        transformResponse: responseMapper(Navlink),
+                        cache: false
+                    })
+                        .then(function (response) {
+                            // reset default cache
+                            var cache = $cacheFactory.get('$http');
+                            cache.removeAll();
+                            return response;
+                        });
                 },
                 postsQuery = function (queryParams) {
                     return $http({
@@ -125,16 +187,19 @@ angular.module('dataServiceModule',
                             cache.removeAll();
                             return response;
                         });
+                },
+                clearEmptyStrings = function () {
+                    var prop;
+                    for (prop in this) {
+                        if (angular.isString(this[prop]) && this[prop].length === 0) {
+                            this[prop] = undefined;
+                        }
+                    }
                 };
 
-            PostDetails.prototype.clearEmptyStrings = function () {
-                var prop;
-                for (prop in this) {
-                    if (angular.isString(this[prop]) && this[prop].length === 0) {
-                        this[prop] = undefined;
-                    }
-                }
-            };
+            PostDetails.prototype.clearEmptyStrings = clearEmptyStrings;
+            Navlink.prototype.clearEmptyStrings = clearEmptyStrings;
+
             return{
                 postProvider: {
                     query: postsQuery,
@@ -142,8 +207,14 @@ angular.module('dataServiceModule',
                     save: postSave,
                     remove: postRemove
                 },
+                navlinkProvider: {
+                    query: navlinkQuery,
+                    save: navlinkSave,
+                    remove: navlinkRemove
+                },
                 PostDetailsModel: PostDetails,
-                PostBriefModel: PostBrief
+                PostBriefModel: PostBrief,
+                Navlink: Navlink
             };
         }
     ]);
