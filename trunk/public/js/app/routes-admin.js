@@ -8,7 +8,8 @@ angular.module('jellyRoutesAdmin',
     ])
     .constant('ROUTE_PATHS', {
         POSTS: '/posts/:query?',
-        EDIT: '/edit/:postId?'
+        EDIT: '/edit/:postId?',
+        MISC: '/misc'
     })
     .config(
     [
@@ -23,6 +24,10 @@ angular.module('jellyRoutesAdmin',
         'ROUTE_PATHS',
         function ($routeProvider, paths) {
             $routeProvider
+                .when(paths.MISC, {
+                    templateUrl: '/partials/admin-misc',
+                    controller: 'miscController'
+                })
                 .when(paths.POSTS, {
                     templateUrl: '/partials/admin-posts',
                     controller: 'postsController'

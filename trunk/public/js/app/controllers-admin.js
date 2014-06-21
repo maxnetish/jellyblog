@@ -3,7 +3,132 @@
  */
 angular.module('jellyControllersAdmin',
     [
-        'dataServiceModule'
+        'dataServiceModule',
+        'jellyServices'
+    ])
+    .controller('miscController',
+    [
+        '$scope',
+        '$q',
+        'dataService',
+        'utils',
+        'jellyLogger',
+        function ($scope, Q, dataService, utils, logger) {
+
+            var setOrder = function (list, orderProp) {
+                var ind, listLen, item, orderVal;
+                orderProp = orderProp || 'order';
+
+                for (ind = 0, listLen = list.length; ind < listLen; ind++) {
+                    item = list[ind];
+                    orderVal = ind;
+                    item[orderProp] = orderVal;
+                }
+            };
+
+            var saveNavlinks = function () {
+                var promises = [];
+
+                // make order:
+                setOrder($scope.mainNavlinks);
+
+                //prepare callbacks:
+                var onRemoveItem = function (data) {
+                    var navlink = data.data;
+                    var ind = utils.findIndex($scope.mainNavlinks, function (item) {
+                        return item._id === navlink._id;
+                    });
+                    $scope.mainNavlinks.splice(ind, 1);
+                    return data;
+                };
+                var onSaveItem = function (data) {
+                    var navlink = data.data;
+                    var ind = utils.findIndex($scope.mainNavlinks, function (item) {
+                        return item.order == navlink.order;
+                    });
+                    $scope.mainNavlinks[ind] = navlink;
+                    return data;
+                };
+                var onAllUpdated = function (data) {
+                    logger.log(data);
+                    $scope.mainNavlinksForm.$setDirty(false);
+                    $scope.mainNavlinksForm.$setPristine(true);
+                };
+
+                //prepare promises:
+                angular.forEach($scope.mainNavlinks, function (navlink) {
+                    // deleted:
+                    if (navlink.willRemove && navlink._id) {
+                        // deleted:
+                        promises.push(dataService.navlinkProvider.remove(navlink)
+                                .then(onRemoveItem)
+                        );
+                    } else {
+                        // changed
+                        promises.push(dataService.navlinkProvider.save(navlink)
+                            .then(onSaveItem));
+                    }
+                });
+
+                Q.all(promises)
+                    .then(onAllUpdated);
+            };
+
+            dataService.navlinkProvider.query('main')
+                .then(function (result) {
+                    $scope.mainNavlinks = angular.copy(result.data);
+                    //$scope.mainNavlinksOriginal=angular.copy(result.data);
+                   // $scope.mainNavlinksForm.$setDirty(false);
+                   // $scope.mainNavlinksForm.$setPristine(true);
+                    return result;
+                })
+                .then(null, function (err) {
+                    logger.log(err);
+                });
+
+            /*
+            $scope.mainNavlinksVisible = function () {
+                var result = [];
+                angular.forEach($scope.mainNavlinks, function (item) {
+                    if (!item.willRemove) {
+                        result.push(item);
+                    }
+                })
+                return result;
+            };
+            */
+
+            $scope.addMainNavlink = function () {
+                var navlink = new dataService.Navlink();
+                $scope.mainNavlinks.push(navlink);
+            };
+
+            $scope.removeMainNavlink = function (navlink) {
+                navlink.willRemove = true;
+            };
+
+            $scope.save = function () {
+                saveNavlinks();
+            };
+
+            $scope.upMainNavlink = function (navlink) {
+                var ind = $scope.mainNavlinks.indexOf(navlink);
+                if (ind === 0 || $scope.mainNavlinks.length < 2) {
+                    return;
+                }
+                $scope.mainNavlinks.splice(ind, 1);
+                $scope.mainNavlinks.splice(ind - 1, 0, navlink);
+            };
+
+            $scope.downMainNavlink = function (navlink) {
+                var ind = $scope.mainNavlinks.indexOf(navlink);
+                if ($scope.mainNavlinks.length < 2 || ind === ($scope.mainNavlinks.length - 1)) {
+                    return;
+                }
+                $scope.mainNavlinks.splice(ind, 1);
+                $scope.mainNavlinks.splice(ind + 1, 0, navlink);
+            }
+        }
     ])
     .controller('postsController',
     [
@@ -115,7 +240,7 @@ angular.module('jellyControllersAdmin',
                     .then(function () {
                         window.location.hash = '!/posts';
                     })
-                    .then(null, function(err){
+                    .then(null, function (err) {
                         logger.log(err);
                     });
             };

@@ -1,7 +1,7 @@
 form.form-horizontal(role='form', novalidate, name='postForm')
     div.form-group
         div.col-sm-offset-2.col-sm-10
-            div.btn-group-sm
+            div.btn-group.btn-group-sm
                 button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
                     span.glyphicon.glyphicon-save
                     span &nbsp;{{'SAVE' | translate}}
@@ -67,7 +67,7 @@ form.form-horizontal(role='form', novalidate, name='postForm')
                 {{'DRAFT' | translate}}
     div.form-group
         div.col-sm-offset-2.col-sm-10
-            div.btn-group-sm
+            div.btn-group.btn-group-sm
                 button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
                     span.glyphicon.glyphicon-save
                     span &nbsp;{{'SAVE' | translate}}
