@@ -8,5 +8,6 @@ angular.module('jellyApp',
         'ngSanitize',
         'pascalprecht.translate',
         'jellyRoutes',
-        'jellyControllers'
+        'jellyControllers',
+        'jellyControls'
     ]);

@@ -13,7 +13,8 @@ angular.module('jellyControllersAdmin',
         'dataService',
         'utils',
         'jellyLogger',
-        function ($scope, Q, dataService, utils, logger) {
+        'jellyIcons',
+        function ($scope, Q, dataService, utils, logger, jellyIcons) {
 
             var setOrder = function (list, orderProp) {
                 var ind, listLen, item, orderVal;
@@ -78,8 +79,8 @@ angular.module('jellyControllersAdmin',
                 .then(function (result) {
                     $scope.mainNavlinks = angular.copy(result.data);
                     //$scope.mainNavlinksOriginal=angular.copy(result.data);
-                   // $scope.mainNavlinksForm.$setDirty(false);
-                   // $scope.mainNavlinksForm.$setPristine(true);
+                    // $scope.mainNavlinksForm.$setDirty(false);
+                    // $scope.mainNavlinksForm.$setPristine(true);
                     return result;
                 })
                 .then(null, function (err) {
@@ -87,16 +88,16 @@ angular.module('jellyControllersAdmin',
                 });
 
             /*
-            $scope.mainNavlinksVisible = function () {
-                var result = [];
-                angular.forEach($scope.mainNavlinks, function (item) {
-                    if (!item.willRemove) {
-                        result.push(item);
-                    }
-                })
-                return result;
-            };
-            */
+             $scope.mainNavlinksVisible = function () {
+             var result = [];
+             angular.forEach($scope.mainNavlinks, function (item) {
+             if (!item.willRemove) {
+             result.push(item);
+             }
+             })
+             return result;
+             };
+             */
 
             $scope.addMainNavlink = function () {
                 var navlink = new dataService.Navlink();
@@ -128,6 +129,8 @@ angular.module('jellyControllersAdmin',
                 $scope.mainNavlinks.splice(ind, 1);
                 $scope.mainNavlinks.splice(ind + 1, 0, navlink);
             }
+
+            $scope.icons = jellyIcons;
         }
     ])
     .controller('postsController',

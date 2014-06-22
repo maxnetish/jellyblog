@@ -5,4 +5,7 @@ angular.module('jellyRoutes',
     [
         'ngRoute',
         'jellyControllers'
-    ]);
+    ])
+    .constant('ROUTE_PATHS', {
+        POSTS: '/posts/'
+    });

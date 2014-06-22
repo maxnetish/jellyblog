@@ -27,9 +27,11 @@ div.container-fluid
                         button.btn.btn-primary(ng-click='downMainNavlink(navlink)', ng-disabled='$last', title='{{"DOWN" | translate}}')
                             span.glyphicon.glyphicon-arrow-down
             div.row.padding-vert-10
-                div.col-sm-5
-                    input.form-control(type='text', name='icon', ng-model='navlink.icon', placeholder='{{"ICON" | translate}}')
-                div.col-sm-7
+                div.col-sm-4
+                    //input.form-control(type='text', name='icon', ng-model='navlink.icon', placeholder='{{"ICON" | translate}}')
+                    select.form-control(ng-options='icon for icon in icons', ng-model='navlink.icon')
+                        option(value='') {{'ICON' | translate}}
+                div.col-sm-8
                     label.checkbox-inline
                         input(type='checkbox', ng-model='navlink.disabled')
                         {{'DISABLED' | translate}}
