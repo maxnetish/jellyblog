@@ -12,5 +12,6 @@ angular.module('jellyApp',
         'ngSanitize',
         'jellyServices',
         'jellyRoutesAdmin',
-        'jellyControllersAdmin'
+        'jellyControllersAdmin',
+        'jellyControls'
     ]);
