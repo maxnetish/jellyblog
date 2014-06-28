@@ -19,23 +19,39 @@ block content
                                         a.btn(ng-href='{{navlink.url}}', ng-class='{"disabled": navlink.disabled}', target='{{navlink.newWindow? "_blank":""}}')
                                             span.glyphicon(class='{{navlink.icon}}')
                                             b &nbsp;{{navlink.text}}
-                div.row
-                    div.col-md-12
-                        article
-                            div.container-fluid
-                                div.row
-                                    div.col-md-12
-                                        h2 Заголовок поста
-                                div.row
-                                    div.col-md-offset-10.col-md-2
-                                        span 22 декабря 2014
-                                div.row
-                                    div.col-md-12
-                                        div.post-content
-                                            p Bla bla bla...
-                                div.row
-                                    div.col-md-12
-                                        a.pull-right(href='#') Читать
+                article
+                    div.row
+                        div.col-md-12
+                            h2 Заголовок поста
+                    div.row
+                        div.col-md-offset-10.col-md-2
+                            span.pull-right 22 декабря 2014
+                    div.row
+                        div.col-md-12
+                            div.post-content
+                                p Bla bla bla...
+                    div.row
+                        div.col-md-12
+                            a.pull-right(href='#') Читать
+                footer
+                    div.row
+                        div.col-md-4
+                            ul.list-unstyled
+                                li
+                                    a(href='http://http://devdocs.io/')
+                                        b Devdocs
+                                li
+                                    a(href='http://docs.mongodb.org/manual/')
+                                        b Mongo docs
+                                li
+                                    a(href='https://docs.angularjs.org/guide')
+                                        b Angular guide
+                        div.col-md-4
+                            div.text-center
+                                p Center part of footer
+                        div.col-md-4
+                            div.text-right
+                                p Right part of footer
 block specific
     script(src='/js/app/app.js')
     script(src='/js/app/controllers.js')
