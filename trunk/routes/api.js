@@ -6,6 +6,9 @@ var express = require('express');
 var router = express.Router();
 var locales = require('../locale');
 var dataProvider = require('../service/dataProvider');
+var multipartMiddleware = require('connect-multiparty')();
+var fileUtils = require('../service/fileUtils');
+var Q = require('q');
 
 
 router.delete('/post', function (req, res) {
@@ -160,5 +163,22 @@ router.get('/locale', function (req, res) {
     res.send(localeTable);
 });
 
+router.post('/upload', multipartMiddleware, function (req, res) {
+    if (!req.userHasAdminRights) {
+        fileUtils.removeTempFiles(req.files);
+        return res.send(401);
+    }
+
+    fileUtils.saveTempFilesPromise(req.files, 'upload')
+        .then(function (result) {
+            fileUtils.removeTempFiles(req.files);
+            return res.send(result);
+        })
+        .then(null, function (err) {
+            fileUtils.removeTempFiles(req.files);
+            return res.send(500, err);
+        });
+
+});
 
 module.exports = router;

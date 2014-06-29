@@ -1,0 +1,9 @@
+div.col-sm-12
+    div.btn-group.btn-group-sm
+        button.btn.btn-info(ng-click='add(category)')
+            span.glyphicon.glyphicon-plus
+            span &nbsp;{{'ADD' | translate}}
+        button.btn.btn-primary(ng-click='save(category)', ng-disabled='saveDisabled')
+            span.glyphicon.glyphicon-save
+            span &nbsp;{{'SAVE' | translate}}
+

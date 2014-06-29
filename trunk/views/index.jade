@@ -4,21 +4,7 @@ block content
     div(ng-app='jellyApp')
         div.center-block.main-wrapper
             div.container-fluid
-                div(ng-controller='mainMenuController')
-                    div.row
-                        div.col-md-12
-                            div.main-image
-                    div.row
-                        div.col-md-12
-                            h1 Пока мы строим другие планы
-                    div.row
-                        div.col-md-12
-                            nav
-                                ul.list-unstyled.list-inline
-                                    li(ng-repeat='navlink in navlinks | filter: {visible: true}')
-                                        a.btn(ng-href='{{navlink.url}}', ng-class='{"disabled": navlink.disabled}', target='{{navlink.newWindow? "_blank":""}}')
-                                            span.glyphicon(class='{{navlink.icon}}')
-                                            b &nbsp;{{navlink.text}}
+                include main-menu
                 article
                     div.row
                         div.col-md-12
@@ -33,25 +19,7 @@ block content
                     div.row
                         div.col-md-12
                             a.pull-right(href='#') Читать
-                footer
-                    div.row
-                        div.col-md-4
-                            ul.list-unstyled
-                                li
-                                    a(href='http://http://devdocs.io/')
-                                        b Devdocs
-                                li
-                                    a(href='http://docs.mongodb.org/manual/')
-                                        b Mongo docs
-                                li
-                                    a(href='https://docs.angularjs.org/guide')
-                                        b Angular guide
-                        div.col-md-4
-                            div.text-center
-                                p Center part of footer
-                        div.col-md-4
-                            div.text-right
-                                p Right part of footer
+                include footer
 block specific
     script(src='/js/app/app.js')
     script(src='/js/app/controllers.js')
