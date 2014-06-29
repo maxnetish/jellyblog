@@ -30,5 +30,7 @@
     "DISABLED": "Disabled",
     "VISIBLE": "Visible",
     "LINK_NEW_WINDOW": "Open in new window",
-    "MAIN_MENU": "Main menu"
+    "MAIN_MENU": "Main menu",
+    "MISC": "Varia",
+    "FOOTER_MENU": "Footer menu"
 }

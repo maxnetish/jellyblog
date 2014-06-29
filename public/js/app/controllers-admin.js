@@ -6,6 +6,67 @@ angular.module('jellyControllersAdmin',
         'dataServiceModule',
         'jellyServices'
     ])
+    .directive('jellyMenuAddSave',
+    [
+        function () {
+            return{
+                priority: 0,
+                terminal: false,
+                templateUrl: 'partials/menu-add-save-tpl',
+                replace: false,
+                transclude: false,
+                restrict: 'EA',
+                scope: {
+                    save: '=',
+                    add: '=',
+                    category: '=',
+                    saveDisabled: '='
+                }
+            }
+        }
+    ])
+    .directive('jellyMenuEditor',
+    [
+        'jellyIcons',
+        function (jellyIcons) {
+            return{
+                priority: 0,
+                terminal: false,
+                templateUrl: 'partials/menu-edit-tpl',
+                replace: false,
+                transclude: false,
+                restrict: 'EA',
+                scope: {
+                    navlinks: '='
+                },
+                controller: function ($scope, $element, $attrs, $transclude) {
+                    $scope.removeNavlink = function (navlink) {
+                        navlink.willRemove = true;
+                    };
+
+                    $scope.upNavlink = function (navlink) {
+                        var ind = $scope.navlinks.indexOf(navlink);
+                        if (ind === 0 || $scope.navlinks.length < 2) {
+                            return;
+                        }
+                        $scope.navlinks.splice(ind, 1);
+                        $scope.navlinks.splice(ind - 1, 0, navlink);
+                    };
+
+                    $scope.downNavlink = function (navlink) {
+                        var ind = $scope.navlinks.indexOf(navlink);
+                        if ($scope.navlinks.length < 2 || ind === ($scope.navlinks.length - 1)) {
+                            return;
+                        }
+                        $scope.navlinks.splice(ind, 1);
+                        $scope.navlinks.splice(ind + 1, 0, navlink);
+                    };
+
+                    $scope.icons = jellyIcons;
+                }
+            }
+        }
+    ])
     .controller('miscController',
     [
         '$scope',
@@ -13,8 +74,8 @@ angular.module('jellyControllersAdmin',
         'dataService',
         'utils',
         'jellyLogger',
-        'jellyIcons',
-        function ($scope, Q, dataService, utils, logger, jellyIcons) {
+        '$http',
+        function ($scope, Q, dataService, utils, logger, http) {
 
             var setOrder = function (list, orderProp) {
                 var ind, listLen, item, orderVal;
@@ -27,37 +88,57 @@ angular.module('jellyControllersAdmin',
                 }
             };
 
-            var saveNavlinks = function () {
-                var promises = [];
+            var saveNavlinks = function (categ) {
+                var promises = [],
+                    savingList,
+                    categ = categ || 'main';
+
+                if (categ == 'main') {
+                    savingList = $scope.mainNavlinks;
+                } else if (categ == 'footer') {
+                    savingList = $scope.footerNavlinks;
+                }
+
+                if (!savingList) {
+                    return;
+                }
 
                 // make order:
-                setOrder($scope.mainNavlinks);
+                setOrder(savingList);
 
                 //prepare callbacks:
                 var onRemoveItem = function (data) {
                     var navlink = data.data;
-                    var ind = utils.findIndex($scope.mainNavlinks, function (item) {
+                    var ind = utils.findIndex(savingList, function (item) {
                         return item._id === navlink._id;
                     });
-                    $scope.mainNavlinks.splice(ind, 1);
+                    savingList.splice(ind, 1);
                     return data;
                 };
                 var onSaveItem = function (data) {
                     var navlink = data.data;
-                    var ind = utils.findIndex($scope.mainNavlinks, function (item) {
+                    var ind = utils.findIndex(savingList, function (item) {
                         return item.order == navlink.order;
                     });
-                    $scope.mainNavlinks[ind] = navlink;
+                    savingList[ind] = navlink;
                     return data;
                 };
                 var onAllUpdated = function (data) {
                     logger.log(data);
-                    $scope.mainNavlinksForm.$setDirty(false);
-                    $scope.mainNavlinksForm.$setPristine(true);
+                    switch (categ) {
+                        case 'main':
+                            $scope.mainNavlinksForm.$setDirty(false);
+                            $scope.mainNavlinksForm.$setPristine(true);
+                            break;
+                        case 'footer':
+                            $scope.footerNavlinksForm.$setDirty(false);
+                            $scope.footerNavlinksForm.$setPristine(true);
+                            break;
+                    }
                 };
 
                 //prepare promises:
-                angular.forEach($scope.mainNavlinks, function (navlink) {
+                angular.forEach(savingList, function (navlink) {
                     // deleted:
                     if (navlink.willRemove && navlink._id) {
                         // deleted:
@@ -78,59 +159,66 @@ angular.module('jellyControllersAdmin',
             dataService.navlinkProvider.query('main')
                 .then(function (result) {
                     $scope.mainNavlinks = angular.copy(result.data);
-                    //$scope.mainNavlinksOriginal=angular.copy(result.data);
-                    // $scope.mainNavlinksForm.$setDirty(false);
-                    // $scope.mainNavlinksForm.$setPristine(true);
+                    return result;
+                })
+                .then(null, function (err) {
+                    logger.log(err);
+                });
+            dataService.navlinkProvider.query('footer')
+                .then(function (result) {
+                    $scope.footerNavlinks = angular.copy(result.data);
                     return result;
                 })
                 .then(null, function (err) {
                     logger.log(err);
                 });
 
-            /*
-             $scope.mainNavlinksVisible = function () {
-             var result = [];
-             angular.forEach($scope.mainNavlinks, function (item) {
-             if (!item.willRemove) {
-             result.push(item);
-             }
-             })
-             return result;
-             };
-             */
+            $scope.addNavlink = function (categ) {
+                var navlink = new dataService.Navlink({
+                    category: categ
+                });
 
-            $scope.addMainNavlink = function () {
-                var navlink = new dataService.Navlink();
-                $scope.mainNavlinks.push(navlink);
-            };
-
-            $scope.removeMainNavlink = function (navlink) {
-                navlink.willRemove = true;
-            };
-
-            $scope.save = function () {
-                saveNavlinks();
-            };
-
-            $scope.upMainNavlink = function (navlink) {
-                var ind = $scope.mainNavlinks.indexOf(navlink);
-                if (ind === 0 || $scope.mainNavlinks.length < 2) {
-                    return;
+                switch (categ) {
+                    case 'main':
+                        $scope.mainNavlinks.push(navlink);
+                        break;
+                    case 'footer':
+                        $scope.footerNavlinks.push(navlink);
+                        break;
                 }
-                $scope.mainNavlinks.splice(ind, 1);
-                $scope.mainNavlinks.splice(ind - 1, 0, navlink);
             };
 
-            $scope.downMainNavlink = function (navlink) {
-                var ind = $scope.mainNavlinks.indexOf(navlink);
-                if ($scope.mainNavlinks.length < 2 || ind === ($scope.mainNavlinks.length - 1)) {
-                    return;
-                }
-                $scope.mainNavlinks.splice(ind, 1);
-                $scope.mainNavlinks.splice(ind + 1, 0, navlink);
-            }
+            $scope.saveNavlinks = function (categ) {
+                saveNavlinks(categ);
+            };
 
-            $scope.icons = jellyIcons;
+            $scope.upload = function () {
+                var f = document.getElementById('file').files[0];
+                //r = new FileReader();
+                //r.onloadend = function(e){
+                //    var data = e.target.result;
+
+                //send you binary data via $http or $resource or do anything else with it
+                //}
+                //r.readAsBinaryString(f);
+
+                var formData=new FormData();
+                formData.append('file_0', f);
+
+                http({
+                    method: 'POST',
+                    url: 'api/upload',
+                    data: formData,
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                })
+                    .then(function (res) {
+                        var foo=res.message;
+                    })
+                    .then(null, function (err) {
+                        var foo=err.message;
+                    });
+            };
         }
     ])
     .controller('postsController',

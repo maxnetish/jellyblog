@@ -144,14 +144,21 @@ var promisePostsList = function (queryParams) {
     return query.exec();
 };
 
-var promiseNavlinkList = function (category) {
-    var query;
+var promiseNavlinkList = function (categoryOrFilter) {
+    var query,
+        filter;
 
-    category = category || 'main';
+    if (_.isString(categoryOrFilter)) {
+        filter = {
+            category: categoryOrFilter
+        };
+    } else {
+        filter = categoryOrFilter;
+    }
 
-    query = model.Navlink.find({
-        category: category
-    }, null, {
+    //category = category || 'main';
+
+    query = model.Navlink.find(filter, null, {
         sort: 'order'
     });
     return query.exec();
