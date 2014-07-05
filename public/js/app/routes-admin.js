@@ -9,7 +9,8 @@ angular.module('jellyRoutesAdmin',
     .constant('ROUTE_PATHS', {
         POSTS: '/posts/:query?',
         EDIT: '/edit/:postId?',
-        MISC: '/misc'
+        MISC: '/misc',
+        FILES: '/files/:query?'
     })
     .config(
     [
@@ -35,6 +36,10 @@ angular.module('jellyRoutesAdmin',
                 .when(paths.EDIT, {
                     templateUrl: '/partials/admin-edit-post',
                     controller: 'postController'
+                })
+                .when(paths.FILES, {
+                    templateUrl: 'partials/admin-files',
+                    controller: 'filesController'
                 })
                 .otherwise({
                     redirectTo: '/posts'

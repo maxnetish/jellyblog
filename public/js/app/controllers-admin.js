@@ -67,6 +67,22 @@ angular.module('jellyControllersAdmin',
             }
         }
     ])
+    .controller('filesController',
+    [
+        '$scope',
+        '$routeParams',
+        'dataService',
+        'jellyLogger',
+        function ($scope, routeParams, dataService, logger) {
+            dataService.uploadProvider.query()
+                .then(function (result) {
+                    $scope.files = result.data;
+                })
+                .then(null, function (err) {
+                    logger.log(err);
+                });
+        }
+    ])
     .controller('miscController',
     [
         '$scope',
@@ -74,8 +90,7 @@ angular.module('jellyControllersAdmin',
         'dataService',
         'utils',
         'jellyLogger',
-        '$http',
-        function ($scope, Q, dataService, utils, logger, http) {
+        function ($scope, Q, dataService, utils, logger) {
 
             var setOrder = function (list, orderProp) {
                 var ind, listLen, item, orderVal;
@@ -194,31 +209,19 @@ angular.module('jellyControllersAdmin',
 
             $scope.upload = function () {
                 var f = document.getElementById('file').files[0];
-                //r = new FileReader();
-                //r.onloadend = function(e){
-                //    var data = e.target.result;
 
-                //send you binary data via $http or $resource or do anything else with it
-                //}
-                //r.readAsBinaryString(f);
-
-                var formData=new FormData();
-                formData.append('file_0', f);
-
-                http({
-                    method: 'POST',
-                    url: 'api/upload',
-                    data: formData,
-                    transformRequest: angular.identity,
-                    headers: {'Content-Type': undefined}
-                })
-                    .then(function (res) {
-                        var foo=res.message;
+                dataService.uploadProvider.save(f)
+                    .then(function (result) {
+                        angular.forEach(result.data, function (fileInfo) {
+                            $scope.files.push(fileInfo);
+                        });
                     })
                     .then(null, function (err) {
-                        var foo=err.message;
+                        //TODO err handler
                     });
             };
+
+
         }
     ])
     .controller('postsController',

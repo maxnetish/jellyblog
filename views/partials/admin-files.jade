@@ -1,0 +1,24 @@
+div.container-fluid
+    div.row
+        div.col-sm-6
+            h2 {{'UPLOADED_FILES' | translate}}
+    div.row
+        div.col-sm-6
+            table.table.table-hover.table-fixed
+                thead
+                    tr
+                        th {{'FILE_NAME' | translate}}
+                        th {{'DATE' | translate}}
+                        th {{'FILE_SIZE' | translate}}
+                        th
+                tbody
+                    tr(ng-repeat='file in files')
+                        td
+                            a(ng-href='{{file.url}}', target='_blank') {{file.name}}
+                        td {{file.date | jellydate}}
+                        td {{file.size}}
+                        td
+                            button.btn.btn-xs.btn-danger
+                                span.glyphicon.glyphicon-remove
+
+

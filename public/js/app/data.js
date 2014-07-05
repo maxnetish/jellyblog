@@ -45,7 +45,15 @@ angular.module('dataServiceModule',
                     this.icon = row.icon || "";
                     this.order = row.order || 0;
                     this.willRemove = false;
-                    this.newWindow=row.newWindow || false;
+                    this.newWindow = row.newWindow || false;
+                },
+                FileInfo = function (row) {
+                    row = row || {};
+
+                    this.name = row.name;
+                    this.date = new Date(row.ctime);
+                    this.size = row.size;
+                    this.url = row.url;
                 },
                 responseMapper = function (Model) {
                     return function (data) {
@@ -188,6 +196,26 @@ angular.module('dataServiceModule',
                             return response;
                         });
                 },
+                readUploadDir = function(){
+                    return $http({
+                        method: 'GET',
+                        url: 'api/upload',
+                        transformResponse: responseMapper(FileInfo)
+                    });
+                },
+                uploadFile = function(fileToUpload){
+                    var formData = new FormData();
+                    formData.append('file_0', fileToUpload);
+
+                    return $http({
+                        method: 'POST',
+                        url: 'api/upload',
+                        data: formData,
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined},
+                        transformResponse: responseMapper(FileInfo)
+                    });
+                },
                 clearEmptyStrings = function () {
                     var prop;
                     for (prop in this) {
@@ -212,9 +240,14 @@ angular.module('dataServiceModule',
                     save: navlinkSave,
                     remove: navlinkRemove
                 },
+                uploadProvider: {
+                    query: readUploadDir,
+                    save: uploadFile
+                },
                 PostDetailsModel: PostDetails,
                 PostBriefModel: PostBrief,
-                Navlink: Navlink
+                Navlink: Navlink,
+                FileInfo: FileInfo
             };
         }
     ]);
