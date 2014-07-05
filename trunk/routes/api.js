@@ -181,4 +181,19 @@ router.post('/upload', multipartMiddleware, function (req, res) {
 
 });
 
+router.get('/upload', function (req, res) {
+    if (!req.userHasAdminRights) {
+        fileUtils.removeTempFiles(req.files);
+        return res.send(401);
+    }
+
+    fileUtils.readDirPromise('upload')
+        .then(function (files) {
+            return res.send(files);
+        })
+        .then(null, function (err) {
+            return res.send(500, err);
+        });
+});
+
 module.exports = router;

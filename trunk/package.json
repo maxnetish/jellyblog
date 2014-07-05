@@ -20,6 +20,7 @@
         "mongoose": "*",
         "underscore": "*",
         "q": "*",
-        "connect-multipartry": "*"
+        "connect-multipartry": "*",
+        "fs-extra": "*"
     }
 }
