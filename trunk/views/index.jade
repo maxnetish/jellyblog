@@ -5,20 +5,21 @@ block content
         div.center-block.main-wrapper
             div.container-fluid
                 include main-menu
-                article
-                    div.row
-                        div.col-md-12
-                            h2 Заголовок поста
-                    div.row
-                        div.col-md-offset-10.col-md-2
-                            span.pull-right 22 декабря 2014
-                    div.row
-                        div.col-md-12
-                            div.post-content
-                                p Bla bla bla...
-                    div.row
-                        div.col-md-12
-                            a.pull-right(href='#') Читать
+                each post in postList
+                    article
+                        div.row
+                            div.col-md-12
+                                h2= post.title
+                        div.row
+                            div.col-md-offset-10.col-md-2
+                                span.pull-right= post.dateFormatted
+                        div.row
+                            div.col-md-12
+                                div.post-content
+                                    p!= post.content
+                        div.row
+                            div.col-md-12
+                                a.pull-right(href='#') Читать
                 include footer
 block specific
     script(src='/js/app/app.js')

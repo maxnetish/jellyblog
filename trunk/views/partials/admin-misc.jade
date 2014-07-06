@@ -1,12 +1,6 @@
 div.container-fluid
     div.row
         div.col-sm-12
-            div.form-group
-                div.col-sm-4
-                    input.form-control(type='file', name='file', id='file', accept='image/*')
-                button.btn.btn-info(ng-click='upload()') Upload
-    div.row
-        div.col-sm-12
             a(ng-click='showMainMenuEditor=!showMainMenuEditor', href='javascript:void(0)')
                 h3 {{'MAIN_MENU' | translate}}
     div(ng-show='showMainMenuEditor')
@@ -43,3 +37,51 @@ div.container-fluid
                             a(ng-href='{{navlink.url}}', ng-class='{"disabled": navlink.disabled}', target='{{navlink.newWindow? "_blank":""}}')
                                 span.glyphicon(class='{{navlink.icon}}')
                                 b &nbsp;{{navlink.text}}
+    div.row
+        div.col-sm-12
+            a(ng-click='showSettingsEditor=!showSettingsEditor', href='javascript:void(0)')
+                h3 {{'SETTINGS_EDITOR' | translate}}
+    div(ng-show='showSettingsEditor')
+        form.form.form-horizontal(role='form', name='settingsForm')
+            div.row
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorDisplayName') {{'AUTHOR_DISPLAY_NAME' | translate}}:
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        input.form-control(id='authorDisplayName', type='text', ng-model='settings.authorDisplayName', required, placeholder='Author display name')
+            div.row
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorDisplayBio') {{'AUTHOR_DISPLAY_BIO' | translate}}:
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        input.form-control(id='authorDisplayBio', type='text', ng-model='settings.authorDisplayBio', placeholder='Author display bio')
+            div.row
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorTwitterScreenName') {{'AUTHOR_TWITTER_NAME' | translate}}:
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        input.form-control(id='authorTwitterScreenName', type='text', ng-model='settings.authorTwitterScreenName', placeholder='Author twitter screen name')
+            div.row
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='footerAnnotation') {{'FOOTER_ANNOTATION' | translate}}:
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        input.form-control(id='footerAnnotation', type='text', ng-model='settings.footerAnnotation', placeholder='Annotation')
+            div.row
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='postsPerPage') {{'POSTS_PER_PAGE' | translate}}:
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        input.form-control(id='postsPerPage', type='number', ng-model='settings.postsPerPage', required, placeholder='Annotation')
+            div.row
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorAvatarUrl') {{'AUTHOR_AVATAR_URL' | translate}}:
+                    div.col-lg-4.cl-md-4.col-sm-4
+                        input.form-control(id='authorAvatarUrl', type='text', ng-model='settings.authorAvatarUrl', placeholder='Avatar url')
+                    div.col-lg-4.cl-md-4.col-sm-4
+                        img.img-rounded.bg-warning(style='max-height:100px;max-width:100px;', ng-src='{{settings.authorAvatarUrl}}')
+            div.row
+                div.col-sm-12
+                    div.btn-group.btn-group-sm
+                        button.btn.btn-primary(ng-click='saveSettings()', ng-disabled='settingsForm.$invalid || settingsForm.$pristine')
+                            span.glyphicon.glyphicon-save
+                            span &nbsp;{{'SAVE' | translate}}
+
+
+
+

@@ -33,5 +33,16 @@
     "MAIN_MENU": "Основное меню",
     "MISC": "Разное",
     "FOOTER_MENU": "Меню в футере",
-    "FILES": "Файлы"
+    "FILES": "Файлы",
+    "UPLOADED_FILES": "Загруженные файлы",
+    "UPLOAD": "Послать на сервер",
+    "FILE_NAME": "Имя файла",
+    "FILE_SIZE": "Размер",
+    "SETTINGS_EDITOR": "Настройки",
+    "AUTHOR_DISPLAY_NAME": "Имя автора",
+    "AUTHOR_DISPLAY_BIO": "Кратко об авторе",
+    "AUTHOR_TWITTER_NAME": "Твиттер-аккаунт (без '@')",
+    "FOOTER_ANNOTATION": "О сайте",
+    "POSTS_PER_PAGE": "Постов на странице",
+    "AUTHOR_AVATAR_URL": "Аватар автора (url)"
 }

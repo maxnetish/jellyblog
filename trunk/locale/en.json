@@ -33,5 +33,16 @@
     "MAIN_MENU": "Main menu",
     "MISC": "Varia",
     "FOOTER_MENU": "Footer menu",
-    "FILES": "Files"
+    "FILES": "Files",
+    "UPLOADED_FILES": "Uploaded files",
+    "UPLOAD": "Send to Celestia",
+    "FILE_NAME": "File name",
+    "FILE_SIZE": "Size",
+    "SETTINGS_EDITOR": "Site settings",
+    "AUTHOR_DISPLAY_NAME": "Author display name",
+    "AUTHOR_DISPLAY_BIO": "Author short bio",
+    "AUTHOR_TWITTER_NAME": "Twitter screen name (without '@')",
+    "FOOTER_ANNOTATION": "Site annotation",
+    "POSTS_PER_PAGE": "Posts on one page",
+    "AUTHOR_AVATAR_URL": "Avatar url"
 }

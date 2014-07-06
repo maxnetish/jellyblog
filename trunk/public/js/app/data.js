@@ -55,6 +55,17 @@ angular.module('dataServiceModule',
                     this.size = row.size;
                     this.url = row.url;
                 },
+                Settings = function (row) {
+                    row = row || {};
+
+                    this._id = row._id || undefined;
+                    this.authorDisplayName = row.authorDisplayName || 'Admin';
+                    this.authorDisplayBio = row.authorDisplayBio || undefined;
+                    this.authorTwitterScreenName = row.authorTwitterScreenName || undefined;
+                    this.authorAvatarUrl = row.authorAvatarUrl || undefined;
+                    this.footerAnnotation = row.footerAnnotation || undefined;
+                    this.postsPerPage = row.postsPerPage || 5;
+                },
                 responseMapper = function (Model) {
                     return function (data) {
                         var rowData,
@@ -196,14 +207,14 @@ angular.module('dataServiceModule',
                             return response;
                         });
                 },
-                readUploadDir = function(){
+                readUploadDir = function () {
                     return $http({
                         method: 'GET',
                         url: 'api/upload',
                         transformResponse: responseMapper(FileInfo)
                     });
                 },
-                uploadFile = function(fileToUpload){
+                uploadFile = function (fileToUpload) {
                     var formData = new FormData();
                     formData.append('file_0', fileToUpload);
 
@@ -216,6 +227,15 @@ angular.module('dataServiceModule',
                         transformResponse: responseMapper(FileInfo)
                     });
                 },
+                removeFile = function (pathToRemove) {
+                    return $http({
+                        method: 'DELETE',
+                        url: 'api/upload',
+                        params: {
+                            path: pathToRemove
+                        }
+                    });
+                },
                 clearEmptyStrings = function () {
                     var prop;
                     for (prop in this) {
@@ -223,6 +243,22 @@ angular.module('dataServiceModule',
                             this[prop] = undefined;
                         }
                     }
+                },
+                settingsGet=function(){
+                    return $http({
+                        method: 'GET',
+                        url: 'api/settings',
+                        transformResponse: responseMapper(Settings)
+                    });
+                },
+                settingsUpdate=function(settings){
+                    return $http({
+                        method: 'POST',
+                        url: 'api/settings',
+                        data: settings,
+                        transformResponse: responseMapper(Settings),
+                        cache: false
+                    });
                 };
 
             PostDetails.prototype.clearEmptyStrings = clearEmptyStrings;
@@ -242,12 +278,18 @@ angular.module('dataServiceModule',
                 },
                 uploadProvider: {
                     query: readUploadDir,
-                    save: uploadFile
+                    save: uploadFile,
+                    remove: removeFile
+                },
+                settingsProvider: {
+                    get: settingsGet,
+                    save: settingsUpdate
                 },
                 PostDetailsModel: PostDetails,
                 PostBriefModel: PostBrief,
                 Navlink: Navlink,
-                FileInfo: FileInfo
+                FileInfo: FileInfo,
+                Settings: Settings
             };
         }
     ]);

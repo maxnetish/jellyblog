@@ -82,6 +82,67 @@ angular.module('jellyServices',
             }
         };
     })
+    .filter('filesize', [
+        function () {
+            var sizeMap = [
+                {
+                    // bytes
+                    minSize: -1,
+                    divider: 1,
+                    abbr: 'B'
+                },
+                {
+                    //kibibytes
+                    minSize: 16384,
+                    divider: 1024,
+                    abbr: 'KiB'
+                },
+                {
+                    // mebibytes
+                    minSize: 1048576,
+                    divider: 1048576,
+                    abbr: 'MiB'
+                },
+                {
+                    //Gyga
+                    minSize: 1073741824,
+                    divider: 1073741824,
+                    abbr: 'GiB'
+                }
+            ];
+
+            return function (val) {
+                var sanitizedVal,
+                    defaultNum = 0,
+                    i, map,
+                    digitPart;
+
+                if (angular.isNumber(val)) {
+                    sanitizedVal = val;
+                } else if (angular.isString(val)) {
+                    sanitizedVal = parseInt(val, 10);
+                }
+
+                sanitizedVal = sanitizedVal || defaultNum;
+
+                for (i = sizeMap.length - 1; i > 0; i--) {
+                    if (sanitizedVal > sizeMap[i].minSize) {
+                        map = sizeMap[i];
+                        break;
+                    }
+                }
+                map = map || sizeMap[0];
+
+                if (map.divider === 1) {
+                    digitPart = sanitizedVal.toLocaleString();
+                } else {
+                    digitPart = parseFloat((sanitizedVal / map.divider).toPrecision(2)).toLocaleString();
+                }
+
+                return digitPart + ' ' + map.abbr;
+            };
+        }
+    ])
     .directive("jellyTagEditor", function () {
         return{
             require: 'ngModel',

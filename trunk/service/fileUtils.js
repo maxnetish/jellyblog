@@ -25,6 +25,21 @@ var removeTempFiles = function (files) {
     }
 };
 
+var removeFilePromise = function (relativePath) {
+    var pathToRemove = path.join(__dirname, '..', 'public', relativePath),
+        dfr = Q.defer();
+
+    fs.unlink(pathToRemove, function (err) {
+        if (err) {
+            dfr.reject(err);
+        } else {
+            dfr.resolve(relativePath);
+        }
+    });
+
+    return dfr.promise;
+};
+
 var saveTempFile = function (file, relativePath, callback) {
     relativePath = relativePath || UPLOAD;
     var pathToSave = path.join(__dirname, '..', 'public', relativePath, file.name);
@@ -95,7 +110,7 @@ var readDirPromise = function (relativePath) {
         } else {
             readFileStatPromise(target, files)
                 .then(function (result) {
-                    _.each(result, function(fileStat){
+                    _.each(result, function (fileStat) {
                         fileStat.url = path.join(relativePath, fileStat.name);
                     });
                     deferred.resolve(result);
@@ -110,6 +125,7 @@ var readDirPromise = function (relativePath) {
 };
 
 module.exports = {
+    removeFilePromise: removeFilePromise,
     removeTempFiles: removeTempFiles,
     saveTempFile: saveTempFile,
     saveTempFilesPromise: saveTempFilesPromise,
