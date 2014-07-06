@@ -81,6 +81,39 @@ angular.module('jellyControllersAdmin',
                 .then(null, function (err) {
                     logger.log(err);
                 });
+
+            $scope.remove = function (fileInfo) {
+                dataService.uploadProvider.remove(fileInfo.url)
+                    .then(function (result) {
+                        var indToRemove = -1, i, iLen;
+                        if (result.data) {
+                            for (i = 0, iLen = $scope.files.length; i < iLen; i++) {
+                                if (result.data == $scope.files[i].url) {
+                                    indToRemove = i;
+                                    break;
+                                }
+                            }
+                            $scope.files.splice(indToRemove, 1);
+                        }
+                    })
+                    .then(null, function (err) {
+                        logger.log(err);
+                    });
+            };
+
+            $scope.upload = function () {
+                var f = document.getElementById('file').files[0];
+
+                dataService.uploadProvider.save(f)
+                    .then(function (result) {
+                        angular.forEach(result.data, function (fileInfo) {
+                            $scope.files.push(fileInfo);
+                        });
+                    })
+                    .then(null, function (err) {
+                        //TODO err handler
+                    });
+            };
         }
     ])
     .controller('miscController',
@@ -102,6 +135,7 @@ angular.module('jellyControllersAdmin',
                     item[orderProp] = orderVal;
                 }
             };
+
 
             var saveNavlinks = function (categ) {
                 var promises = [],
@@ -187,6 +221,14 @@ angular.module('jellyControllersAdmin',
                 .then(null, function (err) {
                     logger.log(err);
                 });
+            dataService.settingsProvider.get()
+                .then(function(result){
+                    $scope.settings=result.data;
+                    return result;
+                })
+                .then(null, function(err){
+                   logger.log(err);
+                });
 
             $scope.addNavlink = function (categ) {
                 var navlink = new dataService.Navlink({
@@ -207,21 +249,17 @@ angular.module('jellyControllersAdmin',
                 saveNavlinks(categ);
             };
 
-            $scope.upload = function () {
-                var f = document.getElementById('file').files[0];
-
-                dataService.uploadProvider.save(f)
-                    .then(function (result) {
-                        angular.forEach(result.data, function (fileInfo) {
-                            $scope.files.push(fileInfo);
-                        });
+            $scope.saveSettings=function(){
+                dataService.settingsProvider.save($scope.settings)
+                    .then(function(result){
+                        $scope.settings=result.data;
+                        $scope.settingsForm.$setDirty(false);
+                        $scope.settingsForm.$setPristine(true);
                     })
-                    .then(null, function (err) {
-                        //TODO err handler
+                    .then(null, function(err){
+                        logger.log(err);
                     });
             };
-
-
         }
     ])
     .controller('postsController',

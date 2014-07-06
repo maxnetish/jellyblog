@@ -8,5 +8,6 @@ mongoose.connect('mongodb://localhost/jellyblogdb');
 exports.model = {
     User: require('./user').createUserModel(mongoose),
     Post: require('./post').createPostModel(mongoose),
-    Navlink: require('./navlink').createNavlinkModel(mongoose)
+    Navlink: require('./navlink').createNavlinkModel(mongoose),
+    Settings: require('./misc-settings').createSettingsModel(mongoose)
 };

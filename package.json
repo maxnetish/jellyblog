@@ -21,6 +21,7 @@
         "underscore": "*",
         "q": "*",
         "connect-multipartry": "*",
-        "fs-extra": "*"
+        "fs-extra": "*",
+        "moment": "*"
     }
 }

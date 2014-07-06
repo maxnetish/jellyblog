@@ -1,20 +1,25 @@
 footer
-    div.row
-        div.col-md-4
+    div.row.bg-warning.padding-vert-20
+        div.col-lg-4.col-md-4.col-sm-4
             ul.list-unstyled
-                li
-                    a(href='http://http://devdocs.io/')
-                        b Devdocs
-                li
-                    a(href='http://docs.mongodb.org/manual/')
-                        b Mongo docs
-                li
-                    a(href='https://docs.angularjs.org/guide')
-                        b Angular guide
-        div.col-md-4
-            div.text-center
-                p Center part of footer
-        div.col-md-4
-            div.text-right
-                p Right part of footer
+                each linkItem in navlinksFooter
+                    li
+                        a(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'')
+                            span.glyphicon(class=linkItem.icon)
+                            b!= '&nbsp;' + linkItem.text
+        div.col-lg-4.col-md-4.col-sm-4
+            div.text-center-xs
+                if settings.authorAvatarUrl
+                    img.author-avatar.img-rounded(src=settings.authorAvatarUrl)
+                br
+                span= settings.authorDisplayName
+                br
+                span= settings.authorDisplayBio
+                br
+                span
+                    if settings.authorTwitterScreenName
+                        iframe(allowtransparency='true', frameborder='0', scrolling='no', src='//platform.twitter.com/widgets/follow_button.html?screen_name='+settings.authorTwitterScreenName+'&show_count=false&show_screen_name=true&dnt=true', style='height:20px;width:150px')
+        div.col-lg-4.col-md-4.col-sm-4
+            div.text-right-xs
+                p= settings.footerAnnotation
 

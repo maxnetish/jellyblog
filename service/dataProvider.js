@@ -3,7 +3,8 @@
  */
 
 var model = require('../models').model,
-    _ = require('underscore');
+    _ = require('underscore'),
+    Q = require('q');
 
 var sanitizeDate = function (row) {
     var result;
@@ -120,12 +121,12 @@ var promisePostGetBySlug = function (slug) {
     return query.exec();
 };
 
-var promisePostsList = function (queryParams) {
+var promisePostsList = function (queryParams, allFields) {
     var query,
         condition,
         limit,
         skip,
-        fields = "title slug featured draft date",
+        fields = allFields ? null : "title slug featured draft date",
         options,
         sort;
 
@@ -185,6 +186,47 @@ var promiseNavlinkRemove = function (id) {
     return model.Navlink.findByIdAndRemove(id).exec();
 };
 
+var promiseSettings = function () {
+    var query,
+        dfr = Q.defer();
+
+    query = model.Settings.find(null, null, {
+        limit: 1
+    });
+
+    query.exec()
+        .then(function (result) {
+            if (result && result.length) {
+                dfr.resolve(result[0]);
+            } else {
+                // have to create one
+                model.Settings.create({})
+                    .then(function (newSettings) {
+                        dfr.resolve(newSettings);
+                    })
+                    .then(null, function (err) {
+                        dfr.reject(err);
+                    });
+            }
+        })
+        .then(null, function (err) {
+            dfr.reject(err);
+        });
+
+    return dfr.promise;
+};
+
+var promiseSettingsUpdate = function (settings) {
+    var query,
+        id = settings._id;
+
+    delete settings._id;
+    query = model.Settings.findByIdAndUpdate(id, settings);
+
+    return query.exec();
+};
+
+
 module.exports = {
     promisePostsList: promisePostsList,
     promisePostGetBySlug: promisePostGetBySlug,
@@ -195,5 +237,7 @@ module.exports = {
     promiseNavlinkCreate: promiseNavlinkCreate,
     promiseNavlinkUpdate: promiseNavlinkUpdate,
     promiseNavlinkRemove: promiseNavlinkRemove,
-    promiseNavlinkList: promiseNavlinkList
+    promiseNavlinkList: promiseNavlinkList,
+    promiseSettings: promiseSettings,
+    promiseSettingsUpdate: promiseSettingsUpdate
 };

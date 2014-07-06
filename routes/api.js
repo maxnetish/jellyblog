@@ -171,11 +171,9 @@ router.post('/upload', multipartMiddleware, function (req, res) {
 
     fileUtils.saveTempFilesPromise(req.files, 'upload')
         .then(function (result) {
-            fileUtils.removeTempFiles(req.files);
             return res.send(result);
         })
         .then(null, function (err) {
-            fileUtils.removeTempFiles(req.files);
             return res.send(500, err);
         });
 
@@ -183,13 +181,54 @@ router.post('/upload', multipartMiddleware, function (req, res) {
 
 router.get('/upload', function (req, res) {
     if (!req.userHasAdminRights) {
-        fileUtils.removeTempFiles(req.files);
         return res.send(401);
     }
 
     fileUtils.readDirPromise('upload')
         .then(function (files) {
             return res.send(files);
+        })
+        .then(null, function (err) {
+            return res.send(500, err);
+        });
+});
+
+router.delete('/upload', function (req, res) {
+    var relativePath = req.query.path
+
+    if (!req.userHasAdminRights) {
+        return res.send(401);
+    }
+
+    fileUtils.removeFilePromise(relativePath)
+        .then(function (result) {
+            res.send(result);
+        })
+        .then(null, function (err) {
+            return res.send(500, err);
+        });
+});
+
+router.get('/settings', function(req, res){
+    dataProvider.promiseSettings()
+        .then(function(result){
+            return res.send(result);
+        })
+        .then(null, function(err){
+            return res.send(500, err);
+        });
+});
+
+router.post('/settings', function(req, res){
+    var settings = req.body;
+
+    if (!req.userHasAdminRights) {
+        return res.send(401);
+    }
+
+    dataProvider.promiseSettingsUpdate(settings)
+        .then(function (result) {
+            return res.send(result);
         })
         .then(null, function (err) {
             return res.send(500, err);

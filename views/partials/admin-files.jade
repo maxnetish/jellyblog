@@ -1,24 +1,38 @@
 div.container-fluid
     div.row
-        div.col-sm-6
+        div.col-sm-12.col-md-10.col-lg-8
             h2 {{'UPLOADED_FILES' | translate}}
     div.row
-        div.col-sm-6
-            table.table.table-hover.table-fixed
+        div.col-sm-12.col-md-10.col-lg-8.form-group
+            div.input-group
+                input.form-control(type='file', name='file', id='file', accept='image/*')
+                div.input-group-btn
+                    button.btn.btn-info(ng-click='upload()')
+                        span.glyphicon.glyphicon-upload
+                        span &nbsp;{{'UPLOAD' | translate}}
+    div.row
+        div.col-sm-12.col-md-10.col-lg-8.form-group
+            input.form-control(type='text', placeholder='Filter', ng-model='filterValue')
+    div.row
+        div.col-sm-12.col-md-10.col-lg-8
+            table.table.table-hover(ng-init='orderby="name"; reverse=false')
                 thead
                     tr
-                        th {{'FILE_NAME' | translate}}
-                        th {{'DATE' | translate}}
-                        th {{'FILE_SIZE' | translate}}
+                        th
+                            a(href='', ng-click='orderby="name";reverse=!reverse') {{'FILE_NAME' | translate}}
+                        th
+                            a(href='', ng-click='orderby="date";reverse=!reverse') {{'DATE' | translate}}
+                        th
+                            a(href='', ng-click='orderby="size";reverse=!reverse') {{'FILE_SIZE' | translate}}
                         th
                 tbody
-                    tr(ng-repeat='file in files')
+                    tr(ng-repeat='file in files | filter: filterValue | orderBy:orderby:reverse')
                         td
                             a(ng-href='{{file.url}}', target='_blank') {{file.name}}
                         td {{file.date | jellydate}}
-                        td {{file.size}}
+                        td {{file.size | filesize}}
                         td
-                            button.btn.btn-xs.btn-danger
+                            button.btn.btn-xs.btn-danger(ng-click='remove(file)', title='{{"DELETE" | translate}}')
                                 span.glyphicon.glyphicon-remove
 
 
