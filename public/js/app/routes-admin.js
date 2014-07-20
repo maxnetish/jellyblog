@@ -38,7 +38,7 @@ angular.module('jellyRoutesAdmin',
                     controller: 'postController'
                 })
                 .when(paths.FILES, {
-                    templateUrl: 'partials/admin-files',
+                    templateUrl: '/partials/admin-files',
                     controller: 'filesController'
                 })
                 .otherwise({

@@ -210,7 +210,7 @@ angular.module('dataServiceModule',
                 readUploadDir = function () {
                     return $http({
                         method: 'GET',
-                        url: 'api/upload',
+                        url: '/api/upload',
                         transformResponse: responseMapper(FileInfo)
                     });
                 },
@@ -220,7 +220,7 @@ angular.module('dataServiceModule',
 
                     return $http({
                         method: 'POST',
-                        url: 'api/upload',
+                        url: '/api/upload',
                         data: formData,
                         transformRequest: angular.identity,
                         headers: {'Content-Type': undefined},
@@ -230,7 +230,7 @@ angular.module('dataServiceModule',
                 removeFile = function (pathToRemove) {
                     return $http({
                         method: 'DELETE',
-                        url: 'api/upload',
+                        url: '/api/upload',
                         params: {
                             path: pathToRemove
                         }
@@ -247,14 +247,14 @@ angular.module('dataServiceModule',
                 settingsGet=function(){
                     return $http({
                         method: 'GET',
-                        url: 'api/settings',
+                        url: '/api/settings',
                         transformResponse: responseMapper(Settings)
                     });
                 },
                 settingsUpdate=function(settings){
                     return $http({
                         method: 'POST',
-                        url: 'api/settings',
+                        url: '/api/settings',
                         data: settings,
                         transformResponse: responseMapper(Settings),
                         cache: false

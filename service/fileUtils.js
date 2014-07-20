@@ -111,7 +111,7 @@ var readDirPromise = function (relativePath) {
             readFileStatPromise(target, files)
                 .then(function (result) {
                     _.each(result, function (fileStat) {
-                        fileStat.url = path.join(relativePath, fileStat.name);
+                        fileStat.url = path.join('/' + relativePath, fileStat.name);
                     });
                     deferred.resolve(result);
                 })
