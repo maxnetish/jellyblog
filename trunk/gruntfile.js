@@ -1,36 +1,60 @@
 /**
  * Created by Gordeev on 20.07.2014.
  */
-module.exports = function(grunt) {
+module.exports = function (grunt) {
+
+    var bowerPath = 'bower_components',
+        publicJs = 'public/js',
+        targetJsConcatAdmin = publicJs + '/app-admin.js',
+        targetJsMinAdmin = publicJs + '/app-admin.min.js',
+        webappsAdmin = 'webapps/admin',
+        jslibsAdmin = [
+            // libs
+                bowerPath + '/requirejs/require.js',
+
+                bowerPath + '/jquery/dist/jquery.js',
+                bowerPath + '/pathjs-amd/dist/path.js',
+                bowerPath + '/moment/min/moment-with-langs.js',
+                webappsAdmin + '/**/*.js'
+        ];
+
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        clean: [
+            publicJs
+        ],
+        copy: {
+            buildAdmin: {
+                files: [
+                    {
+                        src: bowerPath + '/knockoutjs/dist/knockout.debug.js',
+                        dest:  publicJs + '/knockout.js'
+                    },
+                    {
+                        src: bowerPath + '/lodash/dist/lodash.js',
+                        dest:  publicJs + '/lodash.js'
+                    }
+                ]
+            }
+        },
         concat: {
-            build: {
-                src: [
-                    'public/js/lib/angular.js',
-                    'public/js/lib/angular-route.js',
-                    'public/js/lib/angular-sanitize.js',
-                    'public/js/lib/angular-translate.js',
-                    'public/js/lib/angular-translate-loader-url.js',
-                    'public/js/lib/moment/moment.js',
-                    'public/js/lib/moment/lang.min.js',
-                    'public/js/app/**/*.js'
-                ],
-                dest: 'public/js/build/concat.js'
+            buildAdmin: {
+                src: jslibsAdmin,
+                dest: targetJsConcatAdmin
             },
             options: {
                 sourceMap: true
             }
         },
         uglify: {
-            build: {
-                src: 'public/js/build/concat.js',
-                dest: 'public/js/build/js.min.js'
+            buildAdmin: {
+                src: targetJsConcatAdmin,
+                dest: targetJsMinAdmin
             },
             options: {
                 sourceMap: true,
-                sourceMapIn: 'public/js/build/concat.js.map',
+                sourceMapIn: targetJsConcatAdmin + '.map',
                 compress: {
                     drop_console: true
                 }
@@ -40,7 +64,7 @@ module.exports = function(grunt) {
 
 
     require('load-grunt-tasks')(grunt);
-    grunt.registerTask('default', ['concat', 'uglify']);
+    grunt.registerTask('default', ['clean', 'copy', 'concat', 'uglify']);
 
     // Load tasks from the tasks folder
     //grunt.loadTasks('tasks');
