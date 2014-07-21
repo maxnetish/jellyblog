@@ -1,6 +1,6 @@
 extends layout
 block content
-    div(ng-app='jellyApp')
+    div()
         nav.navbar.navbar-default.navbar-static-top(role='navigation')
             div.container-fluid
                 ul.nav.navbar-nav
@@ -28,6 +28,4 @@ block content
                             span &nbsp;{{'NEW_POST' | translate}}
         div.app-view(ng-view)
 block specific
-    //script(src='/js/app/app-admin.js')
-    //script(src='/js/app/routes-admin.js')
-    //script(src='/js/app/controllers-admin.js')
+    script(src='/js/app-admin.js')
