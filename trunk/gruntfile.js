@@ -8,6 +8,7 @@ module.exports = function (grunt) {
         targetJsConcatAdmin = publicJs + '/app-admin.js',
         targetJsMinAdmin = publicJs + '/app-admin.min.js',
         webappsAdmin = 'webapps/admin',
+        webappsCommon = 'webapps/common'
         jslibsAdmin = [
             // libs
                 bowerPath + '/requirejs/require.js',
@@ -15,8 +16,15 @@ module.exports = function (grunt) {
                 bowerPath + '/jquery/dist/jquery.js',
                 bowerPath + '/pathjs-amd/dist/path.js',
                 bowerPath + '/moment/min/moment-with-langs.js',
-                webappsAdmin + '/**/*.js'
-        ];
+                webappsAdmin + '/**/*.js',
+                webappsCommon + '/**/*.js'
+        ],
+        filesUglify = {};
+
+    filesUglify[targetJsMinAdmin] = [targetJsConcatAdmin];
+    filesUglify[publicJs + '/knockout.min.js'] = [publicJs + '/knockout.js'];
+    filesUglify[publicJs + '/lodash.min.js'] = [publicJs + '/lodash.js'];
+    filesUglify[publicJs + '/q.min.js'] = [publicJs + '/q.js'];
 
 
     grunt.initConfig({
@@ -34,12 +42,16 @@ module.exports = function (grunt) {
                     {
                         src: bowerPath + '/lodash/dist/lodash.js',
                         dest:  publicJs + '/lodash.js'
+                    },
+                    {
+                        src: bowerPath + '/q/q.js',
+                        dest: publicJs + '/q.js'
                     }
                 ]
             }
         },
         concat: {
-            buildAdmin: {
+            build: {
                 src: jslibsAdmin,
                 dest: targetJsConcatAdmin
             },
@@ -49,8 +61,7 @@ module.exports = function (grunt) {
         },
         uglify: {
             buildAdmin: {
-                src: targetJsConcatAdmin,
-                dest: targetJsMinAdmin
+                files: filesUglify
             },
             options: {
                 sourceMap: true,

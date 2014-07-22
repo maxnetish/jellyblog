@@ -7,18 +7,22 @@
         baseUrl: '/js',
         paths: {
             ko: "knockout",
-            _: "lodash"
+            _: "lodash",
+            q: "q"
         }
     });
 
-    require([
-        'router'
-    ], function () {
-        //init routes
-    });
+    require(
+        [
+            'binding.ko-translate',
+            'router'
+        ],
+        function () {
+            //init routes
+        });
 
-    var foo = require(['testModule'], function(tm){
-        console.dir(tm);
-    });
+//    var foo = require(['testModule'], function(tm){
+//        console.dir(tm);
+//    });
 
 })();
