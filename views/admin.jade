@@ -26,6 +26,8 @@ block content
                         a(href='#!/edit')
                             span.glyphicon.glyphicon-plus
                             span &nbsp;{{'NEW_POST' | translate}}
-        div.app-view(ng-view)
+        div.app-view()
+            include partials/admin-posts
+            include partials/admin-misc
 block specific
     script(src='/js/app-admin.js')

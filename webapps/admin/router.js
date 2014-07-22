@@ -6,25 +6,21 @@ define('router', ['jquery', 'path', 'ko', '_', 'route-definition'], function ($,
         var routeDefinitions = routeDefinition.definitions,
             show = function (definition) {
                 if(_.isString(definition.view) && definition.view.length){
-                    $(routeDefinitions.view).show();
+                    $(definition.view).show();
                 }
             },
             hide = function (definition) {
                 if(_.isString(definition.view) && definition.view.length){
-                    $(routeDefinitions.view).hide();
+                    $(definition.view).hide();
                 }
             },
             applyKoBindingOnce = function (definition) {
-                return _.once(function () {
-                    if(definition.viewModel && _.isString(definition.view) && definition.view.length) {
-                        ko.applyBindings(definition.viewModel, $(definition.view));
-                    }
-                });
+                definition.applyBidningOnce();
             },
             createEnterCallback = function (definition) {
                 return function () {
                     show(definition);
-                    applyKoBindingOnce(definition)();
+                    applyKoBindingOnce(definition);
                     if (_.isFunction(definition.enter)) {
                         definition.enter({
                             state: definition.state,
