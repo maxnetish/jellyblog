@@ -4,13 +4,22 @@
 define('binding.ko-translate',
     [
         'ko',
-        'jquery'
+        'jquery',
+        'translate-service'
     ],
-    function (ko, $) {
+    function (ko, $, translateService) {
         (function(){
             ko.bindingHandlers.translate = {
                 init: function(element, valueAccessor){
+                    var key = valueAccessor();
 
+                    translateService.getTextPromise(key)
+                        .done(function(translated){
+                            $(element).text(translated);
+                        })
+                        .fail(function(){
+                            $(element).text(key);
+                        });
                 }
             };
         })();
