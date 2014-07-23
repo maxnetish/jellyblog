@@ -1,27 +1,32 @@
 extends layout
 block content
     div()
-        nav.navbar.navbar-default.navbar-static-top(role='navigation')
+        nav.navbar.navbar-default.navbar-static-top(role="navigation", id="main-nav")
             div.container-fluid
                 ul.nav.navbar-nav
                     li
-                        p.navbar-text {{'WELCOME' | translate}}, #{user.displayName}
+                        p.navbar-text
+                            span(data-bind="translate: 'WELCOME'")
+                            span , #{user.displayName}
                     li
-                        a(href='/', target='_blank') {{'BLOG' | translate}}
+                        a(href="/", target="_blank", data-bind="translate: 'BLOG'")
                     li
-                        a(href='/auth/logout') {{'LOGOUT' | translate}}
+                        a(href='/auth/logout', data-bind="translate: 'LOGOUT'")
                     li
                         a(href='#!/posts')
                             span.glyphicon.glyphicon-th-list
-                            span &nbsp;{{'POSTS' | translate}}
+                            span &nbsp;
+                            span(data-bind="translate: 'POSTS'")
                     li
                         a(href='#!/misc')
                             span.glyphicon.glyphicon-adjust
-                            span &nbsp;{{'MISC' | translate}}
+                            span &nbsp;
+                            span(data-bind="translate: 'MISC'")
                     li
                         a(href='#!/files')
                             span.glyphicon.glyphicon-folder-open
-                            span &nbsp;{{'FILES' | translate}}
+                            span &nbsp;
+                            span(data-bind="translate: 'FILES_'")
                     li
                         a(href='#!/edit')
                             span.glyphicon.glyphicon-plus
