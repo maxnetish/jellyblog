@@ -14,11 +14,17 @@
 
     require(
         [
+            'ko',
+            'jquery',
             'binding.ko-translate',
             'router'
         ],
-        function () {
+        function (ko, $) {
             //init routes
+
+            //init non-rout parts
+            console.log('apply binding to nav...');
+            ko.applyBindings({}, $('#main-nav').get(0));
         });
 
 //    var foo = require(['testModule'], function(tm){

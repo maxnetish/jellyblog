@@ -13,6 +13,8 @@ define('binding.ko-translate',
                 init: function(element, valueAccessor){
                     var key = valueAccessor();
 
+                    console.log('init translate binding, key: '+key);
+
                     translateService.getTextPromise(key)
                         .done(function(translated){
                             $(element).text(translated);
