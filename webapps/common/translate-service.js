@@ -3,11 +3,12 @@
  */
 define('translate-service',
     [
-        'jquery'
+        'jquery',
+        '_'
     ],
-    function ($) {
+    function ($, _) {
         var dictionaries = {};
-
+        var langChangedEvent = 'JB_langChanged';
         var conf = {
             lang: window.navigator.userLanguage || window.navigator.language,
             fallback: 'en',
@@ -16,11 +17,20 @@ define('translate-service',
 
         var loadState = {};
 
+        var onConfChanged = _.debounce(function(){
+            $('html').trigger(langChangedEvent);
+        }, 500, {
+            leading: false,
+            trailing: true
+        });
+
         var config = function (opts) {
+            var changed = false;
             if (opts) {
-                conf.lang = opts.lang || conf.lang;
-                conf.fallback = opts.fallback || conf.fallback;
-                conf.url = opts.url || conf.url;
+                if (conf.lang !== opts.lang || conf.fallback !== opts.fallback || conf.url !== opts.url) {
+                    conf = opts;
+                    onConfChanged();
+                }
             }
             return conf;
         };
@@ -88,6 +98,7 @@ define('translate-service',
 
         return {
             config: config,
-            getTextPromise: getTextPromise
+            getTextPromise: getTextPromise,
+            langChangedEvent: langChangedEvent
         }
     });
