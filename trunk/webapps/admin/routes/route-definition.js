@@ -5,8 +5,10 @@ define('route-definition',
     [
         '_',
         'jquery',
-        'ko'
-    ], function (_, $, ko) {
+        'ko',
+        'vm.posts',
+        'vm.edit-post'
+    ], function (_, $, ko, vmPosts, vmEditPost) {
         var RouteDefinition = function (row) {
                 var self = this;
 
@@ -18,27 +20,40 @@ define('route-definition',
                 this.state = row.state || null;            // объект, который будет передаваться в колбеки
                 this.route = row.route || '';              // шаблон пути типа '#!/user/(:userId)'
 
-                this.applyBidningOnce = _.once(function () {
+                this.applyBindingOnce = _.once(function () {
                     if (self.viewModel && _.isString(self.view) && self.view.length) {
                         ko.applyBindings(self.viewModel, $(self.view).get(0));
                     }
                 });
             },
-            definitions = [
-                new RouteDefinition({
+            definitions = Object.freeze({
+                posts: new RouteDefinition({
                     view: '#admin-posts',
-                    viewModel: {},
-                    route: '#!/posts'
+                    viewModel: vmPosts,
+                    route: '#!/posts(/:query)',
+                    on: vmPosts.activate
                 }),
-                new RouteDefinition({
+                misc: new
+                    RouteDefinition({
                     view: '#admin-misc',
                     viewModel: {},
                     route: '#!/misc'
+                }),
+                files: new RouteDefinition({
+                    route: '#!/files',
+                    viewModel: {},
+                    view: '#admin-files'
+                }),
+                edit: new RouteDefinition({
+                    view: '#admin-edit-post',
+                    viewModel: vmEditPost,
+                    route: '#!/edit(/:postId)',
+                    on: vmEditPost.activate
                 })
-            ];
+            });
 
         return {
             definitions: definitions,
-            RouterDefinition: RouteDefinition
+            RouteDefinition: RouteDefinition
         }
     });

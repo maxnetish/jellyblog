@@ -1,16 +1,20 @@
 div#admin-posts.container-fluid.view
-    div.row
-        div.col-md-6
-            div.btn-group.btn-group-xs
-                a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.startQuery}}', ng-class='{"disabled": state.startDisabled}')
+    script#admin-posts-pagination-buttons(type="text/html")
+        div.btn-group.btn-group-xs
+                a.btn.btn-primary.btn-xs(data-bind="attr: {href: startPageUrl}, css: {disabled: !startPageUrl()}")
                     span.glyphicon.glyphicon-fast-backward
-                    span &nbsp;{{'BEGIN' | translate}}
-                a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.backQuery}}', ng-class='{"disabled": state.backDisable}')
+                    span &nbsp;
+                    span(data-bind="translate: 'BEGIN'")
+                a.btn.btn-primary.btn-xs(data-bind="attr: {href: prevPageUrl}, css: {disabled: !prevPageUrl()}")
                     span.glyphicon.glyphicon-backward
-                    span &nbsp;{{'BACK' | translate}}
-                a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.nextQuery}}', ng-class='{"disabled": state.nextDisable}')
+                    span &nbsp;
+                    span(data-bind="translate: 'BACK'")
+                a.btn.btn-primary.btn-xs(data-bind="attr: {href: nextPageUrl}, css: {disabled: !nextPageUrl()}")
                     span.glyphicon.glyphicon-forward
-                    span &nbsp;{{'NEXT' | translate}}
+                    span &nbsp;
+                    span(data-bind="translate: 'NEXT'")
+    div.row
+        div.col-md-6(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
     div.row
         div.col-md-6
             table.table.table-hover.table-fixed
@@ -21,29 +25,20 @@ div#admin-posts.container-fluid.view
                     col.col-md-2
                 thead
                     tr
-                        th {{'TITLE' | translate}}
-                        th {{'DATE' | translate}}
-                        th {{'DRAFT' | translate}}
-                        th {{'FEATURED' | translate}}
-                tbody
-                    tr(ng-repeat='post in posts')
+                        th(data-bind="translate: 'TITLE'")
+                        th(data-bind="translate: 'DATE'")
+                        th(data-bind="translate: 'DRAFT'")
+                        th(data-bind="translate: 'FEATURED'")
+                tbody(data-bind="foreach: posts")
+                    tr
                         td
-                            a(ng-href='#!/edit/{{post._id}}') {{post.title}}
-                        td {{post.date | jellydate}}
+                            a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
                         td
-                            span.glyphicon(ng-class='{"glyphicon-ok": post.draft}')
+                            span(data-bind="dateText: $data.date")
                         td
-                            span.glyphicon(ng-class='{"glyphicon-ok": post.featured}')
+                            span.glyphicon(data-bind="css: {'glyphicon-ok': $data.draft}")
+                        td
+                            span.glyphicon(data-bind="css: {'glyphicon-ok': $data.featured}")
     div.row
-        div.col-md-6
-            div
-                div.btn-group.btn-group-xs.center-block
-                    a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.startQuery}}', ng-class='{"disabled": state.startDisabled}')
-                        span.glyphicon.glyphicon-fast-backward
-                        span &nbsp;{{'BEGIN' | translate}}
-                    a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.backQuery}}', ng-class='{"disabled": state.backDisable}')
-                        span.glyphicon.glyphicon-backward
-                        span &nbsp;{{'BACK' | translate}}
-                    a.btn.btn-primary.btn-xs(ng-href='#!/posts/{{state.nextQuery}}', ng-class='{"disabled": state.nextDisable}')
-                        span.glyphicon.glyphicon-forward
-                        span &nbsp;{{'NEXT' | translate}}
+        div.col-md-6(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+
