@@ -1,38 +1,23 @@
 extends layout
 block content
     div()
-        nav.navbar.navbar-default.navbar-static-top(role="navigation", id="main-nav")
+        nav#main-nav.navbar.navbar-default.navbar-static-top(role="navigation")
             div.container-fluid
                 ul.nav.navbar-nav
                     li
                         p.navbar-text
                             span(data-bind="translate: 'WELCOME'")
                             span , #{user.displayName}
+                    // ko foreach: navlinks
                     li
-                        a(href="/", target="_blank", data-bind="translate: 'BLOG'")
-                    li
-                        a(href='/auth/logout', data-bind="translate: 'LOGOUT'")
-                    li
-                        a(href='#!/posts')
-                            span.glyphicon.glyphicon-th-list
-                            span &nbsp;
-                            span(data-bind="translate: 'POSTS'")
-                    li
-                        a(href='#!/misc')
-                            span.glyphicon.glyphicon-adjust
-                            span &nbsp;
-                            span(data-bind="translate: 'MISC'")
-                    li
-                        a(href='#!/files')
-                            span.glyphicon.glyphicon-folder-open
-                            span &nbsp;
-                            span(data-bind="translate: 'FILES'")
-                    li
-                        a(href='#!/edit')
-                            span.glyphicon.glyphicon-plus
-                            span &nbsp;{{'NEW_POST' | translate}}
+                        a(data-bind="attr: {href: $data.href, target: $data.target}")
+                            span.glyphicon(data-bind="attr: {'class': $data.icon? 'glyphicon '+$data.icon:''}")
+                            span(data-bind="if: $data.icon") &nbsp;
+                            span(data-bind="translate: $data.titleKey")
+                    // /ko
         div.app-view()
             include partials/admin-posts
             include partials/admin-misc
+            include partials/admin-edit-post
 block specific
     script(src='/js/app-admin.js')

@@ -1,77 +1,78 @@
-form.form-horizontal(role='form', novalidate, name='postForm')
-    div.form-group
-        div.col-sm-offset-2.col-sm-10
-            div.btn-group.btn-group-sm
-                button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
-                    span.glyphicon.glyphicon-save
-                    span &nbsp;{{'SAVE' | translate}}
-                button.btn.btn-danger(ng-disabled='!post._id', ng-click='remove()')
-                    span.glyphicon.glyphicon-remove
-                    span &nbsp;{{'DELETE' | translate}}
-    div.form-group
-        label.col-sm-2.control-label(for='title') {{'TITLE' | translate}}:
-        div.col-sm-10
-            input.form-control(id='title', type='text', ng-model='post.title', required, placeholder='Post title')
-    div.form-group
-        label.col-sm-2.control-label(for='slug') {{'SLUG' | translate}}:
-        div.col-sm-4
-            input.form-control(id='slug', type='text', ng-model='post.slug', placeholder='Post url here')
-        label.col-sm-6
-            code [host]/{{post.slug || 'post?id='+(post._id || '')}}
-    div.form-group
-        label.col-sm-2.control-label(for='date') {{'DATE' | translate}}:
-        div.col-sm-4
-            input.form-control(id='date', type='date', ng-model='post.date', jelly-date-editor, placeholder='yyyy-MM-dd')
-        label.col-sm-6
-            code {{post.date | jellydate}}
-    div.form-group
-        label.col-sm-2.control-label(for='content') {{'TEXT' | translate}}:
-        div.col-sm-10
-            textarea.form-control(id='content', ng-model='post.content', placeholder='Post text here', rows='10')
-    div.form-group
-        div.col-sm-10.col-sm-offset-2
-            label.checkbox-inline
-                input(type='checkbox', id="featured", ng-model='state.preview')
-                {{'PREVIEW' | translate}}
-    div.form-group(ng-if='state.preview')
-        label.col-sm-2.control-label(for='preview') {{'PREVIEW' | translate}}:
-        div.col-sm-10.form-control-static(id='preview')
-            p(ng-bind-html='post.content')
-            p.tags-list
-                span.label.label-info(ng-repeat='tag in post.tags') {{tag}}
-    div.form-group
-        label.col-sm-2.control-label(for='tags') {{'TAGS' | translate }}:
-        div.col-sm-10
-            input.form-control(id='tags', ng-model='post.tags', jelly-tag-editor, placeholder='Space separated tags')
-    div.form-group
-        label.col-sm-2.control-label(for='metatitle') {{'METATITLE' | translate}}:
-        div.col-sm-10
-            input.form-control(id='metatitle', type='text', ng-model='post.metaTitle', placeholder='Meta title of page here')
-    div.form-group
-        label.col-sm-2.control-label(for='metadescription') {{'METADESCRIPTION' | translate}}:
-        div.col-sm-10
-            textarea.form-control(id='metadescription', ng-model='post.metaDescription', placeholder='Meta description of page here (few words)')
-    div.form-group
-        label.col-sm-2.control-label(for='image') {{'POST_IMAGE' | translate}}
-        div.col-sm-4
-            input.form-control(type='url', id='image', ng-model='post.image', placeholder='Image url')
-        div.col-sm-6
-            img(width='150', ng-src='{{post.image}}', ng-show='post.image')
-    div.form-group
-        div.col-sm-10.col-sm-offset-2
-            label.checkbox-inline
-                input(type='checkbox', id="featured", ng-model='post.featured')
-                {{'FEATURED' | translate}}
-            label.checkbox-inline
-                input(type='checkbox', id="draft", ng-model='post.draft')
-                {{'DRAFT' | translate}}
-    div.form-group
-        div.col-sm-offset-2.col-sm-10
-            div.btn-group.btn-group-sm
-                button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
-                    span.glyphicon.glyphicon-save
-                    span &nbsp;{{'SAVE' | translate}}
-                button.btn.btn-danger(ng-disabled='!post._id', ng-click='remove()')
-                    span.glyphicon.glyphicon-remove
-                    span &nbsp;{{'DELETE' | translate}}
+div#admin-edit-post.view
+    form.form-horizontal(role='form', novalidate, name='postForm')
+        div.form-group
+            div.col-sm-offset-2.col-sm-10
+                div.btn-group.btn-group-sm
+                    button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
+                        span.glyphicon.glyphicon-save
+                        span &nbsp;{{'SAVE' | translate}}
+                    button.btn.btn-danger(ng-disabled='!post._id', ng-click='remove()')
+                        span.glyphicon.glyphicon-remove
+                        span &nbsp;{{'DELETE' | translate}}
+        div.form-group
+            label.col-sm-2.control-label(for='title') {{'TITLE' | translate}}:
+            div.col-sm-10
+                input.form-control(id='title', type='text', ng-model='post.title', required, placeholder='Post title')
+        div.form-group
+            label.col-sm-2.control-label(for='slug') {{'SLUG' | translate}}:
+            div.col-sm-4
+                input.form-control(id='slug', type='text', ng-model='post.slug', placeholder='Post url here')
+            label.col-sm-6
+                code [host]/{{post.slug || 'post?id='+(post._id || '')}}
+        div.form-group
+            label.col-sm-2.control-label(for='date') {{'DATE' | translate}}:
+            div.col-sm-4
+                input.form-control(id='date', type='date', ng-model='post.date', jelly-date-editor, placeholder='yyyy-MM-dd')
+            label.col-sm-6
+                code {{post.date | jellydate}}
+        div.form-group
+            label.col-sm-2.control-label(for='content') {{'TEXT' | translate}}:
+            div.col-sm-10
+                textarea.form-control(id='content', ng-model='post.content', placeholder='Post text here', rows='10')
+        div.form-group
+            div.col-sm-10.col-sm-offset-2
+                label.checkbox-inline
+                    input(type='checkbox', id="featured", ng-model='state.preview')
+                    {{'PREVIEW' | translate}}
+        div.form-group(ng-if='state.preview')
+            label.col-sm-2.control-label(for='preview') {{'PREVIEW' | translate}}:
+            div.col-sm-10.form-control-static(id='preview')
+                p(ng-bind-html='post.content')
+                p.tags-list
+                    span.label.label-info(ng-repeat='tag in post.tags') {{tag}}
+        div.form-group
+            label.col-sm-2.control-label(for='tags') {{'TAGS' | translate }}:
+            div.col-sm-10
+                input.form-control(id='tags', ng-model='post.tags', jelly-tag-editor, placeholder='Space separated tags')
+        div.form-group
+            label.col-sm-2.control-label(for='metatitle') {{'METATITLE' | translate}}:
+            div.col-sm-10
+                input.form-control(id='metatitle', type='text', ng-model='post.metaTitle', placeholder='Meta title of page here')
+        div.form-group
+            label.col-sm-2.control-label(for='metadescription') {{'METADESCRIPTION' | translate}}:
+            div.col-sm-10
+                textarea.form-control(id='metadescription', ng-model='post.metaDescription', placeholder='Meta description of page here (few words)')
+        div.form-group
+            label.col-sm-2.control-label(for='image') {{'POST_IMAGE' | translate}}
+            div.col-sm-4
+                input.form-control(type='url', id='image', ng-model='post.image', placeholder='Image url')
+            div.col-sm-6
+                img(width='150', ng-src='{{post.image}}', ng-show='post.image')
+        div.form-group
+            div.col-sm-10.col-sm-offset-2
+                label.checkbox-inline
+                    input(type='checkbox', id="featured", ng-model='post.featured')
+                    {{'FEATURED' | translate}}
+                label.checkbox-inline
+                    input(type='checkbox', id="draft", ng-model='post.draft')
+                    {{'DRAFT' | translate}}
+        div.form-group
+            div.col-sm-offset-2.col-sm-10
+                div.btn-group.btn-group-sm
+                    button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
+                        span.glyphicon.glyphicon-save
+                        span &nbsp;{{'SAVE' | translate}}
+                    button.btn.btn-danger(ng-disabled='!post._id', ng-click='remove()')
+                        span.glyphicon.glyphicon-remove
+                        span &nbsp;{{'DELETE' | translate}}
 

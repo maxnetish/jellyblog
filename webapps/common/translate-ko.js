@@ -5,23 +5,32 @@ define('binding.ko-translate',
     [
         'ko',
         'jquery',
-        'translate-service'
+        'translate-service',
+        'messenger'
     ],
-    function (ko, $, translateService) {
-        (function(){
+    function (ko, $, translateService, messenger) {
+        var insertTextTo = function (key, to) {
+            translateService.getTextPromise(key)
+                .done(function (translated) {
+                    $(to).text(translated);
+                })
+                .fail(function () {
+                    $(to).text(key);
+                });
+        };
+
+        (function () {
             ko.bindingHandlers.translate = {
-                init: function(element, valueAccessor){
+                init: function (element, valueAccessor) {
                     var key = valueAccessor();
-
-                    console.log('init translate binding, key: '+key);
-
-                    translateService.getTextPromise(key)
-                        .done(function(translated){
-                            $(element).text(translated);
-                        })
-                        .fail(function(){
-                            $(element).text(key);
-                        });
+                    insertTextTo(key, element);
+                    messenger.subscribe({
+                        messageName: messenger.messageNames.TranslateLangChanged,
+                        callback: function () {
+                            insertTextTo(key, element);
+                        },
+                        async: true
+                    });
                 }
             };
         })();
