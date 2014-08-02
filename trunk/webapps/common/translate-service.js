@@ -38,7 +38,7 @@ define('translate-service',
 
                 if (dictionaries.hasOwnProperty(lang)) {
                     console.log('getDictionaryPromise: immediate resolve');
-                    dfr.resolve(dictionaries.lang);
+                    dfr.resolve(dictionaries[lang]);
                     promise = dfr.promise();
                 } else if (loadState.hasOwnProperty(lang)) {
                     console.log('getDictionaryPromise: wait for request done');
