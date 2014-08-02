@@ -1,30 +1,32 @@
 div#admin-edit-post.view
-    form.form-horizontal(role='form', novalidate, name='postForm')
+    form.form-horizontal(role='form', name='postForm', data-bind="submit: onPostSubmit, with: post")
         div.form-group
             div.col-sm-offset-2.col-sm-10
                 div.btn-group.btn-group-sm
-                    button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
+                    button.btn.btn-primary(type="submit")
                         span.glyphicon.glyphicon-save
-                        span &nbsp;{{'SAVE' | translate}}
-                    button.btn.btn-danger(ng-disabled='!post._id', ng-click='remove()')
+                        span &nbsp;
+                        span(data-bind="translate: 'SAVE'")
+                    button.btn.btn-danger(data-bind="click: $parent.remove")
                         span.glyphicon.glyphicon-remove
-                        span &nbsp;{{'DELETE' | translate}}
+                        span &nbsp;
+                        span(data-bind="translate: 'DELETE'")
         div.form-group
-            label.col-sm-2.control-label(for='title') {{'TITLE' | translate}}:
+            label.col-sm-2.control-label(for="title", data-bind="translate: 'TITLE'")
             div.col-sm-10
-                input.form-control(id='title', type='text', ng-model='post.title', required, placeholder='Post title')
+                input.form-control(id="title", type="text", data-bind="value: title, valueUpdate: 'input'", required, placeholder="Post title")
         div.form-group
-            label.col-sm-2.control-label(for='slug') {{'SLUG' | translate}}:
+            label.col-sm-2.control-label(for="slug", data-bind="translate: 'SLUG'")
             div.col-sm-4
-                input.form-control(id='slug', type='text', ng-model='post.slug', placeholder='Post url here')
+                input.form-control(id="slug", type="text", data-bind="value: slug, valueUpdate: 'input'", placeholder='Post url here')
             label.col-sm-6
-                code [host]/{{post.slug || 'post?id='+(post._id || '')}}
+                code(data-bind="text: $parent.urlPreview")
         div.form-group
-            label.col-sm-2.control-label(for='date') {{'DATE' | translate}}:
+            label.col-sm-2.control-label(for='date', data-bind="translate: 'DATE'")
             div.col-sm-4
-                input.form-control(id='date', type='date', ng-model='post.date', jelly-date-editor, placeholder='yyyy-MM-dd')
+                input.form-control(id='date', type='date', data-bind="value: date, valueUpdate: 'input'", required, placeholder='yyyy-MM-dd')
             label.col-sm-6
-                code {{post.date | jellydate}}
+                code(data-bind="dateText: date")
         div.form-group
             label.col-sm-2.control-label(for='content') {{'TEXT' | translate}}:
             div.col-sm-10
