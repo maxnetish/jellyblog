@@ -22,15 +22,17 @@ define('binding.ko-translate',
         (function () {
             ko.bindingHandlers.translate = {
                 init: function (element, valueAccessor) {
-                    var key = valueAccessor();
-                    insertTextTo(key, element);
                     messenger.subscribe({
                         messageName: messenger.messageNames.TranslateLangChanged,
                         callback: function () {
-                            insertTextTo(key, element);
+                            insertTextTo(ko.unwrap(valueAccessor()), element);
                         },
                         async: true
                     });
+                },
+                update: function (element, valueAccessor) {
+                    var key = ko.unwrap(valueAccessor());
+                    insertTextTo(key, element);
                 }
             };
         })();

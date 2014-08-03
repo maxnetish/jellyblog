@@ -8,9 +8,10 @@ define('data.post',
         'ko',
         '_',
         'data.mapper',
+        'data.utils',
         'logger'
     ],
-    function ($, ko, _, mapper, logger) {
+    function ($, ko, _, mapper, dataUtils, logger) {
         var PostDetails = function (row) {
                 row = row || {};
                 this._id = row._id || undefined;
@@ -49,8 +50,8 @@ define('data.post',
             save = function (postDeatils) {
                 var promise, plain;
 
-                plain = postDeatils.toPlain();
-                PostDetails.clearEmptyStrings.call(plain);
+                plain = dataUtils.toPlain(postDeatils);
+                dataUtils.clearEmptyStrings(plain);
 
                 promise = $.ajax({
                     dataType: 'json',
@@ -79,27 +80,6 @@ define('data.post',
                     .fail(onFail);
                 return promise;
             };
-
-        PostDetails.prototype.clearEmptyStrings = function () {
-            var prop;
-            for (prop in this) {
-                if (_.isString(this[prop]) && this[prop].length === 0) {
-                    this[prop] = undefined;
-                }
-            }
-        };
-
-        PostDetails.prototype.toPlain = function(){
-            var result={};
-            _.forOwn(this, function(val, key){
-                if(ko.isObservable(val)){
-                    result[key] = val();
-                }else if(!_.isFunction(val)){
-                    result[key] = val;
-                }
-            });
-            return result;
-        };
 
         return {
             PostDetails: PostDetails,
