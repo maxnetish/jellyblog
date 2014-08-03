@@ -44,5 +44,8 @@
     "AUTHOR_TWITTER_NAME": "Твиттер-аккаунт (без '@')",
     "FOOTER_ANNOTATION": "О сайте",
     "POSTS_PER_PAGE": "Постов на странице",
-    "AUTHOR_AVATAR_URL": "Аватар автора (url)"
+    "AUTHOR_AVATAR_URL": "Аватар автора (url)",
+    "CANCEL_EDIT": "Отменить изменения",
+    "LOADING": "Загружаем...",
+    "SAVING": "Сохраняем..."
 }

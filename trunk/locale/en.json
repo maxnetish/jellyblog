@@ -44,5 +44,8 @@
     "AUTHOR_TWITTER_NAME": "Twitter screen name (without '@')",
     "FOOTER_ANNOTATION": "Site annotation",
     "POSTS_PER_PAGE": "Posts on one page",
-    "AUTHOR_AVATAR_URL": "Avatar url"
+    "AUTHOR_AVATAR_URL": "Avatar url",
+    "CANCEL_EDIT": "Cancel edit",
+    "LOADING": "Loading...",
+    "SAVING": "Saving..."
 }

@@ -1,80 +1,98 @@
 div#admin-edit-post.view
-    form.form-horizontal(role='form', name='postForm', data-bind="submit: onPostSubmit, with: post")
+    script#post-save-delete(type="text/html")
+        div.col-sm-offset-2.col-sm-10
+            div.btn-group.btn-group-sm
+                button.btn.btn-primary(type="submit", data-bind="attr: {disabled: save.disabled}")
+                    span.glyphicon.glyphicon-save
+                    span &nbsp;
+                    span(data-bind="translate: save.title")
+                button.btn.btn-warning(data-bind="click: reload.do, attr: {disabled: reload.disabled}")
+                    span.glyphicon.glyphicon-remove
+                    span &nbsp;
+                    span(data-bind="translate: reload.title")
+    form.form-horizontal(role='form', name='postForm', data-bind="submit: save.do, with: post")
+        div.form-group(data-bind="template: {name: 'post-save-delete', data: $parent}")
         div.form-group
-            div.col-sm-offset-2.col-sm-10
-                div.btn-group.btn-group-sm
-                    button.btn.btn-primary(type="submit")
-                        span.glyphicon.glyphicon-save
-                        span &nbsp;
-                        span(data-bind="translate: 'SAVE'")
-                    button.btn.btn-danger(data-bind="click: $parent.remove")
-                        span.glyphicon.glyphicon-remove
-                        span &nbsp;
-                        span(data-bind="translate: 'DELETE'")
-        div.form-group
-            label.col-sm-2.control-label(for="title", data-bind="translate: 'TITLE'")
+            label.col-sm-2.control-label(for="title"
+                                        data-bind="translate: 'TITLE'")
             div.col-sm-10
-                input.form-control(id="title", type="text", data-bind="value: title, valueUpdate: 'input'", required, placeholder="Post title")
+                input#title.form-control(type="text"
+                                        data-bind="value: title, valueUpdate: 'input'"
+                                        required
+                                        placeholder="Post title")
         div.form-group
-            label.col-sm-2.control-label(for="slug", data-bind="translate: 'SLUG'")
+            label.col-sm-2.control-label(for="slug"
+                                        data-bind="translate: 'SLUG'")
             div.col-sm-4
-                input.form-control(id="slug", type="text", data-bind="value: slug, valueUpdate: 'input'", placeholder='Post url here')
+                input#slug.form-control(type="text"
+                                        data-bind="value: slug, valueUpdate: 'input'"
+                                        placeholder="Post url here")
             label.col-sm-6
                 code(data-bind="text: $parent.urlPreview")
         div.form-group
-            label.col-sm-2.control-label(for='date', data-bind="translate: 'DATE'")
+            label.col-sm-2.control-label(for="date",
+                                        data-bind="translate: 'DATE'")
             div.col-sm-4
-                input.form-control(id='date', type='date', data-bind="value: date, valueUpdate: 'input'", required, placeholder='yyyy-MM-dd')
+                input#date.form-control(type="date"
+                                        data-bind="dateValue: date"
+                                        required
+                                        placeholder="yyyy-MM-dd")
             label.col-sm-6
                 code(data-bind="dateText: date")
         div.form-group
-            label.col-sm-2.control-label(for='content') {{'TEXT' | translate}}:
+            label.col-sm-2.control-label(for="content"
+                                        data-bind="translate: 'TEXT'")
             div.col-sm-10
-                textarea.form-control(id='content', ng-model='post.content', placeholder='Post text here', rows='10')
+                textarea#content.form-control(data-bind="value: content, valueUpdate: 'input'"
+                                            placeholder="Post text here"
+                                            rows="10")
         div.form-group
             div.col-sm-10.col-sm-offset-2
                 label.checkbox-inline
-                    input(type='checkbox', id="featured", ng-model='state.preview')
-                    {{'PREVIEW' | translate}}
-        div.form-group(ng-if='state.preview')
-            label.col-sm-2.control-label(for='preview') {{'PREVIEW' | translate}}:
-            div.col-sm-10.form-control-static(id='preview')
-                p(ng-bind-html='post.content')
-                p.tags-list
-                    span.label.label-info(ng-repeat='tag in post.tags') {{tag}}
+                    input(type="checkbox"
+                        data-bind="checked: $parent.contentPreview")
+                    span(data-bind="translate: 'PREVIEW'")
+        div.form-group(data-bind="if: $parent.contentPreview")
+            label.col-sm-2.control-label(for="preview", data-bind="translate: 'PREVIEW'")
+            div#preview.col-sm-10.form-control-static
+                p(data-bind="html: content")
+                p.tags-list(data-bind="foreach: {data: tags, as: 'tag'}")
+                    span.label.label-info(data-bind="text: tag")
         div.form-group
-            label.col-sm-2.control-label(for='tags') {{'TAGS' | translate }}:
+            label.col-sm-2.control-label(for="tags",
+                                        data-bind="translate: 'TAGS'")
             div.col-sm-10
-                input.form-control(id='tags', ng-model='post.tags', jelly-tag-editor, placeholder='Space separated tags')
+                input#tags.form-control(data-bind="listText: tags, listSeparator: ' ', valueUpdate: 'input'"
+                                        placeholder="Space separated tags")
         div.form-group
-            label.col-sm-2.control-label(for='metatitle') {{'METATITLE' | translate}}:
+            label.col-sm-2.control-label(for="metatitle"
+                                        data-bind="translate: 'METATITLE'")
             div.col-sm-10
-                input.form-control(id='metatitle', type='text', ng-model='post.metaTitle', placeholder='Meta title of page here')
+                input#metatitle.form-control(type="text",
+                                            data-bind="value: metaTitle, valueUpdate: 'input'"
+                                            placeholder="Meta title of page here")
         div.form-group
-            label.col-sm-2.control-label(for='metadescription') {{'METADESCRIPTION' | translate}}:
+            label.col-sm-2.control-label(for="metadescription"
+                                        data-bind="translate: 'METADESCRIPTION'")
             div.col-sm-10
-                textarea.form-control(id='metadescription', ng-model='post.metaDescription', placeholder='Meta description of page here (few words)')
+                textarea#metadescription.form-control(data-bind="value: metaDescription, valueUpdate: 'input'"
+                                                    placeholder="Meta description of page here (few words)")
         div.form-group
-            label.col-sm-2.control-label(for='image') {{'POST_IMAGE' | translate}}
+            label.col-sm-2.control-label(for="image"
+                                        data-bind="translate: 'POST_IMAGE'")
             div.col-sm-4
-                input.form-control(type='url', id='image', ng-model='post.image', placeholder='Image url')
+                input#image.form-control(type="url"
+                                        data-bind="value: image, valueUpdate: 'input'"
+                                        placeholder="Image url")
             div.col-sm-6
-                img(width='150', ng-src='{{post.image}}', ng-show='post.image')
+                img(width='150', data-bind="attr: {src: image}, visible: image")
         div.form-group
             div.col-sm-10.col-sm-offset-2
                 label.checkbox-inline
-                    input(type='checkbox', id="featured", ng-model='post.featured')
-                    {{'FEATURED' | translate}}
+                    input#featured(type="checkbox", data-bind="checked: featured")
+                    span(data-bind="translate: 'FEATURED'")
                 label.checkbox-inline
-                    input(type='checkbox', id="draft", ng-model='post.draft')
-                    {{'DRAFT' | translate}}
-        div.form-group
-            div.col-sm-offset-2.col-sm-10
-                div.btn-group.btn-group-sm
-                    button.btn.btn-primary(ng-disabled='postForm.$invalid || postForm.$pristine || state.saveDisable', ng-click='save()')
-                        span.glyphicon.glyphicon-save
-                        span &nbsp;{{'SAVE' | translate}}
-                    button.btn.btn-danger(ng-disabled='!post._id', ng-click='remove()')
-                        span.glyphicon.glyphicon-remove
-                        span &nbsp;{{'DELETE' | translate}}
+                    input#draft(type="checkbox", data-bind="checked: draft")
+                    span(data-bind="translate: 'DRAFT'")
+        div.form-group(data-bind="template: {name: 'post-save-delete', data: $parent}")
 

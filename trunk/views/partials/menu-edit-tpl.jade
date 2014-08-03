@@ -1,30 +1,30 @@
-div.border-bottom(ng-repeat='navlink in navlinks | filter: {willRemove: false}')
-    div.row.padding-vert-10
-        div.col-sm-5
-            input.form-control(type='text', required, ng-model='navlink.text', placeholder='{{"TOOLTIP_LINKTEXT" | translate}}')
-        div.col-sm-5
-            input.form-control(type='text', required, ng-model='navlink.url', placeholder='Url')
-        div.col-sm-2
-            div.btn-group.btn-group-xs
-                button.btn.btn-danger(ng-click='removeNavlink(navlink)', title='{{"DELETE" | translate}}')
-                    span.glyphicon.glyphicon-remove
-                button.btn.btn-primary(ng-click='upNavlink(navlink)', ng-disabled='$first', title='{{"UP" | translate}}')
-                    span.glyphicon.glyphicon-arrow-up
-                button.btn.btn-primary(ng-click='downNavlink(navlink)', ng-disabled='$last', title='{{"DOWN" | translate}}')
-                    span.glyphicon.glyphicon-arrow-down
-    div.row.padding-vert-10
-        div.col-sm-4
-            select.form-control(ng-options='icon for icon in icons', ng-model='navlink.icon')
-                option(value='') {{'ICON' | translate}}
-        div.col-sm-8
-            label.checkbox-inline
-                input(type='checkbox', ng-model='navlink.disabled')
-                {{'DISABLED' | translate}}
-            label.checkbox-inline
-                input(type='checkbox', ng-model='navlink.visible')
-                {{'VISIBLE' | translate}}
-            label.checkbox-inline
-                input(type='checkbox', ng-model='navlink.newWindow')
-                {{'LINK_NEW_WINDOW' | translate}}
+div(data-bind="foreach: {data: navlinks, as: 'navlink'}")
+    div.border-bottom
+        div.row.padding-vert-10
+            div.col-sm-5
+                input.form-control(type="text", required, data-bind="value: navlink.text, valueUpdate: 'input'", placeholder="")
+            div.col-sm-5
+                input.form-control(type="text", required, data-bind="value: navlink.url, valueUpdate: 'input'", placeholder="Url")
+            div.col-sm-2
+                div.btn-group.btn-group-xs
+                    button.btn.btn-danger(data-bind="click: $parent.remove", title="")
+                        span.glyphicon.glyphicon-remove
+                    button.btn.btn-primary(data-bind="click: $parent.up, attr: {disabled: $index()===0}", title="")
+                        span.glyphicon.glyphicon-arrow-up
+                    button.btn.btn-primary(data-bind="click: $parent.down, attr: {disabled: $index()===$parent.navlinks().length-1}", title="")
+                        span.glyphicon.glyphicon-arrow-down
+        div.row.padding-vert-10
+            div.col-sm-4
+                select.form-control(data-bind="options: $parent.icons, optionsCaption: 'Select an icon...', value: navlink.icon")
+            div.col-sm-8
+                label.checkbox-inline
+                    input(type="checkbox", data-bind="checked: navlink.disabled")
+                    span(data-bind="translate: 'DISABLED'")
+                label.checkbox-inline
+                    input(type="checkbox", data-bind="checked: navlink.visible")
+                    span(data-bind="translate: 'VISIBLE'")
+                label.checkbox-inline
+                    input(type="checkbox", data-bind="checked: navlink.newWindow")
+                    span(data-bind="translate: 'LINK_NEW_WINDOW'")
 
 

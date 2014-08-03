@@ -20,6 +20,8 @@
             'vm.main-nav',
             'binding.ko-translate',
             'binding.ko-datetext',
+            'binding.ko-datevalue',
+            'binding.ko-listtext',
             'router'
         ],
         function (ko, $, moment, vmMainNav) {
@@ -29,7 +31,6 @@
             moment.lang(window.navigator.userLanguage || window.navigator.language);
 
             //init non-rout parts
-            console.log('apply binding to nav...');
             ko.applyBindings(vmMainNav, $('#main-nav').get(0));
         });
 

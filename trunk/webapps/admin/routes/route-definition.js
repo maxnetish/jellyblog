@@ -7,8 +7,9 @@ define('route-definition',
         'jquery',
         'ko',
         'vm.posts',
-        'vm.edit-post'
-    ], function (_, $, ko, vmPosts, vmEditPost) {
+        'vm.edit-post',
+        'vm.misc'
+    ], function (_, $, ko, vmPosts, vmEditPost, vmMisc) {
         var RouteDefinition = function (row) {
                 var self = this;
 
@@ -33,11 +34,11 @@ define('route-definition',
                     route: '#!/posts(/:query)',
                     on: vmPosts.activate
                 }),
-                misc: new
-                    RouteDefinition({
+                misc: new RouteDefinition({
                     view: '#admin-misc',
-                    viewModel: {},
-                    route: '#!/misc'
+                    viewModel: vmMisc,
+                    route: '#!/misc',
+                    on: vmMisc.activate
                 }),
                 files: new RouteDefinition({
                     route: '#!/files',

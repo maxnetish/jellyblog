@@ -5,69 +5,114 @@ define('vm.edit-post',
     [
         'ko',
         'logger',
-        'data.post'
+        'data.post',
+        'model-state'
     ],
-    function (ko, logger, provider) {
-        var currentPostId = ko.observable(undefined),
-            post = ko.observable(null),
+    function (ko, logger, provider, ModelState) {
+        var post = ko.observable(null),
+            modelState = new ModelState(),
             urlPreview = ko.computed({
-                read: function(){
+                read: function () {
                     var postUnwrapped = post();
-                    if(!postUnwrapped){
+                    if (!postUnwrapped) {
                         return null;
                     }
-                    if(postUnwrapped.slug()){
-                        return '[host]/'+postUnwrapped.slug();
-                    }else{
-                        return '[host]/post?id='+postUnwrapped._id;
+                    if (postUnwrapped.slug()) {
+                        return '[host]/' + postUnwrapped.slug();
+                    } else {
+                        return '[host]/post?id=' + postUnwrapped._id;
                     }
                 },
                 deferEvaluation: true
             }),
             datePreview = ko.computed({
-                read: function(){
+                read: function () {
                     var postUnwrapped = post();
-                    if(!postUnwrapped){
+                    if (!postUnwrapped) {
                         return null;
                     }
                     return postUnwrapped.date()
                 },
                 deferEvaluation: true
             }),
+            saving = ko.observable(false),
+            loading = ko.observable(false),
+            saveButtonTitle = ko.observable('SAVE'),
+            reloadButtonTitle = ko.observable('CANCEL_EDIT'),
+            reloadDisabled = ko.computed({
+                read: function(){
+                    return loading() || modelState.pristine();
+                },
+                deferEvaluation: true
+            }),
+            saveDisabled = ko.computed({
+                read: function () {
+                    return saving() || modelState.pristine();
+                },
+                deferEvaluation: true
+            }),
             updateViewData = function (newPostId) {
-                if(newPostId){
+                if (newPostId) {
+                    loading(true);
+                    reloadButtonTitle('LOADING');
                     provider.get(newPostId)
-                        .done(function(result){
+                        .done(function (result) {
                             post(result);
+                            modelState.setModel(result);
+                        })
+                        .always(function () {
+                            loading(false);
+                            reloadButtonTitle('CANCEL_EDIT');
                         });
-                }else{
+                } else {
                     post(new provider.PostDetails());
+                    modelState.setModel(post());
                 }
             },
             activate = function (stateParams) {
                 var postId;
 
-                if(stateParams && stateParams.params && stateParams.params.postId){
+                if (stateParams && stateParams.params && stateParams.params.postId) {
                     postId = stateParams.params.postId;
                 }
-                currentPostId(postId);
+                updateViewData(postId);
             },
 
-            onPostSubmit=function(form){
-                logger.log(form.checkValidity());
-                logger.log(form);
+            onPostSubmit = function (form) {
+                if (form.checkValidity()) {
+                    saveButtonTitle('SAVING');
+                    saving(true);
+                    provider.save(post())
+                        .done(function (result) {
+                            post(result);
+                            modelState.setModel(result);
+                        })
+                        .always(function () {
+                            saving(false);
+                            saveButtonTitle('SAVE');
+                        });
+                }
             },
-            remove=function(){
-                slert('remove');
+            reload = function () {
+                var postUnwrapped = ko.unwrap(post),
+                    id = postUnwrapped ? postUnwrapped._id : undefined;
+                updateViewData(id);
             };
-
-        currentPostId.subscribe(updateViewData);
 
         return {
             activate: activate,
             post: post,
-            onPostSubmit: onPostSubmit,
-            remove: remove,
-            urlPreview: urlPreview
+            urlPreview: urlPreview,
+            contentPreview: ko.observable(false),
+            save: {
+                do: onPostSubmit,
+                disabled: saveDisabled,
+                title: saveButtonTitle
+            },
+            reload: {
+                do: reload,
+                disabled: reloadDisabled,
+                title: reloadButtonTitle
+            }
         };
     });
