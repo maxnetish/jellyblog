@@ -6,61 +6,75 @@ define('model-state',
         'ko',
         '_'
     ],
-    function(ko, _){
-        var ModelState = function(modelToWatch){
+    function (ko, _) {
+        'use strict';
+        var ModelState = function (modelToWatch) {
+            // 'private' members
             var self = this,
+                selfHandler,
                 handlers = [],
-                onChange = function(newValue){
+                onChange = function () {
                     self.setDirty();
                 },
-                beginWatch = function(model){
-                    var modelUnwrapped;
-                    if(ko.isObservable(model)){
-                        // TODO: к этой подписке ещё надо добавить endWatch для внутренних
-                        // элементов (при изменении родительского объекта все дочернии
-                        // становятся другими) и beginWatchOnInnerProperties
-                        //
-                        handlers.push(model.subscribe(onChange));
-                        modelUnwrapped = ko.unwrap(model);
-                        if(_.isArray(modelUnwrapped)){
-                            _.each(modelUnwrapped, beginWatchOnInnerProperties);
-                        }else {
-                            beginWatchOnInnerProperties(ko.unwrap(model));
-                        }
-                    }else {
-                        beginWatchOnInnerProperties(model)
-                    }
-                },
-                beginWatchOnInnerProperties = function(obj){
-                    _.forOwn(model, function (value, key) {
+                beginWatchOnInnerProperties = function (obj) {
+                    _.forOwn(obj, function (value) {
                         if (ko.isObservable(value)) {
                             handlers.push(value.subscribe(onChange));
                         }
+                        beginWatchOnInnerProperties(ko.unwrap(value));
                     });
                 },
-                endWatch = function(){
-                    _.each(handlers, function(subscription){
+                endWatch = function (withSelf) {
+                    _.each(handlers, function (subscription) {
                         subscription.dispose();
                     });
+                    if (withSelf && selfHandler) {
+                        selfHandler.dispose();
+                        selfHandler = undefined;
+                    }
                     handlers.length = 0;
+                },
+                onChangeSelf = function (newValue) {
+                    self.setDirty();
+                    endWatch(false);
+                    beginWatchOnInnerProperties(newValue);
+                },
+                beginWatch = function (model) {
+                    if (ko.isObservable(model)) {
+                        selfHandler = model.subscribe(onChangeSelf);
+                    }
+                    beginWatchOnInnerProperties(ko.unwrap(model));
                 };
 
+            // public interface
             this.pristine = ko.observable(true);
             this.dirty = ko.observable(false);
-            this.clear = function(){
+            this.clear = function () {
                 self.pristine(true);
                 self.dirty(false);
+                return self;
             };
-            this.setDirty = function(){
+            this.setDirty = function () {
                 self.pristine(false);
                 self.dirty(true);
+                return self;
             };
-            this.setModel = function(model){
-                endWatch();
+            this.setModel = function (model) {
+                endWatch(true);
                 self.clear();
                 beginWatch(model);
+                return self;
             };
+            this.dispose = function(){
+                endWatch(true);
+            };
+
+            // constructor
+            if(modelToWatch){
+                self.setModel(modelToWatch);
+            }
         };
 
-        return ModelState
-    });
+        return ModelState;
+    })
+;
