@@ -18,7 +18,7 @@ define('vm.posts',
         var limit = 8,
             postsList = ko.observableArray(),
 
-            // pagination
+        // pagination
             /**
              * current page params
              */
@@ -59,12 +59,12 @@ define('vm.posts',
                 }
             }),
             startPageUrl = ko.computed({
-                read: function(){
+                read: function () {
                     var currentQuery = queryUrl();
-                    if(!currentQuery){
+                    if (!currentQuery) {
                         return null;
                     }
-                    if(currentQuery.skip === 0){
+                    if (currentQuery.skip === 0) {
                         return null;
                     }
                     return '#!/posts';
@@ -123,5 +123,5 @@ define('vm.posts',
                 prevPageUrl: prevPageUrl,
                 startPageUrl: startPageUrl
             }
-        }
+        };
     });

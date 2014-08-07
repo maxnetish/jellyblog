@@ -9,7 +9,7 @@ div#admin-misc.container-fluid.view
                 h3(data-bind="translate: 'MAIN_MENU'")
     div(data-bind="if: mainNavlinks.visible")
         div.row(data-bind="template: {name: 'menu-add-save', data: mainNavlinks}")
-        form.form(role="form", name="mainNavlinksForm", data-bind="template: {name: 'menu-edit', data: mainNavlinks}")
+        form.form(role="form", data-bind="attr: {id: mainNavlinks.formId, name: mainNavlinks.formId}, template: {name: 'menu-edit', data: mainNavlinks}, submit: mainNavlinks.save")
         div.row(data-bind="visible: mainNavlinks.navlinks().length>2, template: {name: 'menu-add-save', data: mainNavlinks}")
         div.row(data-bind="visible: mainNavlinks.navlinks().length")
             div.col-sm-12

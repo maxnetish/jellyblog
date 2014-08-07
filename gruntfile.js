@@ -8,7 +8,7 @@ module.exports = function (grunt) {
         targetJsConcatAdmin = publicJs + '/app-admin.js',
         targetJsMinAdmin = publicJs + '/app-admin.min.js',
         webappsAdmin = 'webapps/admin',
-        webappsCommon = 'webapps/common'
+        webappsCommon = 'webapps/common',
         jslibsAdmin = [
             // libs
                 bowerPath + '/requirejs/require.js',
@@ -26,7 +26,6 @@ module.exports = function (grunt) {
     filesUglify[publicJs + '/lodash.min.js'] = [publicJs + '/lodash.js'];
     filesUglify[publicJs + '/q.min.js'] = [publicJs + '/q.js'];
 
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         clean: [
@@ -37,11 +36,11 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: bowerPath + '/knockoutjs/dist/knockout.debug.js',
-                        dest:  publicJs + '/knockout.js'
+                        dest: publicJs + '/knockout.js'
                     },
                     {
                         src: bowerPath + '/lodash/dist/lodash.js',
-                        dest:  publicJs + '/lodash.js'
+                        dest: publicJs + '/lodash.js'
                     },
                     {
                         src: bowerPath + '/q/q.js',
@@ -72,7 +71,6 @@ module.exports = function (grunt) {
             }
         }
     });
-
 
     require('load-grunt-tasks')(grunt);
     grunt.registerTask('default', ['clean', 'copy', 'concat', 'uglify']);

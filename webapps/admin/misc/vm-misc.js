@@ -4,20 +4,17 @@
 define('vm.misc',
     [
         'ko',
+        'jquery',
         '_',
         'logger',
+        'model-state',
         'data.icons',
         'data.navlink'
     ],
-    function (ko, _, logger, icons, providerNavlinks) {
-        var mainNavlinks = ko.observableArray()
-                .extend({
-                    rateLimit: 300
-                }),
-            footerNavlinks = ko.observableArray()
-                .extend({
-                    rateLimit: 300
-                }),
+    function (ko, $, _, logger, ModelState, icons, providerNavlinks) {
+        'use strict';
+        var mainNavlinks = ko.observableArray(),
+            footerNavlinks = ko.observableArray(),
             mainNavlinksToShow = ko.computed({
                 read: function () {
                     return _.filter(mainNavlinks(), function (item) {
@@ -27,13 +24,17 @@ define('vm.misc',
                 deferEvaluation: true
             }),
             footerNavlinksToShow = ko.computed({
-               read: function(){
-                   retun _.filter(footerNavlinks(), function(item){
+                read: function () {
+                    return _.filter(footerNavlinks(), function (item) {
                         return !ko.unwrap(item.willRemove);
-                   });
-               },
+                    });
+                },
                 deferEvaluation: true
             }),
+            modelStates = {
+                mainNavlinks: new ModelState(mainNavlinks),
+                footerNavlinks: new ModelState(footerNavlinks)
+            },
             getNavlinksByCateg = function (categ) {
                 switch (categ) {
                     case 'main':
@@ -44,8 +45,19 @@ define('vm.misc',
                         return null;
                 }
             },
+            getNavlinkModelStateByCateg = function (categ) {
+                switch (categ) {
+                    case 'main':
+                        return modelStates.mainNavlinks;
+                    case 'footer':
+                        return modelStates.footerNavlinks;
+                    default:
+                        return null;
+                }
+            },
             mainNavlinksVisible = ko.observable(false),
             footerNavlinkVisible = ko.observable(false),
+            saving = ko.observable(false),
             addNavlink = function (categ) {
                 var arrayToAdd = getNavlinksByCateg(categ),
                     newNavlink = new providerNavlinks.Model({
@@ -79,10 +91,10 @@ define('vm.misc',
                 providerNavlinks.query()
                     .done(function (result) {
                         var main = _.filter(result, function (item) {
-                            return item.category === 'main';
-                        }),
-                            footer = _.filteer(result, function(item){
-                                return item.category === 'footr';
+                                return item.category === 'main';
+                            }),
+                            footer = _.filter(result, function (item) {
+                                return item.category === 'footer';
                             });
 
                         mainNavlinks.removeAll();
@@ -90,16 +102,67 @@ define('vm.misc',
 
                         ko.utils.arrayPushAll(mainNavlinks, main);
                         ko.utils.arrayPushAll(footerNavlinks, footer);
+
+                        modelStates.mainNavlinks.clear();
+                        modelStates.footerNavlinks.clear();
+                    });
+            },
+            navlinksUpdateOrder = function (navlinksArray) {
+                var i, iLen;
+                for (i = 0, iLen = navlinksArray.length; i < iLen; i++) {
+                    navlinksArray[i].order(i);
+                }
+            },
+            saveNavlinks = function (categ) {
+                var observableToSave,
+                    modelState,
+                    promises = [];
+                categ = categ || 'main';
+
+                modelState = getNavlinkModelStateByCateg(categ);
+                observableToSave = getNavlinksByCateg(categ);
+                navlinksUpdateOrder(observableToSave());
+
+                observableToSave.remove(function (item) {
+                    return item.willRemove() && !item._id;
+                });
+
+                saving(true);
+
+                _.each(observableToSave(), function (nl) {
+                    if (nl.willRemove()) {
+                        promises.push(providerNavlinks.remove(nl._id)
+                            .done(function (result) {
+                                observableToSave.remove(function (item) {
+                                    return item._id === result._id;
+                                });
+                            }));
+                    } else {
+                        promises.push(providerNavlinks.save(nl)
+                            .done(function (result) {
+                                if (!nl._id) {
+                                    nl._id = result._id;
+                                }
+                            }));
+                    }
+                });
+
+                $.when.apply(null, promises)
+                    .done(function () {
+                        modelState.clear();
+                    })
+                    .always(function () {
+                        saving(false);
                     });
             },
             activate = function () {
                 updateViewData();
             };
 
-
         return{
             activate: activate,
             mainNavlinks: {
+                formId: 'mainNavlinksForm',
                 toggle: function () {
                     mainNavlinksVisible(!mainNavlinksVisible());
                 },
@@ -109,15 +172,20 @@ define('vm.misc',
                     addNavlink('main');
                 },
                 save: function () {
+                    saveNavlinks('main');
                 },
-                saveDisabled: false,
+                saveDisabled: ko.computed({
+                    read: function () {
+                        return modelStates.mainNavlinks.pristine() || saving();
+                    }
+                }),
                 icons: icons.available,
                 remove: removeNavlink,
                 up: function (navlink) {
                     up(navlink, 'main');
                 },
                 down: function (navlink) {
-                    down(navlink, 'main')
+                    down(navlink, 'main');
                 }
             }
         };

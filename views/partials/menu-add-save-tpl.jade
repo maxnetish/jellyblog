@@ -4,7 +4,7 @@ div.col-sm-12
             span.glyphicon.glyphicon-plus
             span &nbsp;
             span(data-bind="translate: 'ADD'")
-        button.btn.btn-primary(data-bind="click: save, attr: {disabled: saveDisabled}")
+        button.btn.btn-primary(type="submit", data-bind="attr: {form: formId, disabled: saveDisabled}")
             span.glyphicon.glyphicon-save
             span &nbsp;
             span(data-bind="translate: 'SAVE'")
