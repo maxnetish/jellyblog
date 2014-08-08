@@ -25,67 +25,69 @@ div#admin-misc.container-fluid.view
                                 b(data-bind="text: navlink.text")
     div.row
         div.col-sm-12
-            a(ng-click='showFooterMenuEditor=!showFooterMenuEditor', href='javascript:void(0)')
-                h3 {{'FOOTER_MENU' | translate}}
-    div(ng-show='showFooterMenuEditor')
-        div.row(jelly-menu-add-save, save='saveNavlinks', add='addNavlink', category='"footer"', save-disabled='footerNavlinksForm.$invalid || footerNavlinksForm.$pristine')
-        form.form(role='form', name='footerNavlinksForm', jelly-menu-editor, navlinks='footerNavlinks')
-        div.row(ng-show='footerNavlinks.length>2', jelly-menu-add-save, save='saveNavlinks', add='addNavlink', category='"footer"', save-disabled='footerNavlinksForm.$invalid || footerNavlinksForm.$pristine')
-        div.row(ng-show='!!footerNavlinks.length')
+            a(data-bind="click: footerNavlinks.toggle" href="javascript:void 0")
+                h3(data-bind="translate: 'FOOTER_MENU'")
+    div(data-bind="if: footerNavlinks.visible")
+        div.row(data-bind="template: {name: 'menu-add-save', data: footerNavlinks}")
+        form.form(data-bind="attr: {id: footerNavlinks.formId, name: footerNavlinks.formId}, template: {name: 'menu-edit', data: footerNavlinks}, submit: footerNavlinks.save" role="form")
+        div.row(data-bind="visible: footerNavlinks.navlinks().length>2, template: {name: 'menu-add-save', data: footerNavlinks}")
+        div.row(data-bind="visible: footerNavlinks.navlinks().length")
             div.col-sm-12
-                h4 {{'PREVIEW' | translate}}
+                h4(data-bind="translate: 'PREVIEW'")
         div.row
             div.col-sm-12
                 nav
-                    ul.list-unstyled
-                        li(ng-repeat='navlink in footerNavlinks | filter: {willRemove: false, visible: true}')
-                            a(ng-href='{{navlink.url}}', ng-class='{"disabled": navlink.disabled}', target='{{navlink.newWindow? "_blank":""}}')
-                                span.glyphicon(class='{{navlink.icon}}')
-                                b &nbsp;{{navlink.text}}
+                    ul.list-unstyled(data-bind="foreach: {data: footerNavlinks.navlinks, as: 'navlink'}")
+                        li
+                            a(data-bind="attr: {href: navlink.url, target: navlink.newWindow()?'_blank':''}, css: {'disabled': navlink.disabled}, visible: navlink.visible")
+                                span(data-bind="attr: {'class': 'glyphicon '+navlink.icon()}" class='{{navlink.icon}}')
+                                span &nbsp;
+                                b(data-bind="text: navlink.text")
     div.row
         div.col-sm-12
-            a(ng-click='showSettingsEditor=!showSettingsEditor', href='javascript:void(0)')
-                h3 {{'SETTINGS_EDITOR' | translate}}
-    div(ng-show='showSettingsEditor')
-        form.form.form-horizontal(role='form', name='settingsForm')
+            a(data-bind="click: appSettings.toggle", href="javascript:void 0")
+                h3(data-bind="translate: 'SETTINGS_EDITOR'")
+    div(data-bind="if: appSettings.visible")
+        form.form.form-horizontal(data-bind="with: appSettings.settings, attr: {id: appSettings.formId, name: appSettings.formId}, submit: appSettings.save" role="form")
             div.row
                 div.form-group
-                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorDisplayName') {{'AUTHOR_DISPLAY_NAME' | translate}}:
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_DISPLAY_NAME'", for="authorDisplayName")
                     div.col-lg-8.cl-md-8.col-sm-8
-                        input.form-control(id='authorDisplayName', type='text', ng-model='settings.authorDisplayName', required, placeholder='Author display name')
+                        input.form-control(data-bind="value: authorDisplayName", id="authorDisplayName", type="text", required, placeholder="Author display name")
             div.row
                 div.form-group
-                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorDisplayBio') {{'AUTHOR_DISPLAY_BIO' | translate}}:
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_DISPLAY_BIO'", for="authorDisplayBio")
                     div.col-lg-8.cl-md-8.col-sm-8
-                        input.form-control(id='authorDisplayBio', type='text', ng-model='settings.authorDisplayBio', placeholder='Author display bio')
+                        input.form-control(data-bind="value: authorDisplayBio", id="authorDisplayBio", type="text", placeholder="Author display bio")
             div.row
                 div.form-group
-                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorTwitterScreenName') {{'AUTHOR_TWITTER_NAME' | translate}}:
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_TWITTER_NAME'", for="authorTwitterScreenName")
                     div.col-lg-8.cl-md-8.col-sm-8
-                        input.form-control(id='authorTwitterScreenName', type='text', ng-model='settings.authorTwitterScreenName', placeholder='Author twitter screen name')
+                        input.form-control(data-bind="value: authorTwitterScreenName", id="authorTwitterScreenName", type="text", placeholder="Author twitter screen name")
             div.row
                 div.form-group
-                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='footerAnnotation') {{'FOOTER_ANNOTATION' | translate}}:
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'FOOTER_ANNOTATION'", for="footerAnnotation")
                     div.col-lg-8.cl-md-8.col-sm-8
-                        input.form-control(id='footerAnnotation', type='text', ng-model='settings.footerAnnotation', placeholder='Annotation')
+                        input.form-control(data-bind="value: footerAnnotation", id="footerAnnotation", type="text", placeholder="Annotation")
             div.row
                 div.form-group
-                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='postsPerPage') {{'POSTS_PER_PAGE' | translate}}:
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'POSTS_PER_PAGE'", for="postsPerPage")
                     div.col-lg-8.cl-md-8.col-sm-8
-                        input.form-control(id='postsPerPage', type='number', ng-model='settings.postsPerPage', required, placeholder='Annotation')
+                        input.form-control(data-bind="value: postsPerPage", id="postsPerPage", type="number", required, placeholder="Posts on one page")
             div.row
                 div.form-group
-                    label.col-lg-4.col-md-4.col-sm-4.control-label(for='authorAvatarUrl') {{'AUTHOR_AVATAR_URL' | translate}}:
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_AVATAR_URL'", for="authorAvatarUrl")
                     div.col-lg-4.cl-md-4.col-sm-4
-                        input.form-control(id='authorAvatarUrl', type='text', ng-model='settings.authorAvatarUrl', placeholder='Avatar url')
+                        input.form-control(data-bind="value: authorAvatarUrl, valueUpdate: 'input'", id="authorAvatarUrl", type="text", placeholder="Avatar url")
                     div.col-lg-4.cl-md-4.col-sm-4
-                        img.img-rounded.bg-warning(style='max-height:100px;max-width:100px;', ng-src='{{settings.authorAvatarUrl}}')
-            div.row
-                div.col-sm-12
-                    div.btn-group.btn-group-sm
-                        button.btn.btn-primary(ng-click='saveSettings()', ng-disabled='settingsForm.$invalid || settingsForm.$pristine')
-                            span.glyphicon.glyphicon-save
-                            span &nbsp;{{'SAVE' | translate}}
+                        img.img-rounded.bg-warning(data-bind="attr: {src: authorAvatarUrl}", style="max-height:100px;max-width:100px;")
+        div.row
+            div.col-sm-12
+                div.btn-group.btn-group-sm
+                    button.btn.btn-primary(data-bind="attr: {form: appSettings.formId, disabled: appSettings.saveDisabled}", type="submit")
+                        span.glyphicon.glyphicon-save
+                        span &nbsp;
+                        span(data-bind="translate: 'SAVE'")
 
 
 

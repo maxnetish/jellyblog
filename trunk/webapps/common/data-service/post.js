@@ -8,10 +8,9 @@ define('data.post',
         'ko',
         '_',
         'data.mapper',
-        'data.utils',
-        'logger'
+        'data.utils'
     ],
-    function ($, ko, _, mapper, dataUtils, logger) {
+    function ($, ko, _, mapper, dataUtils) {
         var PostDetails = function (row) {
                 row = row || {};
                 this._id = row._id || undefined;
@@ -26,12 +25,7 @@ define('data.post',
                 this.metaDescription = ko.observable(row.metaDescription);
                 this.tags = ko.observableArray(row.tags);
             },
-            onFail = function (jqXHR, textStatus, errorThrown) {
-                logger.log({
-                    status: textStatus,
-                    error: errorThrown
-                });
-            },
+            onFail = dataUtils.onFail,
             get = function (id) {
                 var promise = $.ajax({
                     dataType: 'json',
