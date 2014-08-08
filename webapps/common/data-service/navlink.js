@@ -6,10 +6,9 @@ define('data.navlink',
         'jquery',
         'ko',
         'data.mapper',
-        'data.utils',
-        'logger'
+        'data.utils'
     ],
-    function ($, ko, mapper, dataUtils, logger) {
+    function ($, ko, mapper, dataUtils) {
         var Navlink = function (row) {
                 row = row || {};
 
@@ -24,12 +23,7 @@ define('data.navlink',
                 this.willRemove = ko.observable(false);
                 this.newWindow = ko.observable(row.newWindow || false);
             },
-            onFail = function (jqXHR, textStatus, errorThrown) {
-                logger.log({
-                    status: textStatus,
-                    error: errorThrown
-                });
-            },
+            onFail = dataUtils.onFail,
             navlinkQuery = function (category) {
                 return $.ajax({
                     dataType: 'json',

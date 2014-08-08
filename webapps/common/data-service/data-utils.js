@@ -4,9 +4,10 @@
 define('data.utils',
     [
         '_',
-        'ko'
+        'ko',
+        'logger'
     ],
-    function (_, ko) {
+    function (_, ko, logger) {
         var clearEmptyStrings = function (model) {
                 var thisContext = model || this,
                     prop;
@@ -28,10 +29,17 @@ define('data.utils',
                     }
                 });
                 return result;
+            },
+            onDataFail = function (jqXHR, textStatus, errorThrown) {
+                logger.log({
+                    status: textStatus,
+                    error: errorThrown
+                });
             };
 
         return {
             clearEmptyStrings: clearEmptyStrings,
-            toPlain: toPlain
+            toPlain: toPlain,
+            onFail: onDataFail
         };
     });

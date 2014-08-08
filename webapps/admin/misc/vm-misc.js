@@ -6,15 +6,16 @@ define('vm.misc',
         'ko',
         'jquery',
         '_',
-        'logger',
         'model-state',
         'data.icons',
-        'data.navlink'
+        'data.navlink',
+        'data.settings'
     ],
-    function (ko, $, _, logger, ModelState, icons, providerNavlinks) {
+    function (ko, $, _, ModelState, icons, providerNavlinks, providerSettings) {
         'use strict';
         var mainNavlinks = ko.observableArray(),
             footerNavlinks = ko.observableArray(),
+            settings = ko.observable({}),
             mainNavlinksToShow = ko.computed({
                 read: function () {
                     return _.filter(mainNavlinks(), function (item) {
@@ -33,7 +34,8 @@ define('vm.misc',
             }),
             modelStates = {
                 mainNavlinks: new ModelState(mainNavlinks),
-                footerNavlinks: new ModelState(footerNavlinks)
+                footerNavlinks: new ModelState(footerNavlinks),
+                settings: new ModelState()
             },
             getNavlinksByCateg = function (categ) {
                 switch (categ) {
@@ -57,6 +59,7 @@ define('vm.misc',
             },
             mainNavlinksVisible = ko.observable(false),
             footerNavlinkVisible = ko.observable(false),
+            settingsVisible = ko.observable(false),
             saving = ko.observable(false),
             addNavlink = function (categ) {
                 var arrayToAdd = getNavlinksByCateg(categ),
@@ -105,6 +108,11 @@ define('vm.misc',
 
                         modelStates.mainNavlinks.clear();
                         modelStates.footerNavlinks.clear();
+                    });
+                providerSettings.get()
+                    .done(function(result){
+                        settings(result);
+                        modelStates.settings.setModel(result);
                     });
             },
             navlinksUpdateOrder = function (navlinksArray) {
@@ -187,6 +195,49 @@ define('vm.misc',
                 down: function (navlink) {
                     down(navlink, 'main');
                 }
+            },
+            footerNavlinks: {
+                formId: 'footerNavlinksForm',
+                visible: footerNavlinkVisible,
+                toggle: function () {
+                    footerNavlinkVisible(!footerNavlinkVisible());
+                },
+                navlinks: footerNavlinksToShow,
+                add: function () {
+                    addNavlink('footer');
+                },
+                saveDisabled: ko.computed({
+                    read: function () {
+                        return modelStates.footerNavlinks.pristine() || saving();
+                    }
+                }),
+                icons: icons.available,
+                remove: removeNavlink,
+                up: function (navlink) {
+                    up(navlink, 'footer');
+                },
+                down: function (navlink) {
+                    down(navlink, 'footer');
+                },
+                save: function () {
+                    saveNavlinks('footer');
+                }
+            },
+            appSettings: {
+                formId: 'settingsForm',
+                settings: settings,
+                visible: settingsVisible,
+                toggle: function(){
+                    settingsVisible(!settingsVisible());
+                },
+                save: function(){
+
+                },
+                saveDisabled: ko.computed({
+                    read: function () {
+                        return modelStates.settings.pristine() || saving();
+                    }
+                })
             }
         };
     });

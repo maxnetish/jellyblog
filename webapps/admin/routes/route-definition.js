@@ -8,8 +8,10 @@ define('route-definition',
         'ko',
         'vm.posts',
         'vm.edit-post',
-        'vm.misc'
-    ], function (_, $, ko, vmPosts, vmEditPost, vmMisc) {
+        'vm.misc',
+        'vm.files'
+    ], function (_, $, ko, vmPosts, vmEditPost, vmMisc, vmFiles) {
+        'use strict';
         var RouteDefinition = function (row) {
                 var self = this;
 
@@ -42,8 +44,9 @@ define('route-definition',
                 }),
                 files: new RouteDefinition({
                     route: '#!/files',
-                    viewModel: {},
-                    view: '#admin-files'
+                    viewModel: vmFiles,
+                    view: '#admin-files',
+                    on: vmFiles.activate
                 }),
                 edit: new RouteDefinition({
                     view: '#admin-edit-post',
@@ -56,5 +59,5 @@ define('route-definition',
         return {
             definitions: definitions,
             RouteDefinition: RouteDefinition
-        }
+        };
     });

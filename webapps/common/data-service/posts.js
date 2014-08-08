@@ -5,9 +5,9 @@ define('data.posts',
     [
         'jquery',
         'data.mapper',
-        'logger'
+        'data.utils'
     ],
-    function ($, mapper, logger) {
+    function ($, mapper, dataUtils) {
         var PostBrief = function (row) {
                 row = row || {};
                 this._id = row._id || undefined;
@@ -41,12 +41,7 @@ define('data.posts',
                         'text json': mapper.create(PostBrief)
                     }
                 })
-                    .fail(function(jqXHR, textStatus, errorThrown){
-                        logger.log({
-                            status: textStatus,
-                            error: errorThrown
-                        });
-                    });
+                    .fail(dataUtils.onFail);
                 return promise;
             };
 

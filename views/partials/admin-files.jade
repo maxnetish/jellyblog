@@ -1,38 +1,39 @@
-div.container-fluid
+div#admin-files.container-fluid.view
     div.row
         div.col-sm-12.col-md-10.col-lg-8
-            h2 {{'UPLOADED_FILES' | translate}}
+            h2(data-bind="translate: 'UPLOADED_FILES'")
     div.row
         div.col-sm-12.col-md-10.col-lg-8.form-group
             div.input-group
-                input.form-control(type='file', name='file', id='file', accept='image/*')
+                input.form-control(type="file", name="file", id="file", accept="image/*")
                 div.input-group-btn
-                    button.btn.btn-info(ng-click='upload()')
+                    button.btn.btn-info(data-bind="click: function(){upload(document.getElementById('file').files[0])}")
                         span.glyphicon.glyphicon-upload
-                        span &nbsp;{{'UPLOAD' | translate}}
+                        span &nbsp;
+                        span(data-bind="translate: 'UPLOAD'")
     div.row
         div.col-sm-12.col-md-10.col-lg-8.form-group
-            input.form-control(type='text', placeholder='Filter', ng-model='filterValue')
+            input.form-control(data-bind="value: filter, valueUpdate: 'input'" type="text", placeholder="Filter")
     div.row
         div.col-sm-12.col-md-10.col-lg-8
-            table.table.table-hover(ng-init='orderby="name"; reverse=false')
+            table.table.table-hover
                 thead
                     tr
                         th
-                            a(href='', ng-click='orderby="name";reverse=!reverse') {{'FILE_NAME' | translate}}
+                            a(data-bind="click: function(){setSort('name')}, translate: 'FILE_NAME'", href="javascript:void 0")
                         th
-                            a(href='', ng-click='orderby="date";reverse=!reverse') {{'DATE' | translate}}
+                            a(data-bind="click: function(){setSort('date')}, translate: 'DATE'", href="javascript:void 0")
                         th
-                            a(href='', ng-click='orderby="size";reverse=!reverse') {{'FILE_SIZE' | translate}}
+                            a(data-bind="click: function(){setSort('size')}, translate: 'FILE_SIZE'", href="javascript:void 0")
                         th
-                tbody
-                    tr(ng-repeat='file in files | filter: filterValue | orderBy:orderby:reverse')
+                tbody(data-bind="foreach: {data: files, as: 'file'}")
+                    tr
                         td
-                            a(ng-href='{{file.url}}', target='_blank') {{file.name}}
-                        td {{file.date | jellydate}}
-                        td {{file.size | filesize}}
+                            a(data-bind="attr: {href: file.url}, text: file.name", target='_blank')
+                        td(data-bind="text: file.date")
+                        td(data-bind="text: file.size")
                         td
-                            button.btn.btn-xs.btn-danger(ng-click='remove(file)', title='{{"DELETE" | translate}}')
+                            button.btn.btn-xs.btn-danger(data-bind="click: $parent.remove", title="Delete")
                                 span.glyphicon.glyphicon-remove
 
 
