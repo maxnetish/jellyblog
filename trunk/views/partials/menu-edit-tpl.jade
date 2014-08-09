@@ -1,11 +1,36 @@
-div(data-bind="foreach: {data: navlinks, as: 'navlink'}")
-    div.border-bottom
-        div.row.padding-vert-10
-            div.col-sm-5
+table.table.table-hover.table-condenced
+    colgroup
+        col.col-md-2
+        col.col-md-3
+        col.col-md-2
+        col.col-md-1
+        col.col-md-1
+        col.col-md-1
+        col.col-md-2
+    thead
+        tr
+            th(data-bind="translate: 'LABEL'")
+            th(data-bind="translate: 'URL'")
+            th(data-bind="translate: 'ICON'")
+            th(data-bind="translate: 'DISABLED'")
+            th(data-bind="translate: 'LINK_NEW_WINDOW'")
+            th(data-bind="translate: 'VISIBLE'")
+            th
+    tbody(data-bind="foreach: {data: navlinks, as: 'navlink'}")
+        tr
+            td
                 input.form-control(type="text", required, data-bind="value: navlink.text, valueUpdate: 'input'", placeholder="")
-            div.col-sm-5
+            td
                 input.form-control(type="text", required, data-bind="value: navlink.url, valueUpdate: 'input'", placeholder="Url")
-            div.col-sm-2
+            td
+                select.form-control(data-bind="options: $parent.icons, optionsCaption: 'Select an icon...', value: navlink.icon, select2: $parent.select2IconOptions")
+            td.text-center
+                input(type="checkbox", data-bind="checked: navlink.disabled")
+            td.text-center
+                input(type="checkbox", data-bind="checked: navlink.newWindow")
+            td.text-center
+                input(type="checkbox", data-bind="checked: navlink.visible")
+            td.text-center
                 div.btn-group.btn-group-xs
                     button.btn.btn-danger(data-bind="click: $parent.remove", title="")
                         span.glyphicon.glyphicon-remove
@@ -13,18 +38,6 @@ div(data-bind="foreach: {data: navlinks, as: 'navlink'}")
                         span.glyphicon.glyphicon-arrow-up
                     button.btn.btn-primary(data-bind="click: $parent.down, attr: {disabled: $index()===$parent.navlinks().length-1}", title="")
                         span.glyphicon.glyphicon-arrow-down
-        div.row.padding-vert-10
-            div.col-sm-4
-                select.form-control(data-bind="options: $parent.icons, optionsCaption: 'Select an icon...', value: navlink.icon")
-            div.col-sm-8
-                label.checkbox-inline
-                    input(type="checkbox", data-bind="checked: navlink.disabled")
-                    span(data-bind="translate: 'DISABLED'")
-                label.checkbox-inline
-                    input(type="checkbox", data-bind="checked: navlink.visible")
-                    span(data-bind="translate: 'VISIBLE'")
-                label.checkbox-inline
-                    input(type="checkbox", data-bind="checked: navlink.newWindow")
-                    span(data-bind="translate: 'LINK_NEW_WINDOW'")
+
 
 

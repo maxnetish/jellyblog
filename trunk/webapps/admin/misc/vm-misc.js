@@ -163,6 +163,11 @@ define('vm.misc',
                         saving(false);
                     });
             },
+            select2IconOptions = {
+//                formatResult: format,
+//                formatSelection: format,
+//                escapeMarkup: function(m) { return m; }
+            },
             activate = function () {
                 updateViewData();
             };
@@ -194,7 +199,8 @@ define('vm.misc',
                 },
                 down: function (navlink) {
                     down(navlink, 'main');
-                }
+                },
+                select2IconOptions: select2IconOptions
             },
             footerNavlinks: {
                 formId: 'footerNavlinksForm',
@@ -221,7 +227,8 @@ define('vm.misc',
                 },
                 save: function () {
                     saveNavlinks('footer');
-                }
+                },
+                select2IconOptions: select2IconOptions
             },
             appSettings: {
                 formId: 'settingsForm',

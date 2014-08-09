@@ -22,6 +22,7 @@
             'binding.ko-datetext',
             'binding.ko-datevalue',
             'binding.ko-listtext',
+            'binding.ko-select2',
             'router'
         ],
         function (ko, $, moment, vmMainNav) {

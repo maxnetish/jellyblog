@@ -3,26 +3,27 @@ div#admin-misc.container-fluid.view
         include menu-add-save-tpl
     script#menu-edit(type="text/html")
         include menu-edit-tpl
-    div.row
-        div.col-sm-12
-            a(data-bind="click: mainNavlinks.toggle", href="javascript:void 0")
-                h3(data-bind="translate: 'MAIN_MENU'")
-    div(data-bind="if: mainNavlinks.visible")
-        div.row(data-bind="template: {name: 'menu-add-save', data: mainNavlinks}")
-        form.form(role="form", data-bind="attr: {id: mainNavlinks.formId, name: mainNavlinks.formId}, template: {name: 'menu-edit', data: mainNavlinks}, submit: mainNavlinks.save")
-        div.row(data-bind="visible: mainNavlinks.navlinks().length>2, template: {name: 'menu-add-save', data: mainNavlinks}")
-        div.row(data-bind="visible: mainNavlinks.navlinks().length")
-            div.col-sm-12
-                h4(data-bind="translate: 'PREVIEW'")
+    div.panel.panel-default.padding-1em.col-sm-12.col-md-10.col-lg-8
         div.row
             div.col-sm-12
-                nav
-                    ul.list-unstyled.list-inline(data-bind="foreach: {data: mainNavlinks.navlinks, as: 'navlink'}")
-                        li
-                            a.btn(data-bind="attr: {href: navlink.url, target: navlink.newWindow()?'_blank':''}, css: {'disabled': navlink.disabled}, visible: navlink.visible")
-                                span(data-bind="attr: {'class': 'glyphicon '+navlink.icon()}")
-                                span &nbsp;
-                                b(data-bind="text: navlink.text")
+                a(data-bind="click: mainNavlinks.toggle", href="javascript:void 0")
+                    h3(data-bind="translate: 'MAIN_MENU'")
+        div(data-bind="if: mainNavlinks.visible")
+            div.row(data-bind="template: {name: 'menu-add-save', data: mainNavlinks}")
+            form.form(role="form", data-bind="attr: {id: mainNavlinks.formId, name: mainNavlinks.formId}, template: {name: 'menu-edit', data: mainNavlinks}, submit: mainNavlinks.save")
+            div.row(data-bind="visible: mainNavlinks.navlinks().length>2, template: {name: 'menu-add-save', data: mainNavlinks}")
+            div.row(data-bind="visible: mainNavlinks.navlinks().length")
+                div.col-sm-12
+                    h4(data-bind="translate: 'PREVIEW'")
+            div.row
+                div.col-sm-12
+                    nav
+                        ul.list-unstyled.list-inline(data-bind="foreach: {data: mainNavlinks.navlinks, as: 'navlink'}")
+                            li
+                                a.btn(data-bind="attr: {href: navlink.url, target: navlink.newWindow()?'_blank':''}, css: {'disabled': navlink.disabled}, visible: navlink.visible")
+                                    span(data-bind="attr: {'class': 'glyphicon '+navlink.icon()}")
+                                    span &nbsp;
+                                    b(data-bind="text: navlink.text")
     div.row
         div.col-sm-12
             a(data-bind="click: footerNavlinks.toggle" href="javascript:void 0")
