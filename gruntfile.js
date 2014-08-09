@@ -16,6 +16,8 @@ module.exports = function (grunt) {
                 bowerPath + '/jquery/dist/jquery.js',
                 bowerPath + '/pathjs-amd/dist/path.js',
                 bowerPath + '/moment/min/moment-with-langs.js',
+                bowerPath + '/select2/select2.js',
+
                 webappsAdmin + '/**/*.js',
                 webappsCommon + '/**/*.js'
         ],

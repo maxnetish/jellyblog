@@ -13,32 +13,33 @@ div#admin-posts.container-fluid.view
                     span.glyphicon.glyphicon-forward
                     span &nbsp;
                     span(data-bind="translate: 'NEXT'")
-    div.row
-        div.col-md-6(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
-    div.row
-        div.col-md-6
-            table.table.table-hover.table-fixed
-                colgroup
-                    col.col-md-5
-                    col.col-md-3
-                    col.col-md-2
-                    col.col-md-2
-                thead
-                    tr
-                        th(data-bind="translate: 'TITLE'")
-                        th(data-bind="translate: 'DATE'")
-                        th(data-bind="translate: 'DRAFT'")
-                        th(data-bind="translate: 'FEATURED'")
-                tbody(data-bind="foreach: posts")
-                    tr
-                        td
-                            a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
-                        td
-                            span(data-bind="dateText: $data.date")
-                        td
-                            span.glyphicon(data-bind="css: {'glyphicon-ok': $data.draft}")
-                        td
-                            span.glyphicon(data-bind="css: {'glyphicon-ok': $data.featured}")
-    div.row
-        div.col-md-6(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+    div.panel.col-sm-12.col-md-10.col-lg-8.panel-default.padding-1em
+        div.row
+            div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+        div.row
+            div.col-md-12
+                table.table.table-hover.table-fixed
+                    colgroup
+                        col.col-md-5
+                        col.col-md-3
+                        col.col-md-2
+                        col.col-md-2
+                    thead
+                        tr
+                            th(data-bind="translate: 'TITLE'")
+                            th(data-bind="translate: 'DATE'")
+                            th(data-bind="translate: 'DRAFT'")
+                            th(data-bind="translate: 'FEATURED'")
+                    tbody(data-bind="foreach: posts")
+                        tr
+                            td
+                                a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
+                            td
+                                span(data-bind="dateText: $data.date")
+                            td
+                                span.glyphicon(data-bind="css: {'glyphicon-ok': $data.draft}")
+                            td
+                                span.glyphicon(data-bind="css: {'glyphicon-ok': $data.featured}")
+        div.row
+            div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
 
