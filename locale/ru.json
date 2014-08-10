@@ -26,10 +26,10 @@
     "TOOLTIP_LINKTEXT": "Текст",
     "UP": "Вверх",
     "DOWN": "Вниз",
-    "ICON": "Иконка (класс glyphicon-...)",
+    "ICON": "Иконка",
     "DISABLED": "Отключено",
     "VISIBLE": "Отображается",
-    "LINK_NEW_WINDOW": "Открывать к новом окне",
+    "LINK_NEW_WINDOW": "В новом окне",
     "MAIN_MENU": "Основное меню",
     "MISC": "Разное",
     "FOOTER_MENU": "Меню в футере",
@@ -47,5 +47,7 @@
     "AUTHOR_AVATAR_URL": "Аватар автора (url)",
     "CANCEL_EDIT": "Отменить изменения",
     "LOADING": "Загружаем...",
-    "SAVING": "Сохраняем..."
+    "SAVING": "Сохраняем...",
+    "LABEL": "Лейбл",
+    "URL": "Адрес"
 }

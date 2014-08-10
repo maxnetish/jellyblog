@@ -4,9 +4,10 @@
 define('vm.files',
     [
         'ko',
+        '_',
         'data.files'
     ],
-    function (ko, providerFiles) {
+    function (ko, _, providerFiles) {
         'use strict';
         var files = ko.observableArray(),
             filter = ko.observable(),
@@ -14,6 +15,17 @@ define('vm.files',
                 orderBy: 'name',
                 asc: true
             }),
+            applyFilter = function (observableToFilter, filterValue) {
+                var unwrapped = ko.unwrap(observableToFilter),
+                    filterInternal = ko.unwrap(filterValue);
+                _.each(unwrapped, function (file) {
+                    if (filterInternal) {
+                        file.visible(file.name.indexOf(filterInternal) !== -1);
+                    } else {
+                        file.visible(true);
+                    }
+                });
+            },
             applySort = function (observableToSort, sortObject) {
                 var sortInternal = ko.unwrap(sortObject);
                 switch (sortInternal.orderBy) {
@@ -63,6 +75,7 @@ define('vm.files',
                         files.removeAll();
                         ko.utils.arrayPushAll(files, result);
                         applySort(files, sort);
+                        applyFilter(files, filter);
                     });
             },
             upload = function (fileInput) {
@@ -71,6 +84,7 @@ define('vm.files',
                     .done(function (result) {
                         ko.utils.arrayPushAll(files, result);
                         applySort(files, sort);
+                        applyFilter(files, filter);
                     });
             },
             activate = function () {
@@ -79,6 +93,10 @@ define('vm.files',
 
         sort.subscribe(function (newSort) {
             applySort(files, newSort);
+        });
+
+        filter.subscribe(function(newFilter){
+            applyFilter(files, newFilter);
         });
 
         return{

@@ -1,43 +1,40 @@
-table.table.table-hover.table-condenced
-    colgroup
-        col.col-md-2
-        col.col-md-3
-        col.col-md-2
-        col.col-md-1
-        col.col-md-1
-        col.col-md-1
-        col.col-md-2
-    thead
-        tr
-            th(data-bind="translate: 'LABEL'")
-            th(data-bind="translate: 'URL'")
-            th(data-bind="translate: 'ICON'")
-            th(data-bind="translate: 'DISABLED'")
-            th(data-bind="translate: 'LINK_NEW_WINDOW'")
-            th(data-bind="translate: 'VISIBLE'")
-            th
-    tbody(data-bind="foreach: {data: navlinks, as: 'navlink'}")
-        tr
-            td
-                input.form-control(type="text", required, data-bind="value: navlink.text, valueUpdate: 'input'", placeholder="")
-            td
-                input.form-control(type="text", required, data-bind="value: navlink.url, valueUpdate: 'input'", placeholder="Url")
-            td
-                select.form-control(data-bind="options: $parent.icons, optionsCaption: 'Select an icon...', value: navlink.icon, select2: $parent.select2IconOptions")
-            td.text-center
-                input(type="checkbox", data-bind="checked: navlink.disabled")
-            td.text-center
-                input(type="checkbox", data-bind="checked: navlink.newWindow")
-            td.text-center
-                input(type="checkbox", data-bind="checked: navlink.visible")
-            td.text-center
-                div.btn-group.btn-group-xs
-                    button.btn.btn-danger(data-bind="click: $parent.remove", title="")
-                        span.glyphicon.glyphicon-remove
-                    button.btn.btn-primary(data-bind="click: $parent.up, attr: {disabled: $index()===0}", title="")
-                        span.glyphicon.glyphicon-arrow-up
-                    button.btn.btn-primary(data-bind="click: $parent.down, attr: {disabled: $index()===$parent.navlinks().length-1}", title="")
-                        span.glyphicon.glyphicon-arrow-down
+div.table-responsive
+    table.table.table-hover.table-condenced
+        thead
+            tr
+                th(data-bind="translate: 'LABEL'")
+                th(data-bind="translate: 'URL'")
+                th(data-bind="translate: 'ICON'")
+                th(title="Disabled")
+                    span.glyphicon.glyphicon-off
+                th(title="Open in new window")
+                    span.glyphicon.glyphicon-new-window
+                th(title="Visible")
+                    span.glyphicon.glyphicon-eye-open
+                th
+                    span.glyphicon.glyphicon-sort
+        tbody(data-bind="foreach: {data: navlinks, as: 'navlink'}")
+            tr
+                td
+                    input.form-control(type="text", required, data-bind="value: navlink.text, valueUpdate: 'input'", placeholder="")
+                td
+                    input.form-control(type="text", required, data-bind="value: navlink.url, valueUpdate: 'input'", placeholder="Url")
+                td
+                    select.form-control(data-bind="options: $parent.icons, optionsCaption: 'Select one', value: navlink.icon, select2: $parent.select2IconOptions")
+                td
+                    input(type="checkbox", data-bind="checked: navlink.disabled")
+                td
+                    input(type="checkbox", data-bind="checked: navlink.newWindow")
+                td
+                    input(type="checkbox", data-bind="checked: navlink.visible")
+                td
+                    div.btn-group.btn-group-xs
+                        button.btn.btn-danger(data-bind="click: $parent.remove", title="Remove")
+                            span.glyphicon.glyphicon-remove
+                        button.btn.btn-primary(data-bind="click: $parent.up, attr: {disabled: $index()===0}", title="Up")
+                            span.glyphicon.glyphicon-arrow-up
+                        button.btn.btn-primary(data-bind="click: $parent.down, attr: {disabled: $index()===$parent.navlinks().length-1}", title="Down")
+                            span.glyphicon.glyphicon-arrow-down
 
 
 

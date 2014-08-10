@@ -3,11 +3,12 @@
  */
 define('data.files',
     [
+        'ko',
         'jquery',
         'data.mapper',
         'data.utils'
     ],
-    function ($, mapper, dataUtils) {
+    function (ko, $, mapper, dataUtils) {
         var FileInfo = function (row) {
                 row = row || {};
 
@@ -15,6 +16,7 @@ define('data.files',
                 this.date = new Date(row.ctime);
                 this.size = row.size;
                 this.url = row.url;
+                this.visible = ko.observable(true);
             },
             readUploadDir = function () {
                 return $.ajax({

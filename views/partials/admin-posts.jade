@@ -1,45 +1,45 @@
-div#admin-posts.container-fluid.view
+div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
     script#admin-posts-pagination-buttons(type="text/html")
         div.btn-group.btn-group-xs
                 a.btn.btn-primary.btn-xs(data-bind="attr: {href: startPageUrl}, css: {disabled: !startPageUrl()}")
                     span.glyphicon.glyphicon-fast-backward
-                    span &nbsp;
                     span(data-bind="translate: 'BEGIN'")
                 a.btn.btn-primary.btn-xs(data-bind="attr: {href: prevPageUrl}, css: {disabled: !prevPageUrl()}")
                     span.glyphicon.glyphicon-backward
-                    span &nbsp;
                     span(data-bind="translate: 'BACK'")
                 a.btn.btn-primary.btn-xs(data-bind="attr: {href: nextPageUrl}, css: {disabled: !nextPageUrl()}")
                     span.glyphicon.glyphicon-forward
-                    span &nbsp;
                     span(data-bind="translate: 'NEXT'")
-    div.panel.col-sm-12.col-md-10.col-lg-8.panel-default.padding-1em
-        div.row
-            div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
-        div.row
-            div.col-md-12
-                table.table.table-hover.table-fixed
-                    colgroup
-                        col.col-md-5
-                        col.col-md-3
-                        col.col-md-2
-                        col.col-md-2
-                    thead
-                        tr
-                            th(data-bind="translate: 'TITLE'")
-                            th(data-bind="translate: 'DATE'")
-                            th(data-bind="translate: 'DRAFT'")
-                            th(data-bind="translate: 'FEATURED'")
-                    tbody(data-bind="foreach: posts")
-                        tr
-                            td
-                                a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
-                            td
-                                span(data-bind="dateText: $data.date")
-                            td
-                                span.glyphicon(data-bind="css: {'glyphicon-ok': $data.draft}")
-                            td
-                                span.glyphicon(data-bind="css: {'glyphicon-ok': $data.featured}")
-        div.row
-            div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+    div.panel.panel-default
+        div.panel-heading
+            h4(data-bind="translate: 'POSTS'")
+        div.panel-body
+            div.row
+                div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+            div.row
+                div.col-md-12
+                    table.table.table-hover.table-fixed
+                        colgroup
+                            col.col-md-5
+                            col.col-md-3
+                            col.col-md-2
+                            col.col-md-2
+                        thead
+                            tr
+                                th(data-bind="translate: 'TITLE'")
+                                th(data-bind="translate: 'DATE'")
+                                th(data-bind="translate: 'DRAFT'")
+                                th(data-bind="translate: 'FEATURED'")
+                        tbody(data-bind="foreach: posts")
+                            tr
+                                td
+                                    a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
+                                td
+                                    span(data-bind="dateText: $data.date")
+                                td
+                                    span.glyphicon(data-bind="css: {'glyphicon-ok': $data.draft}")
+                                td
+                                    span.glyphicon(data-bind="css: {'glyphicon-ok': $data.featured}")
+            div.row
+                div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
 

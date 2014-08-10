@@ -9,9 +9,10 @@ define('vm.misc',
         'model-state',
         'data.icons',
         'data.navlink',
-        'data.settings'
+        'data.settings',
+        'binding.ko-select2'
     ],
-    function (ko, $, _, ModelState, icons, providerNavlinks, providerSettings) {
+    function (ko, $, _, ModelState, icons, providerNavlinks, providerSettings, koSelect2) {
         'use strict';
         var mainNavlinks = ko.observableArray(),
             footerNavlinks = ko.observableArray(),
@@ -164,9 +165,10 @@ define('vm.misc',
                     });
             },
             select2IconOptions = {
-//                formatResult: format,
-//                formatSelection: format,
-//                escapeMarkup: function(m) { return m; }
+                formatResult: koSelect2.formatGlyphicon,
+                formatSelection: koSelect2.formatGlyphicon,
+                escapeMarkup: function(m) { return m; },
+                allowClear: true
             },
             activate = function () {
                 updateViewData();
