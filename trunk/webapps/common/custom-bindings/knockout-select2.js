@@ -3,9 +3,30 @@
  */
 define('binding.ko-select2',
     [
-        'ko'
+        'ko',
+        'jquery'
     ],
-    function (ko) {
+    function (ko, $) {
+        var formatIcon = function (state, container) {
+            var $originalOptionElement = $(state.element),
+                valueAttr = $originalOptionElement.attr('value'),
+                resultClass,
+                resultText,
+                resultDom;
+
+            if (valueAttr) {
+                resultClass = 'glyphicon ' + valueAttr;
+                resultText = valueAttr.substring(10);
+            } else {
+                resultText = 'Select one';
+            }
+
+            resultDom = $('<span>')
+                .append($('<span>').addClass(resultClass))
+                .append($('<span>').text(resultText));
+            return resultDom;
+        };
+
         (function () {
             ko.bindingHandlers.select2 = {
                 init: function (element, valueAccessor, allBindingsAccessor) {
@@ -27,4 +48,8 @@ define('binding.ko-select2',
             };
 
         })();
+
+        return {
+            formatGlyphicon: formatIcon
+        };
     });

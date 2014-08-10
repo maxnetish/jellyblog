@@ -1,39 +1,36 @@
-div#admin-files.container-fluid.view
-    div.row
-        div.col-sm-12.col-md-10.col-lg-8
-            h2(data-bind="translate: 'UPLOADED_FILES'")
-    div.row
-        div.col-sm-12.col-md-10.col-lg-8.form-group
-            div.input-group
-                input.form-control(type="file", name="file", id="file", accept="image/*")
-                div.input-group-btn
-                    button.btn.btn-info(data-bind="click: function(){upload(document.getElementById('file').files[0])}")
-                        span.glyphicon.glyphicon-upload
-                        span &nbsp;
-                        span(data-bind="translate: 'UPLOAD'")
-    div.row
-        div.col-sm-12.col-md-10.col-lg-8.form-group
-            input.form-control(data-bind="value: filter, valueUpdate: 'input'" type="text", placeholder="Filter")
-    div.row
-        div.col-sm-12.col-md-10.col-lg-8
-            table.table.table-hover
-                thead
-                    tr
-                        th
-                            a(data-bind="click: function(){setSort('name')}, translate: 'FILE_NAME'", href="javascript:void 0")
-                        th
-                            a(data-bind="click: function(){setSort('date')}, translate: 'DATE'", href="javascript:void 0")
-                        th
-                            a(data-bind="click: function(){setSort('size')}, translate: 'FILE_SIZE'", href="javascript:void 0")
-                        th
-                tbody(data-bind="foreach: {data: files, as: 'file'}")
-                    tr
-                        td
-                            a(data-bind="attr: {href: file.url}, text: file.name", target='_blank')
-                        td(data-bind="text: file.date")
-                        td(data-bind="text: file.size")
-                        td
-                            button.btn.btn-xs.btn-danger(data-bind="click: $parent.remove", title="Delete")
-                                span.glyphicon.glyphicon-remove
+div#admin-files.container-fluid.view.col-sm-12.col-md-10.col-lg-8
+    div.panel.panel-default
+        div.panel-heading
+            h4(data-bind="translate: 'UPLOADED_FILES'")
+        div.panel-body
+            div.form-group
+                div.input-group
+                    input.form-control(type="file", name="file", id="file", accept="image/*")
+                    div.input-group-btn
+                        button.btn.btn-info(data-bind="click: function(){upload(document.getElementById('file').files[0])}")
+                            span.glyphicon.glyphicon-upload
+                            span(data-bind="translate: 'UPLOAD'")
+            div.form-group
+                input.form-control(data-bind="value: filter, valueUpdate: 'input'" type="text", placeholder="Filter")
+            div.table-responsive
+                table.table.table-hover.table-condensed
+                    thead
+                        tr
+                            th
+                                a(data-bind="click: function(){setSort('name')}, translate: 'FILE_NAME'", href="javascript:void 0")
+                            th
+                                a(data-bind="click: function(){setSort('date')}, translate: 'DATE'", href="javascript:void 0")
+                            th
+                                a(data-bind="click: function(){setSort('size')}, translate: 'FILE_SIZE'", href="javascript:void 0")
+                            th
+                    tbody(data-bind="foreach: {data: files, as: 'file'}")
+                        tr(data-bind="visible: file.visible")
+                            td
+                                a(data-bind="attr: {href: file.url}, text: file.name", target='_blank')
+                            td(data-bind="dateText: file.date")
+                            td(data-bind="text: file.size")
+                            td
+                                button.btn.btn-xs.btn-danger(data-bind="click: $parent.remove", title="Delete")
+                                    span.glyphicon.glyphicon-remove
 
 

@@ -26,7 +26,7 @@
     "TOOLTIP_LINKTEXT": "Text of link",
     "UP": "Up",
     "DOWN": "Down",
-    "ICON": "Icon class",
+    "ICON": "Icon",
     "DISABLED": "Disabled",
     "VISIBLE": "Visible",
     "LINK_NEW_WINDOW": "Open in new window",
@@ -47,5 +47,7 @@
     "AUTHOR_AVATAR_URL": "Avatar url",
     "CANCEL_EDIT": "Cancel edit",
     "LOADING": "Loading...",
-    "SAVING": "Saving..."
+    "SAVING": "Saving...",
+    "LABEL": "Label",
+    "URL": "URL"
 }
