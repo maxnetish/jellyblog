@@ -1,15 +1,6 @@
 div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
     script#admin-posts-pagination-buttons(type="text/html")
-        div.btn-group.btn-group-xs
-                a.btn.btn-primary.btn-xs(data-bind="attr: {href: startPageUrl}, css: {disabled: !startPageUrl()}")
-                    span.glyphicon.glyphicon-fast-backward
-                    span(data-bind="translate: 'BEGIN'")
-                a.btn.btn-primary.btn-xs(data-bind="attr: {href: prevPageUrl}, css: {disabled: !prevPageUrl()}")
-                    span.glyphicon.glyphicon-backward
-                    span(data-bind="translate: 'BACK'")
-                a.btn.btn-primary.btn-xs(data-bind="attr: {href: nextPageUrl}, css: {disabled: !nextPageUrl()}")
-                    span.glyphicon.glyphicon-forward
-                    span(data-bind="translate: 'NEXT'")
+        include admin-posts-pagination-tpl
     div.panel.panel-default
         div.panel-heading
             h4(data-bind="translate: 'POSTS'")

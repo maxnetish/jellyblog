@@ -2,23 +2,21 @@ extends layout
 
 block content
     div()
-        div.center-block.main-wrapper
-            div.container-fluid
-                include main-menu
-                each post in postList
-                    article
+        div.main-wrapper.container-fluid
+            include main-menu
+            each post in postList
+                article.panel.panel-default
+                    div.panel-heading
                         div.row
-                            div.col-md-12
+                            div.col-lg-11.col-md-11.col-sm-11.panel-title
                                 h2= post.title
+                            div.col-lg-1.col-md-1.col-sm-1
+                                span.pull-right.label.label-default= post.dateFormatted
+                    div.panel-body
+                        div.post-content!= post.content
+                    div.panel-footer
                         div.row
-                            div.col-md-offset-10.col-md-2
-                                span.pull-right= post.dateFormatted
-                        div.row
-                            div.col-md-12
-                                div.post-content
-                                    p!= post.content
-                        div.row
-                            div.col-md-12
+                            div.col-lg-12.col-md-12.col-sm-12
                                 a.pull-right(href='#') Читать
-                include footer
+            include footer
 block specific
