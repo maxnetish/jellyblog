@@ -1,0 +1,14 @@
+ul.pagination.pagination-sm
+    li(data-bind="css: {disabled: !startPageUrl()}")
+        a(data-bind="attr: {href: startPageUrl}")
+            span.glyphicon.glyphicon-fast-backward
+            span(data-bind="translate: 'BEGIN'")
+    li(data-bind="css: {disabled: !prevPageUrl()}")
+        a(data-bind="attr: {href: prevPageUrl}")
+            span.glyphicon.glyphicon-backward
+            span(data-bind="translate: 'BACK'")
+    li(data-bind="css: {disabled: !nextPageUrl()}")
+        a(data-bind="attr: {href: nextPageUrl}")
+            span.glyphicon.glyphicon-forward
+            span(data-bind="translate: 'NEXT'")
+

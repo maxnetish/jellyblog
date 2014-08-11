@@ -1,5 +1,5 @@
 // div(ng-controller='mainMenuController')
-div()
+header
     div.row
         div.col-lg-12.col-md-12.col-sm-12
             div.main-image(style='background-image: url(images/cropped-venezia_980x250_11.jpg)')
@@ -12,6 +12,6 @@ div()
                 ul.list-unstyled.list-inline
                     each linkItem in navlinksMain
                         li
-                            a.btn(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'')
+                            a.btn.btn-link(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'')
                                 span.glyphicon(class=linkItem.icon)
-                                b!= '&nbsp;' + linkItem.text
+                                b!= linkItem.text
