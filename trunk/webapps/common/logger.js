@@ -16,5 +16,5 @@ define('logger',
 
         return {
             log: log
-        }
+        };
     });
