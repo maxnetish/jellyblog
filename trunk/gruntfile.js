@@ -9,6 +9,9 @@ module.exports = function (grunt) {
         targetJsMinAdmin = publicJs + '/app-admin.min.js',
         webappsAdmin = 'webapps/admin',
         webappsCommon = 'webapps/common',
+        publicCss = 'public/css',
+        publicFonts = 'public/fonts',
+        webAppsLess = 'webapps/less',
         jslibsAdmin = [
             // libs
                 bowerPath + '/requirejs/require.js',
@@ -31,8 +34,24 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         clean: [
-            publicJs
+            publicJs,
+            publicCss,
+            publicFonts
         ],
+        less: {
+            build: {
+                files: [
+                    {
+                        src: webAppsLess + '/style.less',
+                        dest: publicCss + '/app.css'
+                    }
+                ]
+            },
+            options: {
+                sourceMap: true
+                // cleancss: true
+            }
+        },
         copy: {
             buildAdmin: {
                 files: [
@@ -47,6 +66,20 @@ module.exports = function (grunt) {
                     {
                         src: bowerPath + '/q/q.js',
                         dest: publicJs + '/q.js'
+                    },
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        flatten: true,
+                        src: bowerPath + '/select2/*.png',
+                        dest: publicCss + '/'
+                    },
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        flatten: true,
+                        src: bowerPath + '/bootstrap/dist/fonts/*',
+                        dest: publicFonts + '/'
                     }
                 ]
             }
@@ -56,8 +89,18 @@ module.exports = function (grunt) {
                 src: jslibsAdmin,
                 dest: targetJsConcatAdmin
             },
+            buildLess: {
+                src: [
+                        bowerPath + '/bootstrap/dist/css/bootstrap.css',
+                        bowerPath + '/bootstrap/dist/css/bootstrap-theme.css',
+                        bowerPath + '/select2/select2.css',
+                        publicCss + '/app.css'
+                ],
+                dest: publicCss + '/style.css'
+            },
             options: {
-                sourceMap: true
+                sourceMap: true,
+                sourceMapBasepath: publicCss
             }
         },
         uglify: {
@@ -75,7 +118,7 @@ module.exports = function (grunt) {
     });
 
     require('load-grunt-tasks')(grunt);
-    grunt.registerTask('default', ['clean', 'copy', 'concat', 'uglify']);
+    grunt.registerTask('default', ['clean', 'less', 'copy', 'concat', 'uglify']);
 
     // Load tasks from the tasks folder
     //grunt.loadTasks('tasks');
