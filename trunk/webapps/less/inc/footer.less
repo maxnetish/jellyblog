@@ -1,0 +1,21 @@
+@jb-footer-bg: #428bca;
+@jb-footer-color: #ffffff;
+
+.jb-footer {
+  background-color: @jb-footer-bg;
+  color: @jb-footer-color;
+  padding-left: 15px;
+  padding-right: 15px;
+
+  a {
+    &,
+    &:visited,
+    &:active {
+      color: @jb-footer-color;
+    }
+    &:hover,
+    &:focus {
+      color: darken(@jb-footer-color, 10%);
+    }
+  }
+}

@@ -1,4 +1,4 @@
-@import "inc/test";
+@import "inc/footer";
 
 body {
   margin: 0 15px;
@@ -36,20 +36,26 @@ span.glyphicon + *{
     background: lime;
   }
 
-  .padding-vert-20{
-    padding: 20px 0;
-  }
-
   .margin-right-10{
     margin: 0 10px 0 0;
   }
 
-  @media(min-width: 768px){
-    .text-center-xs{
+  .text-center-xs{
+    text-align: center;
+    @media(max-width: 767px) {
       text-align: center;
     }
-    .text-right-xs{
-      text-align: right;
+  }
+  .text-right-xs{
+    text-align: right;
+    @media(max-width: 767px) {
+      text-align: center;
+    }
+  }
+  .text-left-xs{
+    text-align: left;
+    @media(max-width: 767px) {
+      text-align: center;
     }
   }
 }

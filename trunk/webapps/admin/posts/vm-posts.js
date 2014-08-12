@@ -6,9 +6,10 @@ define('vm.posts',
         'ko',
         '_',
         'data.posts',
+        'messenger',
         'logger'
     ],
-    function (ko, _, dataPosts, logger) {
+    function (ko, _, dataPosts, messenger, logger) {
         'use strict';
 
         /**
@@ -114,6 +115,7 @@ define('vm.posts',
 
         // update data when url params changed
         queryUrl.subscribe(updateData);
+        messenger.subscribe(messenger.messageNames.PostUpdated, updateData);
 
         return{
             activate: activate,

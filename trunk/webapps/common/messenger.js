@@ -36,7 +36,7 @@ define('messenger',
                 if (!subscribes.hasOwnProperty(options.messageName)) {
                     subscribes[options.messageName] = [];
                 }
-                subscribes[messageName.messageName].push(newSubscribe);
+                subscribes[options.messageName].push(newSubscribe);
 
                 return newSubscribe.hash;
             },
@@ -90,10 +90,9 @@ define('messenger',
                 });
             },
             messageNames = Object.freeze({
-                 TranslateLangChanged: 'jb_translate_lang_changed'
+                TranslateLangChanged: 'jb_translate_lang_changed',
+                PostUpdated: 'jb_post_updated'
             });
-
-
 
         return {
             publish: doPublish,

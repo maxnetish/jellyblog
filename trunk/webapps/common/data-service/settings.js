@@ -18,7 +18,7 @@ define('data.settings',
                 this.authorDisplayName = ko.observable(row.authorDisplayName || 'Admin');
                 this.authorDisplayBio = ko.observable(row.authorDisplayBio || undefined);
                 this.authorTwitterScreenName = ko.observable(row.authorTwitterScreenName || undefined);
-                this.authorAvatarUrl = ko.observable(row.authorAvatarUrl || undefined);
+                this.authorAvatarUrl = ko.observable(row.authorAvatarUrl || null);
                 this.footerAnnotation = ko.observable(row.footerAnnotation || undefined);
                 this.postsPerPage = ko.observable(row.postsPerPage || 5);
             },
@@ -39,6 +39,7 @@ define('data.settings',
                     dataType: 'json',
                     type: 'POST',
                     url: '/api/settings',
+                    data: plain,
                     converters: {
                         'text json': mapper.create(Settings)
                     }

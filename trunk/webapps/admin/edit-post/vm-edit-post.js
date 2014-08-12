@@ -6,9 +6,10 @@ define('vm.edit-post',
         'ko',
         'logger',
         'data.post',
-        'model-state'
+        'model-state',
+        'messenger'
     ],
-    function (ko, logger, provider, ModelState) {
+    function (ko, logger, provider, ModelState, messenger) {
         var post = ko.observable(null),
             modelState = new ModelState(),
             urlPreview = ko.computed({
@@ -86,6 +87,7 @@ define('vm.edit-post',
                         .done(function (result) {
                             post(result);
                             modelState.setModel(result);
+                            messenger.publish(messenger.messageNames.PostUpdated, result);
                         })
                         .always(function () {
                             saving(false);
