@@ -1,10 +1,11 @@
 doctype html
-html
+html(data-jb-admin=admin, data-jb-locale=preferredLocale)
   head
-    title= title
+    title= pageTitle
     link(rel='stylesheet', href='/css/style.css')
   body
     block content
-    script.
+    //script.
         window.admin = !{admin};
+        window.preferredLocale = !'{preferredLocale}';
     block specific
