@@ -1,25 +1,26 @@
 footer
-    div.row.bg-info.padding-vert-20
-        div.col-lg-4.col-md-4.col-sm-4
-            ul.list-unstyled
-                each linkItem in navlinksFooter
-                    li
-                        a(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'')
-                            span.glyphicon(class=linkItem.icon)
-                            b!= linkItem.text
-        div.col-lg-4.col-md-4.col-sm-4
-            div.text-center-xs
-                if settings.authorAvatarUrl
-                    img.author-avatar.img-rounded(src=settings.authorAvatarUrl)
-                br
-                span= settings.authorDisplayName
-                br
-                span= settings.authorDisplayBio
-                br
-                span
-                    if settings.authorTwitterScreenName
-                        iframe(allowtransparency='true', frameborder='0', scrolling='no', src='//platform.twitter.com/widgets/follow_button.html?screen_name='+settings.authorTwitterScreenName+'&show_count=false&show_screen_name=true&dnt=true', style='height:20px;width:150px')
-        div.col-lg-4.col-md-4.col-sm-4
-            div.text-right-xs
-                p= settings.footerAnnotation
+    div.footer-wrapper.jb-footer.panel-body
+        div.row
+            div.col-lg-4.col-md-4.col-sm-4
+                ul.list-unstyled.text-left-xs
+                    each linkItem in navlinksFooter
+                        li
+                            a(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'')
+                                span.glyphicon(class=linkItem.icon)
+                                b!= linkItem.text
+            div.col-lg-4.col-md-4.col-sm-4
+                div.text-center-xs
+                    if settings.authorAvatarUrl
+                        img.author-avatar.img-rounded(src=settings.authorAvatarUrl)
+                    br
+                    span= settings.authorDisplayName
+                    br
+                    span= settings.authorDisplayBio
+                    br
+                    span
+                        if settings.authorTwitterScreenName
+                            iframe(allowtransparency='true', frameborder='0', scrolling='no', src='//platform.twitter.com/widgets/follow_button.html?screen_name='+settings.authorTwitterScreenName+'&show_count=false&show_screen_name=true&dnt=true', style='height:20px;width:132px')
+            div.col-lg-4.col-md-4.col-sm-4
+                div.text-right-xs
+                    p= settings.footerAnnotation
 

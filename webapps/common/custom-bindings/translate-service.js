@@ -89,5 +89,5 @@ define('translate-service',
         return {
             config: config,
             getTextPromise: getTextPromise
-        }
+        };
     });

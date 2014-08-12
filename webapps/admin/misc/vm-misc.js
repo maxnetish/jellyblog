@@ -16,7 +16,7 @@ define('vm.misc',
         'use strict';
         var mainNavlinks = ko.observableArray(),
             footerNavlinks = ko.observableArray(),
-            settings = ko.observable({}),
+            settings = ko.observable(new providerSettings.Model()),
             mainNavlinksToShow = ko.computed({
                 read: function () {
                     return _.filter(mainNavlinks(), function (item) {
@@ -164,6 +164,16 @@ define('vm.misc',
                         saving(false);
                     });
             },
+            saveSettings = function(){
+                saving(true);
+                providerSettings.update(settings())
+                    .done(function(){
+                        modelStates.settings.clear();
+                    })
+                    .always(function(){
+                         saving(false);
+                    });
+            },
             select2IconOptions = {
                 formatResult: koSelect2.formatGlyphicon,
                 formatSelection: koSelect2.formatGlyphicon,
@@ -239,9 +249,7 @@ define('vm.misc',
                 toggle: function(){
                     settingsVisible(!settingsVisible());
                 },
-                save: function(){
-
-                },
+                save: saveSettings,
                 saveDisabled: ko.computed({
                     read: function () {
                         return modelStates.settings.pristine() || saving();
