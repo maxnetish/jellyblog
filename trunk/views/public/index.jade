@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+    div()
+        div.main-wrapper.container-fluid
+            include main-menu
+            each post in postList
+                include post-tpl
+            include footer
+block specific

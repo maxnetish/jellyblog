@@ -1,4 +1,4 @@
-extends layout
+extends ../layout
 block content
     div()
         nav#main-nav.navbar.navbar-default.navbar-static-top(role="navigation")
@@ -16,9 +16,9 @@ block content
                             span(data-bind="translate: $data.titleKey")
                     // /ko
         div.app-view()
-            include partials/admin-posts
-            include partials/admin-misc
-            include partials/admin-edit-post
-            include partials/admin-files
+            include admin-posts
+            include admin-misc
+            include admin-edit-post
+            include admin-files
 block specific
     script(src='/js/app-admin.js')

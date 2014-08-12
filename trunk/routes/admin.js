@@ -12,7 +12,7 @@ router.get('/', function (req, res) {
         return;
     }
 
-    res.render('admin', {
+    res.render('admin/admin', {
         title: 'Admin app',
         user: req.user || {},
         admin: req.userHasAdminRights
