@@ -1,0 +1,14 @@
+article.panel.panel-default
+    div.panel-heading
+        div.row
+            div.col-lg-11.col-md-11.col-sm-11.panel-title
+                h2= post.title
+            div.col-lg-1.col-md-1.col-sm-1
+                span.pull-right.label.label-default= post.dateFormatted
+    div.panel-body
+        div.post-content!= post.content
+    div.panel-footer
+        div.row
+            div.col-lg-12.col-md-12.col-sm-12
+                a.pull-right(href='#') Читать
+

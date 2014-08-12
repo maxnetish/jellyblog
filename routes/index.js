@@ -1,8 +1,8 @@
 var express = require('express'),
     router = express.Router(),
     dataProvider = require('../service/dataProvider'),
-    Q = require('q')
-_ = require('underscore'),
+    Q = require('q'),
+    _ = require('underscore'),
     moment = require('moment');
 
 /* GET home page. */
@@ -18,9 +18,9 @@ router.get('/', function (req, res) {
         settingsPromise = dataProvider.promiseSettings(),
         preferredLocal = 'en',
         commaPos = -1,
-        langHeader='accept-language';
+        langHeader = 'accept-language';
 
-    if(req.headers[langHeader] && req.headers[langHeader].length) {
+    if (req.headers[langHeader] && req.headers[langHeader].length) {
         commaPos = req.headers[langHeader].indexOf(',');
         if (commaPos > 0) {
             preferredLocal = req.headers[langHeader].substring(0, commaPos);
@@ -40,7 +40,7 @@ router.get('/', function (req, res) {
                         post.dateFormatted = moment(post.date).lang(preferredLocal).format('LL');
                     });
 
-                    return res.render('index', {
+                    return res.render('public/index', {
                         title: 'Express',
                         user: req.user || {},
                         admin: req.userHasAdminRights,
