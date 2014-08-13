@@ -1,0 +1,7 @@
+ul.pager
+    if pager.urlNewer
+        li.previous
+            a(href=pager.urlNewer) &larr; #{getText('TO_NEWER')}
+    if pager.urlOlder
+        li.next(class=pager.urlOlder?"":"disabled")
+            a(href=pager.urlOlder) #{getText('TO_OLDER')} &rarr;

@@ -49,5 +49,7 @@
     "LOADING": "Loading...",
     "SAVING": "Saving...",
     "LABEL": "Label",
-    "URL": "URL"
+    "URL": "URL",
+    "TO_NEWER": "Recent",
+    "TO_OLDER": "Older"
 }
