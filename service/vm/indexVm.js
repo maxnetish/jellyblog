@@ -60,49 +60,45 @@ var dataProvider = require('../dataProvider'),
     processPostList = function (rowList, locale, momentDateFormat) {
         return _.map(rowList, processPost(locale, momentDateFormat));
     },
-    getPagerUrls = function (url, skip, limit, hasNext) {
-        var nextSkip, prevSkip,
-            urlParsed,
-            result = {
-                nextUrl: undefined,
-                prevUrl: undefined
-            };
+    getPrevPageUrl = function (url, skip, limit) {
+        var prevSkip, urlParsed, result;
+        skip = skip || 0;
 
         if (!url) {
             return result;
         }
-
-        if (hasNext) {
-            nextSkip = skip + limit;
+        if (skip === 0) {
+            return result;
         }
 
-        if (skip !== 0) {
-            prevSkip = skip - limit;
-            if (prevSkip < 0) {
-                prevSkip = 0;
-            }
+        urlParsed = URL.parse(url, true);
+        urlParsed.search = null;
+        prevSkip = skip - limit;
+        prevSkip = prevSkip < 0 ? 0 : prevSkip;
+        if (prevSkip === 0) {
+            delete urlParsed.query.skip;
+        } else {
+            urlParsed.query.skip = prevSkip;
+        }
+        result = URL.format(urlParsed);
+        return result;
+    },
+    getNextPageUrl = function (url, skip, limit, hasNext) {
+        var nextSkip, urlParsed, result;
+        skip = skip || 0;
+
+        if (!url) {
+            return result;
+        }
+        if (!hasNext) {
+            return result;
         }
 
-        urlParsed = URL.parse(url);
-
-        if (nextSkip) {
-            urlParsed.query = {
-                skip: nextSkip
-            };
-            urlParsed.search = null;
-            result.nextUrl = URL.format(urlParsed);
-        }
-        if (_.isNumber(prevSkip)) {
-            if (prevSkip === 0) {
-                urlParsed.query = null;
-            } else {
-                urlParsed.query = {
-                    skip: prevSkip
-                };
-            }
-            urlParsed.search = null;
-            result.prevUrl = URL.format(urlParsed);
-        }
+        urlParsed = URL.parse(url, true);
+        urlParsed.search = null;
+        nextSkip = skip + limit;
+        urlParsed.query.skip = nextSkip;
+        result = URL.format(urlParsed);
         return result;
     },
     doReject = function (deferred) {
@@ -148,7 +144,7 @@ var dataProvider = require('../dataProvider'),
                             navlinksMain = results[0],
                             navlinksFooter = results[1],
                             result = IndexViewModel(),
-                            pagerUrls = getPagerUrls(opts.url, opts.skip, settings.postsPerPage, (posts.length - settings.postsPerPage) > 0);
+                            hasNext = (posts.length - settings.postsPerPage) > 0;
 
                         result.user = opts.user;
                         result.admin = opts.admin;
@@ -157,8 +153,8 @@ var dataProvider = require('../dataProvider'),
                         result.settings = settings;
                         result.postList = _.first(posts, settings.postsPerPage);
                         result.preferredLocale = opts.preferredLocale;
-                        result.pager.urlOlder = pagerUrls.nextUrl;
-                        result.pager.urlNewer = pagerUrls.prevUrl;
+                        result.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, settings.postsPerPage, hasNext);
+                        result.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, settings.postsPerPage);
 
                         dfr.resolve(result);
 
