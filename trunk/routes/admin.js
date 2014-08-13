@@ -7,7 +7,7 @@ var express = require('express'),
 
 /* GET admin page. */
 router.get('/', function (req, res) {
-    var locale = preferredLocaleService.detect(req);
+    var locale = req.preferredLocale;
 
     if (!req.userHasAdminRights) {
         req.session.after = req.originalUrl;

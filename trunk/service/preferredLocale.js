@@ -1,10 +1,9 @@
 /**
- * Created by Gordeev on 12.08.2014.
+ * locale detection middleware
  */
-
 var langHeader = 'accept-language',
     defaultLocale = 'en',
-    detect = function (req) {
+    detect = function (req, res, next) {
         var result = defaultLocale,
             commaPos;
         if (req.headers[langHeader] && req.headers[langHeader].length) {
@@ -13,7 +12,8 @@ var langHeader = 'accept-language',
                 result = req.headers[langHeader].substring(0, commaPos);
             }
         }
-        return result;
+        req.preferredLocale = result;
+        next();
     };
 
 module.exports = {

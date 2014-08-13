@@ -1,11 +1,11 @@
 var express = require('express'),
     router = express.Router(),
-    preferredLocaleService = require('../service/preferredLocale'),
-    indexVm = require('../service/vm/indexVm');
+    indexVm = require('../service/vm/indexVm'),
+    errResponse = require('../service/errResponse');
 
 /* GET home page. */
 router.get('/', function (req, res) {
-    var preferredLocale = preferredLocaleService.detect(req),
+    var preferredLocale = req.preferredLocale,
         skip = parseInt(req.query.skip, 10) || 0;
 
     indexVm.promise({
@@ -20,7 +20,7 @@ router.get('/', function (req, res) {
             return vm;
         })
         .then(null, function (err) {
-            res.send(500, err);
+            errResponse(err, req, res);
             return err;
         });
 });

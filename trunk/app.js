@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var serviceAuth = require('./service/auth');
+var preferredLocale = require('./service/preferredLocale');
 
 // session support
 var session = require('express-session');
@@ -43,6 +44,9 @@ app.use(passport.session());
 
 // inject check rights
 app.use(serviceAuth.hasAdminRights);
+
+// inject locale detection
+app.use(preferredLocale.detect);
 
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
