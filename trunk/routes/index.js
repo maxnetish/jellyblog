@@ -12,7 +12,8 @@ router.get('/', function (req, res) {
         preferredLocale: preferredLocale,
         skip: skip,
         user: req.user,
-        admin: req.userHasAdminRights
+        admin: req.userHasAdminRights,
+        url: req.url
     })
         .then(function (vm) {
             res.render('public/index', vm);

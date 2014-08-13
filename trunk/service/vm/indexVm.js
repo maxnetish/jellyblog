@@ -6,28 +6,12 @@
 var dataProvider = require('../dataProvider'),
     _ = require('underscore'),
     moment = require('moment'),
+    URL = require('url'),
     Q = require('q'),
     keyMain = 'main',
     keyFooter = 'footer',
+    vmCommon = require('./commonVm'),
     vmProps = Object.freeze({
-        pageTitle: {
-            configurable: false,
-            enumerable: true,
-            value: 'Express',
-            writable: true
-        },
-        user: {
-            configurable: false,
-            enumerable: true,
-            value: void 0,
-            writable: true
-        },
-        admin: {
-            configurable: false,
-            enumerable: true,
-            value: false,
-            writable: true
-        },
         navlinksMain: {
             configurable: false,
             enumerable: true,
@@ -52,15 +36,18 @@ var dataProvider = require('../dataProvider'),
             value: void 0,
             writable: true
         },
-        preferredLocale: {
+        pager: {
             configurable: false,
             enumerable: true,
-            value: 'en',
-            writable: true
+            writable: true,
+            value: {
+                urlOlder: undefined,
+                urlNewer: undefined
+            }
         }
     }),
     IndexViewModel = function () {
-        return Object.create({}, vmProps);
+        return Object.create(new vmCommon.BaseViewModel(), vmProps);
     },
     processPost = function (locale, momentDateFormat) {
         return function (post) {
@@ -72,6 +59,51 @@ var dataProvider = require('../dataProvider'),
     },
     processPostList = function (rowList, locale, momentDateFormat) {
         return _.map(rowList, processPost(locale, momentDateFormat));
+    },
+    getPagerUrls = function (url, skip, limit, hasNext) {
+        var nextSkip, prevSkip,
+            urlParsed,
+            result = {
+                nextUrl: undefined,
+                prevUrl: undefined
+            };
+
+        if (!url) {
+            return result;
+        }
+
+        if (hasNext) {
+            nextSkip = skip + limit;
+        }
+
+        if (skip !== 0) {
+            prevSkip = skip - limit;
+            if (prevSkip < 0) {
+                prevSkip = 0;
+            }
+        }
+
+        urlParsed = URL.parse(url);
+
+        if (nextSkip) {
+            urlParsed.query = {
+                skip: nextSkip
+            };
+            urlParsed.search = null;
+            result.nextUrl = URL.format(urlParsed);
+        }
+        if (_.isNumber(prevSkip)) {
+            if (prevSkip === 0) {
+                urlParsed.query = null;
+            } else {
+                urlParsed.query = {
+                    skip: prevSkip
+                };
+            }
+            urlParsed.search = null;
+            result.prevUrl = URL.format(urlParsed);
+        }
+        return result;
     },
     doReject = function (deferred) {
         return function (err) {
@@ -89,7 +121,8 @@ var dataProvider = require('../dataProvider'),
             preferredLocale: 'en',
             skip: 0,
             user: void 0,
-            admin: false
+            admin: false,
+            url: null
         };
 
         mainNavlinksPromise = dataProvider.promiseNavlinkList({
@@ -100,12 +133,13 @@ var dataProvider = require('../dataProvider'),
             category: keyFooter,
             visible: true
         });
+
         settingsPromise = dataProvider.promiseSettings();
 
         settingsPromise
             .then(function (settings) {
                 postsPromise = dataProvider.promisePostsList({
-                    limit: settings.postsPerPage,
+                    limit: settings.postsPerPage + 1,
                     skip: opts.skip
                 }, true);
                 Q.all([mainNavlinksPromise, footerNavlinkPromise, postsPromise])
@@ -113,15 +147,18 @@ var dataProvider = require('../dataProvider'),
                         var posts = processPostList(results[2], opts.preferredLocale),
                             navlinksMain = results[0],
                             navlinksFooter = results[1],
-                            result = IndexViewModel();
+                            result = IndexViewModel(),
+                            pagerUrls = getPagerUrls(opts.url, opts.skip, settings.postsPerPage, (posts.length - settings.postsPerPage) > 0);
 
                         result.user = opts.user;
                         result.admin = opts.admin;
                         result.navlinksMain = navlinksMain;
                         result.navlinksFooter = navlinksFooter;
                         result.settings = settings;
-                        result.postList = posts;
+                        result.postList = _.first(posts, settings.postsPerPage);
                         result.preferredLocale = opts.preferredLocale;
+                        result.pager.urlOlder = pagerUrls.nextUrl;
+                        result.pager.urlNewer = pagerUrls.prevUrl;
 
                         dfr.resolve(result);
 

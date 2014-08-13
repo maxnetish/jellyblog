@@ -4,7 +4,9 @@ block content
     div()
         div.main-wrapper.container-fluid
             include main-menu
+            include posts-pagination-tpl
             each post in postList
                 include post-tpl
+            include posts-pagination-tpl
             include footer
 block specific

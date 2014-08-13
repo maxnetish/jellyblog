@@ -29,7 +29,7 @@
             //init routes
 
             //init momen
-            moment.lang(window.navigator.userLanguage || window.navigator.language);
+            moment.lang($('html').data('jb-locale') || window.window.navigator.userLanguage || window.navigator.language);
 
             //init non-rout parts
             ko.applyBindings(vmMainNav, $('#main-nav').get(0));

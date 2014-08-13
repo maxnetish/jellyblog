@@ -11,7 +11,7 @@ define('translate-service',
         'use strict';
         var dictionaries = {},
             conf = {
-                lang: window.navigator.userLanguage || window.navigator.language,
+                lang: $('html').data('jb-locale') || window.navigator.userLanguage || window.navigator.language,
                 fallback: 'en',
                 url: '/api/locale'
             },
