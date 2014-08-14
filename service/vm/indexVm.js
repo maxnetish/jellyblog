@@ -67,11 +67,17 @@ var dataProvider = require('../dataProvider'),
             skip: 0,
             user: void 0,
             admin: false,
-            url: null
+            url: null,
+            pageTitle: void 0
         };
 
         // get base vm first
-        publicPageVm.promise()
+        publicPageVm.promise({
+            admin: opts.admin,
+            preferredLocale: opts.preferredLocale,
+            pageTitle: opts.pageTitle,
+            user: opts.user
+        })
             .then(function (baseVm) {
                 dataProvider.promisePostsList({
                     limit: baseVm.settings.postsPerPage + 1,
