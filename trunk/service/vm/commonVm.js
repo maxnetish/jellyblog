@@ -3,18 +3,17 @@
  */
 
 var lang = require('../../locale'),
-    BaseViewModel = function () {
+    BaseViewModel = function (row) {
         var self = this;
+        row = row || {};
 
-        this.admin = false;
-        this.preferredLocale = 'en';
-        this.pageTitle = 'Express';
-        this.user = void 0;
+        this.admin = row.admin || false;
+        this.preferredLocale = row.preferredLocale || 'en';
+        this.pageTitle = row.pageTitle || 'Express';
+        this.user = row.user || void 0;
         this.getText = function (key) {
             return lang.getText(key, self.preferredLocale);
         };
     };
 
-module.exports = {
-    BaseViewModel: BaseViewModel
-};
+module.exports = BaseViewModel;

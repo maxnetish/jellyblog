@@ -51,5 +51,6 @@
     "LABEL": "Label",
     "URL": "URL",
     "TO_NEWER": "Recent",
-    "TO_OLDER": "Older"
+    "TO_OLDER": "Older",
+    "SHOW_MORE": "More"
 }

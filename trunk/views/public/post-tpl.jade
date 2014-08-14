@@ -6,9 +6,10 @@ article.panel.panel-default
             div.col-lg-1.col-md-1.col-sm-1
                 span.pull-right.label.label-default= post.formatDate(preferredLocale)
     div.panel-body
-        div.post-content!= post.content
+        div.post-content(data-post-content-id=post._id.toString())!= post.contentCut
     div.panel-footer
         div.row
             div.col-lg-12.col-md-12.col-sm-12
-                a.pull-right(href='#') Читать
+                if post.hasCut
+                    a.pull-right(href="javascript:void 0", data-cmd-show-full=post._id.toString()) #{getText('SHOW_MORE')}
 
