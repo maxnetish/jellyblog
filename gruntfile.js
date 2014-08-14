@@ -7,8 +7,11 @@ module.exports = function (grunt) {
         publicJs = 'public/js',
         targetJsConcatAdmin = publicJs + '/app-admin.js',
         targetJsMinAdmin = publicJs + '/app-admin.min.js',
+        targetJsConcatPublic = publicJs + '/app-public.js',
+        targetJsMinPublic = publicJs + '/app-public.min.js',
         webappsAdmin = 'webapps/admin',
         webappsCommon = 'webapps/common',
+        webappsPublic = 'webapps/public',
         publicCss = 'public/css',
         publicFonts = 'public/fonts',
         webAppsLess = 'webapps/less',
@@ -24,12 +27,19 @@ module.exports = function (grunt) {
                 webappsAdmin + '/**/*.js',
                 webappsCommon + '/**/*.js'
         ],
+        jsLibsPublic = [
+            // public libs
+                bowerPath + '/requirejs/require.js',
+                bowerPath + '/jquery/dist/jquery.js',
+                webappsPublic + '/**/*.js'
+        ],
         filesUglify = {};
 
     filesUglify[targetJsMinAdmin] = [targetJsConcatAdmin];
     filesUglify[publicJs + '/knockout.min.js'] = [publicJs + '/knockout.js'];
     filesUglify[publicJs + '/lodash.min.js'] = [publicJs + '/lodash.js'];
     filesUglify[publicJs + '/q.min.js'] = [publicJs + '/q.js'];
+    filesUglify[targetJsMinPublic] = [targetJsConcatPublic];
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -53,7 +63,7 @@ module.exports = function (grunt) {
             }
         },
         copy: {
-            buildAdmin: {
+            buildAll: {
                 files: [
                     {
                         src: bowerPath + '/knockoutjs/dist/knockout.debug.js',
@@ -89,6 +99,10 @@ module.exports = function (grunt) {
                 src: jslibsAdmin,
                 dest: targetJsConcatAdmin
             },
+            buildPublic: {
+                src: jsLibsPublic,
+                dest: targetJsConcatPublic
+            },
             buildLess: {
                 src: [
                         bowerPath + '/bootstrap/dist/css/bootstrap.css',
@@ -104,7 +118,7 @@ module.exports = function (grunt) {
             }
         },
         uglify: {
-            buildAdmin: {
+            buildAll: {
                 files: filesUglify
             },
             options: {

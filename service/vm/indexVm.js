@@ -5,60 +5,11 @@
 
 var dataProvider = require('../dataProvider'),
     _ = require('underscore'),
-    moment = require('moment'),
     URL = require('url'),
     Q = require('q'),
-    keyMain = 'main',
-    keyFooter = 'footer',
-    vmCommon = require('./commonVm'),
-    vmProps = Object.freeze({
-        navlinksMain: {
-            configurable: false,
-            enumerable: true,
-            value: void 0,
-            writable: true
-        },
-        navlinksFooter: {
-            configurable: false,
-            enumerable: true,
-            value: void 0,
-            writable: true
-        },
-        settings: {
-            configurable: false,
-            enumerable: true,
-            value: void 0,
-            writable: true
-        },
-        postList: {
-            configurable: false,
-            enumerable: true,
-            value: void 0,
-            writable: true
-        },
-        pager: {
-            configurable: false,
-            enumerable: true,
-            writable: true,
-            value: {
-                urlOlder: undefined,
-                urlNewer: undefined
-            }
-        }
-    }),
-    IndexViewModel = function () {
-        return Object.create(new vmCommon.BaseViewModel(), vmProps);
-    },
-    processPost = function (locale, momentDateFormat) {
-        return function (post) {
-            locale = locale || 'en';
-            momentDateFormat = momentDateFormat || 'LL';
-            post.dateFormatted = moment(post.date).lang(locale).format(momentDateFormat);
-            return post;
-        };
-    },
-    processPostList = function (rowList, locale, momentDateFormat) {
-        return _.map(rowList, processPost(locale, momentDateFormat));
+    publicPageVm = require('./publicPageVm'),
+    IndexViewModel = function (row) {
+        this.postList = row.postList || [];
     },
     getPrevPageUrl = function (url, skip, limit) {
         var prevSkip, urlParsed, result;
@@ -108,9 +59,7 @@ var dataProvider = require('../dataProvider'),
         };
     },
     promiseViewModel = function (opts) {
-        var mainNavlinksPromise, footerNavlinkPromise,
-            settingsPromise, postsPromise,
-            dfr = Q.defer(),
+        var dfr = Q.defer(),
             reject = doReject(dfr);
 
         opts = opts || {
@@ -121,49 +70,28 @@ var dataProvider = require('../dataProvider'),
             url: null
         };
 
-        mainNavlinksPromise = dataProvider.promiseNavlinkList({
-            category: keyMain,
-            visible: true
-        });
-        footerNavlinkPromise = dataProvider.promiseNavlinkList({
-            category: keyFooter,
-            visible: true
-        });
-
-        settingsPromise = dataProvider.promiseSettings();
-
-        settingsPromise
-            .then(function (settings) {
-                postsPromise = dataProvider.promisePostsList({
-                    limit: settings.postsPerPage + 1,
+        // get base vm first
+        publicPageVm.promise()
+            .then(function (baseVm) {
+                dataProvider.promisePostsList({
+                    limit: baseVm.settings.postsPerPage + 1,
                     skip: opts.skip
-                }, true);
-                Q.all([mainNavlinksPromise, footerNavlinkPromise, postsPromise])
-                    .then(function (results) {
-                        var posts = processPostList(results[2], opts.preferredLocale),
-                            navlinksMain = results[0],
-                            navlinksFooter = results[1],
-                            result = IndexViewModel(),
-                            hasNext = (posts.length - settings.postsPerPage) > 0;
-
-                        result.user = opts.user;
-                        result.admin = opts.admin;
-                        result.navlinksMain = navlinksMain;
-                        result.navlinksFooter = navlinksFooter;
-                        result.settings = settings;
-                        result.postList = _.first(posts, settings.postsPerPage);
-                        result.preferredLocale = opts.preferredLocale;
-                        result.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, settings.postsPerPage, hasNext);
-                        result.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, settings.postsPerPage);
-
-                        dfr.resolve(result);
-
-                        return result;
+                }, true)
+                    .then(function (posts) {
+                        var hasNext = (posts.length - baseVm.settings.postsPerPage) > 0,
+                            vmIntern = new IndexViewModel({
+                                postList: _.first(posts, baseVm.settings.postsPerPage)
+                            }),
+                            vm;
+                        vm = _.extend(vmIntern, baseVm);
+                        vm.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, vm.settings.postsPerPage, hasNext);
+                        vm.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, vm.settings.postsPerPage);
+                        dfr.resolve(vm);
+                        return posts;
                     })
                     .then(null, reject);
             })
             .then(null, reject);
-
         return dfr.promise;
     };
 
