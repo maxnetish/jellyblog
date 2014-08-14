@@ -121,6 +121,43 @@ var promisePostGetBySlug = function (slug) {
     return query.exec();
 };
 
+var promisePostGetAdjacent = function (idOrSlug, queryParams) {
+    var dfr = Q.defer(),
+        fields = 'slug',
+        condition = createCondition(queryParams),
+        sort = queryParams.sort || '-date',
+        options = {
+            sort: sort
+        };
+
+    model.Post.find(condition, fields, options).exec()
+        .then(function (list) {
+            var centerItem = _.find(list, function (item) {
+                    return idOrSlug === item._id.str || idOrSlug === item.slug;
+                }),
+                centerInd = _.indexOf(list, centerItem),
+                prevItem, nextItem;
+
+            if (centerInd > 0) {
+                prevItem = list[centerInd - 1];
+            }
+            if (centerInd < list.length - 1) {
+                nextItem = list[centerInd + 1];
+            }
+            dfr.resolve({
+                prev: prevItem,
+                next: nextItem
+            });
+            return list;
+        })
+        .then(null, function (err) {
+            dfr.reject(err);
+            return err;
+        });
+
+    return dfr.promise;
+};
+
 var promisePostsList = function (queryParams, allFields) {
     var query,
         condition,
@@ -234,6 +271,7 @@ module.exports = {
     promisePostCreate: promisePostCreate,
     promisePostUpdate: promisePostUpdate,
     promisePostRemove: promisePostRemove,
+    promisePostGetAdjacent: promisePostGetAdjacent,
     promiseNavlinkCreate: promiseNavlinkCreate,
     promiseNavlinkUpdate: promiseNavlinkUpdate,
     promiseNavlinkRemove: promiseNavlinkRemove,

@@ -25,7 +25,7 @@ var filterNavlinksByCateg = function (categ) {
     };
 };
 
-var promisePublicPageVm = function () {
+var promisePublicPageVm = function (row) {
     var promiseNavlinks = dataProvider.promiseNavlinkList({
             visible: true
         }),
@@ -36,7 +36,7 @@ var promisePublicPageVm = function () {
         .then(function (results) {
             var navlinks = results[0],
                 settings = results[1],
-                baseVm = new BaseVm(),
+                baseVm = new BaseVm(row),
                 internVm, vm;
 
             internVm = new PublicPageVm({
