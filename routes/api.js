@@ -10,17 +10,32 @@ var multipartMiddleware = require('connect-multiparty')();
 var fileUtils = require('../service/fileUtils');
 var Q = require('q');
 
+var createError = function (status, message) {
+    var result = new Error(message);
+    result.status = status;
+    return result;
+};
+var createError401 = function () {
+    return createError(401, 'Only admin can');
+};
+var createError400 = function (invalidParametrName) {
+    var result = createError(400, 'Invalid param: ' + invalidParametrName);
+    result.invalidParameter = invalidParametrName;
+    return result;
+};
 
-router.delete('/post', function (req, res) {
+router.delete('/post', function (req, res, next) {
     var id = req.query.id,
         promise;
 
     if (!id) {
-        return res.send(400);
+        next(createError400('id'));
+        return;
     }
 
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     promise = dataProvider.promisePostRemove(id);
@@ -29,18 +44,17 @@ router.delete('/post', function (req, res) {
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.post('/post', function (req, res) {
+router.post('/post', function (req, res, next) {
     var formData = req.body,
         id = formData._id,
         promise;
 
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     if (id) {
@@ -53,12 +67,10 @@ router.post('/post', function (req, res) {
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.get('/post', function (req, res) {
+router.get('/post', function (req, res, next) {
     var id = req.query.id,
         slug = req.query.slug,
         promise;
@@ -68,54 +80,55 @@ router.get('/post', function (req, res) {
     } else if (slug) {
         promise = dataProvider.promisePostGetBySlug(slug);
     } else {
-        return res.send(400);
+        next(createError(400, 'id or slug required'));
+        return;
     }
 
     promise
         .then(function (result) {
-            if (result.draft && !req.userHasAdminRights) {
-                return res.send(401);
+            if(!result){
+                next(createError(404, 'No such post'));
+                return;
             }
-
+            if (result.draft && !req.userHasAdminRights) {
+                next(createError401());
+                return;
+            }
             res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.get('/posts', function (req, res) {
+router.get('/posts', function (req, res, next) {
     if (req.query.includeDraft && !req.userHasAdminRights) {
-        return res.send(401); // unauthorized
+        next(createError401()); // unauthorized
+        return;
     }
 
     dataProvider.promisePostsList(req.query)
         .then(function (result) {
             res.send(result);
         })
-        .then(null, function (err) {
-            res.send(err);
-        });
+        .then(null, next);
 });
 
-router.get('/navlinks', function (req, res) {
+router.get('/navlinks', function (req, res, next) {
     var query = req.query;
     dataProvider.promiseNavlinkList(query.category)
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (errRespnse) {
-            return  res.send(500, errRespnse);
-        });
+        .then(null, next);
 });
 
-router.post('/navlink', function (req, res) {
+router.post('/navlink', function (req, res, next) {
     var formData = req.body,
         id = formData._id,
         promise;
 
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     if (id) {
@@ -128,21 +141,21 @@ router.post('/navlink', function (req, res) {
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.delete('/navlink', function (req, res) {
+router.delete('/navlink', function (req, res, next) {
     var id = req.query.id,
         promise;
 
     if (!id) {
-        return res.send(400);
+        next(createError400('id'));
+        return;
     }
 
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     promise = dataProvider.promiseNavlinkRemove(id);
@@ -151,9 +164,7 @@ router.delete('/navlink', function (req, res) {
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
 router.get('/locale', function (req, res) {
@@ -163,76 +174,69 @@ router.get('/locale', function (req, res) {
     res.send(localeTable);
 });
 
-router.post('/upload', multipartMiddleware, function (req, res) {
+router.post('/upload', multipartMiddleware, function (req, res, next) {
     if (!req.userHasAdminRights) {
         fileUtils.removeTempFiles(req.files);
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     fileUtils.saveTempFilesPromise(req.files, 'upload')
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
-
+        .then(null, next);
 });
 
-router.get('/upload', function (req, res) {
+router.get('/upload', function (req, res, next) {
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     fileUtils.readDirPromise('upload')
         .then(function (files) {
             return res.send(files);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.delete('/upload', function (req, res) {
+router.delete('/upload', function (req, res, next) {
     var relativePath = req.query.path
 
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     fileUtils.removeFilePromise(relativePath)
         .then(function (result) {
             res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.get('/settings', function(req, res){
+router.get('/settings', function (req, res, next) {
     dataProvider.promiseSettings()
-        .then(function(result){
+        .then(function (result) {
             return res.send(result);
         })
-        .then(null, function(err){
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
-router.post('/settings', function(req, res){
+router.post('/settings', function (req, res, next) {
     var settings = req.body;
 
     if (!req.userHasAdminRights) {
-        return res.send(401);
+        next(createError401());
+        return;
     }
 
     dataProvider.promiseSettingsUpdate(settings)
         .then(function (result) {
             return res.send(result);
         })
-        .then(null, function (err) {
-            return res.send(500, err);
-        });
+        .then(null, next);
 });
 
 module.exports = router;
