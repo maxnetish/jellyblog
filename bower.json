@@ -26,6 +26,7 @@
     "moment": "~2.7.0",
     "requirejs": "~2.1.14",
     "q": "1.0.1",
-    "knockout-select2": "~0.0.2"
+    "knockout-select2": "~0.0.2",
+    "susanin": "~0.1.11"
   }
 }
