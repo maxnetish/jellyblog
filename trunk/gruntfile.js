@@ -18,7 +18,6 @@ module.exports = function (grunt) {
         jslibsAdmin = [
             // libs
                 bowerPath + '/requirejs/require.js',
-
                 bowerPath + '/jquery/dist/jquery.js',
                 bowerPath + '/pathjs-amd/dist/path.js',
                 bowerPath + '/moment/min/moment-with-langs.js',
@@ -31,7 +30,11 @@ module.exports = function (grunt) {
             // public libs
                 bowerPath + '/requirejs/require.js',
                 bowerPath + '/jquery/dist/jquery.js',
-                webappsPublic + '/**/*.js'
+                bowerPath + '/pathjs-amd/dist/path.js',
+                bowerPath + '/moment/min/moment-with-langs.js',
+
+                webappsPublic + '/**/*.js',
+                webappsCommon + '/**/*.js'
         ],
         filesUglify = {};
 
