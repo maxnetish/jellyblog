@@ -1,10 +1,9 @@
 var express = require('express'),
     router = express.Router(),
-    indexVm = require('../service/vm/indexVm'),
-    errResponse = require('../service/errResponse');
+    indexVm = require('../service/vm/indexVm');
 
 /* GET home page. */
-router.get('/', function (req, res) {
+router.get('/', function (req, res, next) {
     var preferredLocale = req.preferredLocale,
         skip = parseInt(req.query.skip, 10) || 0,
         tag = req.query.tag;
@@ -21,13 +20,10 @@ router.get('/', function (req, res) {
             res.render('public/index', vm);
             return vm;
         })
-        .then(null, function (err) {
-            errResponse(err, req, res);
-            return err;
-        });
+        .then(null, next);
 });
 
-router.get('/demo', function (req, res) {
+router.get('/demo', function (req, res, next) {
     var preferredLocale = req.preferredLocale,
         skip = parseInt(req.query.skip, 10) || 0;
 
@@ -42,10 +38,7 @@ router.get('/demo', function (req, res) {
             res.render('public/demo', vm);
             return vm;
         })
-        .then(null, function (err) {
-            errResponse(err, req, res);
-            return err;
-        });
+        .then(null, next);
 });
 
 module.exports = router;

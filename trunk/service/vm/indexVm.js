@@ -9,9 +9,8 @@ var dataProvider = require('../dataProvider'),
     Q = require('q'),
     publicPageVm = require('./publicPageVm'),
     urlHelper = require('../urlHelper'),
-    getPostUrl = function (post, origin) {
-        origin = urlHelper.addIfEmptyPath(origin, 'post');
-        return urlHelper.combine(origin, post.url);
+    getPostUrl = function (post) {
+        return URL.format(post.url);
     },
     IndexViewModel = function (row) {
         this.postList = row.postList || [];
@@ -99,9 +98,7 @@ var dataProvider = require('../dataProvider'),
                         vm = _.extend(vmIntern, baseVm);
                         vm.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, vm.settings.postsPerPage, hasNext);
                         vm.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, vm.settings.postsPerPage);
-                        vm.getPostUrl = function (post) {
-                            return getPostUrl(post, opts.url);
-                        };
+                        vm.getPostUrl = getPostUrl;
                         dfr.resolve(vm);
                         return posts;
                     })

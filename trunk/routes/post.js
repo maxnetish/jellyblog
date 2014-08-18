@@ -3,21 +3,13 @@
  */
 var express = require('express'),
     router = express.Router(),
-    errResponse = require('../service/errResponse'),
     postVm = require('../service/vm/postVm'),
     urlHelper = require('../service/urlHelper');
 
-router.get('/:slug?', function(req, res){
+router.get('/:slug?', function(req, res, next){
     var slug = req.params.slug,
         id = req.query.id,
-        locale = req.preferredLocale,
-        urlOrigin;
-
-    if(id){
-        urlOrigin = urlHelper.removeQueryParam(req.originalUrl, 'id');
-    }else if(slug){
-        urlOrigin = urlHelper.removeLastPart(req.originalUrl);
-    }
+        locale = req.preferredLocale;
 
     postVm.promise({
         preferredLocale: locale,
@@ -25,16 +17,14 @@ router.get('/:slug?', function(req, res){
         slug: slug,
         user: req.user,
         admin: req.userHasAdminRights,
-        url: urlOrigin,
-        queryParams: {}
+        queryParams: {
+            includeDrafts: false
+        }
     })
         .then(function(vm){
             res.render('public/post', vm);
             return vm;
-        }).then(null, function(err){
-            errResponse(err, req, res);
-            return err;
-        });
+        }).then(null, next);
 });
 
 module.exports = router;
