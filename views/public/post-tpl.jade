@@ -8,10 +8,10 @@ article.panel.panel-default
     div.panel-body
         div.post-content(data-post-content-id=post._id.toString())
             != disableCut? post.contentFull : post.contentCut
-        if !disableCut && post.hasCut
-            a(href="javascript:void 0", data-cmd-show-full=post._id.toString())
-                span.glyphicon.glyphicon-download-alt
-                span= getText('SHOW_MORE')
+            if !disableCut && post.hasCut
+                a(href="javascript:void 0", data-cmd-show-full=post._id.toString())
+                    span.glyphicon.glyphicon-download-alt
+                    span= getText('SHOW_MORE')
     div.panel-footer
         div.row
             if !disablePermalink

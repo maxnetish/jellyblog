@@ -14,7 +14,7 @@ var dataProvider = require('../dataProvider'),
         this.disableCut = true;
         this.disablePermalink = true;
     },
-    getAdjacentPageUrl = function (postInfo, url) {
+    getAdjacentPageUrl = function (postInfo) {
         var postUrl,
             result;
 
@@ -23,7 +23,7 @@ var dataProvider = require('../dataProvider'),
         }
 
         postUrl = postInfo.url;
-        result = urlHelper.combine(url, postUrl);
+        result = URL.format(postUrl);
 
         return result;
     },
@@ -51,7 +51,6 @@ var dataProvider = require('../dataProvider'),
             slug: void 0,
             user: void 0,
             admin: false,
-            url: null,
             queryParams: {
                 includeDrafts: false
             }
@@ -70,6 +69,11 @@ var dataProvider = require('../dataProvider'),
             .then(function (post) {
                 if (!post) {
                     // not found
+                    reject404();
+                    return post;
+                }
+                if(post.draft){
+                    // not show drafts
                     reject404();
                     return post;
                 }
@@ -93,8 +97,8 @@ var dataProvider = require('../dataProvider'),
                             }),
                             vm;
                         vm = _.extend(vmIntern, publicPageVm);
-                        vm.pager.urlOlder = getAdjacentPageUrl(adjacent.next, opts.url);
-                        vm.pager.urlNewer = getAdjacentPageUrl(adjacent.prev, opts.url);
+                        vm.pager.urlOlder = getAdjacentPageUrl(adjacent.next);
+                        vm.pager.urlNewer = getAdjacentPageUrl(adjacent.prev);
                         vm.pageTitle = post.title;
                         dfr.resolve(vm);
                         return results;

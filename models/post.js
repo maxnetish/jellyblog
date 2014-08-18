@@ -77,10 +77,10 @@ var _ = require('underscore'),
             var result = {};
 
             if (this.slug) {
-                result.pathname = '/' + this.slug;
+                result.pathname = '/post/' + this.slug;
                 result.query = {};
             } else {
-                result.pathname = '/';
+                result.pathname = '/post';
                 result.query = {
                     id: this._id.toString()
                 };
