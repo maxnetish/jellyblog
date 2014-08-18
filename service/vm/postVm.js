@@ -8,14 +8,24 @@ var dataProvider = require('../dataProvider'),
     URL = require('url'),
     Q = require('q'),
     publicPageVm = require('./publicPageVm'),
+    urlHelper = require('../urlHelper'),
     PostViewModel = function (row) {
         this.post = row.post || {};
+        this.disableCut = true;
+        this.disablePermalink = true;
     },
-    getPrevPageUrl = function () {
+    getAdjacentPageUrl = function (postInfo, url) {
+        var postUrl,
+            result;
 
-    },
-    getNextPageUrl = function () {
+        if (!(postInfo && (postInfo._id || postInfo.slug))) {
+            return null;
+        }
 
+        postUrl = postInfo.url;
+        result = urlHelper.combine(url, postUrl);
+
+        return result;
     },
     doReject = function (deferred) {
         return function (err) {
@@ -26,6 +36,11 @@ var dataProvider = require('../dataProvider'),
     promiseViewModel = function (opts) {
         var dfr = Q.defer(),
             reject = doReject(dfr),
+            reject404 = function(){
+                var err = new Error('Not Found');
+                err.status = 404;
+                reject(err);
+            },
             promisePublicPageVm,
             promisePost,
             promiseAdjacent;
@@ -46,15 +61,16 @@ var dataProvider = require('../dataProvider'),
             promisePost = dataProvider.promisePostGetById(opts.id);
         } else if (opts.slug) {
             promisePost = dataProvider.promisePostGetBySlug(opts.slug);
+        }else{
+            reject404();
+            return dfr.promise;
         }
 
         promisePost
             .then(function (post) {
                 if (!post) {
                     // not found
-                    var err = new Error('Not Found');
-                    err.status = 404;
-                    reject(err);
+                    reject404();
                     return post;
                 }
 
@@ -66,7 +82,7 @@ var dataProvider = require('../dataProvider'),
                     user: opts.user
                 });
 
-                promiseAdjacent = dataProvider.promisePostGetAdjacent(post._id.str, opts.queryParams);
+                promiseAdjacent = dataProvider.promisePostGetAdjacent(post._id, opts.queryParams);
 
                 Q.all([promisePublicPageVm, promiseAdjacent])
                     .then(function (results) {
@@ -77,8 +93,8 @@ var dataProvider = require('../dataProvider'),
                             }),
                             vm;
                         vm = _.extend(vmIntern, publicPageVm);
-                        vm.pager.urlOlder = getNextPageUrl(adjacent.next, opts.url);
-                        vm.pager.urlNewer = getPrevPageUrl(adjacent.prev, opts.url);
+                        vm.pager.urlOlder = getAdjacentPageUrl(adjacent.next, opts.url);
+                        vm.pager.urlNewer = getAdjacentPageUrl(adjacent.prev, opts.url);
                         vm.pageTitle = post.title;
                         dfr.resolve(vm);
                         return results;

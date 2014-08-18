@@ -15,6 +15,7 @@ var PublicPageVm = function (row) {
         urlOlder: void 0,
         urlNewer: void 0
     };
+    this.getPostUrl = function () {};
 };
 
 var filterNavlinksByCateg = function (categ) {

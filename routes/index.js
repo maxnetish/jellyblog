@@ -6,14 +6,16 @@ var express = require('express'),
 /* GET home page. */
 router.get('/', function (req, res) {
     var preferredLocale = req.preferredLocale,
-        skip = parseInt(req.query.skip, 10) || 0;
+        skip = parseInt(req.query.skip, 10) || 0,
+        tag = req.query.tag;
 
     indexVm.promise({
         preferredLocale: preferredLocale,
         skip: skip,
         user: req.user,
         admin: req.userHasAdminRights,
-        url: req.url
+        url: req.originalUrl,
+        tag: tag
     })
         .then(function (vm) {
             res.render('public/index', vm);

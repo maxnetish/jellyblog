@@ -68,7 +68,7 @@ var createCondition = function (queryParams) {
         condition.date.$lt = toDate;
     }
     if (tag) {
-        condition.tag = tag;
+        condition.tags = tag;
     }
     if (search) {
         condition.content = /search/;
@@ -128,32 +128,47 @@ var promisePostGetAdjacent = function (idOrSlug, queryParams) {
         sort = queryParams.sort || '-date',
         options = {
             sort: sort
+        },
+        stream = model.Post.find(condition, fields, options).stream(),
+        currentDoc, prevDoc, nextDoc,
+        found = false, resolved = false,
+        reject = function (err) {
+            dfr.reject(err);
+        },
+        resolve = function () {
+            if (!resolved) {
+                resolved = true;
+                dfr.resolve({
+                    prev: prevDoc,
+                    next: nextDoc
+                });
+            }
+        },
+        predicate = _.isString(idOrSlug) ?
+            function (doc) {
+                return idOrSlug === doc.slug;
+            } :
+            function (doc) {
+                return doc._id.equals(idOrSlug);
+            },
+        iterateDoc = function (doc) {
+            // do something with the mongoose document
+            if (found) {
+                // found doc on prev iteration, stop iteration
+                nextDoc = doc;
+                resolve();
+                stream.destroy();
+            } else {
+                prevDoc = currentDoc;
+                currentDoc = doc;
+                found = predicate(doc);
+            }
         };
 
-    model.Post.find(condition, fields, options).exec()
-        .then(function (list) {
-            var centerItem = _.find(list, function (item) {
-                    return idOrSlug === item._id.str || idOrSlug === item.slug;
-                }),
-                centerInd = _.indexOf(list, centerItem),
-                prevItem, nextItem;
-
-            if (centerInd > 0) {
-                prevItem = list[centerInd - 1];
-            }
-            if (centerInd < list.length - 1) {
-                nextItem = list[centerInd + 1];
-            }
-            dfr.resolve({
-                prev: prevItem,
-                next: nextItem
-            });
-            return list;
-        })
-        .then(null, function (err) {
-            dfr.reject(err);
-            return err;
-        });
+    stream
+        .on('data', iterateDoc)
+        .on('error', reject)
+        .on('close', resolve);
 
     return dfr.promise;
 };
@@ -262,7 +277,6 @@ var promiseSettingsUpdate = function (settings) {
 
     return query.exec();
 };
-
 
 module.exports = {
     promisePostsList: promisePostsList,

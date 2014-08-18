@@ -7,4 +7,19 @@
     -o-transition: height 0.3s ease;
     transition: height 0.3s ease;
   }
+  .tags-list {
+    & > * {
+      margin: 0 1em 0 0;
+      display: inline-block;
+    }
+  }
+  .pull-right-md-lg{
+    float: right;
+    @media(max-width: 767px) {
+      float: none;
+    }
+  }
+  .no-wrap{
+    white-space: nowrap;
+  }
 }
