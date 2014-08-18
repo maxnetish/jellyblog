@@ -8,6 +8,11 @@ var dataProvider = require('../dataProvider'),
     URL = require('url'),
     Q = require('q'),
     publicPageVm = require('./publicPageVm'),
+    urlHelper = require('../urlHelper'),
+    getPostUrl = function (post, origin) {
+        origin = urlHelper.addIfEmptyPath(origin, 'post');
+        return urlHelper.combine(origin, post.url);
+    },
     IndexViewModel = function (row) {
         this.postList = row.postList || [];
     },
@@ -68,7 +73,8 @@ var dataProvider = require('../dataProvider'),
             user: void 0,
             admin: false,
             url: null,
-            pageTitle: void 0
+            pageTitle: void 0,
+            tag: void 0
         };
 
         // get base vm first
@@ -81,7 +87,8 @@ var dataProvider = require('../dataProvider'),
             .then(function (baseVm) {
                 dataProvider.promisePostsList({
                     limit: baseVm.settings.postsPerPage + 1,
-                    skip: opts.skip
+                    skip: opts.skip,
+                    tag: opts.tag
                 }, true)
                     .then(function (posts) {
                         var hasNext = (posts.length - baseVm.settings.postsPerPage) > 0,
@@ -92,6 +99,9 @@ var dataProvider = require('../dataProvider'),
                         vm = _.extend(vmIntern, baseVm);
                         vm.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, vm.settings.postsPerPage, hasNext);
                         vm.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, vm.settings.postsPerPage);
+                        vm.getPostUrl = function (post) {
+                            return getPostUrl(post, opts.url);
+                        };
                         dfr.resolve(vm);
                         return posts;
                     })

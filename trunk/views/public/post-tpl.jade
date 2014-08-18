@@ -6,10 +6,23 @@ article.panel.panel-default
             div.col-lg-1.col-md-1.col-sm-1
                 span.pull-right.label.label-default= post.formatDate(preferredLocale)
     div.panel-body
-        div.post-content(data-post-content-id=post._id.toString())!= post.contentCut
+        div.post-content(data-post-content-id=post._id.toString())
+            != disableCut? post.contentFull : post.contentCut
+        if !disableCut && post.hasCut
+            a(href="javascript:void 0", data-cmd-show-full=post._id.toString())
+                span.glyphicon.glyphicon-download-alt
+                span= getText('SHOW_MORE')
     div.panel-footer
         div.row
-            div.col-lg-12.col-md-12.col-sm-12
-                if post.hasCut
-                    a.pull-right(href="javascript:void 0", data-cmd-show-full=post._id.toString()) #{getText('SHOW_MORE')}
-
+            if !disablePermalink
+                div.col-lg-2.col-md-2.col-sm-2
+                    a.no-wrap.margin-right-2em(href=getPostUrl(post))
+                        span.glyphicon.glyphicon-link
+                        span #{getText('PERMANENT_LINK')}
+            div.col-lg-10.col-md-10.col-sm-10
+                div.tags-list
+                    each tag in post.tags
+                        a(href="/?tag="+tag)
+                            span.label.label-info
+                                span.glyphicon.glyphicon-tag
+                                span= tag

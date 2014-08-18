@@ -53,13 +53,13 @@ var _ = require('underscore'),
             return result;
         };
 
-        postSchema.virtual('hasCut').get(function(){
+        postSchema.virtual('hasCut').get(function () {
             return -1 !== this.content.indexOf(CUT_LITERAL);
         });
 
         postSchema.virtual('contentCut').get(function () {
             var cutPos = this.content.indexOf(CUT_LITERAL);
-            if(cutPos === -1){
+            if (cutPos === -1) {
                 return this.content;
             }
             return this.content.substring(0, cutPos);
@@ -67,10 +67,25 @@ var _ = require('underscore'),
 
         postSchema.virtual('contentFull').get(function () {
             var cutPos = this.content.indexOf(CUT_LITERAL);
-            if(cutPos === -1){
+            if (cutPos === -1) {
                 return this.content;
             }
             return this.content.substring(0, cutPos) + this.content.substring(cutPos + CUT_LITERAL.length);
+        });
+
+        postSchema.virtual('url').get(function () {
+            var result = {};
+
+            if (this.slug) {
+                result.pathname = '/' + this.slug;
+                result.query = {};
+            } else {
+                result.pathname = '/';
+                result.query = {
+                    id: this._id.toString()
+                };
+            }
+            return result;
         });
 
         return mongoose.model("Post", postSchema);
