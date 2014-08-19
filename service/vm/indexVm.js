@@ -14,6 +14,9 @@ var dataProvider = require('../dataProvider'),
     },
     IndexViewModel = function (row) {
         this.postList = row.postList || [];
+        this.disableCut = false;
+        this.disablePermalink = false;
+        this.rootUrl = urlHelper.rootUrl;
     },
     getPrevPageUrl = function (url, skip, limit) {
         var prevSkip, urlParsed, result;

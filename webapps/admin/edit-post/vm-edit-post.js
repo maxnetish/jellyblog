@@ -19,7 +19,7 @@ define('vm.edit-post',
                         return null;
                     }
                     if (postUnwrapped.slug()) {
-                        return '[host]/' + postUnwrapped.slug();
+                        return '[host]/post/' + postUnwrapped.slug();
                     } else {
                         return '[host]/post?id=' + postUnwrapped._id;
                     }
