@@ -5,6 +5,8 @@
 var URL = require('url'),
     _ = require('underscore');
 
+var rootUrl = '/';
+
 var getParsedUrl = function (urlOrString) {
     if (_.isString(urlOrString)) {
         return URL.parse(urlOrString, true);
@@ -77,9 +79,11 @@ var addIfEmptyPath = function(url, addPart){
     return URL.format(parsed);
 };
 
+
 module.exports = {
     removeLastPart: removeLastPart,
     removeQueryParam: removeQueryParam,
     combine: combine,
-    addIfEmptyPath: addIfEmptyPath
+    addIfEmptyPath: addIfEmptyPath,
+    rootUrl: rootUrl
 };

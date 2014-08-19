@@ -10,9 +10,13 @@ var dataProvider = require('../dataProvider'),
     publicPageVm = require('./publicPageVm'),
     urlHelper = require('../urlHelper'),
     PostViewModel = function (row) {
-        this.post = row.post || {};
+        this.postList = [];
+        if (row.post) {
+            this.postList.push(row.post);
+        }
         this.disableCut = true;
         this.disablePermalink = true;
+        this.rootUrl = urlHelper.rootUrl;
     },
     getAdjacentPageUrl = function (postInfo) {
         var postUrl,
@@ -36,7 +40,7 @@ var dataProvider = require('../dataProvider'),
     promiseViewModel = function (opts) {
         var dfr = Q.defer(),
             reject = doReject(dfr),
-            reject404 = function(){
+            reject404 = function () {
                 var err = new Error('Not Found');
                 err.status = 404;
                 reject(err);
@@ -60,7 +64,7 @@ var dataProvider = require('../dataProvider'),
             promisePost = dataProvider.promisePostGetById(opts.id);
         } else if (opts.slug) {
             promisePost = dataProvider.promisePostGetBySlug(opts.slug);
-        }else{
+        } else {
             reject404();
             return dfr.promise;
         }
@@ -72,7 +76,7 @@ var dataProvider = require('../dataProvider'),
                     reject404();
                     return post;
                 }
-                if(post.draft){
+                if (post.draft) {
                     // not show drafts
                     reject404();
                     return post;

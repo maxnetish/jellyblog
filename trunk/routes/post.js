@@ -22,7 +22,7 @@ router.get('/:slug?', function(req, res, next){
         }
     })
         .then(function(vm){
-            res.render('public/post', vm);
+            res.render('public/index', vm);
             return vm;
         }).then(null, next);
 });
