@@ -3,9 +3,11 @@
  */
 
 var URL = require('url'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    configUrl = require('../config').url;
 
-var rootUrl = '/';
+var rootUrl = configUrl.root;
+var hostUrl = configUrl.host;
 
 var getParsedUrl = function (urlOrString) {
     if (_.isString(urlOrString)) {
@@ -85,5 +87,6 @@ module.exports = {
     removeQueryParam: removeQueryParam,
     combine: combine,
     addIfEmptyPath: addIfEmptyPath,
-    rootUrl: rootUrl
+    rootUrl: rootUrl,
+    hostUrl: hostUrl
 };

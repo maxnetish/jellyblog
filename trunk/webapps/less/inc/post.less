@@ -60,3 +60,19 @@
     white-space: nowrap;
   }
 }
+
+.deferred-image{
+  -webkit-transition: opacity, 0.3s ease 0.3s;
+  -moz-transition: opacity, 0.3s ease 0.3s;
+  -o-transition: opacity, 0.3s ease 0.3s;
+  transition: opacity, 0.3s ease 0.3s;
+  opacity: 0;
+}
+
+.deferred-image-wait{
+//  opacity: 0;
+}
+
+.deferred-image-loaded{
+  opacity: 1;
+}

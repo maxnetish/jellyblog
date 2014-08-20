@@ -3,5 +3,6 @@
  */
 
 module.exports = {
-    auth: require('./auth.json')
+    auth: require('./auth.json'),
+    url: require('./url.json')
 };

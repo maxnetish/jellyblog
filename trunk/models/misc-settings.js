@@ -17,6 +17,7 @@ var createSettingsModel = function (mongoose) {
             type: String
         },
         authorAvatarUrl:{
+            // full url
             type: String
         },
         footerAnnotation:{
@@ -26,6 +27,17 @@ var createSettingsModel = function (mongoose) {
             type: Number,
             required: true,
             default: 5
+        },
+        siteTitle:{
+            type: String,
+            required: true,
+            default: 'Blog'
+        },
+        metaTitle:{
+            type: String
+        },
+        metaDescription:{
+            type: String
         }
     });
 

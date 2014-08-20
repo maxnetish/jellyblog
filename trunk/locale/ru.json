@@ -53,5 +53,6 @@
     "TO_NEWER": "Сюда",
     "TO_OLDER": "Туда",
     "SHOW_MORE": "Показеть всё",
-    "PERMANENT_LINK": "Постоянная ссылка"
+    "PERMANENT_LINK": "Постоянная ссылка",
+    "SITE_TITLE": "Заголовок сайта"
 }

@@ -17,6 +17,9 @@ var dataProvider = require('../dataProvider'),
         this.disableCut = false;
         this.disablePermalink = false;
         this.rootUrl = urlHelper.rootUrl;
+        this.metaTitle = row.metaTitle;
+        this.metaDescription = row.metaDescription;
+        this.metaImage = row.metaImage;
     },
     getPrevPageUrl = function (url, skip, limit) {
         var prevSkip, urlParsed, result;
@@ -102,6 +105,9 @@ var dataProvider = require('../dataProvider'),
                         vm.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, vm.settings.postsPerPage, hasNext);
                         vm.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, vm.settings.postsPerPage);
                         vm.getPostUrl = getPostUrl;
+                        vm.metaTitle = vm.settings.metaTitle;
+                        vm.metaDescription = vm.settings.metaDescription;
+                        vm.metaImage = vm.settings.authorAvatarUrl;
                         dfr.resolve(vm);
                         return posts;
                     })

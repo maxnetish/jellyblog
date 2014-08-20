@@ -21,6 +21,9 @@ define('data.settings',
                 this.authorAvatarUrl = ko.observable(row.authorAvatarUrl || null);
                 this.footerAnnotation = ko.observable(row.footerAnnotation || undefined);
                 this.postsPerPage = ko.observable(row.postsPerPage || 5);
+                this.siteTitle = ko.observable(row.siteTitle || null);
+                this.metaTitle = ko.observable(row.metaTitle || null);
+                this.metaDescription = ko.observable(row.metaDescription || null);
             },
             getObservable = function () {
                 return $.ajax({

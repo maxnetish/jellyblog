@@ -14,11 +14,12 @@
 
     require(
         [
+            'deferred-image-loader',
             'show-full-content',
             'susanin-path',
             'jquery'
         ],
-        function (showFullContent, path, $) {
+        function (imageLoader, showFullContent, path, $) {
             //bind event handlers
             showFullContent.bind();
 

@@ -19,7 +19,7 @@ var _ = require('underscore'),
                 type: String
             },
             image: {
-                // url
+                // full url
                 type: String
             },
             featured: {

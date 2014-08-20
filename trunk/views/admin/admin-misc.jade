@@ -60,6 +60,10 @@ div#admin-misc.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                             span(data-bind="translate: 'SAVE'")
             form.form.form-horizontal(data-bind="with: appSettings.settings, attr: {id: appSettings.formId, name: appSettings.formId}, submit: appSettings.save" role="form")
                 div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'SITE_TITLE'" for=siteTitle)
+                    div.col-lg-8.col-md-8.col-sm-8
+                        input.form-control(data-bind="value: siteTitle", id="siteTitle", type="text", required, placeholder="Enter site title")
+                div.form-group
                     label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_DISPLAY_NAME'", for="authorDisplayName")
                     div.col-lg-8.cl-md-8.col-sm-8
                         input.form-control(data-bind="value: authorDisplayName", id="authorDisplayName", type="text", required, placeholder="Author display name")
@@ -79,6 +83,14 @@ div#admin-misc.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                     label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'POSTS_PER_PAGE'", for="postsPerPage")
                     div.col-lg-8.cl-md-8.col-sm-8
                         input.form-control(data-bind="value: postsPerPage", id="postsPerPage", type="number", required, placeholder="Posts on one page")
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'METATITLE'", for="siteMetatitle")
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        input.form-control(data-bind="value: metaTitle", id="siteMetatitle", type="text", placeholder="Meta title")
+                div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'METADESCRIPTION'", for="siteMetadescription")
+                    div.col-lg-8.cl-md-8.col-sm-8
+                        textarea.form-control(data-bind="value: metaDescription", id="siteMetadescription", type="text", placeholder="Meta description (few words)")
                 div.form-group
                     label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_AVATAR_URL'", for="avatarUrl")
                     div.col-lg-4.cl-md-4.col-sm-4

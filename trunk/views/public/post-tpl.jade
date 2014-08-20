@@ -4,7 +4,7 @@ article.panel.panel-default
             div.col-lg-11.col-md-11.col-sm-11.panel-title
                 div.media
                     if post.image
-                        img.media-object.pull-left(src=post.image)
+                        img.media-object.pull-left.deferred-image.deferred-image-wait(data-deferred-src=post.image)
                     div.media-body
                         h2= post.title
             div.col-lg-1.col-md-1.col-sm-1
