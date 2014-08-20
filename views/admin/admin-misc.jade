@@ -94,9 +94,9 @@ div#admin-misc.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                 div.form-group
                     label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_AVATAR_URL'", for="avatarUrl")
                     div.col-lg-4.cl-md-4.col-sm-4
-                        input.form-control(data-bind="value: authorAvatarUrl, valueUpdate: 'input'", id="avatarUrl", type="text", placeholder="Avatar url")
+                        input.form-control(data-bind="value: authorAvatarUrl, valueUpdate: 'input'", id="avatarUrl", type="url", placeholder="Avatar url (absolute url required)")
                     div.col-lg-4.cl-md-4.col-sm-4
-                        img.author-avatar(data-bind="attr: {src: authorAvatarUrl}", style="max-height:100px;max-width:100px;")
+                        img.author-avatar(data-bind="attr: {src: authorAvatarUrl}", style="height:100px")
             div.row
                 div.col-sm-12
                     div.btn-group.btn-group-sm
