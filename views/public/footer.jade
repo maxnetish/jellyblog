@@ -11,7 +11,7 @@ footer
             div.col-lg-4.col-md-4.col-sm-4
                 div.text-center-pane
                     if settings.authorAvatarUrl
-                        img.author-avatar(src=settings.authorAvatarUrl)
+                        img.author-avatar.deferred-image.deferred-image-wait(data-deferred-src=settings.authorAvatarUrl)
                     br
                     span= settings.authorDisplayName
                     br

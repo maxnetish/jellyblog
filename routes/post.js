@@ -22,6 +22,7 @@ router.get('/:slug?', function(req, res, next){
         }
     })
         .then(function(vm){
+            vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, req.originalUrl);
             res.render('public/index', vm);
             return vm;
         }).then(null, next);

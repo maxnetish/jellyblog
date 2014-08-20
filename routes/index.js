@@ -1,6 +1,7 @@
 var express = require('express'),
     router = express.Router(),
-    indexVm = require('../service/vm/indexVm');
+    indexVm = require('../service/vm/indexVm'),
+    urlHelper = require('../service/urlHelper');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -17,6 +18,7 @@ router.get('/', function (req, res, next) {
         tag: tag
     })
         .then(function (vm) {
+            vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, req.originalUrl);
             res.render('public/index', vm);
             return vm;
         })

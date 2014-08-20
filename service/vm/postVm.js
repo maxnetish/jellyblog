@@ -17,6 +17,9 @@ var dataProvider = require('../dataProvider'),
         this.disableCut = true;
         this.disablePermalink = true;
         this.rootUrl = urlHelper.rootUrl;
+        this.metaTitle = row.metaTitle;
+        this.metaDescription = row.metaDescription;
+        this.metaImage = row.metaImage;
     },
     getAdjacentPageUrl = function (postInfo) {
         var postUrl,
@@ -104,6 +107,9 @@ var dataProvider = require('../dataProvider'),
                         vm.pager.urlOlder = getAdjacentPageUrl(adjacent.next);
                         vm.pager.urlNewer = getAdjacentPageUrl(adjacent.prev);
                         vm.pageTitle = post.title;
+                        vm.metaTitle = post.metaTitle || vm.settings.metaTitle;
+                        vm.metaDescription = post.metaDescription || vm.settings.metaDescription;
+                        vm.metaImage = post.image || vm.settings.authorAvatarUrl
                         dfr.resolve(vm);
                         return results;
                     })

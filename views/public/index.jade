@@ -11,3 +11,10 @@ block content
             include footer
 block specific
     script(src='/js/app-public.js')
+block meta
+    meta(property="og:title", content=metaTitle)
+    meta(property="og:type", content="article")
+    meta(property="og:image" content=metaImage)
+    meta(property="og:url", content=pageUrl)
+    meta(property="og:site_name", content=metaTitle)
+    meta(property="og:description", content=metaDescription)
