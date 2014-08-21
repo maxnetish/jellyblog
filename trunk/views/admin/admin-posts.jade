@@ -9,18 +9,20 @@ div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                 div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
             div.row
                 div.col-md-12
-                    table.table.table-hover.table-fixed
+                    table.table.table-hover.table-condensed
                         colgroup
                             col.col-md-5
                             col.col-md-3
-                            col.col-md-2
-                            col.col-md-2
+                            col.col-md-1
+                            col.col-md-1
+                            col.col-md-1
                         thead
                             tr
                                 th(data-bind="translate: 'TITLE'")
                                 th(data-bind="translate: 'DATE'")
                                 th(data-bind="translate: 'DRAFT'")
                                 th(data-bind="translate: 'FEATURED'")
+                                th
                         tbody(data-bind="foreach: posts")
                             tr
                                 td
@@ -28,9 +30,14 @@ div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                                 td
                                     span(data-bind="dateText: $data.date")
                                 td
-                                    span.glyphicon(data-bind="css: {'glyphicon-ok': $data.draft}")
+                                    button.btn.btn-xs(data-bind="click: $parent.toggleDraft, css: {'btn-info': $data.draft, 'btn-primary': !$data.draft}, attr: {'title': $data.draft?'Publish':'Convert to draft'}")
+                                        span.glyphicon(data-bind="css: {'glyphicon-unchecked': $data.draft, 'glyphicon-share': !$data.draft}")
                                 td
-                                    span.glyphicon(data-bind="css: {'glyphicon-ok': $data.featured}")
+                                    button.btn.btn.btn-xs(data-bind="click: $parent.toggleFeatured, css: {'btn-warning': $data.featured, 'btn-primary': !$data.featured}, attr: {'title': $data.featured?'Make ordinary':'Make featured'}")
+                                        span.glyphicon(data-bind="css: {'glyphicon-flash': $data.featured, 'glyphicon-unchecked': !$data.featured}")
+                                td
+                                    button.btn.btn-danger.btn-xs(data-bind="click: $parent.remove", title="Delete")
+                                        span.glyphicon.glyphicon-remove
             div.row
                 div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
 

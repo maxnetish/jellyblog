@@ -6,10 +6,11 @@ define('vm.posts',
         'ko',
         '_',
         'data.posts',
+        'data.post',
         'messenger',
         'logger'
     ],
-    function (ko, _, dataPosts, messenger, logger) {
+    function (ko, _, dataPosts, dataPost, messenger, logger) {
         'use strict';
 
         /**
@@ -111,6 +112,20 @@ define('vm.posts',
                     // update queryUrl if params really changed
                     queryUrl(newQuery);
                 }
+            },
+
+            remove = function(post){
+                if(window.confirm('Delete post "'+post.title+'" permanently? Really?')){
+                    dataPost.remove(post._id).done(updateData);
+                }
+            },
+
+            toggleDraft = function(post){
+                alert(post.title);
+            },
+
+            toggleFeatured = function(post){
+                alert(post.title);
             };
 
         // update data when url params changed
@@ -120,6 +135,9 @@ define('vm.posts',
         return{
             activate: activate,
             posts: postsList,
+            toggleDraft: toggleDraft,
+            toggleFeatured: toggleFeatured,
+            remove: remove,
             pagination: {
                 nextPageUrl: nextPageUrl,
                 prevPageUrl: prevPageUrl,

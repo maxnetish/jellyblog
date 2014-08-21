@@ -25,7 +25,7 @@ var createError400 = function (invalidParametrName) {
 };
 
 router.delete('/post', function (req, res, next) {
-    var id = req.query.id,
+    var id = req.body.id,
         promise;
 
     if (!id) {
