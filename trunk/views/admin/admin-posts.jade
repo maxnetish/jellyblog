@@ -30,11 +30,11 @@ div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                                 td
                                     span(data-bind="dateText: $data.date")
                                 td
-                                    button.btn.btn-xs(data-bind="click: $parent.toggleDraft, css: {'btn-info': $data.draft, 'btn-primary': !$data.draft}, attr: {'title': $data.draft?'Publish':'Convert to draft'}")
-                                        span.glyphicon(data-bind="css: {'glyphicon-unchecked': $data.draft, 'glyphicon-share': !$data.draft}")
+                                    button.btn.btn-xs(data-bind="click: $parent.toggleDraft, css: {'btn-info': $data.draft, 'btn-primary': !$data.draft()}, attr: {'title': $data.draft()?'Publish':'Convert to draft'}")
+                                        span.glyphicon(data-bind="css: {'glyphicon-unchecked': $data.draft, 'glyphicon-share': !$data.draft()}")
                                 td
-                                    button.btn.btn.btn-xs(data-bind="click: $parent.toggleFeatured, css: {'btn-warning': $data.featured, 'btn-primary': !$data.featured}, attr: {'title': $data.featured?'Make ordinary':'Make featured'}")
-                                        span.glyphicon(data-bind="css: {'glyphicon-flash': $data.featured, 'glyphicon-unchecked': !$data.featured}")
+                                    button.btn.btn.btn-xs(data-bind="click: $parent.toggleFeatured, css: {'btn-warning': $data.featured, 'btn-primary': !$data.featured()}, attr: {'title': $data.featured()?'Make ordinary':'Make featured'}")
+                                        span.glyphicon(data-bind="css: {'glyphicon-flash': $data.featured, 'glyphicon-unchecked': !$data.featured()}")
                                 td
                                     button.btn.btn-danger.btn-xs(data-bind="click: $parent.remove", title="Delete")
                                         span.glyphicon.glyphicon-remove

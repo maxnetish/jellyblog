@@ -70,6 +70,36 @@ router.post('/post', function (req, res, next) {
         .then(null, next);
 });
 
+router.post('/post/draft', function (req, res, next) {
+    var formData = req.body,
+        promise;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    promise = dataProvider.promisePostDraftUpdate(formData);
+    promise.then(function (result) {
+        return res.send(result);
+    }).then(null, next);
+});
+
+router.post('/post/featured', function (req, res, next) {
+    var formData = req.body,
+        promise;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    promise = dataProvider.promisePostFeaturedUpdate(formData);
+    promise.then(function (result) {
+        return res.send(result);
+    }).then(null, next);
+});
+
 router.get('/post', function (req, res, next) {
     var id = req.query.id,
         slug = req.query.slug,
@@ -86,7 +116,7 @@ router.get('/post', function (req, res, next) {
 
     promise
         .then(function (result) {
-            if(!result){
+            if (!result) {
                 next(createError(404, 'No such post'));
                 return;
             }

@@ -89,10 +89,14 @@ var promisePostRemove = function (id) {
 
 var promisePostUpdate = function (post) {
     var query,
-        id = post._id;
+        id = post._id,
+        update,
+        fields;
 
-    delete post._id;
-    query = model.Post.findByIdAndUpdate(id, post);
+    update = _.omit(post, ['_id']);
+    fields = _.keys(update).join(' ');
+
+    query = model.Post.findByIdAndUpdate(id, update, {select: fields});
     return query.exec();
 };
 

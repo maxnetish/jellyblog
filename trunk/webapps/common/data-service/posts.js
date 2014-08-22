@@ -4,18 +4,19 @@
 define('data.posts',
     [
         'jquery',
+        'ko',
         'data.mapper',
         'data.utils'
     ],
-    function ($, mapper, dataUtils) {
+    function ($, ko, mapper, dataUtils) {
         var PostBrief = function (row) {
                 row = row || {};
                 this._id = row._id || undefined;
                 this.title = row.title || "";
                 this.date = row.date ? new Date(row.date) : new Date();
                 this.slug = row.slug || "";
-                this.featured = !!row.featured;
-                this.draft = !!row.draft;
+                this.featured = ko.observable(!!row.featured);
+                this.draft = ko.observable(!!row.draft);
             },
             /**
              * Query list of posts

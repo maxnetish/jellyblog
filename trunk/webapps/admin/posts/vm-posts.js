@@ -19,6 +19,7 @@ define('vm.posts',
          */
         var limit = 8,
             postsList = ko.observableArray(),
+//            saving = ko.observable(false),
 
         // pagination
             /**
@@ -114,18 +115,63 @@ define('vm.posts',
                 }
             },
 
-            remove = function(post){
-                if(window.confirm('Delete post "'+post.title+'" permanently? Really?')){
-                    dataPost.remove(post._id).done(updateData);
+            remove = function (post, event) {
+                if (window.confirm('Delete post "' + post.title + '" permanently? Really?')) {
+                    event.currentTarget.disabled = true;
+                    dataPost.remove(post._id).done(updateData)
+                        .always(afterUpdateAlways(event.currentTarget));
                 }
             },
 
-            toggleDraft = function(post){
-                alert(post.title);
+            afterUpdateDone = function (update) {
+                var itemToUpdate,
+                    propToUpdate,
+                    postsUnwrapped = ko.unwrap(postsList);
+
+                console.dir(update);
+
+                itemToUpdate = _.find(postsUnwrapped, function (item) {
+                    return item._id === update._id;
+                });
+
+                if (!itemToUpdate) {
+                    return;
+                }
+
+                propToUpdate = _.omit(update, ['_id']);
+                _.each(propToUpdate, function (propValue, propName) {
+                    if (ko.isObservable(itemToUpdate[propName])) {
+                        itemToUpdate[propName](ko.unwrap(propValue));
+                    } else {
+                        itemToUpdate[propName] = ko.unwrap(propValue);
+                    }
+                });
             },
 
-            toggleFeatured = function(post){
-                alert(post.title);
+            afterUpdateAlways = function (targetButton) {
+                return function () {
+                    _.delay(function () {
+                        targetButton.disabled = false;
+                    }, 500);
+                };
+            },
+
+            toggleDraft = function (post, event) {
+                var draftValue = !post.draft();
+                event.currentTarget.disabled = true;
+                dataPost.savePlain({
+                    _id: post._id,
+                    draft: draftValue
+                }).done(afterUpdateDone).always(afterUpdateAlways(event.currentTarget));
+            },
+
+            toggleFeatured = function (post, event) {
+                var featuredValue = !post.featured();
+                event.currentTarget.disabled = true;
+                dataPost.savePlain({
+                    _id: post._id,
+                    featured: featuredValue
+                }).done(afterUpdateDone).always(afterUpdateAlways(event.currentTarget));
             };
 
         // update data when url params changed
