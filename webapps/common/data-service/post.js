@@ -59,6 +59,17 @@ define('data.post',
                     .fail(onFail);
                 return promise;
             },
+            savePlain = function (postData) {
+                var promise,
+
+                    promise = $.ajax({
+                        dataType: 'json',
+                        type: 'POST',
+                        url: '/api/post',
+                        data: postData
+                    }).fail(onFail);
+                return promise;
+            },
             remove = function (id) {
                 var promise = $.ajax({
                     dataType: 'json',
@@ -79,6 +90,7 @@ define('data.post',
             PostDetails: PostDetails,
             get: get,
             save: save,
+            savePlain: savePlain,
             remove: remove
         };
     });
