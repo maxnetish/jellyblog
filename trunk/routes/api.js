@@ -8,6 +8,7 @@ var locales = require('../locale');
 var dataProvider = require('../service/dataProvider');
 var multipartMiddleware = require('connect-multiparty')();
 var fileUtils = require('../service/fileUtils');
+var importPosts = require('../service/importPostsFromJson');
 var Q = require('q');
 
 var createError = function (status, message) {
@@ -211,11 +212,23 @@ router.post('/upload', multipartMiddleware, function (req, res, next) {
         return;
     }
 
-    fileUtils.saveTempFilesPromise(req.files, 'upload')
-        .then(function (result) {
-            return res.send(result);
-        })
-        .then(null, next);
+    if(!req.files){
+        next(createError400('files'));
+        return;
+    }
+
+    if(req.files.hasOwnProperty('file_json_posts')){
+         importPosts.importFromFile(req.files['file_json_posts'].path)
+             .then(function(result){
+                 return res.send(result);
+             }, next);
+    }else {
+        fileUtils.saveTempFilesPromise(req.files, 'upload')
+            .then(function (result) {
+                return res.send(result);
+            })
+            .then(null, next);
+    }
 });
 
 router.get('/upload', function (req, res, next) {

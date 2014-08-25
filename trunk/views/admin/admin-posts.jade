@@ -5,6 +5,13 @@ div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
         div.panel-heading
             h4(data-bind="translate: 'POSTS'")
         div.panel-body
+            div.form-group
+                div.input-group
+                    input.form-control(type="file", name="file", id="file", accept="application/json")
+                    div.input-group-btn
+                        button.btn.btn-info(data-bind="click: function(){uploadPosts(document.getElementById('file').files[0])}")
+                            span.glyphicon.glyphicon-upload
+                            span(data-bind="translate: 'IMPORT_FROM_JSON'")
             div.row
                 div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
             div.row
