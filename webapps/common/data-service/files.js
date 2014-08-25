@@ -56,12 +56,26 @@ define('data.files',
                     }
                 })
                     .fail(dataUtils.onFail);
+            },
+            uploadJsonPosts = function(fileObject){
+                var formData = new FormData();
+                formData.append('file_json_posts', fileObject);
+
+                return $.ajax({
+                    type: 'POST',
+                    url: '/api/upload',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                })
+                    .fail(dataUtils.onFail);
             };
 
         return {
             Model: FileInfo,
             query: readUploadDir,
             upload: uploadFile,
-            remove: removeFile
+            remove: removeFile,
+            uploadJsonPosts: uploadJsonPosts
         };
     });

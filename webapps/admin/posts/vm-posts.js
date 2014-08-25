@@ -7,10 +7,11 @@ define('vm.posts',
         '_',
         'data.posts',
         'data.post',
+        'data.files',
         'messenger',
         'logger'
     ],
-    function (ko, _, dataPosts, dataPost, messenger, logger) {
+    function (ko, _, dataPosts, dataPost, dataFiles, messenger, logger) {
         'use strict';
 
         /**
@@ -172,6 +173,14 @@ define('vm.posts',
                     _id: post._id,
                     featured: featuredValue
                 }).done(afterUpdateDone).always(afterUpdateAlways(event.currentTarget));
+            },
+
+            uploadPosts = function(file){
+                var f = file;
+                dataFiles.uploadJsonPosts(f)
+                    .done(function (result) {
+                        console.dir(result);
+                    });
             };
 
         // update data when url params changed
@@ -184,6 +193,7 @@ define('vm.posts',
             toggleDraft: toggleDraft,
             toggleFeatured: toggleFeatured,
             remove: remove,
+            uploadPosts: uploadPosts,
             pagination: {
                 nextPageUrl: nextPageUrl,
                 prevPageUrl: prevPageUrl,
