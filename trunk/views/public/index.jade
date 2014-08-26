@@ -4,13 +4,17 @@ block content
     div()
         div.main-wrapper.container-fluid
             include main-menu
-            include posts-pagination-tpl
-            each post in postList
-                include post-tpl
-            include posts-pagination-tpl
+            div#app-view
+                include posts-pagination-tpl
+                each post in postList
+                    include post-tpl
+                include posts-pagination-tpl
             include footer
 block specific
-    script(src='/js/app-public.js')
+    if developmentMode
+        script(src='/js/app-public.js')
+    else
+        script(src='/js/app-public.min.js')
 block meta
     meta(property="og:title", content=metaTitle)
     meta(property="og:type", content="article")

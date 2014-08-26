@@ -6,9 +6,9 @@
         waitSeconds: 45,
         baseUrl: '/js',
         paths: {
-            ko: "knockout",
-            _: "lodash",
-            q: "q"
+            ko: "knockout.min",
+            _: "lodash.min",
+            q: "q.min"
         }
     });
 

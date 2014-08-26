@@ -39,11 +39,16 @@ router.delete('/post', function (req, res, next) {
         return;
     }
 
-    promise = dataProvider.promisePostRemove(id);
+    if (id === 'all') {
+        promise = dataProvider.promisePostRemoveAll();
+    } else {
+        promise = dataProvider.promisePostRemove(id);
+    }
 
     promise
         .then(function (result) {
-            return res.send(result);
+            // result can be simple value!
+            return res.json(result);
         })
         .then(null, next);
 });
@@ -212,17 +217,18 @@ router.post('/upload', multipartMiddleware, function (req, res, next) {
         return;
     }
 
-    if(!req.files){
+    if (!req.files) {
         next(createError400('files'));
         return;
     }
 
-    if(req.files.hasOwnProperty('file_json_posts')){
-         importPosts.importFromFile(req.files['file_json_posts'].path)
-             .then(function(result){
-                 return res.send(result);
-             }, next);
-    }else {
+    if (req.files.hasOwnProperty('file_json_posts')) {
+        importPosts.importFromFile(req.files['file_json_posts'].path)
+            .then(function (result) {
+                var f = arguments;
+                return res.send(result);
+            }, next);
+    } else {
         fileUtils.saveTempFilesPromise(req.files, 'upload')
             .then(function (result) {
                 return res.send(result);

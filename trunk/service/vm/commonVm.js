@@ -14,6 +14,7 @@ var lang = require('../../locale'),
         this.getText = function (key) {
             return lang.getText(key, self.preferredLocale);
         };
+        this.developmentMode = require('express')().get('env') === 'development';
     };
 
 module.exports = BaseViewModel;

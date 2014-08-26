@@ -21,4 +21,7 @@ block content
             include admin-edit-post
             include admin-files
 block specific
-    script(src='/js/app-admin.js')
+    if developmentMode
+        script(src='/js/app-admin.js')
+    else
+        script(src='/js/app-admin.min.js')

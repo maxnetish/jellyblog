@@ -3,8 +3,7 @@ article.panel.panel-default
         div.row
             div.col-lg-11.col-md-11.col-sm-11.panel-title
                 div.media
-                    if post.image
-                        img.media-object.pull-left.deferred-image.deferred-image-wait(data-deferred-src=post.image)
+                    img.media-object.pull-left.deferred-image.deferred-image-wait(style=post.image?'':'display: none', data-deferred-src=post.image)
                     div.media-body
                         h2= post.title
             div.col-lg-1.col-md-1.col-sm-1
@@ -12,17 +11,15 @@ article.panel.panel-default
     div.panel-body
         div.post-content(data-post-content-id=post._id.toString())
             != disableCut? post.contentFull : post.contentCut
-            if !disableCut && post.hasCut
-                a(href="javascript:void 0", data-cmd-show-full=post._id.toString())
-                    span.glyphicon.glyphicon-download-alt
-                    span= getText('SHOW_MORE')
+            a(style=(!disableCut && post.hasCut)?'':'display: none', href="javascript:void 0", data-cmd-show-full=post._id.toString())
+                span.glyphicon.glyphicon-download-alt
+                span= getText('SHOW_MORE')
     div.panel-footer
         div.row
-            if !disablePermalink
-                div.col-lg-2.col-md-2.col-sm-2
-                    a.no-wrap.margin-right-2em(href=getPostUrl(post))
-                        span.glyphicon.glyphicon-link
-                        span #{getText('PERMANENT_LINK')}
+            div.col-lg-2.col-md-2.col-sm-2(style=disablePermalink?'display: none':'')
+                a.no-wrap.margin-right-2em(href=getPostUrl(post))
+                    span.glyphicon.glyphicon-link
+                    span #{getText('PERMANENT_LINK')}
             div.col-lg-10.col-md-10.col-sm-10
                 div.tags-list
                     each tag in post.tags
