@@ -19,7 +19,16 @@ router.get('/', function (req, res, next) {
     })
         .then(function (vm) {
             vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, req.originalUrl);
-            res.render('public/index', vm);
+            if (req.wantJson) {
+                delete vm.user;
+                delete vm.preferredLocale;
+                delete vm.navlinksFooter;
+                delete vm.navlinksMain;
+                delete vm.settings;
+                res.json(vm);
+            } else {
+                res.render('public/index', vm);
+            }
             return vm;
         })
         .then(null, next);

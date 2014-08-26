@@ -87,6 +87,10 @@ var promisePostRemove = function (id) {
     return model.Post.findByIdAndRemove(id).exec();
 };
 
+var promisePostRemoveAll = function(){
+    return model.Post.remove({}).exec();
+}
+
 var promisePostUpdate = function (post) {
     var query,
         id = post._id,
@@ -289,6 +293,7 @@ module.exports = {
     promisePostCreate: promisePostCreate,
     promisePostUpdate: promisePostUpdate,
     promisePostRemove: promisePostRemove,
+    promisePostRemoveAll: promisePostRemoveAll,
     promisePostGetAdjacent: promisePostGetAdjacent,
     promiseNavlinkCreate: promiseNavlinkCreate,
     promiseNavlinkUpdate: promiseNavlinkUpdate,

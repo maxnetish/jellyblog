@@ -38,6 +38,10 @@ var createSettingsModel = function (mongoose) {
         },
         metaDescription:{
             type: String
+        },
+        titleImageUrl:{
+            // full url
+            type: String
         }
     });
 

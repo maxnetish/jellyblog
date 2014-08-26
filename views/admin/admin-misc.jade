@@ -92,6 +92,13 @@ div#admin-misc.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                     div.col-lg-8.cl-md-8.col-sm-8
                         textarea.form-control(data-bind="value: metaDescription", id="siteMetadescription", type="text", placeholder="Meta description (few words)")
                 div.form-group
+                    label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'TITLE_IMAGE_URL'", for="title-image")
+                    div.col-lg-8.col-md-8.col-sm-8
+                        input.form-control(data-bind="value: titleImageUrl, valueUpdate: 'input'", id="title-image", type="url", placeholder="Main image (absolute url required)")
+                div.form-group
+                    div.main-wrapper
+                        div.main-image(data-bind="style: {backgroundImage: 'url(' + titleImageUrl() +')'}")
+                div.form-group
                     label.col-lg-4.col-md-4.col-sm-4.control-label(data-bind="translate: 'AUTHOR_AVATAR_URL'", for="avatarUrl")
                     div.col-lg-4.cl-md-4.col-sm-4
                         input.form-control(data-bind="value: authorAvatarUrl, valueUpdate: 'input'", id="avatarUrl", type="url", placeholder="Avatar url (absolute url required)")

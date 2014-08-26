@@ -24,6 +24,7 @@ define('data.settings',
                 this.siteTitle = ko.observable(row.siteTitle || null);
                 this.metaTitle = ko.observable(row.metaTitle || null);
                 this.metaDescription = ko.observable(row.metaDescription || null);
+                this.titleImageUrl = ko.observable(row.titleImageUrl || null);
             },
             getObservable = function () {
                 return $.ajax({

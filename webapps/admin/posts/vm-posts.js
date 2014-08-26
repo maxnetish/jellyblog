@@ -124,6 +124,14 @@ define('vm.posts',
                 }
             },
 
+            removeAll = function(data, event){
+                if(window.confirm('Delete all posts?') && window.confirm('Last chance to cancel removing of all posts. Really delete all posts?')){
+                    event.currentTarget.disabled = true;
+                    dataPost.remove('all').done(updateData)
+                        .always(afterUpdateAlways(event.currentTarget));
+                }
+            },
+
             afterUpdateDone = function (update) {
                 var itemToUpdate,
                     propToUpdate,
@@ -175,12 +183,12 @@ define('vm.posts',
                 }).done(afterUpdateDone).always(afterUpdateAlways(event.currentTarget));
             },
 
-            uploadPosts = function(file){
+            uploadPosts = function(file, event){
                 var f = file;
+                event.currentTarget.disabled = true;
                 dataFiles.uploadJsonPosts(f)
-                    .done(function (result) {
-                        console.dir(result);
-                    });
+                    .done(updateData)
+                    .always(afterUpdateAlways(event.currentTarget));
             };
 
         // update data when url params changed
@@ -193,6 +201,7 @@ define('vm.posts',
             toggleDraft: toggleDraft,
             toggleFeatured: toggleFeatured,
             remove: remove,
+            removeAll: removeAll,
             uploadPosts: uploadPosts,
             pagination: {
                 nextPageUrl: nextPageUrl,

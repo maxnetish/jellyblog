@@ -22,7 +22,8 @@
     "q": "*",
     "connect-multiparty": "*",
     "fs-extra": "*",
-    "moment": "*"
+    "moment": "*",
+    "connect-mongo": "~0.4.1"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

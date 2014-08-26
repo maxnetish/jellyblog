@@ -98,10 +98,6 @@ var importPosts = function (row, converter) {
     return dataProvider.promisePostCreate(postsArray);
 };
 
-var importOnePost = function (oneRowPost) {
-
-};
-
 var onReadJson = function (dfr, readed) {
     importPosts(readed, converterFromGhostExportObject)
         .then(dfr.resolve, dfr.reject);
