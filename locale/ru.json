@@ -54,5 +54,8 @@
     "TO_OLDER": "Туда",
     "SHOW_MORE": "Показеть всё",
     "PERMANENT_LINK": "Постоянная ссылка",
-    "SITE_TITLE": "Заголовок сайта"
+    "SITE_TITLE": "Заголовок сайта",
+    "IMPORT_FROM_JSON": "Импортировать из файла json",
+    "REMOVE_ALL_POSTS": "Удалить все публикации",
+    "TITLE_IMAGE_URL": "Заглавная картинка (1000x140 или больше)"
 }
