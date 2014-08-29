@@ -100,7 +100,7 @@ var dataProvider = require('../dataProvider'),
                         var publicPageVm = results[0],
                             adjacent = results[1],
                             vmIntern = new PostViewModel({
-                                post: post
+                                post: post.getPlainObject(opts.preferredLocale, null, true)
                             }),
                             vm;
                         vm = _.extend(vmIntern, publicPageVm);

@@ -7,6 +7,7 @@ define('susanin-path',
         'susanin-route'
     ],
     function (_, SusaninRoute) {
+        'use strict';
         // internal members
         var historyInitial = {
                 popped: null,
@@ -54,18 +55,19 @@ define('susanin-path',
             registered = {},
             onPopState = function () {
                 var initialPop = !historyInitial.popped && location.href === historyInitial.URL;
+
                 historyInitial.popped = true;
                 if (initialPop) {
                     return;
                 }
-                dispatch(document.location.pathname);
+                dispatch(location.pathname + location.search);
             },
             match = function (path) {
-                var parsedRoute;
-                var susaninMatched = _.find(registered, function (item) {
-                    parsedRoute = item.match(path);
-                    return parsedRoute !== null;
-                });
+                var parsedRoute,
+                    susaninMatched = _.find(registered, function (item) {
+                        parsedRoute = item.match(path);
+                        return parsedRoute !== null;
+                    });
                 if (parsedRoute) {
                     return {
                         parsed: parsedRoute,
@@ -94,16 +96,15 @@ define('susanin-path',
                 if (matchedResult !== null) {
                     matchedResult.matched.run(matchedResult.parsed);
                     return true;
-                } else {
-                    if (rescueCb !== null) {
-                        rescueCb(passedRoute);
-                    }
+                }
+                if (rescueCb !== null) {
+                    rescueCb(passedRoute);
                 }
             };
 
         // public interface
         var listen = function () {
-                if(!supported()){
+                if (!supported()) {
                     return false;
                 }
                 historyInitial.popped = (('state' in window.history) ? true : false);
@@ -129,16 +130,33 @@ define('susanin-path',
                     history.pushState(state, title, path);
                 }
             },
-            supported = function(){
+            supported = function () {
                 return !!(window.history && window.history.pushState);
+            },
+            disabled = function () {
+                var query = location.search,
+                    result = false, i, iLen, parts;
+                if (query) {
+                    query = query.substring(1);
+                    query = query.split('&');
+                    for (i = 0, iLen = query.length; i < iLen; i++) {
+                        parts = query[i].split('=');
+                        if (parts && parts.length && parts[0] === 'no-route') {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+                return result;
             };
-
 
         return {
             map: map,
             rescue: rescue,
             pushState: pushState,
             mapped: registered,
-            listen: listen
+            listen: listen,
+            supported: supported,
+            disabled: disabled
         };
     });

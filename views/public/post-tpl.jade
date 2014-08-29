@@ -1,29 +1,28 @@
+- if(!post){post={tags:[]};}
 article.panel.panel-default
     div.panel-heading.post-heading
         div.row
             div.col-lg-11.col-md-11.col-sm-11.panel-title
                 div.media
-                    img.media-object.pull-left.deferred-image.deferred-image-wait(style=post.image?'':'display: none', data-deferred-src=post.image)
+                    img.media-object.pull-left.deferred-image.deferred-image-wait(style=post.image?'':'display: none', data-deferred-src=post.image, data-bind="visible: post.image, attr: {'data-deferred-src': post.image}")
                     div.media-body
-                        h2= post.title
+                        h2(data-bind="text: post.title")= post.title
             div.col-lg-1.col-md-1.col-sm-1
-                span.pull-right.label.label-default= post.formatDate(preferredLocale)
+                span.pull-right.label.label-default(data-bind="text: post.formatDate")= post.formatDate
     div.panel-body
-        div.post-content(data-post-content-id=post._id.toString())
-            != disableCut? post.contentFull : post.contentCut
-            a(style=(!disableCut && post.hasCut)?'':'display: none', href="javascript:void 0", data-cmd-show-full=post._id.toString())
+        div.post-content(data-post-content-id=post._id, data-bind="attr: {'data-post-content-id': post._id}")
+            div(data-bind="html: post.content")
+                != post.content
+            a(style=(!disableCut && post.hasCut)?'':'display: none', href="javascript:void 0", data-cmd-show-full=post._id, data-bind="visible: !$parent.disableCut() && post.hasCut, attr: {'data-cmd-show-full': post._id}")
                 span.glyphicon.glyphicon-download-alt
                 span= getText('SHOW_MORE')
     div.panel-footer
         div.row
-            div.col-lg-2.col-md-2.col-sm-2(style=disablePermalink?'display: none':'')
-                a.no-wrap.margin-right-2em(href=getPostUrl(post))
+            div.col-lg-2.col-md-2.col-sm-2(style=disablePermalink?'display: none':'', data-bind="visible: !$parent.disablePermalink()")
+                a.no-wrap.margin-right-2em(href=post.url, data-bind="attr: {href: post.url}", data-route)
                     span.glyphicon.glyphicon-link
                     span #{getText('PERMANENT_LINK')}
             div.col-lg-10.col-md-10.col-sm-10
-                div.tags-list
+                div.tags-list(data-bind="template: {name: 'post-tag-tpl', foreach: post.tags, as: 'tag'}")
                     each tag in post.tags
-                        a(href="/?tag="+tag)
-                            span.label.label-info
-                                span.glyphicon.glyphicon-tag
-                                span= tag
+                        include post-tag-tpl

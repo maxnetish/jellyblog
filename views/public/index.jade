@@ -6,11 +6,16 @@ block content
             include main-menu
             div#app-view
                 include posts-pagination-tpl
-                each post in postList
-                    include post-tpl
+                div#posts-view-wrapper(data-bind="template: {name: 'post-tpl', foreach: posts, as: 'post'}")
+                    each post in postList
+                        include post-tpl
                 include posts-pagination-tpl
             include footer
 block specific
+    script#post-tpl(type="text/html")
+        include post-tpl
+    script#post-tag-tpl(type="text/html")
+        include post-tag-tpl
     if developmentMode
         script(src='/js/app-public.js')
     else

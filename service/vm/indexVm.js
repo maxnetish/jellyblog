@@ -98,7 +98,9 @@ var dataProvider = require('../dataProvider'),
                     .then(function (posts) {
                         var hasNext = (posts.length - baseVm.settings.postsPerPage) > 0,
                             vmIntern = new IndexViewModel({
-                                postList: _.first(posts, baseVm.settings.postsPerPage)
+                                postList: _.map(_.first(posts, baseVm.settings.postsPerPage), function(item){
+                                     return item.getPlainObject(opts.preferredLocale);
+                                })
                             }),
                             vm;
                         vm = _.extend(vmIntern, baseVm);
