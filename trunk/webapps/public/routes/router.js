@@ -12,6 +12,10 @@ define('router',
     function ($, _, ko, vm, susanin) {
         'use strict';
         (function (viewSelector) {
+            if(!susanin.supported() || susanin.disabled()){
+                return;
+            }
+
             var routeDefinitions = vm.routes,
                 applyBindingOnce = _.once(function () {
                     if(vm && viewSelector) {
@@ -52,8 +56,11 @@ define('router',
 
             susanin.rescue(function (path) {
                 // try to load from server
+                window.location = path;
                 console.log('Rescue path: ' + path);
             });
+
+
             susanin.listen(); // no fallback to hashbangs
 
             // bind anchors

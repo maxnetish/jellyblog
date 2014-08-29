@@ -62,7 +62,10 @@ define('messenger',
                     iLen,
                     contextToUse,
                     subscribe,
-                    subscribesForMessage;
+                    subscribesForMessage,
+                    callSubscribe = function(){
+                        subscribe.callback.call(contextToUse, args, subscribe.state);
+                    };
 
                 if (!subscribes.hasOwnProperty(messageName) || subscribes[messageName].length === 0) {
                     return;
@@ -77,9 +80,9 @@ define('messenger',
                         onceSubscribes.push(subscribe.hash);
                     }
                     if (subscribe.async) {
-                        _.defer(subscribe.callback.call, contextToUse, args, subscribe.status);
+                        _.defer(callSubscribe);
                     } else {
-                        subscribe.callback.call(contextToUse, args, subscribe.state);
+                        callSubscribe();
                     }
                 }
 
@@ -91,7 +94,8 @@ define('messenger',
             },
             messageNames = Object.freeze({
                 TranslateLangChanged: 'jb_translate_lang_changed',
-                PostUpdated: 'jb_post_updated'
+                PostUpdated: 'jb_post_updated',
+                ContentUpdated: 'jb_content_updated'
             });
 
         return {

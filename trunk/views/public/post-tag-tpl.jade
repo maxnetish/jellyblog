@@ -1,0 +1,6 @@
+- if(!tag){tag={};}
+a(href="/?tag="+tag, data-bind="attr: {href: '/?tag='+tag}", data-route)
+    span.label.label-info
+        span.glyphicon.glyphicon-tag
+        span(data-bind="text: tag")= tag
+

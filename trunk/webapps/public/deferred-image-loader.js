@@ -5,9 +5,10 @@ define('deferred-image-loader',
     [
         'jquery',
         'lodash',
-        'helpers-ui'
+        'helpers-ui',
+        'messenger'
     ],
-    function ($, _, helpersUi) {
+    function ($, _, helpersUi, messenger) {
         'use strict';
         var loaderDataAttr = 'deferred-src',
             classInitial = 'deferred-image-wait',
@@ -38,9 +39,6 @@ define('deferred-image-loader',
             },
             onScrollOrResize = function () {
                 var $targetElems = $('.' + classInitial);
-                if (!$targetElems.length) {
-                    $(window).off(nameSpace);
-                }
                 $targetElems.each(function () {
                     if (checkForVisible(this)) {
                         doLoad(this);
@@ -53,5 +51,10 @@ define('deferred-image-loader',
             $(window)
                 .on('scroll' + nameSpace, _.throttle(onScrollOrResize, 1000, {'leading': false}))
                 .on('resize' + nameSpace, _.throttle(onScrollOrResize, 1000, {'leading': false}));
+            messenger.subscribe({
+                messageName: messenger.messageNames.ContentUpdated,
+                callback: onScrollOrResize,
+                async: true
+            });
         })();
     });

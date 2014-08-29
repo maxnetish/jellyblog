@@ -3,6 +3,7 @@
  */
 var _ = require('underscore'),
     moment = require('moment'),
+    URL = require('url'),
     CUT_LITERAL = '%CUT%',
     createPostModel = function (mongoose) {
         var Schema = mongoose.Schema;
@@ -87,6 +88,20 @@ var _ = require('underscore'),
             }
             return result;
         });
+
+        postSchema.methods.getPlainObject = function (locale, momentDateFormat, disableCut) {
+            var result = this.toObject();
+            locale = locale || 'en';
+            momentDateFormat = momentDateFormat || 'LL';
+
+            result.formatDate = this.formatDate(locale, momentDateFormat);
+            result.hasCut = this.hasCut;
+            result.content = disableCut ? this.contentFull : this.contentCut;
+            result.url = URL.format(this.url);
+            result._id = this._id.toString();
+
+            return result;
+        };
 
         return mongoose.model("Post", postSchema);
     };

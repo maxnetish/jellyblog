@@ -18,7 +18,7 @@ define('vm.posts',
          * one page default limit
          * @type {number}
          */
-        var limit = 8,
+        var limit = 16,
             postsList = ko.observableArray(),
 //            saving = ko.observable(false),
 
