@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var serviceAuth = require('./service/auth');
 var preferredLocale = require('./service/preferredLocale');
+var responseTime = require('response-time');
+var morgan2Mongo = require('./service/morgan2Mongo');
 
 // session support
 var session = require('express-session');
@@ -30,8 +32,18 @@ console.log('Express mode: ' + app.get('env'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+// adds X-Response-Time header
+app.use(responseTime(1));
+
+// add favicon
 app.use(favicon());
-app.use(logger('dev'));
+
+// setup logger
+//if (app.get('env') === 'development') {
+//    app.use(logger('dev'));
+//} else {
+    app.use(logger(morgan2Mongo.addEntryFromMorgan));
+//}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
@@ -91,12 +103,13 @@ if (app.get('env') === 'development') {
             error: err,
             stack: err.stack
         });
+        morgan2Mongo.addEntryFromErrorResponse(req, res, err);
     });
     app.use(function (err, req, res, next) {
         var responseVm = {
-                message: err.message,
-                error: err
-            };
+            message: err.message,
+            error: err
+        };
         res.status(err.status || 500);
 
         if (req.wantJson) {
@@ -104,6 +117,8 @@ if (app.get('env') === 'development') {
         } else {
             res.render('error', responseVm);
         }
+
+        morgan2Mongo.addEntryFromErrorResponse(req, res, err);
     });
 }
 
@@ -117,6 +132,7 @@ app.use('/api', function (err, req, res, next) {
         message: err.message,
         error: {}
     });
+    morgan2Mongo.addEntryFromErrorResponse(req, res, err);
 });
 app.use(function (err, req, res, next) {
     var responseVm = {
@@ -125,11 +141,12 @@ app.use(function (err, req, res, next) {
     };
     res.status(err.status || 500);
 
-    if(req.wantJson){
+    if (req.wantJson) {
         res.json(responseVm);
-    }else {
+    } else {
         res.render('error', responseVm);
     }
+    morgan2Mongo.addEntryFromErrorResponse(req, res, err);
 });
 
 module.exports = app;

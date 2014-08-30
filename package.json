@@ -23,7 +23,8 @@
     "connect-multiparty": "*",
     "fs-extra": "*",
     "moment": "*",
-    "connect-mongo": "~0.4.1"
+    "connect-mongo": "~0.4.1",
+    "response-time": "~2.0.1"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

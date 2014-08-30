@@ -36,6 +36,10 @@ define('vm.main-nav',
                 href: '#!/edit',
                 titleKey: 'NEW_POST',
                 icon: 'glyphicon-plus'
+            },
+            {
+                href: '#!/log',
+                titleKey: 'LOG_ENTRIES'
             }
         ];
 

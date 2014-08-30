@@ -9,8 +9,9 @@ define('route-definition',
         'vm.posts',
         'vm.edit-post',
         'vm.misc',
-        'vm.files'
-    ], function (_, $, ko, vmPosts, vmEditPost, vmMisc, vmFiles) {
+        'vm.files',
+        'vm.log'
+    ], function (_, $, ko, vmPosts, vmEditPost, vmMisc, vmFiles, vmLog) {
         'use strict';
         var RouteDefinition = function (row) {
                 var self = this;
@@ -53,6 +54,12 @@ define('route-definition',
                     viewModel: vmEditPost,
                     route: '#!/edit(/:postId)',
                     on: vmEditPost.activate
+                }),
+                log: new RouteDefinition({
+                    view: '#admin-view-log',
+                    viewModel: vmLog,
+                    route: '#!/log',
+                    on: vmLog.activate
                 })
             });
 
