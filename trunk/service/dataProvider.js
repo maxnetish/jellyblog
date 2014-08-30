@@ -87,7 +87,7 @@ var promisePostRemove = function (id) {
     return model.Post.findByIdAndRemove(id).exec();
 };
 
-var promisePostRemoveAll = function(){
+var promisePostRemoveAll = function () {
     return model.Post.remove({}).exec();
 }
 
@@ -286,11 +286,53 @@ var promiseSettingsUpdate = function (settings) {
     return query.exec();
 };
 
-var promiseLogEntries = function(){
-    var query = model.Log.find(null, null,{
+var promiseLogEntries = function (params) {
+    var stream, query, skip, afterId, limit, dfr, result, found;
+
+    var reject = function (err) {
+            dfr.reject(err);
+        },
+        resolve = function () {
+            dfr.resolve(result);
+        },
+        iterateDoc = function (doc) {
+            if (found) {
+                if (result.push(doc) === limit) {
+                    resolve();
+                    stream.destroy();
+                }
+            } else {
+                found = doc._id.equals(afterId);
+            }
+        };
+
+    params = params || {};
+    afterId = params.afterId;
+    limit = parseInt(params.limit, 10);
+    skip = params.skip;
+
+    if (!afterId) {
+        query = model.Log.find(null, null, {
+            sort: '-date',
+            skip: skip,
+            limit: limit
+        });
+        return query.exec();
+    }
+
+    result = [];
+    dfr = Q.defer();
+    limit = limit || 0;
+    stream = model.Log.find(null, null, {
         sort: '-date'
-    });
-    return query.exec();
+    }).stream();
+
+    stream
+        .on('data', iterateDoc)
+        .on('error', reject)
+        .on('close', resolve);
+
+    return dfr.promise;
 };
 
 module.exports = {

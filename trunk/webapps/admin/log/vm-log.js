@@ -11,20 +11,44 @@ define('vm.log', [
         'use strict';
         var logEntries = ko.observableArray();
         var filter = ko.observable();
+        var limit = 100;
 
-        var updateEntries = function () {
-            dataLog.query()
-                .done(function (result) {
-                    logEntries(result);
-                });
+        var refreshEntries = function () {
+            dataLog.query({
+                limit: limit
+            }).done(function (result) {
+                logEntries(result);
+            });
         };
 
         var activate = function () {
-            updateEntries();
+            if (!logEntries().length) {
+                refreshEntries();
+            }
         };
 
         var toggleExpand = function (data) {
             data.expanded(!data.expanded());
+        };
+
+        var loadMore = function () {
+            var newQuery = {
+                    limit: limit
+                },
+                logUnwrapped = ko.unwrap(logEntries);
+
+            if (logUnwrapped.length) {
+                newQuery.afterId = _.last(logUnwrapped)._id;
+            }
+
+            dataLog.query(newQuery)
+                .done(function (result) {
+                    ko.utils.arrayPushAll(logEntries, result);
+                });
+        };
+
+        var refresh = function () {
+            refreshEntries();
         };
 
         filter.subscribe(function (newFilter) {
@@ -42,6 +66,8 @@ define('vm.log', [
             entries: logEntries,
             activate: activate,
             toggleExpand: toggleExpand,
-            filter: filter
+            filter: filter,
+            loadMore: loadMore,
+            refresh: refresh
         };
     });

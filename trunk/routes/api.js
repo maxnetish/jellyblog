@@ -294,7 +294,7 @@ router.get('/log', function (req, res, next) {
         return;
     }
 
-    dataProvider.promiseLogEntries()
+    dataProvider.promiseLogEntries(req.query)
         .then(function (result) {
             return res.send(result);
         })
