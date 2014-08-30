@@ -4,7 +4,10 @@ div#admin-view-log.container-fluid.view.col-sm-12.col-md-10.col-lg-8
             h4.panel-title(data-bind="translate: 'LOG_ENTRIES'")
         div.panel-body
             div.form-group
-                input.form-control(data-bind="value: filter, valueUpdate: 'input'" type="text", placeholder="Filter")
+                div.col-lg-2.col-md-2.col-sm-2
+                    button.btn.btn-danger(data-bind="translate: 'REFRESH', click: refresh")
+                div.col-lg-10.col-md-10.col-sm-10
+                    input.form-control(data-bind="value: filter, valueUpdate: 'input'" type="text", placeholder="Filter")
             div.table-responsive
                 table.table.table-hover.table-condensed.table-fixed
                     colgroup
@@ -27,7 +30,8 @@ div#admin-view-log.container-fluid.view.col-sm-12.col-md-10.col-lg-8
                                     div.row
                                         div.col-lg-2.col-md-2.col-sm-2(data-bind="text: param.name")
                                         div.col-lg-10.col-md-10.col-sm-10(data-bind="text: param.value")
-
+            div.form-group
+                a(href="javascript: void 0" data-bind="translate: 'LOAD_MORE', click: loadMore")
 
 
 

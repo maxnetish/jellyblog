@@ -18,7 +18,7 @@ define('data.log',
 
             this.asArray = [];
             for (prop in this) {
-                if(prop !== 'asArray' && prop !== '_id' && prop !== '__v') {
+                if (prop !== 'asArray' && prop !== '_id' && prop !== '__v') {
                     this.asArray.push({
                         name: prop,
                         value: this[prop]
@@ -31,11 +31,12 @@ define('data.log',
         };
 
         var onFail = dataUtils.onFail;
-        var query = function () {
+        var query = function (opts) {
             return $.ajax({
                 dataType: 'json',
                 type: 'GET',
                 url: '/api/log',
+                data: opts,
                 converters: {
                     'text json': mapper.create(LogEntry)
                 }
