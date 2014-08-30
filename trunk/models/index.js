@@ -9,5 +9,6 @@ exports.model = {
     User: require('./user').createUserModel(mongoose),
     Post: require('./post').createPostModel(mongoose),
     Navlink: require('./navlink').createNavlinkModel(mongoose),
-    Settings: require('./misc-settings').createSettingsModel(mongoose)
+    Settings: require('./misc-settings').createSettingsModel(mongoose),
+    Log: require('./log-record').createLogRecordModel(mongoose)
 };

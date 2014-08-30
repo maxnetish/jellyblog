@@ -286,6 +286,13 @@ var promiseSettingsUpdate = function (settings) {
     return query.exec();
 };
 
+var promiseLogEntries = function(){
+    var query = model.Log.find(null, null,{
+        sort: '-date'
+    });
+    return query.exec();
+};
+
 module.exports = {
     promisePostsList: promisePostsList,
     promisePostGetBySlug: promisePostGetBySlug,
@@ -300,5 +307,6 @@ module.exports = {
     promiseNavlinkRemove: promiseNavlinkRemove,
     promiseNavlinkList: promiseNavlinkList,
     promiseSettings: promiseSettings,
-    promiseSettingsUpdate: promiseSettingsUpdate
+    promiseSettingsUpdate: promiseSettingsUpdate,
+    promiseLogEntries: promiseLogEntries
 };

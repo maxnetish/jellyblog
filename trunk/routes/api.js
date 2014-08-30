@@ -288,4 +288,17 @@ router.post('/settings', function (req, res, next) {
         .then(null, next);
 });
 
+router.get('/log', function (req, res, next) {
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    dataProvider.promiseLogEntries()
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
 module.exports = router;
