@@ -1,4 +1,6 @@
 /**
+ * used parts from path js lib:
+ * https://github.com/mtrpcic/pathjs
  * Created by Gordeev on 17.08.2014.
  */
 define('susanin-path',
