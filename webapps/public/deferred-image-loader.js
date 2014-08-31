@@ -1,10 +1,10 @@
 /**
- * Created by mgordeev on 20.08.2014.
+ * image load after became visible
  */
 define('deferred-image-loader',
     [
         'jquery',
-        'lodash',
+        '_',
         'helpers-ui',
         'messenger'
     ],
@@ -44,17 +44,19 @@ define('deferred-image-loader',
                         doLoad(this);
                     }
                 });
+            },
+            bind = function(){
+                $(onScrollOrResize);
+                $(window)
+                    .on('scroll' + nameSpace, _.throttle(onScrollOrResize, 1000, {'leading': false}))
+                    .on('resize' + nameSpace, _.throttle(onScrollOrResize, 1000, {'leading': false}));
+                messenger.subscribe({
+                    messageName: messenger.messageNames.ContentUpdated,
+                    callback: onScrollOrResize,
+                    async: true
+                });
             };
-
-        (function () {
-            onScrollOrResize();
-            $(window)
-                .on('scroll' + nameSpace, _.throttle(onScrollOrResize, 1000, {'leading': false}))
-                .on('resize' + nameSpace, _.throttle(onScrollOrResize, 1000, {'leading': false}));
-            messenger.subscribe({
-                messageName: messenger.messageNames.ContentUpdated,
-                callback: onScrollOrResize,
-                async: true
-            });
-        })();
+        return {
+            bind: bind
+        };
     });

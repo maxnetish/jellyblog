@@ -3,7 +3,7 @@
  */
 define('susanin-path',
     [
-        'lodash',
+        '_',
         'susanin-route'
     ],
     function (_, SusaninRoute) {
@@ -126,7 +126,9 @@ define('susanin-path',
                 rescueCb = cb;
             },
             pushState = function (state, title, path) {
-                if (dispatch(path)) {
+                var encoded = encodeURI(path);
+                console.log('encoded: '+encoded);
+                if (dispatch(encoded)) {
                     history.pushState(state, title, path);
                 }
             },

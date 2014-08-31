@@ -4,7 +4,8 @@
 define('binding.ko-select2',
     [
         'ko',
-        'jquery'
+        'jquery',
+        'select2'
     ],
     function (ko, $) {
         var formatIcon = function (state, container) {

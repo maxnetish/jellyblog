@@ -45,7 +45,6 @@ define('vm',
             });
         };
 
-        // TODO: есть проблема с не-англоязычным slug, надо раздебажить
         var enterPostSlug = function (params) {
             $.ajax({
                 dataType: "json",

@@ -39,11 +39,11 @@ app.use(responseTime(1));
 app.use(favicon());
 
 // setup logger
-//if (app.get('env') === 'development') {
-//    app.use(logger('dev'));
-//} else {
+if (app.get('env') === 'development') {
+    app.use(logger('dev'));
+} else {
     app.use(logger(morgan2Mongo.addEntryFromMorgan));
-//}
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());

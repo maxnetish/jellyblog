@@ -141,7 +141,8 @@ define('susanin-route',
         var GROUP_CLOSED_CHAR = ')';
 
         var PARAM_NAME_REGEXP_SOURCE = '[a-zA-Z_][\\w\\-]*';
-        var PARAM_VALUE_REGEXP_SOURCE = '[\\w\\-\\.~]+';
+        // add '%' char to match url-encoded path like /foo/%D1%82
+        var PARAM_VALUE_REGEXP_SOURCE = '[\\w\\-\\.~%]+';
 
         var PARSE_PARAMS_REGEXP =
             new RegExp(
