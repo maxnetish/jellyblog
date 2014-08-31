@@ -18,10 +18,10 @@ module.exports = function (grunt) {
         jslibsAdmin = [
             // libs
                 bowerPath + '/requirejs/require.js',
-                bowerPath + '/jquery/dist/jquery.js',
-                bowerPath + '/pathjs-amd/dist/path.js',
-                bowerPath + '/moment/min/moment-with-langs.js',
-                bowerPath + '/select2/select2.js',
+                //bowerPath + '/jquery/dist/jquery.js',
+                //bowerPath + '/pathjs-amd/dist/path.js',
+                //bowerPath + '/moment/min/moment-with-langs.js',
+                //bowerPath + '/select2/select2.js',
 
                 webappsAdmin + '/**/*.js',
                 webappsCommon + '/**/*.js'
@@ -29,9 +29,8 @@ module.exports = function (grunt) {
         jsLibsPublic = [
             // public libs
                 bowerPath + '/requirejs/require.js',
-                bowerPath + '/jquery/dist/jquery.js',
-                bowerPath + '/pathjs-amd/dist/path.js',
-                bowerPath + '/moment/min/moment-with-langs.js',
+                //bowerPath + '/jquery/dist/jquery.js',
+                //bowerPath + '/moment/min/moment-with-langs.js',
 
                 webappsPublic + '/**/*.js',
                 webappsCommon + '/**/*.js'
@@ -39,8 +38,8 @@ module.exports = function (grunt) {
         filesUglify = {};
 
     filesUglify[targetJsMinAdmin] = [targetJsConcatAdmin];
-    filesUglify[publicJs + '/knockout.min.js'] = [publicJs + '/knockout.js'];
-    filesUglify[publicJs + '/lodash.min.js'] = [publicJs + '/lodash.js'];
+    //filesUglify[publicJs + '/knockout.min.js'] = [publicJs + '/knockout.js'];
+    //filesUglify[publicJs + '/lodash.min.js'] = [publicJs + '/lodash.js'];
     filesUglify[publicJs + '/q.min.js'] = [publicJs + '/q.js'];
     filesUglify[targetJsMinPublic] = [targetJsConcatPublic];
 
@@ -61,7 +60,7 @@ module.exports = function (grunt) {
                 ]
             },
             options: {
-                sourceMap: true
+                // sourceMap: true
                 // cleancss: true
             }
         },
@@ -69,12 +68,56 @@ module.exports = function (grunt) {
             buildAll: {
                 files: [
                     {
+                        src: bowerPath + '/select2/select2.js',
+                        dest: publicJs + '/select2.js'
+                    },
+                    {
+                        src: bowerPath + '/select2/select2.min.js',
+                        dest: publicJs + '/select2.min.js'
+                    },
+                    {
+                        src: bowerPath + '/moment/min/moment-with-langs.js',
+                        dest: publicJs + '/moment-with-langs.js'
+                    },
+                    {
+                        src: bowerPath + '/moment/min/moment-with-langs.min.js',
+                        dest: publicJs + '/moment-with-langs.min.js'
+                    },
+                    {
+                        src: bowerPath + '/pathjs-amd/dist/path.js',
+                        dest: publicJs + '/path.js'
+                    },
+                    {
+                        src: bowerPath + '/pathjs-amd/dist/path.min.js',
+                        dest: publicJs + '/path.min.js'
+                    },
+                    {
+                        src: bowerPath + '/requirejs/require.js',
+                        dest: publicJs + '/require.js'
+                    },
+                    {
+                        src: bowerPath + '/jquery/dist/jquery.js',
+                        dest: publicJs + '/jquery.js'
+                    },
+                    {
+                        src: bowerPath + '/jquery/dist/jquery.min.js',
+                        dest: publicJs + '/jquery.min.js'
+                    },
+                    {
                         src: bowerPath + '/knockoutjs/dist/knockout.debug.js',
                         dest: publicJs + '/knockout.js'
                     },
                     {
+                        src: bowerPath + '/knockoutjs/dist/knockout.js',
+                        dest: publicJs + '/knockout.min.js'
+                    },
+                    {
                         src: bowerPath + '/lodash/dist/lodash.js',
                         dest: publicJs + '/lodash.js'
+                    },
+                    {
+                        src: bowerPath + '/lodash/dist/lodash.min.js',
+                        dest: publicJs + '/lodash.min.js'
                     },
                     {
                         src: bowerPath + '/q/q.js',
@@ -116,8 +159,8 @@ module.exports = function (grunt) {
                 dest: publicCss + '/style.css'
             },
             options: {
-                sourceMap: true,
-                sourceMapBasepath: publicCss
+                sourceMap: true
+                //sourceMapBasepath: publicCss
             }
         },
         uglify: {
