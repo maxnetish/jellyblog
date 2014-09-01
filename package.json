@@ -24,7 +24,8 @@
     "fs-extra": "*",
     "moment": "*",
     "connect-mongo": "~0.4.1",
-    "response-time": "~2.0.1"
+    "response-time": "~2.0.1",
+    "passport-google-oauth": "~0.1.5"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

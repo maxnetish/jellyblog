@@ -4,5 +4,6 @@
 
 module.exports = {
     auth: require('./auth.json'),
-    url: require('./url.json')
+    url: require('./url.json'),
+    googleApp: require('./google-app.json')
 };
