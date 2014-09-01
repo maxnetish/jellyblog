@@ -11,11 +11,13 @@ router.get('/', function (req, res) {
     var locale = req.preferredLocale,
         vm;
 
+    /*
     if (!req.userHasAdminRights) {
         req.session.after = req.originalUrl;
         res.redirect('/auth/google');
         return;
     }
+    */
 
     vm = new CommonVm({
         pageTitle: 'Admin app',
