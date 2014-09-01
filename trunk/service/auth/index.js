@@ -8,13 +8,22 @@ var init = function () {
     var model = require('../../models').model,
         User = model.User,
         passport = require('passport'),
-        GoogleStrategy = require('passport-google').Strategy;
+//        GoogleStrategy = require('passport-google').Strategy;
+        GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+        googleRedirectUrl;
+
+    if(_.isArray(config.googleApp.web.redirect_uris)){
+        googleRedirectUrl = config.googleApp.web.redirect_uris[0];
+    }else{
+        googleRedirectUrl = config.googleApp.web.redirect_uris;
+    }
 
     passport.use(new GoogleStrategy({
-        returnURL: config.auth.returnURL,
-        realm: config.auth.realm
-    }, function (identifier, profile, done) {
-        User.findOne({openId: identifier}, function (error, user) {
+        clientID: config.googleApp.web.client_id,
+        clientSecret: config.googleApp.web.client_secret,
+        callbackURL: googleRedirectUrl
+    }, function (accessToken, refreshToken, profile, done) {
+        User.findOne({openId: profile.id}, function (error, user) {
             if (!error) {
                 if (user) {
                     user.emails = profile.emails;
@@ -28,7 +37,7 @@ var init = function () {
                     });
                 } else {
                     User.create({
-                        openId: identifier,
+                        openId: profile.id,
                         emails: profile.emails,
                         displayName: profile.displayName
                     }, function (errorCreate, user) {
@@ -47,8 +56,8 @@ var init = function () {
     passport.serializeUser(function (user, done) {
         done(null, user.openId);
     });
-    passport.deserializeUser(function (openId, done) {
-        User.findOne({openId: openId}, function (error, user) {
+    passport.deserializeUser(function (id, done) {
+        User.findOne({openId: id}, function (error, user) {
             if (!error) {
                 done(null, user.toPlainObject());
             } else {

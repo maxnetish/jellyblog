@@ -3,9 +3,14 @@
  */
 var express = require('express'),
     router = express.Router(),
-    passport = require('passport');
+    passport = require('passport'),
+    create401 = function () {
+        var result = new Error('Auth required');
+        result.status = 401;
+        return result;
+    };
 
-router.get('/google', passport.authenticate('google'));
+router.get('/google', passport.authenticate('google', { scope: 'email' }));
 
 router.get('/google/return', function (req, res, next) {
     passport.authenticate('google', function (err, user, info) {
@@ -13,7 +18,7 @@ router.get('/google/return', function (req, res, next) {
             return next(err);
         }
         if (!user) {
-            return res.redirect('/auth/google')
+            return next(create401());
         }
         req.logIn(user, function (err) {
             if (err) {
@@ -24,7 +29,7 @@ router.get('/google/return', function (req, res, next) {
             } else {
                 return res.redirect('/');
             }
-        })
+        });
     })(req, res, next);
 });
 
