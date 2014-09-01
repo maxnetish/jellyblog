@@ -5,9 +5,9 @@ div#admin-files.container-fluid.view.col-sm-12.col-md-10.col-lg-8
         div.panel-body
             div.form-group
                 div.input-group
-                    input.form-control(type="file", name="file", id="file", accept="image/*")
+                    input.form-control(type="file", name="file", id="file-upload", accept="image/*")
                     div.input-group-btn
-                        button.btn.btn-info(data-bind="click: function(){upload(document.getElementById('file').files[0])}")
+                        button.btn.btn-info(data-bind="click: function(){upload(document.getElementById('file-upload').files[0])}")
                             span.glyphicon.glyphicon-upload
                             span(data-bind="translate: 'UPLOAD'")
             div.form-group
