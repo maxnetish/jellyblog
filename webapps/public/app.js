@@ -37,12 +37,14 @@
 
     require(
         [
+            'polyfill',
             'deferred-image-loader',
             'show-full-content',
             'router'
         ],
-        function (imageLoader, showFullContent, router) {
+        function (polyfill, imageLoader, showFullContent, router) {
             // run up
+            polyfill.add();
             imageLoader.bind();
             showFullContent.bind();
             router.run();

@@ -35,6 +35,7 @@
 
     require(
         [
+            'polyfill',
             'ko',
             'jquery',
             'moment',
@@ -46,7 +47,9 @@
             'binding.ko-select2',
             'router'
         ],
-        function (ko, $, moment, vmMainNav) {
+        function (polyfill, ko, $, moment, vmMainNav) {
+            polyfill.add();
+
             //init routes
 
             //init momen
