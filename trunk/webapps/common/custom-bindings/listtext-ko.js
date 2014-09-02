@@ -12,13 +12,22 @@ define('binding.ko-listtext',
                     var eventsToCatch = ['change'];
                     var requestedEventsToCatch = allBindings.get('valueUpdate');
                     var listDelimiter = allBindings.get('listSeparator') || ' ';
+                    var propWriters;
 
                     var valueUpdateHandler = function () {
                         var modelValue = valueAccessor();
                         var elementValue = ko.selectExtensions.readValue(element);
                         var elementValueArray = elementValue.split(listDelimiter);
 
-                        ko.expressionRewriting.writeValueToProperty(modelValue, allBindings, 'value', elementValueArray);
+                        // expressionRewriting.writeValueToProperty не экспортируется
+                        if(!modelValue || !ko.isObservable(modelValue)){
+                            propWriters = allBindings.get('_ko_property_writers');
+                            if(propWriters && propWriters['value']){
+                                propWriters['value'](elementValueArray);
+                            }
+                        }else if(ko.isWriteableObservable(modelValue)){
+                            modelValue(elementValueArray);
+                        }
                     };
 
                     if (requestedEventsToCatch) {
@@ -33,7 +42,8 @@ define('binding.ko-listtext',
                         // This is useful, for example, to catch "keydown" events after the browser has updated the control
                         // (otherwise, ko.selectExtensions.readValue(this) will receive the control's value *before* the key event)
                         var handler = valueUpdateHandler;
-                        if (ko.utils.stringStartsWith(eventName, "after")) {
+                        // -> stringStartsWith
+                        if (eventName.startsWith("after")) {
                             handler = function () {
                                 setTimeout(valueUpdateHandler, 0)
                             };
