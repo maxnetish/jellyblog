@@ -81,6 +81,15 @@ var addIfEmptyPath = function(url, addPart){
     return URL.format(parsed);
 };
 
+var moveQueryParams = function(originUrl, urlWithQuery){
+    var parsedOrigin = getParsedUrl(originUrl),
+        parsedQuery = getParsedUrl(urlWithQuery),
+        queryToMove = parsedQuery.query;
+
+    parsedOrigin.query = queryToMove;
+    return URL.format(parsedOrigin);
+};
+
 
 module.exports = {
     removeLastPart: removeLastPart,
@@ -88,5 +97,6 @@ module.exports = {
     combine: combine,
     addIfEmptyPath: addIfEmptyPath,
     rootUrl: rootUrl,
-    hostUrl: hostUrl
+    hostUrl: hostUrl,
+    moveQueryParams: moveQueryParams
 };

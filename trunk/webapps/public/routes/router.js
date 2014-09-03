@@ -21,13 +21,14 @@ define('router',
             createEnterCallback = function (definition) {
                 return function (params) {
                     if (_.isFunction(definition.enter)) {
-                        definition.enter(params);
+                        definition.enter(params, applyBindingOnce);
                     }
                 };
             },
             createOnCallback = function (definition) {
                 return function (params) {
-                    applyBindingOnce();
+//                    apply binding throw enter callback
+//                    applyBindingOnce();
                     if (_.isFunction(definition.on)) {
                         definition.on(params);
                     }
@@ -72,5 +73,5 @@ define('router',
             };
         return {
             run: run
-        }
+        };
     });

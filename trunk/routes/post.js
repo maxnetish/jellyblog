@@ -20,21 +20,12 @@ router.get('/:slug?', function (req, res, next) {
         queryParams: {
             includeDrafts: false
         }
-    })
-        .then(function (vm) {
-            vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, req.originalUrl);
-            if (req.wantJson) {
-                delete vm.user;
-                delete vm.preferredLocale;
-                delete vm.navlinksFooter;
-                delete vm.navlinksMain;
-                delete vm.settings;
-                res.json(vm);
-            } else {
-                res.render('public/index', vm);
-            }
-            return vm;
-        }).then(null, next);
+    }).then(function (vm) {
+        vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, req.originalUrl);
+        vm.deviceMobile = !!req.detectUserAgent.mobile();
+        res.render('public/index', vm);
+        return vm;
+    }).then(null, next);
 });
 
 module.exports = router;

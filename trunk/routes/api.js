@@ -10,6 +10,9 @@ var multipartMiddleware = require('connect-multiparty')();
 var fileUtils = require('../service/fileUtils');
 var importPosts = require('../service/importPostsFromJson');
 var Q = require('q');
+var indexVm = require('../service/vm/indexVm');
+var postVm = require('../service/vm/postVm');
+var urlHelper = require('../service/urlHelper');
 
 var createError = function (status, message) {
     var result = new Error(message);
@@ -299,6 +302,66 @@ router.get('/log', function (req, res, next) {
             return res.send(result);
         })
         .then(null, next);
+});
+
+/**
+ * GET viewmodel for use in single-page updates,
+ * we use same params as GET /
+ */
+router.get('/vm', function (req, res, next) {
+    var preferredLocale = req.preferredLocale,
+        skip = parseInt(req.query.skip, 10) || 0,
+        tag = req.query.tag,
+        clientUrl = urlHelper.moveQueryParams('/', req.originalUrl);
+
+    indexVm.promise({
+        preferredLocale: preferredLocale,
+        skip: skip,
+        user: req.user,
+        admin: req.userHasAdminRights,
+        url: clientUrl,
+        tag: tag
+    }).then(function (vm) {
+        vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, clientUrl);
+        delete vm.user;
+        delete vm.preferredLocale;
+        delete vm.navlinksFooter;
+        delete vm.navlinksMain;
+        delete vm.settings;
+        res.json(vm);
+    }).then(null, next);
+});
+
+router.get('/vm/post/:slug?', function (req, res, next) {
+    var slug = req.params.slug,
+        id = req.query.id,
+        locale = req.preferredLocale,
+        clientUrl;
+
+    postVm.promise({
+        preferredLocale: locale,
+        id: id,
+        slug: slug,
+        user: req.user,
+        admin: req.userHasAdminRights,
+        queryParams: {
+            includeDrafts: false
+        }
+    }).then(function (vm) {
+        if (slug) {
+            clientUrl = urlHelper.moveQueryParams('/post/' + slug, req.originalUrl);
+        } else {
+            clientUrl = urlHelper.moveQueryParams('/post', req.originalUrl);
+        }
+
+        vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, clientUrl);
+        delete vm.user;
+        delete vm.preferredLocale;
+        delete vm.navlinksFooter;
+        delete vm.navlinksMain;
+        delete vm.settings;
+        return res.json(vm);
+    }).then(null, next);
 });
 
 module.exports = router;

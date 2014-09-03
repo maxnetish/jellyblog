@@ -34,35 +34,38 @@ define('vm',
             messenger.publish(messenger.messageNames.ContentUpdated);
         };
 
-        var enterRoot = function (params) {
+        var enterRoot = function (params, applyBinding) {
             $.ajax({
                 dataType: "json",
-                url: '/',
+                url: '/api/vm',
                 data: params,
                 type: 'GET'
             }).done(function (result) {
                 updateVmInternal(result);
+                applyBinding();
             });
         };
 
-        var enterPostSlug = function (params) {
+        var enterPostSlug = function (params, applyBinding) {
             $.ajax({
                 dataType: "json",
-                url: '/post/' + params.slug,
+                url: '/api/vm/post/' + params.slug,
                 type: 'GET'
             }).done(function (result) {
                 updateVmInternal(result);
+                applyBinding();
             });
         };
 
-        var enterPostId = function (params) {
+        var enterPostId = function (params, applyBinding) {
             $.ajax({
                 dataType: "json",
-                url: '/post',
+                url: '/api/vm/post',
                 data: params,
                 type: 'GET'
             }).done(function (result) {
                 updateVmInternal(result);
+                applyBinding();
             });
         };
 
