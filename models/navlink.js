@@ -44,6 +44,11 @@ var createNavlinkModel = function (mongoose) {
             type: Boolean,
             required: true,
             default: false
+        },
+        useClientRouter: {
+            type: Boolean,
+            required: true,
+            default: false
         }
     });
 

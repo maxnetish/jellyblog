@@ -9,6 +9,8 @@ div.table-responsive
                     span.glyphicon.glyphicon-off
                 th(title="Open in new window")
                     span.glyphicon.glyphicon-new-window
+                th(title="Use client router")
+                    span.glyphicon.glyphicon-home
                 th(title="Visible")
                     span.glyphicon.glyphicon-eye-open
                 th
@@ -25,6 +27,8 @@ div.table-responsive
                     input(type="checkbox", data-bind="checked: navlink.disabled")
                 td
                     input(type="checkbox", data-bind="checked: navlink.newWindow")
+                td
+                    input(type="checkbox", data-bind="checked: navlink.useClientRouter")
                 td
                     input(type="checkbox", data-bind="checked: navlink.visible")
                 td

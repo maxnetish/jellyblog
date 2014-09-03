@@ -10,6 +10,8 @@ define('data.navlink',
     ],
     function ($, ko, mapper, dataUtils) {
         var Navlink = function (row) {
+                var self = this;
+
                 row = row || {};
 
                 this._id = row._id || undefined;
@@ -22,6 +24,19 @@ define('data.navlink',
                 this.order = ko.observable(row.order || 0);
                 this.willRemove = ko.observable(false);
                 this.newWindow = ko.observable(row.newWindow || false);
+                this.useClientRouter = ko.observable(row.useClientRouter || false);
+
+                this.newWindow.subscribe(function (newWindowValue) {
+                     if(newWindowValue){
+                         self.useClientRouter(false);
+                     }
+                });
+
+                this.useClientRouter.subscribe(function(useROuterValue){
+                    if(useROuterValue){
+                        self.newWindow(false);
+                    }
+                });
             },
             onFail = dataUtils.onFail,
             navlinkQuery = function (category) {

@@ -5,7 +5,7 @@ footer
                 ul.list-unstyled.text-left-pane
                     each linkItem in navlinksFooter
                         li
-                            a(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'')
+                            a(href=linkItem.url, class=linkItem.disabled?'disabled':'', target=linkItem.newWindow?'_blank':'', data-route=linkItem.useClientRouter)
                                 span.glyphicon(class=linkItem.icon)
                                 b!= linkItem.text
             div.col-lg-4.col-md-4.col-sm-4
