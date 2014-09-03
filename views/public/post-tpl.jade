@@ -8,7 +8,7 @@ article.panel.panel-default
                     div.media-body
                         h2(data-bind="text: post.title")= post.title
             div.col-lg-1.col-md-1.col-sm-1
-                span.pull-right.label.label-default(data-bind="text: post.formatDate")= post.formatDate
+                time.pull-right.label.label-default(data-bind="text: post.formatDate")= post.formatDate
     div.panel-body
         div.post-content(data-post-content-id=post._id, data-bind="attr: {'data-post-content-id': post._id}")
             div(data-bind="html: post.content")
