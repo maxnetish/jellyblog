@@ -8,6 +8,7 @@ var serviceAuth = require('./service/auth');
 var preferredLocale = require('./service/preferredLocale');
 var responseTime = require('response-time');
 var morgan2Mongo = require('./service/morgan2Mongo');
+var mobileDetect = require('./service/mobileDetectMiddleware');
 
 // session support
 var session = require('express-session');
@@ -68,6 +69,9 @@ app.use(serviceAuth.hasAdminRights);
 
 // inject locale detection
 app.use(preferredLocale.detect);
+
+// mobile detection:
+app.use(mobileDetect.detect);
 
 // detect if client want json
 app.use(function (req, res, next) {
