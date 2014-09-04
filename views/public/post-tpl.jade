@@ -18,11 +18,11 @@ article.panel.panel-default
                 span= getText('SHOW_MORE')
     div.panel-footer
         div.row
-            div.col-lg-2.col-md-2.col-sm-2(style=disablePermalink?'display: none':'', data-bind="visible: !$parent.disablePermalink()")
-                a.no-wrap.margin-right-2em(href=post.url, data-bind="attr: {href: post.url}", data-route)
+            div.col-lg-2.col-md-2.col-sm-3(style=disablePermalink?'display: none':'', data-bind="visible: !$parent.disablePermalink()")
+                a.text-nowrap.margin-right-2em(href=post.url, data-bind="attr: {href: post.url}", data-route)
                     span.glyphicon.glyphicon-link
                     span #{getText('PERMANENT_LINK')}
-            div.col-lg-10.col-md-10.col-sm-10
+            div.col-lg-10.col-md-10.col-sm-9
                 div.tags-list(data-bind="template: {name: 'post-tag-tpl', foreach: post.tags, as: 'tag'}")
                     each tag in post.tags
                         include post-tag-tpl
