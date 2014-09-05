@@ -98,8 +98,8 @@ var dataProvider = require('../dataProvider'),
                     .then(function (posts) {
                         var hasNext = (posts.length - baseVm.settings.postsPerPage) > 0,
                             vmIntern = new IndexViewModel({
-                                postList: _.map(_.first(posts, baseVm.settings.postsPerPage), function(item){
-                                     return item.getPlainObject(opts.preferredLocale);
+                                postList: _.map(_.first(posts, baseVm.settings.postsPerPage), function (item) {
+                                    return item.getPlainObject(opts.preferredLocale);
                                 })
                             }),
                             vm;
@@ -107,6 +107,7 @@ var dataProvider = require('../dataProvider'),
                         vm.pager.urlOlder = getNextPageUrl(opts.url, opts.skip, vm.settings.postsPerPage, hasNext);
                         vm.pager.urlNewer = getPrevPageUrl(opts.url, opts.skip, vm.settings.postsPerPage);
                         vm.getPostUrl = getPostUrl;
+                        vm.pageTitle = vm.settings.siteTitle + (opts.tag ? (' | ' + opts.tag) : '');
                         vm.metaTitle = vm.settings.metaTitle;
                         vm.metaDescription = vm.settings.metaDescription;
                         vm.metaImage = vm.settings.authorAvatarUrl;
