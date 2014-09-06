@@ -89,13 +89,21 @@ define('vm.files',
             },
             activate = function () {
                 updateView();
+            },
+            remove = function (file) {
+                providerFiles.remove(file.url)
+                    .done(function (result) {
+                        files.remove(function (item) {
+                            return item.url === result;
+                        });
+                    });
             };
 
         sort.subscribe(function (newSort) {
             applySort(files, newSort);
         });
 
-        filter.subscribe(function(newFilter){
+        filter.subscribe(function (newFilter) {
             applyFilter(files, newFilter);
         });
 
@@ -110,6 +118,7 @@ define('vm.files',
                     asc: prop === currentSort.orderBy ? !currentSort.asc : true
                 });
             },
-            upload: upload
+            upload: upload,
+            remove: remove
         };
     });
