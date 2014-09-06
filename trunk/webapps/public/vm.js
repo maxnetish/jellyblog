@@ -34,6 +34,8 @@ define('vm',
             messenger.publish(messenger.messageNames.ContentUpdated);
         };
 
+
+
         var enterRoot = function (params, applyBinding) {
             $.ajax({
                 dataType: "json",

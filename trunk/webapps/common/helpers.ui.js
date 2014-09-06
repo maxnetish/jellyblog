@@ -39,10 +39,14 @@ define('helpers-ui',
                     || viewport.left > bounds.right
                     || viewport.bottom < bounds.top
                     || viewport.top > bounds.bottom));
+            },
+            scrollToTop = function () {
+                $(window).scrollTop(0);
             };
 
         return {
             isDocumentHidden: isDocumentHidden,
-            isElementInViewport: isElementInViewport
+            isElementInViewport: isElementInViewport,
+            scrollToTop: scrollToTop
         };
     });
