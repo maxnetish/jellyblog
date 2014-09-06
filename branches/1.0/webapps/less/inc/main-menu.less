@@ -1,0 +1,26 @@
+@title-color: #333;
+@title-hover-color: #428bca;
+
+.site-title{
+  color: @title-color;
+  a{
+    color: inherit;
+    &:hover,
+    &:focus{
+      text-decoration: none;
+      color: darken(@title-hover-color, 20%)
+    }
+    &:active{
+      color: darken(@title-hover-color, 30%)
+    }
+  }
+}
+
+.main-image{
+  background: lightpink;
+  background-repeat: no-repeat;
+  background-position: left top;
+
+  height: 140px;
+  width: 100%;
+}

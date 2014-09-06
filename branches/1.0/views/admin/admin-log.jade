@@ -1,0 +1,42 @@
+div#admin-view-log.container-fluid.view.col-sm-12.col-md-10.col-lg-8
+    div.panel.panel-default
+        div.panel-heading
+            h4.panel-title(data-bind="translate: 'LOG_ENTRIES'")
+        div.panel-body
+            div.form-group
+                div.col-lg-2.col-md-2.col-sm-2
+                    button.btn.btn-danger(data-bind="translate: 'REFRESH', click: refresh")
+                div.col-lg-10.col-md-10.col-sm-10
+                    input.form-control(data-bind="value: filter, valueUpdate: 'input'" type="text", placeholder="Filter")
+            div.table-responsive
+                table.table.table-hover.table-condensed.table-fixed
+                    colgroup
+                        col.col-lg-3.col-md-3.col-sm-3
+                        col.col-lg-1.col-md-1.col-sm-1
+                        col.col-lg-7.col-md-7.col-sm-8
+                    thead
+                        tr
+                            th(data-bind="translate: 'DATE'")
+                            th(data-bind="translate: 'REQ_METHOD'")
+                            th(data-bind="translate: 'REQ_URL'")
+                    tbody(data-bind="foreach: {data: entries, as: 'entry'}")
+                        tr.mice-pointer(data-bind="visible: entry.visible, css: {'warning': entry.error}, click: $parent.toggleExpand")
+                            td.line-ellipsis(data-bind="dateText: entry.date, date-format: 'MMM D YYYY HH:mm:ss.SSS'")
+                            td.line-ellipsis(data-bind="text: entry.requestMethod")
+                            td.line-ellipsis(data-bind="text: entry.requestUrl")
+                        tr.info(data-bind="if: entry.visible() && entry.expanded(), css: {'danger': entry.error}")
+                            td(colspan="3")
+                                div.log-details(data-bind="foreach: {data: entry.asArray, as: 'param'}")
+                                    div.row
+                                        div.col-lg-2.col-md-2.col-sm-2(data-bind="text: param.name")
+                                        div.col-lg-10.col-md-10.col-sm-10(data-bind="text: param.value")
+            div.form-group
+                a(href="javascript: void 0" data-bind="translate: 'LOAD_MORE', click: loadMore")
+
+
+
+
+
+
+
+

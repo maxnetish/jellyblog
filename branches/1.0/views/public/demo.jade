@@ -1,0 +1,23 @@
+extends ../layout
+block content
+    div()
+        div#public-app.main-wrapper.container-fluid
+            include main-menu
+            div.public-main.view
+                ul
+                    li
+                        a(href="/demo/another", data-route) push another
+                    li
+                        a(href="/demo/another") another without push
+                    li
+                        a(href="/demo/unregistered", data-route) push unregistered
+                    li
+                        a(href="/demo?skip=5", data-route) push, change query part
+                include posts-pagination-tpl
+                each post in postList
+                    include post-tpl
+                include posts-pagination-tpl
+                include footer
+block specific
+    script(src='/js/app-public.js')
+

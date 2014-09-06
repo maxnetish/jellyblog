@@ -1,0 +1,11 @@
+doctype html
+html(data-jb-admin=admin, data-jb-locale=preferredLocale)
+  head
+    title= pageTitle
+    block meta
+    link(rel='stylesheet', href='/css/style.css')
+    if developmentMode
+        script!= "window.jb_developmentMode = true;"
+  body
+    block content
+    block specific
