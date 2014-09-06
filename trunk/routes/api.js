@@ -254,7 +254,7 @@ router.get('/upload', function (req, res, next) {
 });
 
 router.delete('/upload', function (req, res, next) {
-    var relativePath = req.query.path
+    var relativePath = req.body.path
 
     if (!req.userHasAdminRights) {
         next(createError401());
