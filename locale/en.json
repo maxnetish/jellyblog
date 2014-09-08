@@ -57,5 +57,10 @@
     "SITE_TITLE": "Site title",
     "IMPORT_FROM_JSON": "Import from json file",
     "REMOVE_ALL_POSTS": "Delete all posts",
-    "TITLE_IMAGE_URL": "Title image (1000x140 or bigger)"
+    "TITLE_IMAGE_URL": "Title image (1000x140 or bigger)",
+    "LOG_ENTRIES": "Log",
+    "REFRESH": "Refresh",
+    "REQ_METHOD": "Method",
+    "REQ_URL": "URL",
+    "LOAD_MORE": "More"
 }
