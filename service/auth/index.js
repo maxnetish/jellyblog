@@ -1,16 +1,17 @@
 /**
  * Created by Gordeev on 12.06.2014.
  */
-var config = require('../../config'),
+var config,
     _ = require('underscore');
 
-var init = function () {
+var init = function (customConfig) {
     var model = require('../../models').model,
         User = model.User,
         passport = require('passport'),
-//        GoogleStrategy = require('passport-google').Strategy;
         GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
         googleRedirectUrl;
+
+    config = customConfig || require('../../config');
 
     if(_.isArray(config.googleApp.web.redirect_uris)){
         googleRedirectUrl = config.googleApp.web.redirect_uris[0];
