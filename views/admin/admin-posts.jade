@@ -1,55 +1,56 @@
-div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
-    script#admin-posts-pagination-buttons(type="text/html")
-        include admin-posts-pagination-tpl
-    div.panel.panel-default
-        div.panel-heading
-            h4(data-bind="translate: 'POSTS'")
-        div.panel-body
-            div.form-group
-                div.input-group
-                    input.form-control(type="file", name="file", id="file-import", accept="application/json")
-                    div.input-group-btn
-                        button.btn.btn-info(data-bind="click: function(data, event){uploadPosts(document.getElementById('file-import').files[0], event)}")
-                            span.glyphicon.glyphicon-upload
-                            span(data-bind="translate: 'IMPORT_FROM_JSON'")
-            div.row
-                div.col-md-12
-                    button.btn.btn-danger(data-bind="click: removeAll")
-                        span.glyphicon.glyphicon-remove
-                        span(data-bind="translate: 'REMOVE_ALL_POSTS'")
-            div.row
-                div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
-            div.row
-                div.col-md-12
-                    table.table.table-hover.table-condensed
-                        colgroup
-                            col.col-md-5
-                            col.col-md-3
-                            col.col-md-1
-                            col.col-md-1
-                            col.col-md-1
-                        thead
-                            tr
-                                th(data-bind="translate: 'TITLE'")
-                                th(data-bind="translate: 'DATE'")
-                                th(data-bind="translate: 'DRAFT'")
-                                th(data-bind="translate: 'FEATURED'")
-                                th
-                        tbody(data-bind="foreach: posts")
-                            tr
-                                td
-                                    a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
-                                td
-                                    span(data-bind="dateText: $data.date")
-                                td
-                                    button.btn.btn-xs(data-bind="click: $parent.toggleDraft, css: {'btn-info': $data.draft, 'btn-primary': !$data.draft()}, attr: {'title': $data.draft()?'Publish':'Convert to draft'}")
-                                        span.glyphicon(data-bind="css: {'glyphicon-unchecked': $data.draft, 'glyphicon-share': !$data.draft()}")
-                                td
-                                    button.btn.btn.btn-xs(data-bind="click: $parent.toggleFeatured, css: {'btn-warning': $data.featured, 'btn-primary': !$data.featured()}, attr: {'title': $data.featured()?'Make ordinary':'Make featured'}")
-                                        span.glyphicon(data-bind="css: {'glyphicon-flash': $data.featured, 'glyphicon-unchecked': !$data.featured()}")
-                                td
-                                    button.btn.btn-danger.btn-xs(data-bind="click: $parent.remove", title="Delete")
-                                        span.glyphicon.glyphicon-remove
-            div.row
-                div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+if (admin)
+    div#admin-posts.container-fluid.view.col-sm-12.col-md-10.col-lg-8
+        script#admin-posts-pagination-buttons(type="text/html")
+            include admin-posts-pagination-tpl
+        div.panel.panel-default
+            div.panel-heading
+                h4(data-bind="translate: 'POSTS'")
+            div.panel-body
+                div.form-group
+                    div.input-group
+                        input.form-control(type="file", name="file", id="file-import", accept="application/json")
+                        div.input-group-btn
+                            button.btn.btn-info(data-bind="click: function(data, event){uploadPosts(document.getElementById('file-import').files[0], event)}")
+                                span.glyphicon.glyphicon-upload
+                                span(data-bind="translate: 'IMPORT_FROM_JSON'")
+                div.row
+                    div.col-md-12
+                        button.btn.btn-danger(data-bind="click: removeAll")
+                            span.glyphicon.glyphicon-remove
+                            span(data-bind="translate: 'REMOVE_ALL_POSTS'")
+                div.row
+                    div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
+                div.row
+                    div.col-md-12
+                        table.table.table-hover.table-condensed
+                            colgroup
+                                col.col-md-5
+                                col.col-md-3
+                                col.col-md-1
+                                col.col-md-1
+                                col.col-md-1
+                            thead
+                                tr
+                                    th(data-bind="translate: 'TITLE'")
+                                    th(data-bind="translate: 'DATE'")
+                                    th(data-bind="translate: 'DRAFT'")
+                                    th(data-bind="translate: 'FEATURED'")
+                                    th
+                            tbody(data-bind="foreach: posts")
+                                tr
+                                    td
+                                        a(data-bind="attr: {href: '#!/edit/'+$data._id}, text: $data.title")
+                                    td
+                                        span(data-bind="dateText: $data.date")
+                                    td
+                                        button.btn.btn-xs(data-bind="click: $parent.toggleDraft, css: {'btn-info': $data.draft, 'btn-primary': !$data.draft()}, attr: {'title': $data.draft()?'Publish':'Convert to draft'}")
+                                            span.glyphicon(data-bind="css: {'glyphicon-unchecked': $data.draft, 'glyphicon-share': !$data.draft()}")
+                                    td
+                                        button.btn.btn.btn-xs(data-bind="click: $parent.toggleFeatured, css: {'btn-warning': $data.featured, 'btn-primary': !$data.featured()}, attr: {'title': $data.featured()?'Make ordinary':'Make featured'}")
+                                            span.glyphicon(data-bind="css: {'glyphicon-flash': $data.featured, 'glyphicon-unchecked': !$data.featured()}")
+                                    td
+                                        button.btn.btn-danger.btn-xs(data-bind="click: $parent.remove", title="Delete")
+                                            span.glyphicon.glyphicon-remove
+                div.row
+                    div.col-md-12(data-bind="template: {name: 'admin-posts-pagination-buttons', data: pagination}")
 
