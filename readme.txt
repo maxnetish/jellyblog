@@ -22,4 +22,6 @@ NODE_ENV=production node bin/www
 
 Admin interface here: <host>/admin
 
+http://gordeev.me
+
 
