@@ -15,6 +15,8 @@ Edit config files in /config:
         This file contains app identification data to use with google oauth service.
         You need to register web application at https://console.developers.google.com
         and download json file from 'credentials'.
+    4. google-analytics.json:
+        "identificator": "UA-XXX-Y" // google analytics identificator
 
 Run:
 

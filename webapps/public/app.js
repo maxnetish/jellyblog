@@ -40,13 +40,15 @@
             'polyfill',
             'deferred-image-loader',
             'show-full-content',
-            'router'
+            'router',
+            'google-analytics'
         ],
-        function (polyfill, imageLoader, showFullContent, router) {
+        function (polyfill, imageLoader, showFullContent, router, googleAnalytics) {
             // run up
             polyfill.add();
             imageLoader.bind();
             showFullContent.bind();
             router.run();
+            googleAnalytics.init();
         });
 })();

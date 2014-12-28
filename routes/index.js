@@ -1,7 +1,9 @@
 var express = require('express'),
     router = express.Router(),
     indexVm = require('../service/vm/indexVm'),
-    urlHelper = require('../service/urlHelper');
+    urlHelper = require('../service/urlHelper'),
+    gAnalytics = require('../config').googleAnalytics || {};
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -20,6 +22,7 @@ router.get('/', function (req, res, next) {
         .then(function (vm) {
             vm.pageUrl = urlHelper.combine(urlHelper.hostUrl, req.originalUrl);
             vm.deviceMobile = !!req.detectUserAgent.mobile();
+            vm.gaIdentificator = gAnalytics.identificator;
             res.render('public/index', vm);
             return vm;
         })

@@ -12,7 +12,9 @@ block content
                 include posts-pagination-tpl
             include footer
 block specific
-    script!= "window.jb_deviceMobile = " + deviceMobile
+    script.
+        window.jb_deviceMobile = #{deviceMobile};
+        window.jb_googleAnalyticsId = '#{gaIdentificator}';
     script#post-tpl(type="text/html")
         include post-tpl
     script#post-tag-tpl(type="text/html")
