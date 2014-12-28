@@ -6,9 +6,10 @@ define('vm',
         'ko',
         'route-definition',
         'jquery',
-        'messenger'
+        'messenger',
+        'google-analytics'
     ],
-    function (ko, RouteDefinition, $, messenger) {
+    function (ko, RouteDefinition, $, messenger, googleAnalytics) {
         var posts = ko.observableArray();
         var pager = {
             urlNewer: ko.observable(),
@@ -45,6 +46,7 @@ define('vm',
             }).done(function (result) {
                 updateVmInternal(result);
                 applyBinding();
+                googleAnalytics.trackCurrentPage();
             });
         };
 
@@ -56,6 +58,7 @@ define('vm',
             }).done(function (result) {
                 updateVmInternal(result);
                 applyBinding();
+                googleAnalytics.trackCurrentPage();
             });
         };
 
@@ -68,6 +71,7 @@ define('vm',
             }).done(function (result) {
                 updateVmInternal(result);
                 applyBinding();
+                googleAnalytics.trackCurrentPage();
             });
         };
 

@@ -4,6 +4,12 @@
 define('google-analytics',
     [],
     function () {
+        var trackCurrentPage = function(){
+            if(ga){
+                ga('send', 'pageview');
+            }
+        };
+
         var initFn = function () {
             var gaId = window.jb_googleAnalyticsId;
 
@@ -23,10 +29,11 @@ define('google-analytics',
             })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
             ga('create', gaId, 'auto');
-            ga('send', 'pageview');
+            trackCurrentPage();
         };
 
         return {
-            init: initFn
+            init: initFn,
+            trackCurrentPage: trackCurrentPage
         };
     });
