@@ -20,9 +20,9 @@ block specific
     script#post-tag-tpl(type="text/html")
         include post-tag-tpl
     if developmentMode
-        script(src='/js/app-public.js')
+        script(src='/js/app-public.js', defer)
     else
-        script(src='/js/app-public.min.js')
+        script(src='/js/app-public.min.js', defer)
 block meta
     meta(property="og:title", content=metaTitle)
     meta(property="og:type", content="article")
