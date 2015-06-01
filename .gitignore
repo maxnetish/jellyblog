@@ -1,9 +1,6 @@
 /.idea
 /bower_components
 /node_modules
-/public/css
-/public/fonts
-/public/js
-/public/upload
 /config/*.json
 /projectFilesBackup
+/build
