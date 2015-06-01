@@ -6,9 +6,12 @@ var express = require('express'),
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('*', function (req, res, next) {
 
-    res.render('index', {title: 'Cool title'});
+    //res.render('index', {title: 'Cool title'});
+    res
+        .set('Content-Type', 'text/html')
+        .send('<html><body><h2>Cool title</h2></body></html>');
 
     //var preferredLocale = req.preferredLocale,
     //    skip = parseInt(req.query.skip, 10) || 0,

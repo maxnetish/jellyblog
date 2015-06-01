@@ -22,10 +22,14 @@ var logger = require('morgan');
 var routes = require('./routes/index');
 //var routesAuth = require('./routes/auth');
 //var routesAdmin = require('./routes/admin');
-//var routesApi = require('./routes/api');
+var routesApi = require('./routes/api');
 //var routesPost = require('./routes/post');
 
 var app = express();
+
+
+// run up jsx transformer
+require('node-jsx').install({extension: '.jsx'});
 
 console.log('Express mode: ' + app.get('env'));
 
@@ -84,7 +88,10 @@ app.use(logger('dev'));
 
 app.use(express.static(path.join(__dirname, 'build')));
 
+app.use('/api', routesApi);
 app.use('/', routes);
+
+//app.use('/', routes);
 //app.use('/auth', routesAuth);
 //app.use('/admin', routesAdmin);
 //app.use('/api', routesApi);
