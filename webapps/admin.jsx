@@ -8,6 +8,8 @@ var RouteHandler = Router.RouteHandler;
 var NotFoundRoute = Router.NotFoundRoute;
 var DefaultRoute = Router.DefaultRoute;
 
+var Navmenu = require('./admin/components/navmenu/navmenu.jsx');
+
 var adminRoutes = require('./admin/routes');
 var AdminHome = adminRoutes.AdminHome;
 var AdminPageNotFound = adminRoutes.PageNotFound;
@@ -15,6 +17,7 @@ var AdminPageNotFound = adminRoutes.PageNotFound;
 var App = React.createClass({
     render: function () {
         return <div>
+            <Navmenu />
             <RouteHandler />
             <label>Props:</label>
             <pre>{JSON.stringify(this.props, null, '\t')}</pre>
@@ -22,10 +25,15 @@ var App = React.createClass({
     }
 });
 
+/**
+ * /admin is 'root' path for app
+ * lower routes has relative paths
+ * @type {XML}
+ */
 var routes = (
     <Route handler={App} path="/admin">
         <DefaultRoute name="admin-home" handler={AdminHome}/>
-        <Route name="admin-other" path="other" handler={AdminHome} />
+        <Route name="admin-other" path="other" handler={AdminHome}/>
         <NotFoundRoute handler={AdminPageNotFound}/>
     </Route>
 );
@@ -67,8 +75,7 @@ function doBackendRender(requestUrl, buildViewModel) {
 }
 
 function isRunInBrowser() {
-    var isBrowser = !(typeof window === 'undefined');
-    return isBrowser;
+    return !(typeof window === 'undefined');
 }
 
 // run up in browser here:

@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.4",
+    "classnames": "^2.1.2",
     "debug": "^2.2.0",
     "express": "^4.12.4",
     "jade": "^1.10.0",
@@ -27,6 +28,7 @@
     "grunt-contrib-copy": "^0.8.0",
     "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-uglify": "^0.9.1",
+    "grunt-contrib-watch": "^0.6.1",
     "load-grunt-tasks": "^3.2.0",
     "reactify": "^1.1.1"
   }
