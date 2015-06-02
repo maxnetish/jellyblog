@@ -1,0 +1,14 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/css/style.css')
+    body
+        div#react-wrapper !{prerendered}
+        if developmentMode
+            script(src="/js/admin.js", async, defer)
+        else
+            script(src="/js/admin.min.js", async, defer)
+
+
+

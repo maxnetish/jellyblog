@@ -4,14 +4,30 @@ var express = require('express'),
     //urlHelper = require('../service/urlHelper'),
     //gAnalytics = require('../config').googleAnalytics || {};
 
+//var RootReactComponent = require('../views/root/root.jsx');
+
 
 /* GET home page. */
 router.get('*', function (req, res, next) {
 
-    //res.render('index', {title: 'Cool title'});
-    res
-        .set('Content-Type', 'text/html')
-        .send('<html><body><h2>Cool title</h2></body></html>');
+    res.send('OK');
+    //RootReactComponent.doBackendRender(req, res);
+
+    //Router.run()
+    //
+    ////res.render('index', {title: 'Cool title'});
+    //var responseContent = RootComponent.doBackendRender({
+    //    headers: req.headers,
+    //    method: req.method,
+    //    params: req.params,
+    //    query: req.query,
+    //    url: req.url,
+    //    path: req.path
+    //});
+    //
+    //res
+    //    .set('Content-Type', 'text/html')
+    //    .send(responseContent);
 
     //var preferredLocale = req.preferredLocale,
     //    skip = parseInt(req.query.skip, 10) || 0,

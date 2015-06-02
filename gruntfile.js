@@ -3,58 +3,24 @@
  */
 module.exports = function (grunt) {
 
-    var bowerPath = 'bower_components',
-        publicJs = 'public/js',
-        targetJsConcatAdmin = publicJs + '/app-admin.js',
-        targetJsMinAdmin = publicJs + '/app-admin.min.js',
-        targetJsConcatPublic = publicJs + '/app-public.js',
-        targetJsMinPublic = publicJs + '/app-public.min.js',
-        webappsAdmin = 'webapps/admin',
-        webappsCommon = 'webapps/common',
-        webappsPublic = 'webapps/public',
-        publicCss = 'public/css',
-        publicFonts = 'public/fonts',
-        webAppsLess = 'webapps/less',
-        jslibsAdmin = [
-            // libs
-                bowerPath + '/requirejs/require.js',
-                //bowerPath + '/jquery/dist/jquery.js',
-                //bowerPath + '/pathjs-amd/dist/path.js',
-                //bowerPath + '/moment/min/moment-with-langs.js',
-                //bowerPath + '/select2/select2.js',
-
-                webappsAdmin + '/**/*.js',
-                webappsCommon + '/**/*.js'
-        ],
-        jsLibsPublic = [
-            // public libs
-                bowerPath + '/requirejs/require.js',
-                //bowerPath + '/jquery/dist/jquery.js',
-                //bowerPath + '/moment/min/moment-with-langs.js',
-
-                webappsPublic + '/**/*.js',
-                webappsCommon + '/**/*.js'
-        ],
-        filesUglify = {};
-
-    filesUglify[targetJsMinAdmin] = [targetJsConcatAdmin];
-    //filesUglify[publicJs + '/knockout.min.js'] = [publicJs + '/knockout.js'];
-    //filesUglify[publicJs + '/lodash.min.js'] = [publicJs + '/lodash.js'];
-    filesUglify[publicJs + '/q.min.js'] = [publicJs + '/q.js'];
-    filesUglify[targetJsMinPublic] = [targetJsConcatPublic];
+    var buildDir = 'build',
+        publicJs = buildDir + '/js',
+        publicCss = buildDir + '/css',
+        publicFonts = buildDir + '/fonts',
+        sourceLess = 'webapps/less/app.less';
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+
         clean: [
-            publicJs,
-            publicCss,
-            publicFonts
+            buildDir
         ],
+
         less: {
             build: {
                 files: [
                     {
-                        src: webAppsLess + '/style.less',
+                        src: 'webapps/less/app.less',
                         dest: publicCss + '/app.css'
                     }
                 ]
@@ -64,97 +30,27 @@ module.exports = function (grunt) {
                 // cleancss: true
             }
         },
+
         copy: {
-            buildAll: {
+            fonts: {
                 files: [
                     {
-                        src: bowerPath + '/select2/select2.js',
-                        dest: publicJs + '/select2.js'
-                    },
-                    {
-                        src: bowerPath + '/select2/select2.min.js',
-                        dest: publicJs + '/select2.min.js'
-                    },
-                    {
-                        src: bowerPath + '/moment/min/moment-with-langs.js',
-                        dest: publicJs + '/moment-with-langs.js'
-                    },
-                    {
-                        src: bowerPath + '/moment/min/moment-with-langs.min.js',
-                        dest: publicJs + '/moment-with-langs.min.js'
-                    },
-                    {
-                        src: bowerPath + '/pathjs-amd/dist/path.js',
-                        dest: publicJs + '/path.js'
-                    },
-                    {
-                        src: bowerPath + '/pathjs-amd/dist/path.min.js',
-                        dest: publicJs + '/path.min.js'
-                    },
-                    {
-                        src: bowerPath + '/requirejs/require.js',
-                        dest: publicJs + '/require.js'
-                    },
-                    {
-                        src: bowerPath + '/jquery/dist/jquery.js',
-                        dest: publicJs + '/jquery.js'
-                    },
-                    {
-                        src: bowerPath + '/jquery/dist/jquery.min.js',
-                        dest: publicJs + '/jquery.min.js'
-                    },
-                    {
-                        src: bowerPath + '/knockoutjs/dist/knockout.debug.js',
-                        dest: publicJs + '/knockout.js'
-                    },
-                    {
-                        src: bowerPath + '/knockoutjs/dist/knockout.js',
-                        dest: publicJs + '/knockout.min.js'
-                    },
-                    {
-                        src: bowerPath + '/lodash/dist/lodash.js',
-                        dest: publicJs + '/lodash.js'
-                    },
-                    {
-                        src: bowerPath + '/lodash/dist/lodash.min.js',
-                        dest: publicJs + '/lodash.min.js'
-                    },
-                    {
-                        src: bowerPath + '/q/q.js',
-                        dest: publicJs + '/q.js'
-                    },
-                    {
                         expand: true,
                         filter: 'isFile',
                         flatten: true,
-                        src: bowerPath + '/select2/*.png',
-                        dest: publicCss + '/'
-                    },
-                    {
-                        expand: true,
-                        filter: 'isFile',
-                        flatten: true,
-                        src: bowerPath + '/bootstrap/dist/fonts/*',
+                        src: 'node_modules/bootstrap/dist/fonts/*',
                         dest: publicFonts + '/'
                     }
                 ]
             }
         },
+
         concat: {
-            build: {
-                src: jslibsAdmin,
-                dest: targetJsConcatAdmin
-            },
-            buildPublic: {
-                src: jsLibsPublic,
-                dest: targetJsConcatPublic
-            },
-            buildLess: {
+            css: {
                 src: [
-                        bowerPath + '/bootstrap/dist/css/bootstrap.css',
-                        bowerPath + '/bootstrap/dist/css/bootstrap-theme.css',
-                        bowerPath + '/select2/select2.css',
-                        publicCss + '/app.css'
+                    'node_modules/bootstrap/dist/css/bootstrap.css',
+                    'node_modules/bootstrap/dist/css/bootstrap-theme.css',
+                    publicCss + '/app.css'
                 ],
                 dest: publicCss + '/style.css'
             },
@@ -163,13 +59,39 @@ module.exports = function (grunt) {
                 //sourceMapBasepath: publicCss
             }
         },
+
+        browserify: {
+            options: {
+                transform: ['reactify'],
+                browserifyOptions: {
+                    debug: true
+                }
+            },
+            admin: {
+                files: {
+                    'build/js/admin.js': ['webapps/admin.jsx']
+                }
+            },
+            public: {
+                files: {
+                    'build/js/app.js': ['webapps/public.jsx']
+                }
+            }
+        },
+
         uglify: {
-            buildAll: {
-                files: filesUglify
+            admin: {
+                files: {
+                    'build/js/admin.min.js': ['build/js/admin.js']
+                }
+            },
+            public: {
+                files: {
+                    'build/js/app.min.js': ['build/js/app.js']
+                }
             },
             options: {
                 sourceMap: true,
-                sourceMapIn: targetJsConcatAdmin + '.map',
                 compress: {
                     drop_console: true
                 }
@@ -178,7 +100,8 @@ module.exports = function (grunt) {
     });
 
     require('load-grunt-tasks')(grunt);
-    grunt.registerTask('default', ['clean', 'less', 'copy', 'concat', 'uglify']);
+
+    grunt.registerTask('default', ['clean', 'less', 'copy', 'concat', 'browserify', 'uglify']);
 
     // Load tasks from the tasks folder
     //grunt.loadTasks('tasks');

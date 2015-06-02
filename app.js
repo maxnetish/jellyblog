@@ -2,6 +2,13 @@ var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
+
+// run up jsx transformer
+require('node-jsx').install({extension: '.jsx'});
+
+
+
+
 //var cookieParser = require('cookie-parser');
 //var bodyParser = require('body-parser');
 //var serviceAuth = require('./service/auth');
@@ -21,15 +28,12 @@ var logger = require('morgan');
 
 var routes = require('./routes/index');
 //var routesAuth = require('./routes/auth');
-//var routesAdmin = require('./routes/admin');
+var routesAdmin = require('./routes/admin');
 var routesApi = require('./routes/api');
 //var routesPost = require('./routes/post');
 
 var app = express();
 
-
-// run up jsx transformer
-require('node-jsx').install({extension: '.jsx'});
 
 console.log('Express mode: ' + app.get('env'));
 
@@ -37,7 +41,7 @@ console.log('Express mode: ' + app.get('env'));
 app.set("trust proxy", true);
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+//app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // adds X-Response-Time header
@@ -53,6 +57,7 @@ app.use(logger('dev'));
 //} else {
 //    app.use(logger(morgan2Mongo.addEntryFromMorgan));
 //}
+
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded());
 //app.use(cookieParser());
@@ -88,6 +93,7 @@ app.use(logger('dev'));
 
 app.use(express.static(path.join(__dirname, 'build')));
 
+app.use('/admin', routesAdmin);
 app.use('/api', routesApi);
 app.use('/', routes);
 
