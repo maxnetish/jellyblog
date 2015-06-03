@@ -8,6 +8,8 @@ var RouteHandler = Router.RouteHandler;
 var NotFoundRoute = Router.NotFoundRoute;
 var DefaultRoute = Router.DefaultRoute;
 
+var Reflux = require('reflux');
+
 var Navmenu = require('./admin/components/navmenu/navmenu.jsx');
 
 var adminRoutes = require('./admin/routes');
@@ -18,9 +20,9 @@ var App = React.createClass({
     render: function () {
         return <div>
             <Navmenu />
-            <RouteHandler />
-            <label>Props:</label>
-            <pre>{JSON.stringify(this.props, null, '\t')}</pre>
+            <RouteHandler data={this.props.data} />
+            <pre>{JSON.stringify(this.props)}</pre>
+            <pre>{JSON.stringify(this.state)}</pre>
         </div>;
     }
 });
@@ -38,11 +40,29 @@ var routes = (
     </Route>
 );
 
+var routeActions = Reflux.createActions([
+    'stateChanged'
+]);
+
+var routeStore = Reflux.createStore({
+    listenables: routeActions,
+    onStateChanged: function (state) {
+        var oldState = this.state;
+        this.state = state;
+        this.trigger({
+            oldState: oldState,
+            newState: state
+        });
+    },
+    state: null
+});
+
 function initInBrowser(rootElementId) {
     Router.run(routes, Router.HistoryLocation, function (Root, state) {
-        console.log(state);
         // whenever the url changes, this callback is called again
-        React.render(<Root data={state}/>, document.getElementById(rootElementId));
+        React.render(<Root data={state}/>, document.getElementById(rootElementId), function () {
+            routeActions.stateChanged(state);
+        });
     });
 }
 
@@ -78,11 +98,17 @@ function isRunInBrowser() {
     return !(typeof window === 'undefined');
 }
 
+routeStore.listen(function () {
+    console.log('route store fires event:');
+    console.log(arguments);
+});
+
 // run up in browser here:
 if (isRunInBrowser()) {
     initInBrowser('react-wrapper');
 }
 
 module.exports = {
-    doBackendRender: doBackendRender
+    doBackendRender: doBackendRender,
+    routeStore: routeStore
 };

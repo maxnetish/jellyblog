@@ -2,13 +2,12 @@
  * Created by Gordeev on 12.06.2014.
  */
 var config = require('../../config'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 var init = function () {
     var model = require('../../models').model,
         User = model.User,
         passport = require('passport'),
-//        GoogleStrategy = require('passport-google').Strategy;
         GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
         googleRedirectUrl;
 

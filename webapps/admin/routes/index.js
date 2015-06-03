@@ -1,4 +1,4 @@
 module.exports = {
-    AdminHome: require('./admin-home.jsx'),
+    AdminHome: require('./home/home.jsx'),
     PageNotFound: require('./404.jsx')
 };

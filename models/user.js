@@ -1,7 +1,7 @@
 /**
  * Created by Gordeev on 12.06.2014.
  */
-var _ = require('underscore');
+var _ = require('lodash');
 var createUserModel = function (mongoose) {
     var Schema = mongoose.Schema;
 

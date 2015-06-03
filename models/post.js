@@ -1,7 +1,7 @@
 /**
  * Created by Gordeev on 13.06.2014.
  */
-var _ = require('underscore'),
+var _ = require('lodash'),
     moment = require('moment'),
     URL = require('url'),
     CUT_LITERAL = '%CUT%',
