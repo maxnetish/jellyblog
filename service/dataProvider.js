@@ -281,7 +281,7 @@ var promiseSettingsUpdate = function (settings) {
         id = settings._id;
 
     delete settings._id;
-    query = model.Settings.findByIdAndUpdate(id, settings);
+    query = model.Settings.findByIdAndUpdate(id, settings, {new: true});
 
     return query.exec();
 };

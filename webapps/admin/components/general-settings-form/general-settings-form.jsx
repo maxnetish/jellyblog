@@ -1,6 +1,7 @@
 var React = require('react/addons');
 var Reflux = require('reflux');
 var _ = require('lodash');
+var ClassSet = require('classnames');
 var componentFlux = require('./general-settings-flux');
 
 var GeneralSettingsForm = React.createClass({
@@ -12,6 +13,10 @@ var GeneralSettingsForm = React.createClass({
         };
     },
     render: function () {
+        var savingIconClass = ClassSet({
+            'glyphicon glyphicon-save': this.state.saving
+        });
+
         return <section>
             <div className="container-fluid">
                 <div className="row">
@@ -19,6 +24,7 @@ var GeneralSettingsForm = React.createClass({
                         <div className="panel panel-default">
                             <div className="panel-heading">
                                 <span className="panel-title">General settings</span>
+                                <i className={savingIconClass}></i>
                             </div>
                             <div className="panel-body">
                                 <form name="general-settings-form">

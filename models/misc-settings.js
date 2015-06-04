@@ -10,36 +10,36 @@ var createSettingsModel = function (mongoose) {
             required: true,
             default: 'Admin'
         },
-        authorDisplayBio:{
+        authorDisplayBio: {
             type: String
         },
-        authorTwitterScreenName:{
+        authorTwitterScreenName: {
             type: String
         },
-        authorAvatarUrl:{
+        authorAvatarUrl: {
             // full url
             type: String
         },
-        footerAnnotation:{
+        footerAnnotation: {
             type: String
         },
-        postsPerPage:{
+        postsPerPage: {
             type: Number,
             required: true,
             default: 5
         },
-        siteTitle:{
+        siteTitle: {
             type: String,
             required: true,
             default: 'Blog'
         },
-        metaTitle:{
+        metaTitle: {
             type: String
         },
-        metaDescription:{
+        metaDescription: {
             type: String
         },
-        titleImageUrl:{
+        titleImageUrl: {
             // full url
             type: String
         }

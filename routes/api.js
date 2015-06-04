@@ -14,20 +14,20 @@ var dataProvider = require('../service/dataProvider');
 //var postVm = require('../service/vm/postVm');
 //var urlHelper = require('../service/urlHelper');
 
-//var createError = function (status, message) {
-//    var result = new Error(message);
-//    result.status = status;
-//    return result;
-//};
-//var createError401 = function () {
-//    return createError(401, 'Only admin can');
-//};
-//var createError400 = function (invalidParametrName) {
-//    var result = createError(400, 'Invalid param: ' + invalidParametrName);
-//    result.invalidParameter = invalidParametrName;
-//    return result;
-//};
-//
+var createError = function (status, message) {
+    var result = new Error(message);
+    result.status = status;
+    return result;
+};
+var createError401 = function () {
+    return createError(401, 'Only admin can');
+};
+var createError400 = function (invalidParametrName) {
+    var result = createError(400, 'Invalid param: ' + invalidParametrName);
+    result.invalidParameter = invalidParametrName;
+    return result;
+};
+
 
 router.get('/', function(req, res){
    res.json({
@@ -283,21 +283,21 @@ router.get('/settings', function (req, res, next) {
         .then(null, next);
 });
 
-//router.post('/settings', function (req, res, next) {
-//    var settings = req.body;
-//
-//    if (!req.userHasAdminRights) {
-//        next(createError401());
-//        return;
-//    }
-//
-//    dataProvider.promiseSettingsUpdate(settings)
-//        .then(function (result) {
-//            return res.send(result);
-//        })
-//        .then(null, next);
-//});
-//
+router.post('/settings', function (req, res, next) {
+    var settings = req.body;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    dataProvider.promiseSettingsUpdate(settings)
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
 //router.get('/log', function (req, res, next) {
 //    if (!req.userHasAdminRights) {
 //        next(createError401());
