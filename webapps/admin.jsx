@@ -11,18 +11,26 @@ var DefaultRoute = Router.DefaultRoute;
 var Reflux = require('reflux');
 
 var Navmenu = require('./admin/components/navmenu/navmenu.jsx');
+var AuthRedirector = require('./admin/components/auth-redirector/auth-redirector.jsx');
 
 var adminRoutes = require('./admin/routes');
 var AdminHome = adminRoutes.AdminHome;
 var AdminPageNotFound = adminRoutes.PageNotFound;
 
+var injectedFromBackend = (window && window.jb__injected) || {};
+
 var App = React.createClass({
     render: function () {
+        var isAdmin = !!(this.props.data && this.props.data.injectedFromBackend && this.props.data.injectedFromBackend.admin);
+
         return <div>
             <Navmenu />
-            <RouteHandler data={this.props.data} />
+            {isAdmin ? null : <AuthRedirector />}
+            <RouteHandler data={this.props.data}/>
+            {/*
             <pre>{JSON.stringify(this.props)}</pre>
             <pre>{JSON.stringify(this.state)}</pre>
+            */}
         </div>;
     }
 });
@@ -35,7 +43,7 @@ var App = React.createClass({
 var routes = (
     <Route handler={App} path="/admin">
         <DefaultRoute name="admin-home" handler={AdminHome}/>
-        <Route name="admin-other" path="other" handler={AdminHome}/>
+        <Route name="admin-other" path="other" handler={adminRoutes.AdminOther}/>
         <NotFoundRoute handler={AdminPageNotFound}/>
     </Route>
 );
@@ -60,7 +68,11 @@ var routeStore = Reflux.createStore({
 function initInBrowser(rootElementId) {
     Router.run(routes, Router.HistoryLocation, function (Root, state) {
         // whenever the url changes, this callback is called again
-        React.render(<Root data={state}/>, document.getElementById(rootElementId), function () {
+        var dataToPassAsProp = {
+            state: state,
+            injectedFromBackend: injectedFromBackend
+        };
+        React.render(<Root data={dataToPassAsProp}/>, document.getElementById(rootElementId), function () {
             routeActions.stateChanged(state);
         });
     });

@@ -5,7 +5,7 @@
 var express = require('express');
 var router = express.Router();
 //var locales = require('../locale');
-//var dataProvider = require('../service/dataProvider');
+var dataProvider = require('../service/dataProvider');
 //var multipartMiddleware = require('connect-multiparty')();
 //var fileUtils = require('../service/fileUtils');
 //var importPosts = require('../service/importPostsFromJson');
@@ -274,15 +274,15 @@ router.get('/', function(req, res){
 //        })
 //        .then(null, next);
 //});
-//
-//router.get('/settings', function (req, res, next) {
-//    dataProvider.promiseSettings()
-//        .then(function (result) {
-//            return res.send(result);
-//        })
-//        .then(null, next);
-//});
-//
+
+router.get('/settings', function (req, res, next) {
+    dataProvider.promiseSettings()
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
 //router.post('/settings', function (req, res, next) {
 //    var settings = req.body;
 //

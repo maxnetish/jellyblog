@@ -3,7 +3,7 @@
  */
 
 var model = require('../models').model,
-    _ = require('underscore'),
+    _ = require('lodash'),
     Q = require('q');
 
 var sanitizeDate = function (row) {

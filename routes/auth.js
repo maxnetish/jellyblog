@@ -27,7 +27,7 @@ router.get('/google/return', function (req, res, next) {
             if (req.session.after) {
                 return res.redirect(req.session.after);
             } else {
-                return res.redirect('/');
+                return res.redirect('/admin');
             }
         });
     })(req, res, next);
@@ -37,7 +37,7 @@ router.get('/logout', function (req, res) {
     if (req.user) {
         req.logout();
     }
-    res.redirect('/');
+    res.redirect('/admin');
 });
 
 module.exports = router;

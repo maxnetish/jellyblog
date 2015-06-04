@@ -6,19 +6,22 @@ var express = require('express'),
 //preferredLocaleService = require('../service/preferredLocale'),
 //CommonVm = require('../service/vm/commonVm');
 
-var reactAdminApp = require('../webapps/admin.jsx');
+//var reactAdminApp = require('../webapps/admin.jsx');
 
 /* GET admin page. */
 router.get('*', function (req, res) {
 
-    reactAdminApp.doBackendRender(req.originalUrl)
-        .then(function (html) {
-            res.render('../webapps/admin-index', {
-                title: 'Admin app',
-                prerendered: html,
-                developmentMode: !!req.query.debug || express().get('env') === 'development'
-            });
-        });
+    res.render('../webapps/admin-index.jade', {
+        title: 'Admin app',
+        developmentMode: !!req.query.debug || express().get('env') === 'development',
+        admin: !!req.userHasAdminRights,
+        user: req.user,
+        toInject: JSON.stringify({
+            admin: !!req.userHasAdminRights,
+            user: req.user,
+            developmentMode: !!req.query.debug || express().get('env') === 'development'
+        })
+    });
 
     //var locale = req.preferredLocale,
     //    vm;

@@ -29,16 +29,24 @@ var routesAdmin = require('./routes/admin');
 var routesApi = require('./routes/api');
 //var routesPost = require('./routes/post');
 
+var reactEngine = require('react-engine');
+
 var app = express();
 
 console.log('Express mode: ' + app.get('env'));
+
+// set up react-engine renderer
+var reactEngineInstance = reactEngine.server.create({
+    //reactRoutes: path.join(__dirname + )
+});
 
 // to properly work behind nginx
 app.set("trust proxy", true);
 
 // view engine setup
+app.engine('.jsx', reactEngineInstance);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+//app.set('view engine', 'jade');
 
 // adds X-Response-Time header
 //app.use(responseTime(1));
@@ -134,7 +142,7 @@ if (app.get('env') === 'development') {
         if (req.wantJson) {
             res.json(responseVm);
         } else {
-            res.render('error', responseVm);
+            res.render('error.jade', responseVm);
         }
 
 //        morgan2Mongo.addEntryFromErrorResponse(req, res, err);
@@ -163,7 +171,7 @@ app.use(function (err, req, res, next) {
     if (req.wantJson) {
         res.json(responseVm);
     } else {
-        res.render('error', responseVm);
+        res.render('error.jade', responseVm);
     }
 //    morgan2Mongo.addEntryFromErrorResponse(req, res, err);
 });

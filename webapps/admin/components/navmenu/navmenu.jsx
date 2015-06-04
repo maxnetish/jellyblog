@@ -10,22 +10,30 @@ var Link = Router.Link;
 var Navmenu = React.createClass({
     mixins: [Router.State],
 
-    getInitialState: function(){
-       return {
-           menuCollapsed: true
-       };
+    getInitialState: function () {
+        return {
+            menuCollapsed: true
+        };
     },
 
     render: function () {
         var navButtons = _.map(definitions, function (def) {
             var liClass = ClassSet({
-                'active': this.isActive(def.routeName, this.getParams(), this.getQuery())
+                'active': def.routeName && this.isActive(def.routeName, this.getParams(), this.getQuery())
             });
-            return <li className={liClass} key={def.routeName}>
-                <Link to={def.routeName}>
-                    <i className={def.icon+' _margin-right-half'}></i>
-                    {def.title}
-                </Link>
+            var key = def.routeName || def.url;
+            return <li className={liClass} key={key}>
+                {
+                    def.routeName ?
+                        <Link to={def.routeName} target={def.target}>
+                            <i className={def.icon+' _margin-right-half'}></i>
+                            {def.title}
+                        </Link> :
+                        <a href={def.url} target={def.target}>
+                            <i className={def.icon+' _margin-right-half'}></i>
+                            {def.title}
+                        </a>
+                }
             </li>
         }, this);
 
@@ -57,7 +65,7 @@ var Navmenu = React.createClass({
         return xMarkup;
     },
 
-    onToggleCollapseMenu: function(e){
+    onToggleCollapseMenu: function (e) {
         this.setState({
             menuCollapsed: !this.state.menuCollapsed
         });

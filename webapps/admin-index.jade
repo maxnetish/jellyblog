@@ -4,7 +4,10 @@ html
         title= title
         link(rel='stylesheet', href='/css/style.css')
     body
-        div#react-wrapper !{prerendered}
+        div#react-wrapper
+            h1 Loading app...
+        script!= "window.jb__injected = JSON.parse('"+toInject+"');"
+
         if developmentMode
             script(src="/js/admin.js", async, defer)
         else
