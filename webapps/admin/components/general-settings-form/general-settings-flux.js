@@ -2,16 +2,19 @@ var Reflux = require('reflux');
 var _ = require('lodash');
 var resources = require('./general-settings-resources');
 
-var actions = Reflux.createActions([
-    'valueChanged',
-    'dataGet',
-    'dataGetCompleted',
-    'dataGetFailed',
-    'dataSave',
-    'dataSaveCompleted',
-    'dataSaveFailed',
-    'componentMounted'
-]);
+var actionSyncOptions = {sync: true};
+var actionAsyncOptions = {sync: false};
+var actions = Reflux.createActions({
+    'valueChanged': actionSyncOptions,
+    'dataGet': actionSyncOptions,
+    'dataGetCompleted': actionSyncOptions,
+    'dataGetFailed': actionSyncOptions,
+    'dataSave': actionSyncOptions,
+    'dataSaveCompleted': actionSyncOptions,
+    'dataSaveFailed': actionSyncOptions,
+    'userForceSave': actionSyncOptions,
+    'componentMounted': actionAsyncOptions
+});
 
 var store = Reflux.createStore({
     listenables: actions,
@@ -22,7 +25,11 @@ var store = Reflux.createStore({
         this.data[payload.key] = payload.value;
         this.pristine = false;
         this.trigger(this.getViewModel());
-        saveDataDebounce(this.data);
+        if (payload.valid) {
+            saveDataDebounce(this.data);
+        } else {
+            saveDataDebounce.cancel();
+        }
     },
     onComponentMounted: function () {
         if (_.isEmpty(this.data)) {
@@ -38,11 +45,13 @@ var store = Reflux.createStore({
     onDataGetCompleted: function (gettedData) {
         this.data = _.cloneDeep(gettedData);
         this.loading = false;
-        this.prisine = true;
+        this.pristine = true;
+        this.error = null;
         this.trigger(this.getViewModel());
     },
     onDataGetFailed: function (err) {
         this.loading = false;
+        this.error = err;
         console.log(err);
         this.trigger(this.getViewModel());
     },
@@ -53,13 +62,21 @@ var store = Reflux.createStore({
     onDataSaveCompleted: function (res) {
         this.data = _.assign(this.data, res);
         this.saving = false;
-        this.prisine = true;
+        this.pristine = true;
+        this.error = null;
         this.trigger(this.getViewModel());
     },
     onDataSaveFailed: function (err) {
         this.saving = false;
+        this.error = err;
         console.log(err);
         this.trigger(this.getViewModel());
+    },
+    onUserForceSave: function () {
+        // supress debounced invokation
+        saveDataDebounce.cancel();
+        // and invoke sync
+        saveData(this.data);
     },
 
     getViewModel: function () {
@@ -67,14 +84,16 @@ var store = Reflux.createStore({
             data: this.data,
             pristine: this.pristine,
             loading: this.loading,
-            saving: this.saving
+            saving: this.saving,
+            error: this.error
         };
     },
 
     data: {},
     pristine: true,
     loading: false,
-    saving: false
+    saving: false,
+    error: null
 });
 
 var saveDataDebounce = _.debounce(saveData, 10000);

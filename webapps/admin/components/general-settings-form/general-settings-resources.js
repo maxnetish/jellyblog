@@ -10,7 +10,7 @@ function getGeneralSettings() {
                 dfr.reject(err);
                 return;
             }
-            dfr.resolve(result.body);
+            dfr.resolve(result.body || {});
         });
 
     return dfr.promise;
