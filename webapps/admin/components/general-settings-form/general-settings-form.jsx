@@ -4,12 +4,68 @@ var _ = require('lodash');
 var ClassSet = require('classnames');
 var componentFlux = require('./general-settings-flux');
 
+var defaultTextInputOpts = {
+    dataObject: {},
+    fieldName: 'fieldName',
+    fieldTitle: void 0,
+    required: false,
+    placeholder: 'Enter value',
+    pattern: void 0,
+    validityObject: {},
+    inputType: 'text',
+    onChange: _.noop
+};
+
 function getClassSetForInputParent(inputName, validityState, baseClass) {
     var classSetOptions = {
         'has-error': validityState.hasOwnProperty(inputName) && !validityState[inputName]
     };
     classSetOptions[baseClass] = true;
     return ClassSet(classSetOptions);
+}
+function renderTextInputField(opts) {
+    /**
+     * dataObject, fieldName, fieldTitle, required, placeholder, pattern, validityObject, inputType, onChange
+     */
+    opts = _.assign(_.clone(defaultTextInputOpts), opts);
+    var kebabFieldName = _.kebabCase(opts.fieldName);
+    var xMarkup = <div className="form-group">
+        <label htmlFor={kebabFieldName} className="col-md-2 control-label">{opts.fieldTitle || opts.fieldName}</label>
+
+        <div className={getClassSetForInputParent(opts.fieldName, opts.validityObject, 'col-md-10')}>
+            <input type={opts.inputType}
+                   name={opts.fieldName}
+                   id={kebabFieldName}
+                   className="form-control"
+                   placeholder={opts.placeholder}
+                   required={opts.required}
+                   pattern={opts.pattern}
+                   value={opts.dataObject[opts.fieldName]}
+                   onChange={opts.onChange}/>
+        </div>
+    </div>;
+    return xMarkup;
+}
+
+function renderTextAreaField(opts){
+    opts = _.assign(_.clone(defaultTextInputOpts), opts);
+    var kebabFieldName = _.kebabCase(opts.fieldName);
+    var xMarkup = <div className="form-group">
+        <label htmlFor={kebabFieldName} className="col-md-2 control-label">{opts.fieldTitle || opts.fieldName}</label>
+
+        <div className={getClassSetForInputParent(opts.fieldName, opts.validityObject, 'col-md-10')}>
+            <textarea name={opts.fieldName}
+                   id={kebabFieldName}
+                   className="form-control"
+                   rows="3"
+                   maxLength="256"
+                   placeholder={opts.placeholder}
+                   required={opts.required}
+                   value={opts.dataObject[opts.fieldName]}
+                   onChange={opts.onChange}></textarea>
+        </div>
+    </div>;
+    return xMarkup;
 }
 
 var GeneralSettingsForm = React.createClass({
@@ -52,22 +108,38 @@ var GeneralSettingsForm = React.createClass({
                                       ref="generalSettingsForm"
                                       onSubmit={this.onSubmitForm}>
                                     <div className="form-horizontal">
-                                        <div className="form-group">
-                                            <label htmlFor="site-title" className="col-md-2 control-label">Site
-                                                title</label>
-
-                                            <div
-                                                className={getClassSetForInputParent('siteTitle', this.state.validity, 'col-md-10')}>
-                                                <input type="text"
-                                                       name="siteTitle"
-                                                       id="site-title"
-                                                       className="form-control form-validation"
-                                                       placeholder="Enter site title"
-                                                       required
-                                                       value={this.state.data.siteTitle}
-                                                       onChange={this.textFieldChanged}/>
-                                            </div>
-                                        </div>
+                                        { renderTextInputField({
+                                            dataObject: this.state.data,
+                                            fieldName: 'siteTitle',
+                                            fieldTitle: 'Site title',
+                                            required: true,
+                                            placeholder: 'Enter site title (required)',
+                                            pattern: void 0,
+                                            validityObject: this.state.validity,
+                                            inputType: 'text',
+                                            onChange: this.textFieldChanged
+                                        }) }
+                                        { renderTextInputField({
+                                            dataObject: this.state.data,
+                                            fieldName: 'authorDisplayName',
+                                            fieldTitle: 'Author name',
+                                            required: true,
+                                            placeholder: 'Enter author display name (required)',
+                                            pattern: void 0,
+                                            validityObject: this.state.validity,
+                                            inputType: 'text',
+                                            onChange: this.textFieldChanged
+                                        }) }
+                                        { renderTextAreaField({
+                                            dataObject: this.state.data,
+                                            fieldName: 'authorDisplayBio',
+                                            fieldTitle: 'Author bio',
+                                            required: false,
+                                            placeholder: 'Enter author display bio',
+                                            pattern: void 0,
+                                            validityObject: this.state.validity,
+                                                onChange: this.textFieldChanged
+                                        }) }
                                     </div>
                                 </form>
                             </div>
@@ -107,8 +179,13 @@ var GeneralSettingsForm = React.createClass({
 
     },
     textFieldChanged: function (e) {
+        // We should check both field and overall form validity
+        // field validity will be use for invalid field styling
+        // and if form valid than we will save data
+
         var fieldValidity = {};
         var valid = e.target.checkValidity();
+        var formValid = React.findDOMNode(this.refs.generalSettingsForm).checkValidity();
 
         fieldValidity[e.target.name] = valid;
 
@@ -119,7 +196,7 @@ var GeneralSettingsForm = React.createClass({
         componentFlux.actions.valueChanged({
             key: e.target.name,
             value: e.target.value,
-            valid: valid
+            valid: formValid
         })
     },
     onErrorLinkClick: function (e) {
