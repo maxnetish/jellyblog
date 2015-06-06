@@ -3,19 +3,33 @@ var AvatarEditor = require('react-avatar-editor');
 
 var AvatarCreator = React.createClass({
     getInitialState: function () {
-        return {};
+        return {
+            scale: "1"
+        };
     },
     render: function () {
-        return <div>
+        var scaleDisplay;
+
+        scaleDisplay = parseFloat(this.state.scale).toFixed(1);
+
+        return <div className="avatar-creator">
             <input type="file"
                    className="form-control"
                    onChange={this.onInputFileChange}/>
             <AvatarEditor image={this.state.imgSource}
-                          width={250}
-                          height={250}
+                          ref="avatarEditor"
+                          width={150}
+                          height={150}
                           border={50}
-                          color={[64, 128, 255, 0.6]} // RGBA
-                          scale={1.2}/>
+                          color={[32, 64, 64, 0.6]} // RGBA
+                          scale={this.state.scale}/>
+
+            <div className="input-group">
+                <span className="input-group-addon scale-label"><i
+                    className="glyphicon glyphicon-zoom-in scale-label-icon"></i>{scaleDisplay}</span>
+                <input className="form-control" type="range" max="10" min="1" step="0.1" value={this.state.scale}
+                       onChange={this.onScaleChange}/>
+            </div>
         </div>;
     },
     onInputFileChange: function (e) {
@@ -42,6 +56,14 @@ var AvatarCreator = React.createClass({
         };
 
         reader.readAsDataURL(targetInput.files[0]);
+    },
+    onScaleChange: function (e) {
+        this.setState({
+            scale: e.target.value
+        });
+    },
+    getImageDataUrl: function () {
+        return this.refs.avatarEditor.getImage();
     }
 });
 

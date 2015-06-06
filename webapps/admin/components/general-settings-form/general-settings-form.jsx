@@ -121,7 +121,7 @@ var GeneralSettingsForm = React.createClass({
             saveButtonText = 'Save'
         }
 
-        return <section>
+        return <section className="general-settings-form">
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-offset-2 col-md-8">
@@ -188,7 +188,32 @@ var GeneralSettingsForm = React.createClass({
                                             <label className="col-md-2 control-label">Avatar</label>
 
                                             <div className="col-md-10">
-                                                <AvatarCreator />
+                                                <div className="media">
+                                                    <div className="media-left">
+                                                        <img src={this.state.createdAvatarUrl}
+                                                             className="media-object"
+                                                             style={{height:'150px',width:'150px'}}/>
+                                                    </div>
+                                                    <div className="media-body">
+                                                        <a href="javascript:void 0"
+                                                           className="create-avatar-button"
+                                                           onClick={this.onCreateNewAvatarButtonClick}>
+                                                            <i className="caret caret-creator-toggle"></i>
+                                                            <span>{this.state.avatarCreatorVisible ? 'Cancel' : 'Create new avatar'}</span>
+                                                        </a>
+                                                        {this.state.avatarCreatorVisible ?
+                                                            <a href="javascript:void 0"
+                                                               onClick={this.onImageButtonClick}>
+                                                                Apply new avatar
+                                                            </a> :
+                                                            null}
+                                                        {this.state.avatarCreatorVisible ?
+                                                            <div>
+                                                                <AvatarCreator ref="avatarCreator"/>
+                                                            </div> :
+                                                            null}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -257,6 +282,20 @@ var GeneralSettingsForm = React.createClass({
     onErrorLinkClick: function (e) {
         this.setState({
             showErrorDetails: !this.state.showErrorDetails
+        });
+    },
+    onImageButtonClick: function (e) {
+        var creator = this.refs.avatarCreator;
+        var foo = creator.getImageDataUrl();
+        console.log(foo);
+        this.setState({
+            createdAvatarUrl: foo,
+            avatarCreatorVisible: false
+        });
+    },
+    onCreateNewAvatarButtonClick: function (e) {
+        this.setState({
+            avatarCreatorVisible: !this.state.avatarCreatorVisible
         });
     },
     onSubmitForm: function (e) {
