@@ -4,6 +4,8 @@ var _ = require('lodash');
 var ClassSet = require('classnames');
 var componentFlux = require('./general-settings-flux');
 
+var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
+
 var defaultTextInputOpts = {
     dataObject: {},
     fieldName: 'fieldName',
@@ -13,7 +15,9 @@ var defaultTextInputOpts = {
     pattern: void 0,
     validityObject: {},
     inputType: 'text',
-    onChange: _.noop
+    onChange: _.noop,
+    fieldAddonText: null,
+    maxLength: null
 };
 
 function getClassSetForInputParent(inputName, validityState, baseClass) {
@@ -40,6 +44,7 @@ function renderTextInputField(opts) {
                    placeholder={opts.placeholder}
                    required={opts.required}
                    pattern={opts.pattern}
+                   maxLength={opts.maxLength}
                    value={opts.dataObject[opts.fieldName]}
                    onChange={opts.onChange}/>
         </div>
@@ -47,7 +52,7 @@ function renderTextInputField(opts) {
     return xMarkup;
 }
 
-function renderTextAreaField(opts){
+function renderTextAreaField(opts) {
     opts = _.assign(_.clone(defaultTextInputOpts), opts);
     var kebabFieldName = _.kebabCase(opts.fieldName);
     var xMarkup = <div className="form-group">
@@ -55,14 +60,40 @@ function renderTextAreaField(opts){
 
         <div className={getClassSetForInputParent(opts.fieldName, opts.validityObject, 'col-md-10')}>
             <textarea name={opts.fieldName}
-                   id={kebabFieldName}
-                   className="form-control"
-                   rows="3"
-                   maxLength="256"
-                   placeholder={opts.placeholder}
-                   required={opts.required}
-                   value={opts.dataObject[opts.fieldName]}
-                   onChange={opts.onChange}></textarea>
+                      id={kebabFieldName}
+                      className="form-control"
+                      rows="3"
+                      maxLength={opts.maxLength}
+                      placeholder={opts.placeholder}
+                      required={opts.required}
+                      value={opts.dataObject[opts.fieldName]}
+                      onChange={opts.onChange}></textarea>
+        </div>
+    </div>;
+    return xMarkup;
+}
+
+function renderTextInputWithAddon(opts) {
+    opts = _.assign(_.clone(defaultTextInputOpts), opts);
+    var kebabFieldName = _.kebabCase(opts.fieldName);
+    var xMarkup = <div className="form-group">
+        <label htmlFor={kebabFieldName} className="col-md-2 control-label">{opts.fieldTitle || opts.fieldName}</label>
+
+        <div className="col-md-10">
+            <div className={getClassSetForInputParent(opts.fieldName, opts.validityObject, 'input-group')}>
+                <span className="input-group-addon" id={'input-addon-'+opts.fieldName}>{opts.fieldAddonText}</span>
+                <input name={opts.fieldName}
+                       type={opts.inputType}
+                       id={kebabFieldName}
+                       className="form-control"
+                       aria-describedby={'input-addon-'+opts.fieldName}
+                       placeholder={opts.placeholder}
+                       required={opts.required}
+                       pattern={opts.pattern}
+                       maxLength={opts.maxLength}
+                       value={opts.dataObject[opts.fieldName]}
+                       onChange={opts.onChange}/>
+            </div>
         </div>
     </div>;
     return xMarkup;
@@ -71,13 +102,9 @@ function renderTextAreaField(opts){
 var GeneralSettingsForm = React.createClass({
     mixins: [Reflux.ListenerMixin],
     getInitialState: function () {
-        return {
-            data: {
-                siteTitle: null
-            },
-            pristine: true,
-            validity: {}
-        };
+        var vm = _.cloneDeep(componentFlux.store.getViewModel());
+        vm.validity = {};
+        return vm;
     },
     render: function () {
         var saveButtonIconClass = ClassSet({
@@ -115,6 +142,7 @@ var GeneralSettingsForm = React.createClass({
                                             required: true,
                                             placeholder: 'Enter site title (required)',
                                             pattern: void 0,
+                                            maxLength: 128,
                                             validityObject: this.state.validity,
                                             inputType: 'text',
                                             onChange: this.textFieldChanged
@@ -126,6 +154,7 @@ var GeneralSettingsForm = React.createClass({
                                             required: true,
                                             placeholder: 'Enter author display name (required)',
                                             pattern: void 0,
+                                            maxLength: 64,
                                             validityObject: this.state.validity,
                                             inputType: 'text',
                                             onChange: this.textFieldChanged
@@ -137,9 +166,31 @@ var GeneralSettingsForm = React.createClass({
                                             required: false,
                                             placeholder: 'Enter author display bio',
                                             pattern: void 0,
+                                            maxLength: 512,
                                             validityObject: this.state.validity,
-                                                onChange: this.textFieldChanged
+                                            onChange: this.textFieldChanged
                                         }) }
+                                        { renderTextInputWithAddon({
+                                            dataObject: this.state.data,
+                                            fieldName: 'authorTwitterScreenName',
+                                            fieldTitle: 'Twitter screen name',
+                                            required: false,
+                                            placeholder: 'Enter twitter screen name',
+                                            pattern: '[a-zA-Z0-9]*',
+                                            maxLength: 64,
+                                            validityObject: this.state.validity,
+                                            inputType: 'text',
+                                            onChange: this.textFieldChanged,
+                                            fieldAddonText: '@'
+                                        }) }
+
+                                        <div className="form-group">
+                                            <label className="col-md-2 control-label">Avatar</label>
+
+                                            <div className="col-md-10">
+                                                <AvatarCreator />
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -186,6 +237,7 @@ var GeneralSettingsForm = React.createClass({
         var fieldValidity = {};
         var valid = e.target.checkValidity();
         var formValid = React.findDOMNode(this.refs.generalSettingsForm).checkValidity();
+        var oldValue = this.state.data[e.target.name];
 
         fieldValidity[e.target.name] = valid;
 
@@ -193,11 +245,14 @@ var GeneralSettingsForm = React.createClass({
             validity: _.assign(this.state.validity, fieldValidity)
         });
 
-        componentFlux.actions.valueChanged({
-            key: e.target.name,
-            value: e.target.value,
-            valid: formValid
-        })
+
+        if (oldValue !== e.target.value) {
+            componentFlux.actions.valueChanged({
+                key: e.target.name,
+                value: e.target.value,
+                valid: formValid
+            })
+        }
     },
     onErrorLinkClick: function (e) {
         this.setState({

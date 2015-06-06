@@ -32,13 +32,16 @@ var store = Reflux.createStore({
         }
     },
     onComponentMounted: function () {
-        if (_.isEmpty(this.data)) {
+        // some form elements in some browsers (yep, IE)
+        // fires change event immedtiately after React inserts elem in DOM before whole component mounted,
+        // so we should not rely on state of data prop
+        // because after change event 'data' may become not empty
+        if (!this.retrievedOnce) {
             getData();
-        } else {
-            this.trigger(this.getViewModel());
         }
     },
     onDataGet: function () {
+        this.retrievedOnce = true;
         this.loading = true;
         this.trigger(this.getViewModel());
     },
@@ -88,6 +91,8 @@ var store = Reflux.createStore({
             error: this.error
         };
     },
+
+    retrievedOnce: false,
 
     data: {},
     pristine: true,

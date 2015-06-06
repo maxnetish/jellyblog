@@ -25,8 +25,7 @@ var App = React.createClass({
 
         return <div>
             <Navmenu />
-            {isAdmin ? null : <AuthRedirector />}
-            <RouteHandler data={this.props.data}/>
+            {isAdmin ? <RouteHandler data={this.props.data}/> : <AuthRedirector />}
             {/*
             <pre>{JSON.stringify(this.props)}</pre>
             <pre>{JSON.stringify(this.state)}</pre>

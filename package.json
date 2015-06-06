@@ -26,6 +26,7 @@
     "q": "^1.4.1",
     "react": "^0.13.3",
     "react-async": "^2.1.0",
+    "react-avatar-editor": "^1.0.0",
     "react-engine": "^1.6.0",
     "react-router": "^0.13.3",
     "reflux": "^0.2.7",
