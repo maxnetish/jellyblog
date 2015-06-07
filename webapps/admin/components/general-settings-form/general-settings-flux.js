@@ -13,6 +13,7 @@ var actions = Reflux.createActions({
     'dataSaveCompleted': actionSyncOptions,
     'dataSaveFailed': actionSyncOptions,
     'userForceSave': actionSyncOptions,
+    'applyNewAvatar': actionSyncOptions,
     'componentMounted': actionAsyncOptions
 });
 
@@ -80,6 +81,16 @@ var store = Reflux.createStore({
         saveDataDebounce.cancel();
         // and invoke sync
         saveData(this.data);
+    },
+    onApplyNewAvatar: function (avatarDataUrl) {
+        resources.uploadFileFromDataUrl(avatarDataUrl)
+            .then(function (result) {
+                console.log(result);
+            })
+            ['catch'](function (err) {
+            console.log(err);
+        });
+        // TODO convert to File object, upload and set new url to data.authorAvatarUrl
     },
 
     getViewModel: function () {

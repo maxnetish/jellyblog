@@ -203,7 +203,7 @@ var GeneralSettingsForm = React.createClass({
                                                         </a>
                                                         {this.state.avatarCreatorVisible ?
                                                             <a href="javascript:void 0"
-                                                               onClick={this.onImageButtonClick}>
+                                                               onClick={this.onApplyNewAvatarButtonClick}>
                                                                 Apply new avatar
                                                             </a> :
                                                             null}
@@ -284,14 +284,14 @@ var GeneralSettingsForm = React.createClass({
             showErrorDetails: !this.state.showErrorDetails
         });
     },
-    onImageButtonClick: function (e) {
+    onApplyNewAvatarButtonClick: function (e) {
         var creator = this.refs.avatarCreator;
-        var foo = creator.getImageDataUrl();
-        console.log(foo);
+        var imageDataUrl = creator.getImageDataUrl();
         this.setState({
-            createdAvatarUrl: foo,
+            createdAvatarUrl: imageDataUrl,
             avatarCreatorVisible: false
         });
+        componentFlux.actions.applyNewAvatar(imageDataUrl);
     },
     onCreateNewAvatarButtonClick: function (e) {
         this.setState({

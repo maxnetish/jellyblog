@@ -2,6 +2,13 @@ var React = require('react/addons');
 var AvatarEditor = require('react-avatar-editor');
 
 var AvatarCreator = React.createClass({
+    getDefaultProps: function () {
+        return {
+            width: 150,
+            height: 150,
+            border: 50
+        };
+    },
     getInitialState: function () {
         return {
             scale: "1"
@@ -18,9 +25,9 @@ var AvatarCreator = React.createClass({
                    onChange={this.onInputFileChange}/>
             <AvatarEditor image={this.state.imgSource}
                           ref="avatarEditor"
-                          width={150}
-                          height={150}
-                          border={50}
+                          width={this.props.width}
+                          height={this.props.height}
+                          border={this.props.border}
                           color={[32, 64, 64, 0.6]} // RGBA
                           scale={this.state.scale}/>
 
@@ -59,7 +66,7 @@ var AvatarCreator = React.createClass({
     },
     onScaleChange: function (e) {
         this.setState({
-            scale: e.target.value
+            scale: parseFloat(e.target.value)
         });
     },
     getImageDataUrl: function () {
