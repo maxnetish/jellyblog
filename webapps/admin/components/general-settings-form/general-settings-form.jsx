@@ -190,7 +190,7 @@ var GeneralSettingsForm = React.createClass({
                                             <div className="col-md-10">
                                                 <div className="media">
                                                     <div className="media-left">
-                                                        <img src={this.state.createdAvatarUrl}
+                                                        <img src={this.state.data.authorAvatarUrl}
                                                              className="media-object"
                                                              style={{height:'150px',width:'150px'}}/>
                                                     </div>
@@ -288,7 +288,7 @@ var GeneralSettingsForm = React.createClass({
         var creator = this.refs.avatarCreator;
         var imageDataUrl = creator.getImageDataUrl();
         this.setState({
-            createdAvatarUrl: imageDataUrl,
+            //createdAvatarUrl: imageDataUrl,
             avatarCreatorVisible: false
         });
         componentFlux.actions.applyNewAvatar(imageDataUrl);

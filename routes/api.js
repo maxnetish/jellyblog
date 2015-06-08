@@ -2,11 +2,12 @@
  * Created by mgordeev on 02.06.2014.
  */
 
+var _ = require('lodash');
 var express = require('express');
 var router = express.Router();
 //var locales = require('../locale');
 var dataProvider = require('../service/dataProvider');
-//var multipartMiddleware = require('connect-multiparty')();
+var multipartMiddleware = require('../service/fileUpload').multerMiddleware;
 //var fileUtils = require('../service/fileUtils');
 //var importPosts = require('../service/importPostsFromJson');
 //var Q = require('q');
@@ -219,33 +220,40 @@ router.get('/', function(req, res){
 //
 //    res.send(localeTable);
 //});
-//
-//router.post('/upload', multipartMiddleware, function (req, res, next) {
-//    if (!req.userHasAdminRights) {
-//        fileUtils.removeTempFiles(req.files);
-//        next(createError401());
-//        return;
-//    }
-//
-//    if (!req.files) {
-//        next(createError400('files'));
-//        return;
-//    }
-//
-//    if (req.files.hasOwnProperty('file_json_posts')) {
-//        importPosts.importFromFile(req.files['file_json_posts'].path)
-//            .then(function (result) {
-//                var f = arguments;
-//                return res.send(result);
-//            }, next);
-//    } else {
-//        fileUtils.saveTempFilesPromise(req.files, 'upload')
-//            .then(function (result) {
-//                return res.send(result);
-//            })
-//            .then(null, next);
-//    }
-//});
+
+router.post('/upload', multipartMiddleware, function (req, res, next) {
+    if (!req.userHasAdminRights) {
+        //fileUtils.removeTempFiles(req.files);
+        next(createError401());
+        return;
+    }
+
+    if (!req.files) {
+        next(createError400('files'));
+        return;
+    }
+
+
+    res.send(_.mapValues(req.files, function(val, key){
+        return {
+            name: val.name
+        }
+    }));
+
+    //if (req.files.hasOwnProperty('file_json_posts')) {
+    //    importPosts.importFromFile(req.files['file_json_posts'].path)
+    //        .then(function (result) {
+    //            var f = arguments;
+    //            return res.send(result);
+    //        }, next);
+    //} else {
+    //    fileUtils.saveTempFilesPromise(req.files, 'upload')
+    //        .then(function (result) {
+    //            return res.send(result);
+    //        })
+    //        .then(null, next);
+    //}
+});
 //
 //router.get('/upload', function (req, res, next) {
 //    if (!req.userHasAdminRights) {

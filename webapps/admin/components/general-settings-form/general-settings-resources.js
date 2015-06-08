@@ -43,14 +43,14 @@ function uploadFileFromDataUrl(dataUrl) {
     var dfr = Q.defer();
 
     request
-        .post('/api/upload/avatar')
-        .attach(dataBlob)
+        .post('/api/upload')
+        .attach('avatar-image', dataBlob, 'ava.png')
         .end(function (err, result) {
             if (err) {
                 dfr.reject(err);
                 return;
             }
-            dfr.resolve(result);
+            dfr.resolve(result.body);
         });
 
     return dfr.promise;
