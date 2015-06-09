@@ -10,5 +10,6 @@ exports.model = {
     Post: require('./post').createPostModel(mongoose),
     Navlink: require('./navlink').createNavlinkModel(mongoose),
     Settings: require('./misc-settings').createSettingsModel(mongoose),
-    Log: require('./log-record').createLogRecordModel(mongoose)
+    Log: require('./log-record').createLogRecordModel(mongoose),
+    FileStoreMeta: require('./file-store').createFileStoreModel(mongoose)
 };

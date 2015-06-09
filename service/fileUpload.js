@@ -1,7 +1,8 @@
 var Multer = require('multer');
+var appConfig = require('../config');
 
 var multerMiddlewareOptions = {
-    dest: './build/upload',
+    dest: './' + appConfig.fileStore.uploadPath,
     limits: {
         fieldNameSize: 255,
         fieldSize: 262144,
@@ -10,7 +11,7 @@ var multerMiddlewareOptions = {
         files: 8,
         parts: 8
     },
-    onFileUploadStart: function(file, req, res){
+    onFileUploadStart: function (file, req, res) {
         // only admin
         if (!req.userHasAdminRights) {
             //fileUtils.removeTempFiles(req.files);

@@ -2,6 +2,7 @@
  * Created by mgordeev on 02.06.2014.
  */
 
+var config = require('../config');
 var _ = require('lodash');
 var express = require('express');
 var router = express.Router();
@@ -29,11 +30,10 @@ var createError400 = function (invalidParametrName) {
     return result;
 };
 
-
-router.get('/', function(req, res){
-   res.json({
-       apirequest: 'success'
-   });
+router.get('/', function (req, res) {
+    res.json({
+        apirequest: 'success'
+    });
 });
 
 //router.delete('/post', function (req, res, next) {
@@ -223,7 +223,6 @@ router.get('/', function(req, res){
 
 router.post('/upload', multipartMiddleware, function (req, res, next) {
     if (!req.userHasAdminRights) {
-        //fileUtils.removeTempFiles(req.files);
         next(createError401());
         return;
     }
@@ -233,12 +232,17 @@ router.post('/upload', multipartMiddleware, function (req, res, next) {
         return;
     }
 
-
-    res.send(_.mapValues(req.files, function(val, key){
-        return {
-            name: val.name
-        }
-    }));
+    dataProvider.promiseFileStoreMetaCreateFromMultFileInfo(req.files, req.user)
+        .then(function (dbSaveResult) {
+            var responseBody = _.map(dbSaveResult, function (one) {
+                return one.toObject({virtuals: true});
+            });
+            res.send(responseBody);
+            return dbSaveResult;
+        })
+        .then(null, function (err) {
+            next(createError(500, 'Could not save file meta data'));
+        });
 
     //if (req.files.hasOwnProperty('file_json_posts')) {
     //    importPosts.importFromFile(req.files['file_json_posts'].path)

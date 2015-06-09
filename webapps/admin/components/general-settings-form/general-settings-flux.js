@@ -86,9 +86,14 @@ var store = Reflux.createStore({
         var self = this;
         resources.uploadFileFromDataUrl(avatarDataUrl)
             .then(function (result) {
-                self.data.authorAvatarUrl = 'upload/' + result['avatar-image'].name;
-                self.pristine = false;
-                self.trigger(self.getViewModel());
+                console.log(result);
+                if(result && result.length) {
+                    self.onValueChanged({
+                        key: 'authorAvatarUrl',
+                        value: result[0].url,
+                        valid: true
+                    });
+                }
             })
             ['catch'](function (err) {
             console.log(err);

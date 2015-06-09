@@ -1,3 +1,4 @@
+var appConfig = require('./config');
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -95,7 +96,14 @@ app.use(function (req, res, next) {
 
 //app.use(require('less-middleware')(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, 'build')));
+// set middleware for static public content
+app.use(express.static(path.join(__dirname, 'build'), {
+    index: false
+}));
+// set middleware for static user uploaded files (avatars, images, etc...)
+app.use(appConfig.fileStore.bindPath, express.static(path.join(__dirname, appConfig.fileStore.uploadPath), {
+    index: false
+}));
 
 app.use('/auth', routesAuth);
 app.use('/admin', routesAdmin);
