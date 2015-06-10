@@ -9,7 +9,7 @@ var router = express.Router();
 //var locales = require('../locale');
 var dataProvider = require('../service/dataProvider');
 var multipartMiddleware = require('../service/fileUpload').multerMiddleware;
-//var fileUtils = require('../service/fileUtils');
+var fileUtils = require('../service/fileUtils');
 //var importPosts = require('../service/importPostsFromJson');
 //var Q = require('q');
 //var indexVm = require('../service/vm/indexVm');
@@ -243,49 +243,57 @@ router.post('/upload', multipartMiddleware, function (req, res, next) {
         .then(null, function (err) {
             next(createError(500, 'Could not save file meta data'));
         });
-
-    //if (req.files.hasOwnProperty('file_json_posts')) {
-    //    importPosts.importFromFile(req.files['file_json_posts'].path)
-    //        .then(function (result) {
-    //            var f = arguments;
-    //            return res.send(result);
-    //        }, next);
-    //} else {
-    //    fileUtils.saveTempFilesPromise(req.files, 'upload')
-    //        .then(function (result) {
-    //            return res.send(result);
-    //        })
-    //        .then(null, next);
-    //}
 });
-//
-//router.get('/upload', function (req, res, next) {
-//    if (!req.userHasAdminRights) {
-//        next(createError401());
-//        return;
-//    }
-//
-//    fileUtils.readDirPromise('upload')
-//        .then(function (files) {
-//            return res.send(files);
-//        })
-//        .then(null, next);
-//});
-//
-//router.delete('/upload', function (req, res, next) {
-//    var relativePath = req.body.path
-//
-//    if (!req.userHasAdminRights) {
-//        next(createError401());
-//        return;
-//    }
-//
-//    fileUtils.removeFilePromise(relativePath)
-//        .then(function (result) {
-//            res.send(result);
-//        })
-//        .then(null, next);
-//});
+
+router.get('/upload', function (req, res, next) {
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    dataProvider.promiseFileMetaList(req.query)
+        .then(function (dbResult) {
+            var responseBody = _.map(dbResult, function (oneResult) {
+                return oneResult.toObject({virtuals: true});
+            });
+            res.send(responseBody);
+            return dbResult;
+        })
+        .then(null, function (err) {
+            next(createError(500, 'Could not perform query'));
+        });
+});
+
+router.delete('/upload', function (req, res, next) {
+    var filesToRemoveMetaList = [];
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    //first we should request list of file meta info that will be removed
+    dataProvider.promiseFileMetaList(req.query)
+        .then(function (dbResult) {
+            // put removing files info into closing
+            filesToRemoveMetaList = _.map(dbResult, function (oneResult) {
+                return oneResult.toObject({virtuals: true});
+            });
+            return fileUtils.removeFileByMetaInfo(dbResult);
+        })
+        .then(function (fsRemoveResult) {
+            // remove info from db
+            return dataProvider.promiseFileMetaRemove(req.query);
+        })
+        .then(function (dbRemoveResult) {
+            //and send response
+            res.send(filesToRemoveMetaList);
+            return dbRemoveResult;
+        })
+        .then(null, function (err) {
+            next(createError(500, 'Could not remove file(s)'));
+        });
+});
 
 router.get('/settings', function (req, res, next) {
     dataProvider.promiseSettings()

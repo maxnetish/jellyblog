@@ -5,6 +5,7 @@ var ClassSet = require('classnames');
 var componentFlux = require('./general-settings-flux');
 
 var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
+var AvatarList = require('../avatar-list/avatar-list.jsx');
 
 var defaultTextInputOpts = {
     dataObject: {},
@@ -211,7 +212,10 @@ var GeneralSettingsForm = React.createClass({
                                                             <div>
                                                                 <AvatarCreator ref="avatarCreator"/>
                                                             </div> :
-                                                            null}
+                                                            <div>
+                                                                <span>Or choose from exitsing:</span>
+                                                                <AvatarList />
+                                                            </div>}
                                                     </div>
                                                 </div>
                                             </div>

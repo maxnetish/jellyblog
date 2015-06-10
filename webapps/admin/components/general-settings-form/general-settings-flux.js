@@ -1,6 +1,7 @@
 var Reflux = require('reflux');
 var _ = require('lodash');
 var resources = require('./general-settings-resources');
+var avatarListFlux = require('../avatar-list/avatar-list-flux');
 
 var actionSyncOptions = {sync: true};
 var actionAsyncOptions = {sync: false};
@@ -19,6 +20,10 @@ var actions = Reflux.createActions({
 
 var store = Reflux.createStore({
     listenables: actions,
+    init: function () {
+        this.listenTo(avatarListFlux.actions.avatarSelect, this.onAvatarSelect);
+        this.listenTo(avatarListFlux.actions.avatarRemoveCompleted, this.onAvatarRemoveCompleted);
+    },
     onValueChanged: function (payload) {
         if (!(payload && payload.key)) {
             return;
@@ -77,7 +82,7 @@ var store = Reflux.createStore({
         this.trigger(this.getViewModel());
     },
     onUserForceSave: function () {
-        // supress debounced invokation
+        // supress debounced invocation
         saveDataDebounce.cancel();
         // and invoke sync
         saveData(this.data);
@@ -87,18 +92,37 @@ var store = Reflux.createStore({
         resources.uploadFileFromDataUrl(avatarDataUrl)
             .then(function (result) {
                 console.log(result);
-                if(result && result.length) {
+                if (result && result.length) {
                     self.onValueChanged({
                         key: 'authorAvatarUrl',
                         value: result[0].url,
                         valid: true
                     });
+                    avatarListFlux.actions.avatarAdded(result[0]);
                 }
             })
             ['catch'](function (err) {
             console.log(err);
         });
         // TODO convert to File object, upload and set new url to data.authorAvatarUrl
+    },
+    onAvatarSelect: function (avatarInfo) {
+        this.onValueChanged({
+            key: 'authorAvatarUrl',
+            value: avatarInfo.url,
+            valid: true
+        });
+    },
+    onAvatarRemoveCompleted: function (removedInfos) {
+        if (_.any(removedInfos, function (info) {
+                return info.url === this.data.authorAvatarUrl;
+            }, this)) {
+            this.onValueChanged({
+                key: 'authorAvatarUrl',
+                value: null,
+                valid: true
+            });
+        }
     },
 
     getViewModel: function () {

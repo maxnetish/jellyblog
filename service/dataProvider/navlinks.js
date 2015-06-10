@@ -1,4 +1,4 @@
-var model = require('../models').model,
+var model = require('../../models').model,
     _ = require('lodash'),
     Q = require('q'),
     utils = require('./utils');
