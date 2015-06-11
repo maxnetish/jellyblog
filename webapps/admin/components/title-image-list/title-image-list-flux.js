@@ -1,6 +1,6 @@
 var Reflux = require('reflux');
 var _ = require('lodash');
-var resources = require('./avatar-list-resources');
+var resources = require('./title-image-list-resources');
 
 var actionSyncOptions = {sync: true};
 var actionAsyncOptions = {sync: false};
@@ -8,11 +8,11 @@ var actions = Reflux.createActions({
     'dataGet': actionSyncOptions,
     'dataGetCompleted': actionSyncOptions,
     'dataGetFailed': actionSyncOptions,
-    'avatarRemoveCompleted': actionSyncOptions,
-    'avatarRemoveFailed': actionSyncOptions,
-    'avatarSelect': actionSyncOptions,
-    'avatarRemove': actionSyncOptions,
-    'avatarAdded': actionAsyncOptions,
+    'titleImageRemoveCompleted': actionSyncOptions,
+    'titleImageRemoveFailed': actionSyncOptions,
+    'titleImageSelect': actionSyncOptions,
+    'titleImageRemove': actionSyncOptions,
+    'titleImageAdded': actionAsyncOptions,
     'componentMounted': actionAsyncOptions
 });
 
@@ -20,7 +20,7 @@ var store = Reflux.createStore({
     listenables: actions,
 
     onComponentMounted: function () {
-        if (!this.dataGetOnce) {
+        if (!this.getDataOnce) {
             getData();
         }
     },
@@ -31,7 +31,7 @@ var store = Reflux.createStore({
     onDataGetCompleted: function (result) {
         this.loading = false;
         this.dataGetOnce = true;
-        this.avatarList = _.cloneDeep(result);
+        this.titleImageList = _.cloneDeep(result);
         this.trigger(this.getViewModel());
     },
     onDataGetFailed: function (err) {
@@ -40,35 +40,35 @@ var store = Reflux.createStore({
         console.log(err);
         this.trigger(this.getViewModel());
     },
-    onAvatarSelect: function (avatarFileInfo) {
-        this.selectedAvatar = avatarFileInfo;
+    onTitleImageSelect: function (fileInfo) {
+        this.selectedTitleImage = fileInfo;
         this.trigger(this.getViewModel());
     },
-    onAvatarRemove: function (avatarFileInfo) {
-        removeAvatar(avatarFileInfo);
+    onTitleImageRemove: function (fileInfo) {
+        removeTitleImage(fileInfo);
     },
-    onAvatarRemoveCompleted: function (removeResult) {
-        _.remove(this.avatarList, function (oneExisting) {
+    onTitleImageRemoveCompleted: function (removeResult) {
+        _.remove(this.titleImageList, function (oneExisting) {
             return _.any(removeResult, function (oneRemoved) {
                 return oneRemoved._id === oneExisting._id;
             });
         });
         this.trigger(this.getViewModel());
     },
-    onAvatarRemoveFailed: function (err) {
+    onTitleImageRemoveFailed: function (err) {
         this.error = err;
         console.log(err);
         this.trigger(this.getViewModel());
     },
-    onAvatarAdded: function (avatarInfo) {
-        this.avatarList.unshift(avatarInfo);
+    onTitleImageAdded: function (fileInfo) {
+        this.titleImageList.unshift(fileInfo);
         this.trigger(this.getViewModel());
     },
 
     getViewModel: function () {
         return {
-            avatarList: this.avatarList,
-            selectedAvatar: this.selectedAvatar,
+            titleImageList: this.titleImageList,
+            selectedTitleImage: this.selectedTitleImage,
             loading: this.loading,
             error: this.error
         };
@@ -76,32 +76,32 @@ var store = Reflux.createStore({
 
     dataGetOnce: false,
 
-    avatarList: [],
-    selectedAvatar: null,
+    titleImageList: [],
+    selectedTitleImage: null,
     loading: false,
     error: null
 });
 
 function getData() {
     actions.dataGet();
-    resources.getAvatarList()
+    resources.getImageTitleList()
         .then(function (result) {
             actions.dataGetCompleted(result);
             return result;
         })
         ['catch'](function (err) {
         actions.dataGetFailed(err);
-    });
+    })
 }
 
-function removeAvatar(avatarInfo) {
-    resources.removeAvatar(avatarInfo)
+function removeTitleImage(fileInfo) {
+    resources.removeImageTitle(fileInfo)
         .then(function (result) {
-            actions.avatarRemoveCompleted(result);
+            actions.titleImageRemoveCompleted(result);
             return result;
         })
         ['catch'](function (err) {
-        actions.avatarRemoveFailed(err);
+        actions.titleImageRemoveFailed(err);
     })
 }
 

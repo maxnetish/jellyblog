@@ -6,6 +6,7 @@ var componentFlux = require('./general-settings-flux');
 
 var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
 var AvatarList = require('../avatar-list/avatar-list.jsx');
+var TitleImageList = require('../title-image-list/title-image-list.jsx');
 
 var defaultTextInputOpts = {
     dataObject: {},
@@ -18,7 +19,10 @@ var defaultTextInputOpts = {
     inputType: 'text',
     onChange: _.noop,
     fieldAddonText: null,
-    maxLength: null
+    maxLength: null,
+    min: void 0,
+    max: void 0,
+    step: void 0
 };
 
 function getClassSetForInputParent(inputName, validityState, baseClass) {
@@ -46,6 +50,9 @@ function renderTextInputField(opts) {
                    required={opts.required}
                    pattern={opts.pattern}
                    maxLength={opts.maxLength}
+                   min={opts.min}
+                   max={opts.max}
+                   step={opts.step}
                    value={opts.dataObject[opts.fieldName]}
                    onChange={opts.onChange}/>
         </div>
@@ -100,6 +107,54 @@ function renderTextInputWithAddon(opts) {
     return xMarkup;
 }
 
+function renderAvatarEditor(opts) {
+    var defaultOpts = {
+        dataObject: {},
+        createNewAvatarHandler: _.noop,
+        avatarCreatorVisible: false,
+        applyNewAvatarHandler: _.noop,
+        creatorRef: 'avatarCreator'
+    };
+
+    opts = _.assign(defaultOpts, opts);
+
+    return <div className="form-group">
+        <label className="col-md-2 control-label">Avatar</label>
+
+        <div className="col-md-10">
+            <div className="media">
+                <div className="media-left">
+                    <img src={opts.dataObject.authorAvatarUrl}
+                         className="media-object"
+                         style={{height:'150px',width:'150px'}}/>
+                </div>
+                <div className="media-body">
+                    <a href="javascript:void 0"
+                       className="create-avatar-button"
+                       onClick={opts.createNewAvatarHandler}>
+                        <i className="caret caret-creator-toggle"></i>
+                        <span>{opts.avatarCreatorVisible ? 'Cancel' : 'Create new avatar'}</span>
+                    </a>
+                    {opts.avatarCreatorVisible ?
+                        <a href="javascript:void 0"
+                           onClick={opts.applyNewAvatarHandler}>
+                            Apply new avatar
+                        </a> :
+                        null}
+                    {opts.avatarCreatorVisible ?
+                        <div>
+                            <AvatarCreator ref={opts.creatorRef}/>
+                        </div> :
+                        <div>
+                            <span>Or choose from exitsing:</span>
+                            <AvatarList previewSize={{heigth:'75px',width:'75px'}}/>
+                        </div>}
+                </div>
+            </div>
+        </div>
+    </div>;
+}
+
 var GeneralSettingsForm = React.createClass({
     mixins: [Reflux.ListenerMixin],
     getInitialState: function () {
@@ -150,6 +205,28 @@ var GeneralSettingsForm = React.createClass({
                                         }) }
                                         { renderTextInputField({
                                             dataObject: this.state.data,
+                                            fieldName: 'metaTitle',
+                                            fieldTitle: 'Site meta title',
+                                            required: false,
+                                            pattern: void 0,
+                                            maxLength: 255,
+                                            validityObject: this.state.validity,
+                                            inputType: 'text',
+                                            onChange: this.textFieldChanged
+                                        }) }
+                                        { renderTextInputField({
+                                            dataObject: this.state.data,
+                                            fieldName: 'metaDescription',
+                                            fieldTitle: 'Site meta description',
+                                            required: false,
+                                            pattern: void 0,
+                                            maxLength: 255,
+                                            validityObject: this.state.validity,
+                                            inputType: 'text',
+                                            onChange: this.textFieldChanged
+                                        }) }
+                                        { renderTextInputField({
+                                            dataObject: this.state.data,
                                             fieldName: 'authorDisplayName',
                                             fieldTitle: 'Author name',
                                             required: true,
@@ -184,42 +261,75 @@ var GeneralSettingsForm = React.createClass({
                                             onChange: this.textFieldChanged,
                                             fieldAddonText: '@'
                                         }) }
+                                        { renderAvatarEditor({
+                                            dataObject: this.state.data,
+                                            createNewAvatarHandler: this.onCreateNewAvatarButtonClick,
+                                            avatarCreatorVisible: this.state.avatarCreatorVisible,
+                                            applyNewAvatarHandler: this.onApplyNewAvatarButtonClick,
+                                            creatorRef: 'avatarCreator'
+                                        }) }
+                                        { renderTextInputField({
+                                            dataObject: this.state.data,
+                                            fieldName: 'footerAnnotation',
+                                            fieldTitle: 'Footer annotation',
+                                            required: false,
+                                            placeholder: 'Enter footer annotation text',
+                                            pattern: void 0,
+                                            maxLength: 256,
+                                            validityObject: this.state.validity,
+                                            inputType: 'text',
+                                            onChange: this.textFieldChanged
+                                        }) }
+                                        { renderTextInputField({
+                                            dataObject: this.state.data,
+                                            fieldName: 'postsPerPage',
+                                            fieldTitle: 'Posts per one page',
+                                            required: true,
+                                            placeholder: 'Posts per one page (required)',
+                                            pattern: void 0,
+                                            min: 3,
+                                            max: 32,
+                                            step: 1,
+                                            validityObject: this.state.validity,
+                                            inputType: 'number',
+                                            onChange: this.textFieldChanged
+                                        }) }
 
                                         <div className="form-group">
-                                            <label className="col-md-2 control-label">Avatar</label>
-
+                                            <label className="col-md-2 control-label">
+                                                Title image
+                                            </label>
                                             <div className="col-md-10">
-                                                <div className="media">
-                                                    <div className="media-left">
-                                                        <img src={this.state.data.authorAvatarUrl}
-                                                             className="media-object"
-                                                             style={{height:'150px',width:'150px'}}/>
-                                                    </div>
-                                                    <div className="media-body">
-                                                        <a href="javascript:void 0"
-                                                           className="create-avatar-button"
-                                                           onClick={this.onCreateNewAvatarButtonClick}>
-                                                            <i className="caret caret-creator-toggle"></i>
-                                                            <span>{this.state.avatarCreatorVisible ? 'Cancel' : 'Create new avatar'}</span>
-                                                        </a>
-                                                        {this.state.avatarCreatorVisible ?
-                                                            <a href="javascript:void 0"
-                                                               onClick={this.onApplyNewAvatarButtonClick}>
-                                                                Apply new avatar
-                                                            </a> :
-                                                            null}
-                                                        {this.state.avatarCreatorVisible ?
-                                                            <div>
-                                                                <AvatarCreator ref="avatarCreator"/>
-                                                            </div> :
-                                                            <div>
-                                                                <span>Or choose from exitsing:</span>
-                                                                <AvatarList />
-                                                            </div>}
-                                                    </div>
-                                                </div>
+
+                                                <img className="title-image-preview"
+                                                     style={{width:'100%'}}
+                                                     src={this.state.data.titleImageUrl} />
+
+                                                <a href="javascript:void 0"
+                                                   className="create-title-image-button"
+                                                   onClick={this.onCreateNewTitleImageClick}>
+                                                    <i className="caret caret-creator-toggle"></i>
+                                                    <span>{this.state.createNewTitleImageVisible ? 'Cancel' : 'Create new title image'}</span>
+                                                </a>
+
+                                                {this.state.createNewTitleImageVisible ?
+                                                    <a href="javascript:void 0"
+                                                       onClick={this.onApplyNewTitleImageClick}>
+                                                        Apply new image
+                                                    </a> :
+                                                    null}
+                                                {this.state.createNewTitleImageVisible ?
+                                                    <div>
+                                                        <AvatarCreator width={1000} height={180} border={50} scrollable={true} ref="titleImageCreator"/>
+                                                    </div> :
+                                                    <div>
+                                                        <span>Or choose from exitsing:</span>
+                                                        <TitleImageList />
+                                                    </div>}
+
                                             </div>
                                         </div>
+
                                     </div>
                                 </form>
                             </div>
@@ -274,7 +384,6 @@ var GeneralSettingsForm = React.createClass({
             validity: _.assign(this.state.validity, fieldValidity)
         });
 
-
         if (oldValue !== e.target.value) {
             componentFlux.actions.valueChanged({
                 key: e.target.name,
@@ -297,9 +406,23 @@ var GeneralSettingsForm = React.createClass({
         });
         componentFlux.actions.applyNewAvatar(imageDataUrl);
     },
+    onApplyNewTitleImageClick: function(){
+        var creator = this.refs.titleImageCreator;
+        var imageDataUrl = creator.getImageDataUrl();
+        this.setState({
+            //createdAvatarUrl: imageDataUrl,
+            createNewTitleImageVisible: false
+        });
+        componentFlux.actions.applyNewTitleImage(imageDataUrl);
+    },
     onCreateNewAvatarButtonClick: function (e) {
         this.setState({
             avatarCreatorVisible: !this.state.avatarCreatorVisible
+        });
+    },
+    onCreateNewTitleImageClick: function(){
+        this.setState({
+            createNewTitleImageVisible: !this.state.createNewTitleImageVisible
         });
     },
     onSubmitForm: function (e) {

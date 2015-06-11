@@ -38,13 +38,15 @@ function convertDataUrl2Blob(dataUrl) {
     return result;
 }
 
-function uploadFileFromDataUrl(dataUrl) {
+function uploadFileFromDataUrl(dataUrl, fileCategory, fileLocalName) {
     var dataBlob = convertDataUrl2Blob(dataUrl);
     var dfr = Q.defer();
+    fileCategory = fileCategory || 'avatar-image';
+    fileLocalName = fileLocalName || 'ava.png';
 
     request
         .post('/api/upload')
-        .attach('avatar-image', dataBlob, 'ava.png')
+        .attach(fileCategory, dataBlob, fileLocalName)
         .end(function (err, result) {
             if (err) {
                 dfr.reject(err);

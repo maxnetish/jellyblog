@@ -2,6 +2,7 @@ var Reflux = require('reflux');
 var _ = require('lodash');
 var resources = require('./general-settings-resources');
 var avatarListFlux = require('../avatar-list/avatar-list-flux');
+var titleImageFlux = require('../title-image-list/title-image-list-flux');
 
 var actionSyncOptions = {sync: true};
 var actionAsyncOptions = {sync: false};
@@ -15,6 +16,7 @@ var actions = Reflux.createActions({
     'dataSaveFailed': actionSyncOptions,
     'userForceSave': actionSyncOptions,
     'applyNewAvatar': actionSyncOptions,
+    'applyNewTitleImage': actionSyncOptions,
     'componentMounted': actionAsyncOptions
 });
 
@@ -23,6 +25,8 @@ var store = Reflux.createStore({
     init: function () {
         this.listenTo(avatarListFlux.actions.avatarSelect, this.onAvatarSelect);
         this.listenTo(avatarListFlux.actions.avatarRemoveCompleted, this.onAvatarRemoveCompleted);
+        this.listenTo(titleImageFlux.actions.titleImageSelect, this.onTitleImageSelect);
+        this.listenTo(titleImageFlux.actions.titleImageRemoveCompleted, this.onTitleImageRemoveCompleted);
     },
     onValueChanged: function (payload) {
         if (!(payload && payload.key)) {
@@ -39,7 +43,7 @@ var store = Reflux.createStore({
     },
     onComponentMounted: function () {
         // some form elements in some browsers (yep, IE)
-        // fires change event immedtiately after React inserts elem in DOM before whole component mounted,
+        // fires change event immediately after React inserts elem in DOM before whole component mounted,
         // so we should not rely on state of data prop
         // because after change event 'data' may become not empty
         if (!this.retrievedOnce) {
@@ -104,7 +108,23 @@ var store = Reflux.createStore({
             ['catch'](function (err) {
             console.log(err);
         });
-        // TODO convert to File object, upload and set new url to data.authorAvatarUrl
+    },
+    onApplyNewTitleImage: function(titleImageDataUrl){
+        var self = this;
+        resources.uploadFileFromDataUrl(titleImageDataUrl, 'site-title-image', 'site-title.png')
+            .then(function (result) {
+                if (result && result.length) {
+                    self.onValueChanged({
+                        key: 'titleImageUrl',
+                        value: result[0].url,
+                        valid: true
+                    });
+                    //avatarListFlux.actions.avatarAdded(result[0]);
+                }
+            })
+            ['catch'](function (err) {
+            console.log(err);
+        });
     },
     onAvatarSelect: function (avatarInfo) {
         this.onValueChanged({
@@ -119,6 +139,24 @@ var store = Reflux.createStore({
             }, this)) {
             this.onValueChanged({
                 key: 'authorAvatarUrl',
+                value: null,
+                valid: true
+            });
+        }
+    },
+    onTitleImageSelect: function(fileInfo){
+        this.onValueChanged({
+            key: 'titleImageUrl',
+            value: fileInfo.url,
+            valid: true
+        });
+    },
+    onTitleImageRemoveCompleted: function(removedInfos){
+        if (_.any(removedInfos, function (info) {
+                return info.url === this.data.titleImageUrl;
+            }, this)) {
+            this.onValueChanged({
+                key: 'titleImageUrl',
                 value: null,
                 valid: true
             });

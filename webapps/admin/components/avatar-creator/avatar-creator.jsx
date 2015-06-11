@@ -6,7 +6,8 @@ var AvatarCreator = React.createClass({
         return {
             width: 150,
             height: 150,
-            border: 50
+            border: 50,
+            scrollable: false
         };
     },
     getInitialState: function () {
@@ -16,6 +17,9 @@ var AvatarCreator = React.createClass({
     },
     render: function () {
         var scaleDisplay;
+        var scrollStyle = {
+            'overflow-x': this.props.scrollable?'auto':'hidden'
+        };
 
         scaleDisplay = parseFloat(this.state.scale).toFixed(1);
 
@@ -23,13 +27,15 @@ var AvatarCreator = React.createClass({
             <input type="file"
                    className="form-control"
                    onChange={this.onInputFileChange}/>
-            <AvatarEditor image={this.state.imgSource}
-                          ref="avatarEditor"
-                          width={this.props.width}
-                          height={this.props.height}
-                          border={this.props.border}
-                          color={[32, 64, 64, 0.6]} // RGBA
-                          scale={this.state.scale}/>
+            <div style={scrollStyle}>
+                <AvatarEditor image={this.state.imgSource}
+                              ref="avatarEditor"
+                              width={this.props.width}
+                              height={this.props.height}
+                              border={this.props.border}
+                              color={[32, 64, 64, 0.6]} // RGBA
+                              scale={this.state.scale}/>
+            </div>
 
             <div className="input-group">
                 <span className="input-group-addon scale-label"><i
