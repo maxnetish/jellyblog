@@ -12,6 +12,7 @@ var Reflux = require('reflux');
 
 var Navmenu = require('./admin/components/navmenu/navmenu.jsx');
 var AuthRedirector = require('./admin/components/auth-redirector/auth-redirector.jsx');
+var AdminViewWrapper = require('./admin/components/admin-view-wrapper/admin-view-wrapper.jsx');
 
 var adminRoutes = require('./admin/routes');
 var AdminHome = adminRoutes.AdminHome;
@@ -25,11 +26,11 @@ var App = React.createClass({
 
         return <div>
             <Navmenu />
-            {isAdmin ? <RouteHandler data={this.props.data}/> : <AuthRedirector />}
+            {isAdmin ? <AdminViewWrapper><RouteHandler data={this.props.data}/></AdminViewWrapper> : <AuthRedirector />}
             {/*
-            <pre>{JSON.stringify(this.props)}</pre>
-            <pre>{JSON.stringify(this.state)}</pre>
-            */}
+             <pre>{JSON.stringify(this.props)}</pre>
+             <pre>{JSON.stringify(this.state)}</pre>
+             */}
         </div>;
     }
 });
@@ -42,6 +43,7 @@ var App = React.createClass({
 var routes = (
     <Route handler={App} path="/admin">
         <DefaultRoute name="admin-home" handler={AdminHome}/>
+        <Route name="admin-navlinks" path="navlinks" handler={adminRoutes.Navlinks}/>
         <Route name="admin-other" path="other" handler={adminRoutes.AdminOther}/>
         <NotFoundRoute handler={AdminPageNotFound}/>
     </Route>

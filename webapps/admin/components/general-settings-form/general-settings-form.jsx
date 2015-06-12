@@ -178,183 +178,179 @@ var GeneralSettingsForm = React.createClass({
         }
 
         return <section className="general-settings-form">
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-offset-2 col-md-8">
-                        <div className="panel panel-default">
-                            <div className="panel-heading">
-                                <span className="panel-title">General settings</span>
-                            </div>
-                            <div className="panel-body">
-                                <form name="general-settings-form"
-                                      id="general-settings-form"
-                                      ref="generalSettingsForm"
-                                      onSubmit={this.onSubmitForm}>
-                                    <div className="form-horizontal">
-                                        { renderTextInputField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'siteTitle',
-                                            fieldTitle: 'Site title',
-                                            required: true,
-                                            placeholder: 'Enter site title (required)',
-                                            pattern: void 0,
-                                            maxLength: 128,
-                                            validityObject: this.state.validity,
-                                            inputType: 'text',
-                                            onChange: this.textFieldChanged
-                                        }) }
-                                        { renderTextInputField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'metaTitle',
-                                            fieldTitle: 'Site meta title',
-                                            required: false,
-                                            pattern: void 0,
-                                            maxLength: 255,
-                                            validityObject: this.state.validity,
-                                            inputType: 'text',
-                                            onChange: this.textFieldChanged
-                                        }) }
-                                        { renderTextInputField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'metaDescription',
-                                            fieldTitle: 'Site meta description',
-                                            required: false,
-                                            pattern: void 0,
-                                            maxLength: 255,
-                                            validityObject: this.state.validity,
-                                            inputType: 'text',
-                                            onChange: this.textFieldChanged
-                                        }) }
-                                        { renderTextInputField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'authorDisplayName',
-                                            fieldTitle: 'Author name',
-                                            required: true,
-                                            placeholder: 'Enter author display name (required)',
-                                            pattern: void 0,
-                                            maxLength: 64,
-                                            validityObject: this.state.validity,
-                                            inputType: 'text',
-                                            onChange: this.textFieldChanged
-                                        }) }
-                                        { renderTextAreaField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'authorDisplayBio',
-                                            fieldTitle: 'Author bio',
-                                            required: false,
-                                            placeholder: 'Enter author display bio',
-                                            pattern: void 0,
-                                            maxLength: 512,
-                                            validityObject: this.state.validity,
-                                            onChange: this.textFieldChanged
-                                        }) }
-                                        { renderTextInputWithAddon({
-                                            dataObject: this.state.data,
-                                            fieldName: 'authorTwitterScreenName',
-                                            fieldTitle: 'Twitter screen name',
-                                            required: false,
-                                            placeholder: 'Enter twitter screen name',
-                                            pattern: '[a-zA-Z0-9]*',
-                                            maxLength: 64,
-                                            validityObject: this.state.validity,
-                                            inputType: 'text',
-                                            onChange: this.textFieldChanged,
-                                            fieldAddonText: '@'
-                                        }) }
-                                        { renderAvatarEditor({
-                                            dataObject: this.state.data,
-                                            createNewAvatarHandler: this.onCreateNewAvatarButtonClick,
-                                            avatarCreatorVisible: this.state.avatarCreatorVisible,
-                                            applyNewAvatarHandler: this.onApplyNewAvatarButtonClick,
-                                            creatorRef: 'avatarCreator'
-                                        }) }
-                                        { renderTextInputField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'footerAnnotation',
-                                            fieldTitle: 'Footer annotation',
-                                            required: false,
-                                            placeholder: 'Enter footer annotation text',
-                                            pattern: void 0,
-                                            maxLength: 256,
-                                            validityObject: this.state.validity,
-                                            inputType: 'text',
-                                            onChange: this.textFieldChanged
-                                        }) }
-                                        { renderTextInputField({
-                                            dataObject: this.state.data,
-                                            fieldName: 'postsPerPage',
-                                            fieldTitle: 'Posts per one page',
-                                            required: true,
-                                            placeholder: 'Posts per one page (required)',
-                                            pattern: void 0,
-                                            min: 3,
-                                            max: 32,
-                                            step: 1,
-                                            validityObject: this.state.validity,
-                                            inputType: 'number',
-                                            onChange: this.textFieldChanged
-                                        }) }
+            <div className="panel panel-default">
+                <div className="panel-heading">
+                    <span className="panel-title">General settings</span>
+                </div>
+                <div className="panel-body">
+                    <form name="general-settings-form"
+                          id="general-settings-form"
+                          ref="generalSettingsForm"
+                          onSubmit={this.onSubmitForm}>
+                        <div className="form-horizontal">
+                            { renderTextInputField({
+                                dataObject: this.state.data,
+                                fieldName: 'siteTitle',
+                                fieldTitle: 'Site title',
+                                required: true,
+                                placeholder: 'Enter site title (required)',
+                                pattern: void 0,
+                                maxLength: 128,
+                                validityObject: this.state.validity,
+                                inputType: 'text',
+                                onChange: this.textFieldChanged
+                            }) }
+                            { renderTextInputField({
+                                dataObject: this.state.data,
+                                fieldName: 'metaTitle',
+                                fieldTitle: 'Site meta title',
+                                required: false,
+                                pattern: void 0,
+                                maxLength: 255,
+                                validityObject: this.state.validity,
+                                inputType: 'text',
+                                onChange: this.textFieldChanged
+                            }) }
+                            { renderTextInputField({
+                                dataObject: this.state.data,
+                                fieldName: 'metaDescription',
+                                fieldTitle: 'Site meta description',
+                                required: false,
+                                pattern: void 0,
+                                maxLength: 255,
+                                validityObject: this.state.validity,
+                                inputType: 'text',
+                                onChange: this.textFieldChanged
+                            }) }
+                            { renderTextInputField({
+                                dataObject: this.state.data,
+                                fieldName: 'authorDisplayName',
+                                fieldTitle: 'Author name',
+                                required: true,
+                                placeholder: 'Enter author display name (required)',
+                                pattern: void 0,
+                                maxLength: 64,
+                                validityObject: this.state.validity,
+                                inputType: 'text',
+                                onChange: this.textFieldChanged
+                            }) }
+                            { renderTextAreaField({
+                                dataObject: this.state.data,
+                                fieldName: 'authorDisplayBio',
+                                fieldTitle: 'Author bio',
+                                required: false,
+                                placeholder: 'Enter author display bio',
+                                pattern: void 0,
+                                maxLength: 512,
+                                validityObject: this.state.validity,
+                                onChange: this.textFieldChanged
+                            }) }
+                            { renderTextInputWithAddon({
+                                dataObject: this.state.data,
+                                fieldName: 'authorTwitterScreenName',
+                                fieldTitle: 'Twitter screen name',
+                                required: false,
+                                placeholder: 'Enter twitter screen name',
+                                pattern: '[a-zA-Z0-9]*',
+                                maxLength: 64,
+                                validityObject: this.state.validity,
+                                inputType: 'text',
+                                onChange: this.textFieldChanged,
+                                fieldAddonText: '@'
+                            }) }
+                            { renderAvatarEditor({
+                                dataObject: this.state.data,
+                                createNewAvatarHandler: this.onCreateNewAvatarButtonClick,
+                                avatarCreatorVisible: this.state.avatarCreatorVisible,
+                                applyNewAvatarHandler: this.onApplyNewAvatarButtonClick,
+                                creatorRef: 'avatarCreator'
+                            }) }
+                            { renderTextInputField({
+                                dataObject: this.state.data,
+                                fieldName: 'footerAnnotation',
+                                fieldTitle: 'Footer annotation',
+                                required: false,
+                                placeholder: 'Enter footer annotation text',
+                                pattern: void 0,
+                                maxLength: 256,
+                                validityObject: this.state.validity,
+                                inputType: 'text',
+                                onChange: this.textFieldChanged
+                            }) }
+                            { renderTextInputField({
+                                dataObject: this.state.data,
+                                fieldName: 'postsPerPage',
+                                fieldTitle: 'Posts per one page',
+                                required: true,
+                                placeholder: 'Posts per one page (required)',
+                                pattern: void 0,
+                                min: 3,
+                                max: 32,
+                                step: 1,
+                                validityObject: this.state.validity,
+                                inputType: 'number',
+                                onChange: this.textFieldChanged
+                            }) }
 
-                                        <div className="form-group">
-                                            <label className="col-md-2 control-label">
-                                                Title image
-                                            </label>
-                                            <div className="col-md-10">
+                            <div className="form-group">
+                                <label className="col-md-2 control-label">
+                                    Title image
+                                </label>
 
-                                                <img className="title-image-preview"
-                                                     style={{width:'100%'}}
-                                                     src={this.state.data.titleImageUrl} />
+                                <div className="col-md-10">
 
-                                                <a href="javascript:void 0"
-                                                   className="create-title-image-button"
-                                                   onClick={this.onCreateNewTitleImageClick}>
-                                                    <i className="caret caret-creator-toggle"></i>
-                                                    <span>{this.state.createNewTitleImageVisible ? 'Cancel' : 'Create new title image'}</span>
-                                                </a>
+                                    <img className="title-image-preview"
+                                         style={{width:'100%'}}
+                                         src={this.state.data.titleImageUrl}/>
 
-                                                {this.state.createNewTitleImageVisible ?
-                                                    <a href="javascript:void 0"
-                                                       onClick={this.onApplyNewTitleImageClick}>
-                                                        Apply new image
-                                                    </a> :
-                                                    null}
-                                                {this.state.createNewTitleImageVisible ?
-                                                    <div>
-                                                        <AvatarCreator width={1000} height={180} border={50} scrollable={true} ref="titleImageCreator"/>
-                                                    </div> :
-                                                    <div>
-                                                        <span>Or choose from exitsing:</span>
-                                                        <TitleImageList />
-                                                    </div>}
+                                    <a href="javascript:void 0"
+                                       className="create-title-image-button"
+                                       onClick={this.onCreateNewTitleImageClick}>
+                                        <i className="caret caret-creator-toggle"></i>
+                                        <span>{this.state.createNewTitleImageVisible ? 'Cancel' : 'Create new title image'}</span>
+                                    </a>
 
-                                            </div>
-                                        </div>
+                                    {this.state.createNewTitleImageVisible ?
+                                        <a href="javascript:void 0"
+                                           onClick={this.onApplyNewTitleImageClick}>
+                                            Apply new image
+                                        </a> :
+                                        null}
+                                    {this.state.createNewTitleImageVisible ?
+                                        <div>
+                                            <AvatarCreator width={1000} height={180} border={50} scrollable={true}
+                                                           ref="titleImageCreator"/>
+                                        </div> :
+                                        <div>
+                                            <span>Or choose from exitsing:</span>
+                                            <TitleImageList />
+                                        </div>}
 
-                                    </div>
-                                </form>
-                            </div>
-                            <div className="panel-footer">
-                                <div className="row">
-                                    <div className="col-md-2">
-                                        <button type="submit"
-                                                form="general-settings-form"
-                                                className="btn btn-primary"
-                                                disabled={this.state.pristine || this.state.saving || this.state.loading}>
-                                            <i className={saveButtonIconClass}></i>
-                                            &nbsp;{saveButtonText}
-                                        </button>
-                                    </div>
-                                    <div className="col-md-10">
-                                        {this.state.error ? <div className="alert alert-danger" role="alert">
-                                            Something wrong. Just got <a href="javascript:void 0;"
-                                                                         className="alert-link"
-                                                                         onClick={this.onErrorLinkClick}>error.</a>
-                                            {this.state.showErrorDetails ?
-                                                <pre>{JSON.stringify(this.state.error, null, '\t')}</pre> : null}
-                                        </div> : null}
-                                    </div>
                                 </div>
                             </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div className="panel-footer">
+                    <div className="row">
+                        <div className="col-md-2">
+                            <button type="submit"
+                                    form="general-settings-form"
+                                    className="btn btn-primary"
+                                    disabled={this.state.pristine || this.state.saving || this.state.loading}>
+                                <i className={saveButtonIconClass}></i>
+                                &nbsp;{saveButtonText}
+                            </button>
+                        </div>
+                        <div className="col-md-10">
+                            {this.state.error ? <div className="alert alert-danger" role="alert">
+                                Something wrong. Just got <a href="javascript:void 0;"
+                                                             className="alert-link"
+                                                             onClick={this.onErrorLinkClick}>error.</a>
+                                {this.state.showErrorDetails ?
+                                    <pre>{JSON.stringify(this.state.error, null, '\t')}</pre> : null}
+                            </div> : null}
                         </div>
                     </div>
                 </div>
@@ -406,7 +402,7 @@ var GeneralSettingsForm = React.createClass({
         });
         componentFlux.actions.applyNewAvatar(imageDataUrl);
     },
-    onApplyNewTitleImageClick: function(){
+    onApplyNewTitleImageClick: function () {
         var creator = this.refs.titleImageCreator;
         var imageDataUrl = creator.getImageDataUrl();
         this.setState({
@@ -420,7 +416,7 @@ var GeneralSettingsForm = React.createClass({
             avatarCreatorVisible: !this.state.avatarCreatorVisible
         });
     },
-    onCreateNewTitleImageClick: function(){
+    onCreateNewTitleImageClick: function () {
         this.setState({
             createNewTitleImageVisible: !this.state.createNewTitleImageVisible
         });

@@ -5,6 +5,11 @@ var definitions = [
         icon: 'glyphicon glyphicon-option-vertical'
     },
     {
+        title: 'Navigation links',
+        routeName: 'admin-navlinks',
+        icon: 'glyphicon glyphicon-tasks'
+    },
+    {
         title: 'Other settings',
         routeName: 'admin-other',
         icon: 'glyphicon glyphicon-wrench'
