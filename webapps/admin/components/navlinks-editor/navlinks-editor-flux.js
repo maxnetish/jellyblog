@@ -5,7 +5,10 @@ var actionSyncOptions = {sync: true};
 var actionAsyncOptions = {sync: false};
 var actions = Reflux.createActions({
     'valueChanged': actionSyncOptions,
-    'componentMounted': actionAsyncOptions
+    'componentMounted': actionAsyncOptions,
+    'dataGet': actionSyncOptions,
+    'dataGetCompleted': actionSyncOptions,
+    'dataGetFailed': actionSyncOptions
 });
 
 var store = Reflux.createStore({
@@ -21,7 +24,7 @@ var store = Reflux.createStore({
          *      valid
          * }
          *
-          */
+         */
 
         if (!(payload && payload.id && payload.key)) {
             return;
@@ -35,13 +38,38 @@ var store = Reflux.createStore({
             saveDataDebounce.cancel();
         }
     },
+    onComponentMounted: function () {
+        if (this.dataLoadOnce) {
+            return;
+        }
+        getData();
+    },
+    onDataGet: function () {
+        this.loading = true;
+        this.trigger(this.getViewModel());
+    },
+    onDataGetCompleted: function (requestedData) {
+        this.data = _.indexBy(requestedData, '_id');
+        this.loading = false;
+        this.pristine = true;
+        this.error = null;
+        this.trigger(this.getViewModel());
+    },
+    onDataGetFailed: function(err){
+        his.loading = false;
+        this.error = err;
+        this.trigger(this.getViewModel());
+    },
 
-    getViewModel: function(){
+    getViewModel: function () {
 
     },
 
+    dataLoadOnce: false,
     data: {},
-    pristine: true
+    pristine: true,
+    loading: false,
+    error: null
 
 });
 
