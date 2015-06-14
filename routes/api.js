@@ -158,62 +158,81 @@ router.get('/', function (req, res) {
 //        })
 //        .then(null, next);
 //});
-//
-//router.get('/navlinks', function (req, res, next) {
-//    var query = req.query;
-//    dataProvider.promiseNavlinkList(query.category)
-//        .then(function (result) {
-//            return res.send(result);
-//        })
-//        .then(null, next);
-//});
-//
-//router.post('/navlink', function (req, res, next) {
-//    var formData = req.body,
-//        id = formData._id,
-//        promise;
-//
-//    if (!req.userHasAdminRights) {
-//        next(createError401());
-//        return;
-//    }
-//
-//    if (id) {
-//        promise = dataProvider.promiseNavlinkUpdate(formData);
-//    } else {
-//        promise = dataProvider.promiseNavlinkCreate(formData);
-//    }
-//
-//    promise
-//        .then(function (result) {
-//            return res.send(result);
-//        })
-//        .then(null, next);
-//});
-//
-//router.delete('/navlink', function (req, res, next) {
-//    var id = req.query.id,
-//        promise;
-//
-//    if (!id) {
-//        next(createError400('id'));
-//        return;
-//    }
-//
-//    if (!req.userHasAdminRights) {
-//        next(createError401());
-//        return;
-//    }
-//
-//    promise = dataProvider.promiseNavlinkRemove(id);
-//
-//    promise
-//        .then(function (result) {
-//            return res.send(result);
-//        })
-//        .then(null, next);
-//});
-//
+
+router.get('/navlinks', function (req, res, next) {
+    var query = req.query;
+    dataProvider.promiseNavlinkList(query.category)
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
+router.post('/navlink', function (req, res, next) {
+    var formData = req.body,
+        promise;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    promise = dataProvider.promiseNavlinkCreate(formData);
+
+    promise
+        .then(function (result) {
+            return res.status(201).send(result);
+        })
+        .then(null, next);
+});
+
+router.put('/navlink', function () {
+    var formData = req.body,
+        id = formData._id,
+        promise;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    if (!id) {
+        next(createError400('id'));
+        return;
+    }
+
+    promise = dataProvider.promiseNavlinkUpdate(formData);
+
+    promise
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
+router.delete('/navlink', function (req, res, next) {
+    var id = req.query.id,
+        promise;
+
+    if (!id) {
+        next(createError400('id'));
+        return;
+    }
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    promise = dataProvider.promiseNavlinkRemove(id);
+
+    promise
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
 //router.get('/locale', function (req, res) {
 //    var langCode = req.query.lang || 'en',
 //        localeTable = locales[langCode] || locales[langCode.slice(0, 2)] || locales.en;
