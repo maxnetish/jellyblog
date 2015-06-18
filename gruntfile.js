@@ -19,7 +19,7 @@ module.exports = function (grunt) {
             build: {
                 files: [
                     {
-                        src: ['webapps/less/app.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less'],
+                        src: ['webapps/less/app.less', 'webapps/common/components/**/*.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less'],
                         dest: publicCss + '/app.css'
                     }
                 ]
@@ -120,12 +120,16 @@ module.exports = function (grunt) {
                 files: ['webapps/public/**/*.js*', 'webapps/public*.js*', '!webapps/public/**/__tests__/*.*'],
                 tasks: ['browserify:public']
             },
+            'js-common': {
+                files: ['webapps/common/**/*.js*', '!webapps/common/**/__tests__/*.*'],
+                tasks: ['browserify:public', 'browserify:admin']
+            },
 
             /**
              * When the LESS files change, we need to compile them.
              */
             less: {
-                files: ['webapps/less/**/*.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less'],
+                files: ['webapps/less/**/*.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less', 'webapps/common/components/**/*.less'],
                 tasks: ['less', 'concat:css']
             }
         }
