@@ -30,6 +30,7 @@
     "react-avatar-editor": "^1.0.0",
     "react-engine": "^1.6.0",
     "react-router": "^0.13.3",
+    "react-super-select": "^0.1.15",
     "reflux": "^0.2.7",
     "static-favicon": "^2.0.0-alpha",
     "superagent": "^1.2.0"

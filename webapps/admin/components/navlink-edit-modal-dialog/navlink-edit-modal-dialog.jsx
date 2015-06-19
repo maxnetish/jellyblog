@@ -4,6 +4,7 @@ var ClassSet = require('classnames');
 var _ = require('lodash');
 
 var ModalComponent = require('../../../common/components/modal/modal.jsx');
+var SuperSelect = require('react-super-select');
 
 function resolveDialog(dialog, resolveData) {
     if (!dialog.state.visible) {
@@ -42,6 +43,19 @@ var NavlinkModalEditor = React.createClass({
         };
     },
     render: function () {
+        var testData = [
+            {
+                "id": "5507c0528152e61f3c348d56",
+                "name": "elit laborum et",
+                "size": "Large"
+            },
+            {
+                "id": "5507c0526305bceb0c0e2c7a",
+                "name": "dolor nulla velit",
+                "size": "Medium"
+            }
+        ];
+
         return <ModalComponent visible={this.state.visible}>
             {this.state.visible ? <div>
                 <div className="modal-header">
@@ -123,6 +137,15 @@ var NavlinkModalEditor = React.createClass({
                                     </div>
                                 </div>
                             </div>
+                            <div className="form-group">
+                                <label htmlFor="link-url" className="col-md-3 control-label">Icon</label>
+
+                                <div className={getFormControlWrapperClassSet(this.state.validity, 'url')}>
+                                    <SuperSelect placeholder="Make a Selection"
+                                                 dataSource={testData}
+                                                 onChange={this.handleSelectIconChange}/>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -154,6 +177,9 @@ var NavlinkModalEditor = React.createClass({
             data: _.assign(this.state.data, dataState),
             validity: _.assign(this.state.validity, fieldValidity)
         });
+    },
+    handleSelectIconChange: function () {
+        console.log(arguments);
     },
 
     onModalCloseClick: function () {
