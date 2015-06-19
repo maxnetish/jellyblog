@@ -4,9 +4,20 @@
     }
 }
 
-#jb-modal-backdrop {
-    display: none;
-    &.jb-modal-backdrop-visible {
-        display: block;
+.modal-animate-enter {
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+
+    &.modal-animate-enter-active {
+        transform: translateY(0);
+    }
+}
+
+.modal-animate-leave {
+    transform: translateY(0);
+    transition: transform 0.2s ease;
+
+    &.modal-animate-leave-active {
+        transform: translateY(100%);
     }
 }

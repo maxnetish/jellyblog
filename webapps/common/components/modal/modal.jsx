@@ -1,70 +1,98 @@
 var React = require('react/addons');
 var ClassSet = require('classnames/dedupe');
+var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 var GLOBAL = (function () {return this}());
 var document = GLOBAL.document;
 
-var backdropId = 'jb-modal-backdrop';
-var backdropClass = 'modal-backdrop';
-var backdropClassVisible = 'jb-modal-backdrop-visible in';
+var backdropId = 'jb-modal-backdrop-';
+var backdropClass = 'modal-backdrop in';
 
-function getBackdrop() {
-    var backdrop = document.querySelector('#' + backdropId + '.' + backdropClass);
-    if (!backdrop) {
-        backdrop = (function () {
-            var backdropElement = document.createElement('div');
-            backdropElement.className = backdropClass;
-            backdropElement.id = backdropId;
-            return document.body.appendChild(backdropElement);
-        })();
+var _lastId = 0;
+
+function getNextId() {
+    _lastId++;
+    return _lastId;
+}
+
+function addBackdrop(id) {
+    var idAttr = backdropId + id;
+    var backdrop = document.querySelector('#' + idAttr);
+    if (backdrop) {
+        return backdrop;
     }
+    backdrop = (function () {
+        var backdropElement = document.createElement('div');
+        backdropElement.className = backdropClass;
+        backdropElement.id = idAttr;
+        return document.body.appendChild(backdropElement);
+    })();
     return backdrop;
 }
 
-function addBackdrop() {
-    var backdrop = getBackdrop();
-    backdrop.className = ClassSet(backdropClass, backdropClassVisible);
-    document.body.className = ClassSet(document.body.className, 'modal-open');
+function removeBackdrop(id) {
+    var idAttr = backdropId + id;
+    var backdrop = document.querySelector('#' + idAttr);
+    if (!backdrop) {
+        return;
+    }
+    backdrop.parentNode.removeChild(backdrop);
 }
 
-function hideBackdrop() {
-    getBackdrop().className = backdropClass;
-    document.body.className = ClassSet(document.body.className, {'modal-open': false});
+function modifyDocumentBody() {
+    document.body.className = ClassSet(document.body.className, {'modal-open': true});
+}
+
+function clearDocumentBody() {
+    // if no more modals
+    // we use async to wait while React updates DOM
+    setTimeout(function () {
+        var modal = document.querySelector('.modal.jb-modal-visible');
+        if (modal) {
+            return;
+        }
+        document.body.className = ClassSet(document.body.className, {'modal-open': false});
+    }, 0);
 }
 
 var Modal = React.createClass({
     getDefaultProps: function () {
         return {
-            visible: false
+            visible: false,
+            useBackdrop: true
         };
     },
     getInitialState: function () {
         return {};
     },
     render: function () {
+        this._modalId = this._modalId || getNextId();
 
+        // Here we add backdrop and add .modal-open to body
+        // it is not exactly 'React way'
         if (this.props.visible) {
-            addBackdrop();
+            modifyDocumentBody();
+            if (this.props.useBackdrop) {
+                addBackdrop(this._modalId);
+            }
         } else {
-            hideBackdrop();
+            removeBackdrop(this._modalId);
+            clearDocumentBody();
         }
 
-        return this.props.visible ? <div className="modal jb-modal-visible" role="dialog">
-            <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                    {this.props.children}
+        return <ReactCSSTransitionGroup component="div" transitionName="modal-animate">
+            {this.props.visible ? <div key={this._modalId} className="modal jb-modal-visible" role="dialog">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        {this.props.children}
+                    </div>
                 </div>
-            </div>
-        </div> : null;
-    },
-    shouldComponentUpdate: function (nextProps, nextState) {
-        //console.log('Modal wants to update....');
-        //console.log('Will update: ' + (this.props.visible != nextProps.visible));
-        //return this.props.visible != nextProps.visible;
-        return true;
+            </div> : null}
+        </ReactCSSTransitionGroup>;
     },
     componentWillUnmount: function () {
-        hideBackdrop();
+        removeBackdrop(this._modalId);
+        clearDocumentBody();
     }
 });
 

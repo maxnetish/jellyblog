@@ -15,7 +15,7 @@ function renderNavlink(navlinkModel, editHandler) {
     });
     var linkTarget = navlinkModel.newWindow ? '_blank' : null;
 
-    return <li className="list-group-item">
+    return <li className="list-group-item" key={navlinkModel._id}>
         <div className="row">
             <div className="col-md-8">
                 <a className={linkClass}
