@@ -90,6 +90,9 @@ var Modal = React.createClass({
             </div> : null}
         </ReactCSSTransitionGroup>;
     },
+    componentDidMount: function(){
+
+    },
     componentWillUnmount: function () {
         removeBackdrop(this._modalId);
         clearDocumentBody();
