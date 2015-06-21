@@ -6,7 +6,6 @@ var NavlinksEditor = require('../../components/navlinks-editor/navlinks-editor.j
 var NavlinksPage = React.createClass({
     render: function () {
         return <section>
-            Navlinks page
             <NavlinksEditor />
         </section>;
     }

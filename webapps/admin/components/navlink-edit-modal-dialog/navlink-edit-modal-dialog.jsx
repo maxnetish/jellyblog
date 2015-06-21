@@ -3,6 +3,8 @@ var React = require('react/addons');
 var ClassSet = require('classnames');
 var _ = require('lodash');
 
+var availableIcons = require('./available-icons');
+
 var ModalComponent = require('../../../common/components/modal/modal.jsx');
 var SuperSelect = require('react-super-select');
 
@@ -39,25 +41,21 @@ var NavlinkModalEditor = React.createClass({
         return {
             visible: false,
             data: {},
-            validity: {}
+            validity: {},
+            iconSelectInitialValue: null
         };
     },
     render: function () {
-        var testData = [
-            {
-                "id": "5507c0528152e61f3c348d56",
-                "name": "elit laborum et",
-                "size": "Large"
-            },
-            {
-                "id": "5507c0526305bceb0c0e2c7a",
-                "name": "dolor nulla velit",
-                "size": "Medium"
-            }
-        ];
+        var navlinkIconTemplate = function (model) {
+            return (
+                <div className="navlink-icon-select-item">
+                    <i className={model.className}></i>
+                    <span>{model.id}</span>
+                </div>);
+        };
 
         return <ModalComponent visible={this.state.visible}>
-            {this.state.visible ? <div>
+            {this.state.visible ? <div className="navlink-edit-modal-dialog">
                 <div className="modal-header">
                     <button type="button"
                             className="close"
@@ -65,10 +63,9 @@ var NavlinkModalEditor = React.createClass({
                             aria-label="Close">
                         <span>&times;</span>
                     </button>
-                    <h4 className="modal-title">Modal title here</h4>
+                    <h4 className="modal-title">{this.state.data.text || 'Link'}</h4>
                 </div>
                 <div className="modal-body">
-                    <div>{this.state.data.text}</div>
                     <form id="navlink-edit-form" onSubmit={this.onModalSubmit}>
                         <div className="form-horizontal">
                             <div className="form-group">
@@ -90,7 +87,7 @@ var NavlinkModalEditor = React.createClass({
                                 <label htmlFor="link-url" className="col-md-3 control-label">Url</label>
 
                                 <div className={getFormControlWrapperClassSet(this.state.validity, 'url')}>
-                                    <input type="url"
+                                    <input type="text"
                                            name="url"
                                            id="link-url"
                                            className="form-control"
@@ -135,6 +132,16 @@ var NavlinkModalEditor = React.createClass({
                                             Use client router
                                         </label>
                                     </div>
+                                    <div className="checkbox">
+                                        <label>
+                                            <input type="checkbox"
+                                                   name="newWindow"
+                                                   id="link-newWindow"
+                                                   checked={this.state.data.newWindow}
+                                                   onChange={this.onFieldChange}/>
+                                            Open in new tab
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div className="form-group">
@@ -142,7 +149,11 @@ var NavlinkModalEditor = React.createClass({
 
                                 <div className={getFormControlWrapperClassSet(this.state.validity, 'url')}>
                                     <SuperSelect placeholder="Make a Selection"
-                                                 dataSource={testData}
+                                                 dataSource={availableIcons}
+                                                 customOptionTemplateFunction={navlinkIconTemplate}
+                                                 searchable={true}
+                                                 optionLabelKey="id"
+                                                 initialValue={this.state.iconSelectInitialValue}
                                                  onChange={this.handleSelectIconChange}/>
                                 </div>
                             </div>
@@ -151,7 +162,10 @@ var NavlinkModalEditor = React.createClass({
                 </div>
                 <div className="modal-footer">
                     <button type="button" className="btn btn-default" onClick={this.onModalCloseClick}>Cancel</button>
-                    <button type="submit" form="navlink-edit-form" className="btn btn-primary">OK</button>
+                    <button type="submit" form="navlink-edit-form" className="btn btn-primary">
+                        <i className="glyphicon glyphicon-ok"></i>
+                        &nbsp;OK
+                    </button>
                 </div>
             </div> : null}
         </ModalComponent>;
@@ -178,8 +192,12 @@ var NavlinkModalEditor = React.createClass({
             validity: _.assign(this.state.validity, fieldValidity)
         });
     },
-    handleSelectIconChange: function () {
-        console.log(arguments);
+    handleSelectIconChange: function (iconSelection) {
+        this.setState({
+            data: _.assign(this.state.data, {
+                icon: 'glyphicon-' + iconSelection.id
+            })
+        });
     },
 
     onModalCloseClick: function () {
@@ -199,7 +217,13 @@ var NavlinkModalEditor = React.createClass({
 
         this.setState({
             visible: true,
-            data: _.cloneDeep(data)
+            data: _.cloneDeep(data),
+            iconSelectInitialValue: _.find(availableIcons, function (s) {
+                if (data.icon) {
+                    return data.icon.indexOf(s.id) !== -1;
+                }
+                return false;
+            })
         });
 
         return this._dfr.promise;

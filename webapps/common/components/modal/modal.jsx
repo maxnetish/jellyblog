@@ -52,7 +52,7 @@ function clearDocumentBody() {
             return;
         }
         document.body.className = ClassSet(document.body.className, {'modal-open': false});
-    }, 0);
+    }, 500);
 }
 
 var Modal = React.createClass({

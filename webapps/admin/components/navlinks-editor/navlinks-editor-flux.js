@@ -19,6 +19,8 @@ var actions = Reflux.createActions({
     'dataSave': actionSyncOptions,
     'dataSaveCompleted': actionSyncOptions,
     'dataSaveFailed': actionSyncOptions,
+    'itemUpdate': actionSyncOptions,
+    'dataRemoveCompleted': actionSyncOptions
 });
 
 var store = Reflux.createStore({
@@ -74,30 +76,17 @@ var store = Reflux.createStore({
         this.error = err;
         this.trigger(this.getViewModel());
     },
-    onItemAdd: function (category) {
-        var newNavlink = createNewNavlink(category, getNextOrderToPush(this.data));
-
-        this.pristine = false;
-        this.itemsToPendingUpdate.push(newNavlink._id);
-        this.data[newNavlink._id] = newNavlink;
-        this.trigger(this.getViewModel());
-        // new empty navlink is not valid, so...
-        saveDataDebounce.cancel();
+    onItemAdd: function (payload) {
+        var model = payload.value;
+        addItem(model);
     },
     onItemRemove: function (payload) {
         var navlink = payload.value;
-        var valid = payload.valid;
-        this.prisine = false;
-        delete this.data[navlink._id];
-        if (!_.startsWith(navlink._id, newNavlinkIdPrefix)) {
-            this.itemsToPendingRemove.push(navlink._id);
-        }
-        this.trigger(this.getViewModel());
-        if (valid) {
-            saveDataDebounce(this.data, this.itemsToPendingUpdate, this.itemsToPendingRemove);
-        } else {
-            saveDataDebounce.cancel();
-        }
+        removeItem(navlink);
+    },
+    onItemUpdate: function (payload) {
+        var navlink = payload.value;
+        updateItem(navlink);
     },
     onDataSave: function () {
         this.loading = true;
@@ -107,17 +96,14 @@ var store = Reflux.createStore({
         this.loading = false;
         this.pristine = true;
         this.error = null;
-        this.itemsToPendingRemove.length = 0;
-        this.itemsToPendingUpdate.length = 0;
-        // TODO update existing items
-        this.data = _.omit(this.data, function (existingNavlink) {
-            return _.startsWith(existingNavlink._id, newNavlinkIdPrefix);
-        });
-        _.each(payload, function (updatedNavlink) {
-            if (updatedNavlink._id) {
-                this.data[updatedNavlink._id] = updatedNavlink;
-            }
-        }, this);
+        this.data[payload._id] = payload;
+        this.trigger(this.getViewModel());
+    },
+    onDataRemoveCompleted: function(payload){
+        this.loading = false;
+        this.pristine = true;
+        this.error = null;
+        delete this.data[payload._id];
         this.trigger(this.getViewModel());
     },
     onDataSaveFailed: function (err) {
@@ -134,10 +120,11 @@ var store = Reflux.createStore({
             error: this.error
         };
     },
+    getNewNavlinkModel: function(category){
+      return createNewNavlink(category, getNextOrderToPush(this.data));
+    },
 
     dataLoadOnce: false,
-    itemsToPendingRemove: [],
-    itemsToPendingUpdate: [],
 
     data: {},
     pristine: true,
@@ -145,8 +132,6 @@ var store = Reflux.createStore({
     error: null
 
 });
-
-var saveDataDebounce = _.debounce(saveData, 10000);
 
 function getData() {
     actions.dataGet();
@@ -160,48 +145,41 @@ function getData() {
     });
 }
 
-function saveData(model, itemsToPendingUpdate, itemsToPendingRemove) {
-    var pendingOperations = [];
-
-    _.each(itemsToPendingRemove, function (idToRemove) {
-        if (!model.hasOwnProperty(idToRemove)) {
-            return;
-        }
-        pendingOperations.push(resources.remove(idToRemove))
-            .then(function (result) {
-                return null;
-            });
-    });
-    _.each(itemsToPendingUpdate, function (idToUpdate) {
-        if (!model.hasOwnProperty(idToUpdate)) {
-            return;
-        }
-        if (_.startsWith(idToUpdate, newNavlinkIdPrefix)) {
-            pendingOperations.push(resources.create(model[idToUpdate]));
-        } else {
-            pendingOperations.push(resources.put(model[idToUpdate]));
-        }
-    });
-
+function updateItem(model) {
     actions.dataSave();
-
-    return Q.all(pendingOperations)
-        .then(function (updateResult) {
-            actions.dataSaveCompleted(updateResult);
-            return updateResult;
+    resources.put(model)
+        .then(function (result) {
+            actions.dataSaveCompleted(result);
         })
         ['catch'](function (err) {
         actions.dataSaveFailed(err);
     });
 }
 
-function idForNewItem() {
-    return _.uniqueId(newNavlinkIdPrefix);
+function addItem(model) {
+    actions.dataSave();
+    resources.create(model)
+        .then(function (result) {
+            actions.dataSaveCompleted(result);
+        })
+        ['catch'](function (err) {
+        actions.dataSaveFailed(err);
+    });
+}
+
+function removeItem(model) {
+    actions.dataSave();
+    resources.remove(model._id)
+        .then(function (result) {
+            actions.dataRemoveCompleted(result);
+        })
+        ['catch'](function (err) {
+        actions.dataSaveFailed(err);
+    });
 }
 
 function createNewNavlink(category, order) {
     return {
-        _id: idForNewItem(),
         text: null,
         url: null,
         category: category,

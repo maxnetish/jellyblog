@@ -1,5 +1,6 @@
 var request = require('superagent');
 var Q = require('q');
+var _ = require('lodash');
 
 function list() {
     var dfr = Q.defer();
@@ -19,7 +20,7 @@ function list() {
 
 function create(navlink) {
     var dfr = Q.defer();
-    var payload = navlink.omit('_id');
+    var payload = _.omit(navlink, '_id');
 
     request
         .post('/api/navlink')
@@ -57,7 +58,7 @@ function remove(id) {
 
     request
         .del('/api/navlink')
-        .query(id)
+        .query({id: id})
         .end(function (err, response) {
             if (err) {
                 dfr.reject(err);

@@ -34,7 +34,7 @@ function promiseNavlinkUpdate (navlink) {
         id = navlink._id;
 
     delete navlink._id;
-    query = model.Navlink.findByIdAndUpdate(id, navlink);
+    query = model.Navlink.findByIdAndUpdate(id, navlink, {new: true});
     return query.exec();
 }
 

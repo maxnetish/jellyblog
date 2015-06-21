@@ -13,6 +13,7 @@ var Reflux = require('reflux');
 var Navmenu = require('./admin/components/navmenu/navmenu.jsx');
 var AuthRedirector = require('./admin/components/auth-redirector/auth-redirector.jsx');
 var AdminViewWrapper = require('./admin/components/admin-view-wrapper/admin-view-wrapper.jsx');
+var CommonDialogsComponent = require('./common/components/common-dialogs/common-dialogs.jsx');
 
 var adminRoutes = require('./admin/routes');
 var AdminHome = adminRoutes.AdminHome;
@@ -27,10 +28,7 @@ var App = React.createClass({
         return <div>
             <Navmenu />
             {isAdmin ? <AdminViewWrapper><RouteHandler data={this.props.data}/></AdminViewWrapper> : <AuthRedirector />}
-            {/*
-             <pre>{JSON.stringify(this.props)}</pre>
-             <pre>{JSON.stringify(this.state)}</pre>
-             */}
+            <CommonDialogsComponent />
         </div>;
     }
 });

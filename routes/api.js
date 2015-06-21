@@ -186,7 +186,7 @@ router.post('/navlink', function (req, res, next) {
         .then(null, next);
 });
 
-router.put('/navlink', function () {
+router.put('/navlink', function (req, res, next) {
     var formData = req.body,
         id = formData._id,
         promise;
