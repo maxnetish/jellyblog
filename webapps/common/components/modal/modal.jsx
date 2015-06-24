@@ -80,7 +80,7 @@ var Modal = React.createClass({
             clearDocumentBody();
         }
 
-        return <ReactCSSTransitionGroup component="div" transitionName="modal-animate">
+        return <ReactCSSTransitionGroup component="div" transitionName="modal-animate" transitionAppear={true}>
             {this.props.visible ? <div key={this._modalId} className="modal jb-modal-visible" role="dialog">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">

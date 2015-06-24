@@ -43,6 +43,10 @@ var routes = (
         <DefaultRoute name="admin-home" handler={AdminHome}/>
         <Route name="admin-navlinks" path="navlinks" handler={adminRoutes.Navlinks}/>
         <Route name="admin-other" path="other" handler={adminRoutes.AdminOther}/>
+        <Route name="admin-posts" path="posts">
+            <DefaultRoute name="admin-posts-index" handler={adminRoutes.AdminOther} />
+            <Route name="admin-post" path=":id/edit" handler={adminRoutes.AdminOther} />
+        </Route>
         <NotFoundRoute handler={AdminPageNotFound}/>
     </Route>
 );

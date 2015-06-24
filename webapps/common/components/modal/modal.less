@@ -4,6 +4,15 @@
     }
 }
 
+.modal-animate-appear {
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+
+    &.modal-animate-appear-active {
+        transform: translateY(0);
+    }
+}
+
 .modal-animate-enter {
     transform: translateY(-50%);
     transition: transform 0.2s ease;

@@ -19,13 +19,13 @@ var Navmenu = React.createClass({
     render: function () {
         var navButtons = _.map(definitions, function (def) {
             var liClass = ClassSet({
-                'active': def.routeName && this.isActive(def.routeName, this.getParams(), this.getQuery())
+                'active': def.routeName && this.isActive(def.routeName, def.routeParams, def.routeQuery)
             });
             var key = def.routeName || def.url;
             return <li className={liClass} key={key}>
                 {
                     def.routeName ?
-                        <Link to={def.routeName} target={def.target}>
+                        <Link to={def.routeName} params={def.routeParams} target={def.target}>
                             <i className={def.icon+' _margin-right-half'}></i>
                             {def.title}
                         </Link> :

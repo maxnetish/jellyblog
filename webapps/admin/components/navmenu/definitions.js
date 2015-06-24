@@ -15,6 +15,19 @@ var definitions = [
         icon: 'glyphicon glyphicon-wrench'
     },
     {
+        title: 'Posts',
+        routeName: 'admin-posts-index',
+        icon: 'glyphicon glyphicon-list'
+    },
+    {
+        title: 'Post 3',
+        routeName: 'admin-post',
+        routeParams: {
+          id: '1234-5432-234'
+        },
+        icon: 'glyphicon glyphicon-wrench'
+    },
+    {
         title: 'Logout',
         url: '/auth/logout',
         icon: 'glyphicon glyphicon-log-out'
