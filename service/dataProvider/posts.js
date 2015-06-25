@@ -3,12 +3,13 @@ var model = require('../../models').model,
     Q = require('q'),
     utils = require('./utils');
 
-function createCondition (queryParams) {
+function createCondition(queryParams) {
     var condition = {},
         fromDate,
         toDate,
         tag,
-        search,
+        title,
+        content,
         featured,
         includeDraft;
 
@@ -17,7 +18,8 @@ function createCondition (queryParams) {
     fromDate = utils.sanitizeDate(queryParams.fromDate);
     toDate = utils.sanitizeDate(queryParams.toDate);
     tag = queryParams.tag;
-    search = queryParams.search;
+    title = queryParams.title;
+    content = queryParams.content;
     featured = utils.sanitizeBoolean(queryParams.featured);
     includeDraft = utils.sanitizeBoolean(queryParams.includeDraft);
 
@@ -33,8 +35,11 @@ function createCondition (queryParams) {
     if (tag) {
         condition.tags = tag;
     }
-    if (search) {
-        condition.content = /search/;
+    if (title) {
+        condition.title = /title/;
+    }
+    if (content) {
+        condition.content = /content/;
     }
     if (_.isBoolean(featured)) {
         condition.featured = featured;
@@ -46,15 +51,15 @@ function createCondition (queryParams) {
     return condition;
 }
 
-function promisePostRemove (id) {
+function promisePostRemove(id) {
     return model.Post.findByIdAndRemove(id).exec();
 }
 
-function promisePostRemoveAll () {
+function promisePostRemoveAll() {
     return model.Post.remove({}).exec();
 }
 
-function promisePostUpdate (post) {
+function promisePostUpdate(post) {
     var query,
         id = post._id,
         update,
@@ -67,7 +72,7 @@ function promisePostUpdate (post) {
     return query.exec();
 }
 
-function promisePostCreate (post) {
+function promisePostCreate(post) {
     var promise;
 
     // some post validation?
@@ -75,12 +80,12 @@ function promisePostCreate (post) {
     return promise;
 }
 
-function promisePostGetById (id) {
+function promisePostGetById(id) {
     var query = model.Post.findById(id);
     return query.exec();
 }
 
-function promisePostGetBySlug (slug) {
+function promisePostGetBySlug(slug) {
     var query, condition;
     slug = slug || "";
 
@@ -92,7 +97,7 @@ function promisePostGetBySlug (slug) {
     return query.exec();
 }
 
-function promisePostGetAdjacent (idOrSlug, queryParams) {
+function promisePostGetAdjacent(idOrSlug, queryParams) {
     var dfr = Q.defer(),
         fields = 'slug',
         condition = createCondition(queryParams),
@@ -144,7 +149,7 @@ function promisePostGetAdjacent (idOrSlug, queryParams) {
     return dfr.promise;
 }
 
-function promisePostsList (queryParams, allFields) {
+function promisePaginationPostsList(queryParams, allFields) {
     var query,
         condition,
         limit,
@@ -169,7 +174,7 @@ function promisePostsList (queryParams, allFields) {
 }
 
 module.exports = {
-    promisePostsList: promisePostsList,
+    promisePaginationPostsList: promisePaginationPostsList,
     promisePostGetBySlug: promisePostGetBySlug,
     promisePostGetById: promisePostGetById,
     promisePostCreate: promisePostCreate,

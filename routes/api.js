@@ -145,19 +145,19 @@ router.get('/', function (req, res) {
 //        })
 //        .then(null, next);
 //});
-//
-//router.get('/posts', function (req, res, next) {
-//    if (req.query.includeDraft && !req.userHasAdminRights) {
-//        next(createError401()); // unauthorized
-//        return;
-//    }
-//
-//    dataProvider.promisePostsList(req.query)
-//        .then(function (result) {
-//            res.send(result);
-//        })
-//        .then(null, next);
-//});
+
+router.get('/posts', function (req, res, next) {
+    if (req.query.includeDraft && !req.userHasAdminRights) {
+        next(createError401()); // unauthorized
+        return;
+    }
+
+    dataProvider.promisePaginationPostsList(req.query)
+        .then(function (result) {
+            res.send(result);
+        })
+        .then(null, next);
+});
 
 router.get('/navlinks', function (req, res, next) {
     var query = req.query;

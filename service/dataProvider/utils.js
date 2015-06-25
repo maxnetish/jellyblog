@@ -36,6 +36,6 @@ function sanitizeBoolean (row) {
 
 
 module.exports = {
-    sanitizeData: sanitizeDate,
+    sanitizeDate: sanitizeDate,
     sanitizeBoolean: sanitizeBoolean
 };
