@@ -12,6 +12,7 @@ var PostsFilter = React.createClass({
         return _.cloneDeep(this.props.query);
     },
     render: function () {
+        console.log(this.state);
         return <section className="posts-filter">
             <div className="panel panel-default">
                 <div className="panel-body">
@@ -74,7 +75,14 @@ var PostsFilter = React.createClass({
 
     },
     componentWillReceiveProps: function (nextProps) {
-        this.setState(_.cloneDeep(nextProps.query));
+        var stateUpdate = _.mapValues(this.state, function(val, key){
+            if(nextProps.query) {
+                return nextProps.query[key] || null;
+            }
+            return null;
+        });
+
+        this.setState(stateUpdate);
     },
 
     handleFieldChange: function (event) {

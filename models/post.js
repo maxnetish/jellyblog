@@ -2,7 +2,7 @@
  * Created by Gordeev on 13.06.2014.
  */
 var _ = require('lodash'),
-    moment = require('moment'),
+    //moment = require('moment'),
     URL = require('url'),
     CUT_LITERAL = '%CUT%',
     createPostModel = function (mongoose) {
@@ -46,14 +46,6 @@ var _ = require('lodash'),
             }
         });
 
-        postSchema.methods.formatDate = function (locale, momentDateFormat) {
-            var result;
-            locale = locale || 'en';
-            momentDateFormat = momentDateFormat || 'LL';
-            result = moment(this.date).lang(locale).format(momentDateFormat);
-            return result;
-        };
-
         postSchema.virtual('hasCut').get(function () {
             return -1 !== this.content.indexOf(CUT_LITERAL);
         });
@@ -73,35 +65,6 @@ var _ = require('lodash'),
             }
             return this.content.substring(0, cutPos) + this.content.substring(cutPos + CUT_LITERAL.length);
         });
-
-        postSchema.virtual('url').get(function () {
-            var result = {};
-
-            if (this.slug) {
-                result.pathname = '/post/' + this.slug;
-                result.query = {};
-            } else {
-                result.pathname = '/post';
-                result.query = {
-                    id: this._id.toString()
-                };
-            }
-            return result;
-        });
-
-        postSchema.methods.getPlainObject = function (locale, momentDateFormat, disableCut) {
-            var result = this.toObject();
-            locale = locale || 'en';
-            momentDateFormat = momentDateFormat || 'LL';
-
-            result.formatDate = this.formatDate(locale, momentDateFormat);
-            result.hasCut = this.hasCut;
-            result.content = disableCut ? this.contentFull : this.contentCut;
-            result.url = URL.format(this.url);
-            result._id = this._id.toString();
-
-            return result;
-        };
 
         return mongoose.model("Post", postSchema);
     };

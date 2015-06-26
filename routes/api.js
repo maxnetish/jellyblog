@@ -152,7 +152,7 @@ router.get('/posts', function (req, res, next) {
         return;
     }
 
-    dataProvider.promisePaginationPostsList(req.query)
+    dataProvider.promisePaginationAdminPostsList(req.query, req.preferredLocale)
         .then(function (result) {
             res.send(result);
         })

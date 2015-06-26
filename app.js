@@ -10,7 +10,7 @@ require('node-jsx').install({extension: '.jsx'});
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var serviceAuth = require('./service/auth');
-//var preferredLocale = require('./service/preferredLocale');
+var preferredLocale = require('./service/preferredLocale');
 //var responseTime = require('response-time');
 //var morgan2Mongo = require('./service/morgan2Mongo');
 //var mobileDetect = require('./service/mobileDetectMiddleware');
@@ -83,7 +83,7 @@ app.use(passport.session());
 app.use(serviceAuth.hasAdminRights);
 
 // inject locale detection
-//app.use(preferredLocale.detect);
+app.use(preferredLocale.detect);
 
 // mobile detection:
 //app.use(mobileDetect.detect);

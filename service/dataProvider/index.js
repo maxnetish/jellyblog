@@ -1,6 +1,6 @@
 module.exports = {
 
-    promisePaginationPostsList: require('./posts').promisePaginationPostsList,
+    promisePaginationAdminPostsList: require('./posts').promisePaginationAdminPostsList,
     promisePostGetBySlug: require('./posts').promisePostGetBySlug,
     promisePostGetById: require('./posts').promisePostGetById,
     promisePostCreate: require('./posts').promisePostCreate,

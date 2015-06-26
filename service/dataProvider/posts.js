@@ -1,7 +1,8 @@
 var model = require('../../models').model,
     _ = require('lodash'),
     Q = require('q'),
-    utils = require('./utils');
+    utils = require('./utils'),
+    moment = require('moment');
 
 function createCondition(queryParams) {
     var condition = {},
@@ -36,10 +37,10 @@ function createCondition(queryParams) {
         condition.tags = tag;
     }
     if (title) {
-        condition.title = /title/;
+        condition.title = {$regex: new RegExp(title, 'i')};
     }
     if (content) {
-        condition.content = /content/;
+        condition.content = {$regex: new RegExp(content, 'i')};
     }
     if (_.isBoolean(featured)) {
         condition.featured = featured;
@@ -149,15 +150,17 @@ function promisePostGetAdjacent(idOrSlug, queryParams) {
     return dfr.promise;
 }
 
-function promisePaginationPostsList(queryParams, allFields) {
+function promisePaginationAdminPostsList(queryParams, locale, dateFormat) {
     var query,
         condition,
         limit,
         skip,
-        fields = allFields ? null : "title slug featured draft date",
+        fields = 'title slug featured draft date',
         options,
         sort;
 
+    locale = locale || 'en';
+    dateFormat = dateFormat || 'LLL';
     queryParams = queryParams || {};
     condition = createCondition(queryParams);
     limit = parseInt(queryParams.limit, 10) || undefined;
@@ -166,15 +169,24 @@ function promisePaginationPostsList(queryParams, allFields) {
     options = {
         sort: sort,
         skip: skip,
-        limit: limit
+        limit: limit,
+        lean: true
     };
 
     query = model.Post.find(condition, fields, options);
-    return query.exec();
+    return query.exec()
+        .then(function(result){
+            var formatted = _.map(result, function(postInfo){
+                return _.assign(postInfo, {
+                    dateFormatted: moment(postInfo.date).locale(locale).format(dateFormat)
+                });
+            });
+            return formatted;
+        });
 }
 
 module.exports = {
-    promisePaginationPostsList: promisePaginationPostsList,
+    promisePaginationAdminPostsList: promisePaginationAdminPostsList,
     promisePostGetBySlug: promisePostGetBySlug,
     promisePostGetById: promisePostGetById,
     promisePostCreate: promisePostCreate,

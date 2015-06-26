@@ -10,45 +10,63 @@ var actions = Reflux.createActions({
     'componentMounted': actionAsyncOptions,
     'dataGet': actionAsyncOptions,
     'dataGetCompleted': actionAsyncOptions,
-    'dataGetFailed': actionAsyncOptions
+    'dataGetFailed': actionAsyncOptions,
+    'queryChanged': actionAsyncOptions
 });
 
 var store = Reflux.createStore({
     listenables: actions,
 
     onComponentMounted: function (routeQuery) {
-        if (this.loadOnce && _.eq(routeQuery, this.currentRouteQuery)) {
+        if ((this.loadOnce) && _.eq(routeQuery, this.currentRouteQuery)) {
             return;
         }
 
         var query = _.assign(_.cloneDeep(routeQuery), {
             limit: LIMIT,
-            skip: 0
+            skip: 0,
+            includeDraft: true
         });
 
-        this.posts.lenth = 0;
+        this.posts.length = 0;
         this.loadOnce = true;
-        this.currentRouteQuery = query;
+        this.currentRouteQuery = _.cloneDeep(routeQuery);
 
         updatePostsList(query);
     },
-    onDataGet: function(){
+    onDataGet: function () {
         this.loading = true;
         this.trigger(this.getViewModel());
     },
-    onDataGetCompleted: function(dataChunk){
+    onDataGetCompleted: function (dataChunk) {
         this.loading = false;
         this.loadOnce = true;
         this.error = null;
         Array.prototype.push.apply(this.posts, dataChunk);
         this.trigger(this.getViewModel());
     },
-    onDataGetFailed: function(err){
+    onDataGetFailed: function (err) {
         this.loading = false;
         this.error = err;
         this.trigger(this.getViewModel());
     },
+    onQueryChanged: function (routeQuery) {
+        if (_.eq(routeQuery, this.currentRouteQuery)) {
+            return;
+        }
 
+        var query = _.assign(_.cloneDeep(routeQuery), {
+            limit: LIMIT,
+            skip: 0,
+            includeDraft: true
+        });
+
+        this.posts.length = 0;
+        this.loadOnce = true;
+        this.currentRouteQuery = _.cloneDeep(routeQuery);
+
+        updatePostsList(query);
+    },
 
     loadOnce: false,
     currentRouteQuery: {},
