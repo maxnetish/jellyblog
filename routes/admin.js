@@ -16,10 +16,12 @@ router.get('*', function (req, res) {
         developmentMode: !!req.query.debug || express().get('env') === 'development',
         admin: !!req.userHasAdminRights,
         user: req.user,
+        preferredLocale: req.preferredLocale,
         toInject: JSON.stringify({
             admin: !!req.userHasAdminRights,
             user: req.user,
-            developmentMode: !!req.query.debug || express().get('env') === 'development'
+            developmentMode: !!req.query.debug || express().get('env') === 'development',
+            preferredLocale: req.preferredLocale
         })
     });
 

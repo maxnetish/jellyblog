@@ -41,6 +41,17 @@ module.exports = function (grunt) {
                         dest: publicFonts + '/'
                     }
                 ]
+            },
+            'moment-locales': {
+                files: [
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        flatten: true,
+                        src: 'node_modules/moment/locale/*.js',
+                        dest: publicJs + '/moment/locale/'
+                    }
+                ]
             }
         },
 
@@ -61,7 +72,12 @@ module.exports = function (grunt) {
 
         browserify: {
             options: {
-                transform: ['reactify'],
+                transform: ['reactify', 'aliasify'],
+                aliasifyOptions: {
+                    aliases: {
+                        'moment': './node_modules/moment/min/moment-with-locales.js'
+                    }
+                },
                 browserifyOptions: {
                     debug: true
                 }
