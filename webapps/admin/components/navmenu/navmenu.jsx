@@ -25,11 +25,11 @@ var Navmenu = React.createClass({
             return <li className={liClass} key={key}>
                 {
                     def.routeName ?
-                        <Link to={def.routeName} params={def.routeParams} target={def.target}>
+                        <Link to={def.routeName} params={def.routeParams} target={def.target} onClick={this.handleCollapseMenu}>
                             <i className={def.icon+' _margin-right-half'}></i>
                             {def.title}
                         </Link> :
-                        <a href={def.url} target={def.target}>
+                        <a href={def.url} target={def.target} onClick={this.handleCollapseMenu}>
                             <i className={def.icon+' _margin-right-half'}></i>
                             {def.title}
                         </a>
@@ -43,7 +43,7 @@ var Navmenu = React.createClass({
             'in': !this.state.menuCollapsed
         });
 
-        var xMarkup = <nav className="navbar navbar-default navbar-admin-upper">
+        var xMarkup = <nav className="navbar navbar-default navbar-fixed-top navbar-admin-upper">
             <div className="container-fluid">
                 <div className="navbar-header">
                     <button type="button" className="navbar-toggle collapsed" onClick={this.onToggleCollapseMenu}>
@@ -68,6 +68,11 @@ var Navmenu = React.createClass({
     onToggleCollapseMenu: function (e) {
         this.setState({
             menuCollapsed: !this.state.menuCollapsed
+        });
+    },
+    handleCollapseMenu: function(e){
+        this.setState({
+            menuCollapsed: true
         });
     }
 });

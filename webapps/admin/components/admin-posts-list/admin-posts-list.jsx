@@ -7,47 +7,26 @@ var moment = require('moment');
 
 var componentFlux = require('./admin-posts-list-flux');
 
-function renderPostInfo(postInfo) {
+var PostEdit = require('../admin-post-edit/admin-post-edit.jsx');
+
+function renderPostInfo(postInfo, active, handleActive) {
     var itemClass = ClassSet({
         'list-group-item': true,
         'list-group-item-success': !postInfo.draft,
-        'list-group-item-info': postInfo.draft
+        'list-group-item-info': postInfo.draft,
+        'active': !!active
     });
-    var toggleButtonIconClass = ClassSet({
-        'glyphicon': true,
-        'glyphicon-unchecked': postInfo.draft,
-        'glyphicon-check': !postInfo.draft
-    });
-    var toggleButtonButtonClass = ClassSet({
-        'btn': true,
-        'btn-success': !postInfo.draft,
-        'btn-info': postInfo.draft
-    });
-    var toggleButtonText = postInfo.draft ? 'Make public' : 'Make draft';
 
-    return <li className={itemClass} key={postInfo._id}>
+    return <a className={itemClass} key={postInfo._id} href="javascript:void 0;" onClick={handleActive.bind(null, postInfo._id)}>
         <div className="row">
-            <div className="col-md-4">
+            <div className="col-lg-6 col-md-12">
                 <span>{postInfo.title}</span>
             </div>
-            <div className="col-md-3">
+            <div className="col-lg-6 col-md-12">
                 <time className="small" dateTime={postInfo.date}>{moment(postInfo.date).format('LLL')}</time>
             </div>
-            <div className="col-md-5 text-right">
-                <div className="btn-group">
-                    <button className={toggleButtonButtonClass} title={toggleButtonText}>
-                        <i className={toggleButtonIconClass}></i>
-                    </button>
-                    <button className="btn btn-primary" title="Edit">
-                        <i className="glyphicon glyphicon-edit"></i>
-                    </button>
-                    <button className="btn btn-danger" title="Remove">
-                        <i className="glyphicon glyphicon-remove-sign"></i>
-                    </button>
-                </div>
-            </div>
         </div>
-    </li>;
+    </a>;
 }
 
 var AdminPostsList = React.createClass({
@@ -58,10 +37,34 @@ var AdminPostsList = React.createClass({
     },
     render: function () {
         return <section className="admin-posts-list">
-            <div className="panel panel-default">
-                <ul className="list-group">
-                    {_.map(this.state.posts, renderPostInfo)}
-                </ul>
+            <div className="row">
+                <div className="col-sm-4 col-xs-5">
+                    <nav className="">
+                        <ul className="pager">
+                            <li className="previous">
+                                <a href="#" title="Previous page">
+                                    <i className="glyphicon glyphicon-circle-arrow-left"></i>
+                                </a>
+                            </li>
+                            <li className="next">
+                                <Router.Link to="admin-posts" query={{skip: 10}} title="Next page">
+                                    Next&nbsp;
+                                    <i className="glyphicon glyphicon-circle-arrow-right"></i>
+                                </Router.Link>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div className="panel panel-default">
+                        <div className="list-group">
+                            {_.map(this.state.posts, function (postInfo) {
+                                return renderPostInfo(postInfo, (postInfo._id === this.state.activePostId), this.handleActivePost);
+                            }, this)}
+                        </div>
+                    </div>
+                </div>
+                <div className="col-sm-8 col-xs-7">
+                    <PostEdit postId={this.state.activePostId} />
+                </div>
             </div>
             <pre>{JSON.stringify(this.props.query, null, '\t')}</pre>
         </section>;
@@ -72,6 +75,10 @@ var AdminPostsList = React.createClass({
     },
     componentWillReceiveProps: function (nextProps) {
         componentFlux.actions.queryChanged(nextProps.query);
+    },
+
+    handleActivePost: function (postId) {
+        componentFlux.actions.postSelected(postId);
     },
 
     onStoreChanged: function (newViewModel) {

@@ -2,7 +2,7 @@ var Reflux = require('reflux');
 var _ = require('lodash');
 var resources = require('./admin-posts-list-resources');
 
-var LIMIT = 16;
+var LIMIT = 10;
 
 var actionSyncOptions = {sync: true};
 var actionAsyncOptions = {sync: false};
@@ -11,7 +11,8 @@ var actions = Reflux.createActions({
     'dataGet': actionAsyncOptions,
     'dataGetCompleted': actionAsyncOptions,
     'dataGetFailed': actionAsyncOptions,
-    'queryChanged': actionAsyncOptions
+    'queryChanged': actionAsyncOptions,
+    'postSelected': actionAsyncOptions
 });
 
 var store = Reflux.createStore({
@@ -57,7 +58,6 @@ var store = Reflux.createStore({
 
         var query = _.assign(_.cloneDeep(routeQuery), {
             limit: LIMIT,
-            skip: 0,
             includeDraft: true
         });
 
@@ -67,18 +67,24 @@ var store = Reflux.createStore({
 
         updatePostsList(query);
     },
+    onPostSelected: function(postId){
+        this.activePostId = postId;
+        this.trigger(this.getViewModel());
+    },
 
     loadOnce: false,
     currentRouteQuery: {},
     posts: [],
     loading: false,
     error: null,
+    activePostId: null,
 
     getViewModel: function () {
         return {
             posts: this.posts,
             loading: this.loading,
-            error: this.error
+            error: this.error,
+            activePostId: this.activePostId
         };
     }
 

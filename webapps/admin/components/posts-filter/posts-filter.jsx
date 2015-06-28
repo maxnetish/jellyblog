@@ -22,12 +22,12 @@ var PostsFilter = React.createClass({
                           onSubmit={this.handleSubmitForm}>
                         <div className="form-horizontal">
                             <div className="row">
-                                <div className="col-md-6">
+                                <div className="col-sm-6">
                                     <div className="form-group">
-                                        <label htmlFor="filter-title" className="col-md-2 control-label">Post
+                                        <label htmlFor="filter-title" className="col-md-2 col-sm-4 control-label">Post
                                             title</label>
 
-                                        <div className="col-md-10">
+                                        <div className="col-md-10 col-sm-8">
                                             <input name="title"
                                                    type="text"
                                                    id="filter-title"
@@ -39,12 +39,12 @@ var PostsFilter = React.createClass({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-md-6">
+                                <div className="col-sm-6">
                                     <div className="form-group">
                                         <label htmlFor="filter-content"
-                                               className="col-md-2 control-label">Content</label>
+                                               className="col-md-2 col-sm-4 control-label">Content</label>
 
-                                        <div className="col-md-10">
+                                        <div className="col-md-10 col-sm-8">
                                             <input name="content"
                                                    type="text"
                                                    id="filter-content"
