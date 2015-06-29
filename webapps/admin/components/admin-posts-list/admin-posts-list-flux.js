@@ -25,7 +25,7 @@ var store = Reflux.createStore({
 
         var query = _.assign(_.cloneDeep(routeQuery), {
             limit: LIMIT,
-            skip: 0,
+            skip: routeQuery.skip || 0,
             includeDraft: true
         });
 
@@ -44,6 +44,19 @@ var store = Reflux.createStore({
         this.loadOnce = true;
         this.error = null;
         Array.prototype.push.apply(this.posts, dataChunk);
+
+        if (dataChunk.length < LIMIT) {
+            this.nextSkip = null;
+        } else {
+            this.nextSkip = parseInt((this.currentRouteQuery.skip || 0)) + LIMIT;
+        }
+        if (this.currentRouteQuery.skip && this.currentRouteQuery.skip !== '0') {
+            this.previousSkip = this.currentRouteQuery.skip - LIMIT;
+            this.previousSkip = this.previousSkip < 0 ? 0 : this.previousSkip;
+        } else {
+            this.previousSkip = null;
+        }
+
         this.trigger(this.getViewModel());
     },
     onDataGetFailed: function (err) {
@@ -67,7 +80,7 @@ var store = Reflux.createStore({
 
         updatePostsList(query);
     },
-    onPostSelected: function(postId){
+    onPostSelected: function (postId) {
         this.activePostId = postId;
         this.trigger(this.getViewModel());
     },
@@ -78,13 +91,17 @@ var store = Reflux.createStore({
     loading: false,
     error: null,
     activePostId: null,
+    previousSkip: null,
+    nextSkip: null,
 
     getViewModel: function () {
         return {
             posts: this.posts,
             loading: this.loading,
             error: this.error,
-            activePostId: this.activePostId
+            activePostId: this.activePostId,
+            previousSkip: this.previousSkip,
+            nextSkip: this.nextSkip
         };
     }
 

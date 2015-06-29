@@ -116,35 +116,36 @@ router.get('/', function (req, res) {
 //        return res.send(result);
 //    }).then(null, next);
 //});
-//
-//router.get('/post', function (req, res, next) {
-//    var id = req.query.id,
-//        slug = req.query.slug,
-//        promise;
-//
-//    if (id) {
-//        promise = dataProvider.promisePostGetById(id);
-//    } else if (slug) {
-//        promise = dataProvider.promisePostGetBySlug(slug);
-//    } else {
-//        next(createError(400, 'id or slug required'));
-//        return;
-//    }
-//
-//    promise
-//        .then(function (result) {
-//            if (!result) {
-//                next(createError(404, 'No such post'));
-//                return;
-//            }
-//            if (result.draft && !req.userHasAdminRights) {
-//                next(createError401());
-//                return;
-//            }
-//            res.send(result);
-//        })
-//        .then(null, next);
-//});
+
+router.get('/post', function (req, res, next) {
+    var id = req.query.id,
+        slug = req.query.slug,
+        promise;
+
+    if (id) {
+        promise = dataProvider.promisePostGetById(id);
+    } else if (slug) {
+        promise = dataProvider.promisePostGetBySlug(slug);
+    } else {
+        next(createError(400, 'id or slug required'));
+        return;
+    }
+
+    promise
+        .then(function (result) {
+            if (!result) {
+                next(createError(404, 'No such post'));
+                return result;
+            }
+            if (result.draft && !req.userHasAdminRights) {
+                next(createError401());
+                return result;
+            }
+            res.send(result);
+            return result;
+        })
+        .then(null, next);
+});
 
 router.get('/posts', function (req, res, next) {
     if (req.query.includeDraft && !req.userHasAdminRights) {

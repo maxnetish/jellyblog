@@ -23,8 +23,9 @@ var PostsFilter = React.createClass({
                         <div className="form-horizontal">
                             <div className="row">
                                 <div className="col-sm-6">
-                                    <div className="form-group">
-                                        <label htmlFor="filter-title" className="col-md-2 col-sm-4 control-label">Post
+                                    <div className="form-group form-group-sm">
+                                        <label htmlFor="filter-title"
+                                               className="small col-md-2 col-sm-4 control-label">Post
                                             title</label>
 
                                         <div className="col-md-10 col-sm-8">
@@ -40,9 +41,9 @@ var PostsFilter = React.createClass({
                                     </div>
                                 </div>
                                 <div className="col-sm-6">
-                                    <div className="form-group">
+                                    <div className="form-group form-group-sm">
                                         <label htmlFor="filter-content"
-                                               className="col-md-2 col-sm-4 control-label">Content</label>
+                                               className="small col-md-2 col-sm-4 control-label">Content</label>
 
                                         <div className="col-md-10 col-sm-8">
                                             <input name="content"
@@ -63,7 +64,7 @@ var PostsFilter = React.createClass({
                 <div className="panel-footer text-right">
                     <button type="submit"
                             form="filter-form"
-                            className="btn btn-primary">
+                            className="btn btn-sm btn-primary">
                         <i className="glyphicon glyphicon-search"></i>
                         &nbsp;Search
                     </button>
