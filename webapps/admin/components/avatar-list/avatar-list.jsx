@@ -4,19 +4,14 @@ var _ = require('lodash');
 var ClassSet = require('classnames');
 var componentFlux = require('./avatar-list-flux');
 
-function renderOneAvatar(fileMetaObject, imageSize, clickHandler, removeHandler, selected) {
+function renderOneAvatar(fileMetaObject, imageStyle, clickHandler, removeHandler, selected) {
     var liClassSet = ClassSet({
         'avatar-item': true,
         'avatar-item-selected': selected
     });
 
-    imageSize = imageSize || {
-            height: '100px',
-            width: '100px'
-        };
-
     var xMarkup = <li key={fileMetaObject.id} className={liClassSet}>
-        <img style={imageSize}
+        <img style={imageStyle}
              onClick={clickHandler.bind(null, fileMetaObject)}
              title="Choose"
              src={fileMetaObject.url}/>
@@ -34,12 +29,17 @@ function renderOneAvatar(fileMetaObject, imageSize, clickHandler, removeHandler,
 
 var AvatarList = React.createClass({
     mixins: [Reflux.ListenerMixin],
+    propTypes: {
+        previewStyle: React.PropTypes.object,
+        onSelect: React.PropTypes.func
+    },
     getDefaultProps: function () {
         return {
-            previewSize: {
-                heigth: '100px',
+            previewStyle: {
+                height: '100px',
                 width: '100px'
-            }
+            },
+            onSelect: _.noop
         };
     },
     getInitialState: function () {
@@ -50,14 +50,14 @@ var AvatarList = React.createClass({
         return <ul className="avatar-list list-unstyled list-inline">
             {_.map(this.state.avatarList, function (one) {
                 return renderOneAvatar
-                (one, this.props.previewSize,
+                (one, this.props.previewStyle,
                     this.onAvatarClick, this.onAvatarRemove,
                     one.id === (this.state.selectedAvatar && this.state.selectedAvatar.id));
             }, this)}
         </ul>;
     },
     componentDidMount: function () {
-        componentFlux.actions.componentMounted();
+        componentFlux.actions.componentMounted(this.props.category);
         this.listenTo(componentFlux.store, this.onStoreChanged);
     },
 
@@ -66,7 +66,10 @@ var AvatarList = React.createClass({
     },
 
     onAvatarClick: function (avatarInfo, event) {
-        componentFlux.actions.avatarSelect(avatarInfo);
+        this.setState({
+            selectedAvatar: avatarInfo
+        });
+        this.props.onSelect(avatarInfo);
     },
     onAvatarRemove: function (avatarInfo, event) {
         componentFlux.actions.avatarRemove(avatarInfo);

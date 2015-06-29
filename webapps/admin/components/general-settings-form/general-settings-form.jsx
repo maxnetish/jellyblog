@@ -113,6 +113,7 @@ function renderAvatarEditor(opts) {
         createNewAvatarHandler: _.noop,
         avatarCreatorVisible: false,
         applyNewAvatarHandler: _.noop,
+        selectAvatarHandler: _.noop,
         creatorRef: 'avatarCreator'
     };
 
@@ -135,19 +136,19 @@ function renderAvatarEditor(opts) {
                         <i className="caret caret-creator-toggle"></i>
                         <span>{opts.avatarCreatorVisible ? 'Cancel' : 'Create new avatar'}</span>
                     </a>
-                    {opts.avatarCreatorVisible ?
-                        <a href="javascript:void 0"
-                           onClick={opts.applyNewAvatarHandler}>
-                            Apply new avatar
-                        </a> :
-                        null}
+                    {/*opts.avatarCreatorVisible ?
+                     <a href="javascript:void 0"
+                     onClick={opts.applyNewAvatarHandler}>
+                     Apply new avatar
+                     </a> :
+                     null*/}
                     {opts.avatarCreatorVisible ?
                         <div>
-                            <AvatarCreator ref={opts.creatorRef}/>
+                            <AvatarCreator ref={opts.creatorRef} onApply={opts.applyNewAvatarHandler}/>
                         </div> :
                         <div>
                             <span>Or choose from exitsing:</span>
-                            <AvatarList previewSize={{heigth:'75px',width:'75px'}}/>
+                            <AvatarList previewStyle={{height:'75px', width:'75px'}} onSelect={opts.selectAvatarHandler}/>
                         </div>}
                 </div>
             </div>
@@ -262,7 +263,8 @@ var GeneralSettingsForm = React.createClass({
                                 dataObject: this.state.data,
                                 createNewAvatarHandler: this.onCreateNewAvatarButtonClick,
                                 avatarCreatorVisible: this.state.avatarCreatorVisible,
-                                applyNewAvatarHandler: this.onApplyNewAvatarButtonClick,
+                                applyNewAvatarHandler: this.handleApplyNewAvatar,
+                                selectAvatarHandler: this.handleSelectAvatar,
                                 creatorRef: 'avatarCreator'
                             }) }
                             { renderTextInputField({
@@ -310,20 +312,21 @@ var GeneralSettingsForm = React.createClass({
                                         <span>{this.state.createNewTitleImageVisible ? 'Cancel' : 'Create new title image'}</span>
                                     </a>
 
-                                    {this.state.createNewTitleImageVisible ?
-                                        <a href="javascript:void 0"
-                                           onClick={this.onApplyNewTitleImageClick}>
-                                            Apply new image
-                                        </a> :
-                                        null}
+                                    {/*this.state.createNewTitleImageVisible ?
+                                     <a href="javascript:void 0"
+                                     onClick={this.onApplyNewTitleImageClick}>
+                                     Apply new image
+                                     </a> :
+                                     null*/}
                                     {this.state.createNewTitleImageVisible ?
                                         <div>
                                             <AvatarCreator width={1000} height={180} border={50} scrollable={true}
+                                                           onApply={this.handleApplyNewTitleImage}
                                                            ref="titleImageCreator"/>
                                         </div> :
                                         <div>
                                             <span>Or choose from exitsing:</span>
-                                            <TitleImageList />
+                                            <TitleImageList onSelect={this.handleSelectTitleImage}/>
                                         </div>}
 
                                 </div>
@@ -393,20 +396,16 @@ var GeneralSettingsForm = React.createClass({
             showErrorDetails: !this.state.showErrorDetails
         });
     },
-    onApplyNewAvatarButtonClick: function (e) {
-        var creator = this.refs.avatarCreator;
-        var imageDataUrl = creator.getImageDataUrl();
+    handleApplyNewAvatar: function (e) {
+        var imageDataUrl = e.image;
         this.setState({
-            //createdAvatarUrl: imageDataUrl,
             avatarCreatorVisible: false
         });
         componentFlux.actions.applyNewAvatar(imageDataUrl);
     },
-    onApplyNewTitleImageClick: function () {
-        var creator = this.refs.titleImageCreator;
-        var imageDataUrl = creator.getImageDataUrl();
+    handleApplyNewTitleImage: function (e) {
+        var imageDataUrl = e.image;
         this.setState({
-            //createdAvatarUrl: imageDataUrl,
             createNewTitleImageVisible: false
         });
         componentFlux.actions.applyNewTitleImage(imageDataUrl);
@@ -419,6 +418,20 @@ var GeneralSettingsForm = React.createClass({
     onCreateNewTitleImageClick: function () {
         this.setState({
             createNewTitleImageVisible: !this.state.createNewTitleImageVisible
+        });
+    },
+    handleSelectAvatar: function(avatarInfo){
+        componentFlux.actions.valueChanged({
+            key: 'authorAvatarUrl',
+            value: avatarInfo.url,
+            valid: true
+        });
+    },
+    handleSelectTitleImage: function(fileInfo){
+        componentFlux.actions.valueChanged({
+            key: 'titleImageUrl',
+            value: fileInfo.url,
+            valid: true
         });
     },
     onSubmitForm: function (e) {

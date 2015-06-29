@@ -10,7 +10,7 @@ var actions = Reflux.createActions({
     'dataGetFailed': actionSyncOptions,
     'avatarRemoveCompleted': actionSyncOptions,
     'avatarRemoveFailed': actionSyncOptions,
-    'avatarSelect': actionSyncOptions,
+    //'avatarSelect': actionSyncOptions,
     'avatarRemove': actionSyncOptions,
     'avatarAdded': actionAsyncOptions,
     'componentMounted': actionAsyncOptions
@@ -40,10 +40,10 @@ var store = Reflux.createStore({
         console.log(err);
         this.trigger(this.getViewModel());
     },
-    onAvatarSelect: function (avatarFileInfo) {
-        this.selectedAvatar = avatarFileInfo;
-        this.trigger(this.getViewModel());
-    },
+    //onAvatarSelect: function (avatarFileInfo) {
+    //    this.selectedAvatar = avatarFileInfo;
+    //    this.trigger(this.getViewModel());
+    //},
     onAvatarRemove: function (avatarFileInfo) {
         removeAvatar(avatarFileInfo);
     },
@@ -68,7 +68,7 @@ var store = Reflux.createStore({
     getViewModel: function () {
         return {
             avatarList: this.avatarList,
-            selectedAvatar: this.selectedAvatar,
+            //selectedAvatar: this.selectedAvatar,
             loading: this.loading,
             error: this.error
         };
@@ -77,7 +77,7 @@ var store = Reflux.createStore({
     dataGetOnce: false,
 
     avatarList: [],
-    selectedAvatar: null,
+    //selectedAvatar: null,
     loading: false,
     error: null
 });

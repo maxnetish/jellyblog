@@ -10,7 +10,6 @@ var actions = Reflux.createActions({
     'dataGetFailed': actionSyncOptions,
     'titleImageRemoveCompleted': actionSyncOptions,
     'titleImageRemoveFailed': actionSyncOptions,
-    'titleImageSelect': actionSyncOptions,
     'titleImageRemove': actionSyncOptions,
     'titleImageAdded': actionAsyncOptions,
     'componentMounted': actionAsyncOptions
@@ -40,10 +39,6 @@ var store = Reflux.createStore({
         console.log(err);
         this.trigger(this.getViewModel());
     },
-    onTitleImageSelect: function (fileInfo) {
-        this.selectedTitleImage = fileInfo;
-        this.trigger(this.getViewModel());
-    },
     onTitleImageRemove: function (fileInfo) {
         removeTitleImage(fileInfo);
     },
@@ -68,7 +63,6 @@ var store = Reflux.createStore({
     getViewModel: function () {
         return {
             titleImageList: this.titleImageList,
-            selectedTitleImage: this.selectedTitleImage,
             loading: this.loading,
             error: this.error
         };
@@ -77,7 +71,6 @@ var store = Reflux.createStore({
     dataGetOnce: false,
 
     titleImageList: [],
-    selectedTitleImage: null,
     loading: false,
     error: null
 });

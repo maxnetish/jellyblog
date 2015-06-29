@@ -1,24 +1,33 @@
 var React = require('react/addons');
 var AvatarEditor = require('react-avatar-editor');
+var _ = require('lodash');
 
 var AvatarCreator = React.createClass({
+    propTypes: {
+        width: React.PropTypes.number,
+        height: React.PropTypes.number,
+        border: React.PropTypes.number,
+        scrollable: React.PropTypes.bool,
+        onApply: React.PropTypes.func
+    },
     getDefaultProps: function () {
         return {
             width: 150,
             height: 150,
             border: 50,
-            scrollable: false
+            scrollable: false,
+            onApply: _.noop
         };
     },
     getInitialState: function () {
         return {
-            scale: "1"
+            scale: 1
         };
     },
     render: function () {
         var scaleDisplay;
         var scrollStyle = {
-            'overflow-x': this.props.scrollable?'auto':'hidden'
+            overflowX: this.props.scrollable?'auto':'hidden'
         };
 
         scaleDisplay = parseFloat(this.state.scale).toFixed(1);
@@ -42,6 +51,10 @@ var AvatarCreator = React.createClass({
                     className="glyphicon glyphicon-zoom-in scale-label-icon"></i>{scaleDisplay}</span>
                 <input className="form-control" type="range" max="10" min="1" step="0.1" value={this.state.scale}
                        onChange={this.onScaleChange}/>
+            </div>
+
+            <div>
+                <a href="javascript:void 0" onClick={this.handleApply}>Apply image</a>
             </div>
         </div>;
     },
@@ -73,6 +86,11 @@ var AvatarCreator = React.createClass({
     onScaleChange: function (e) {
         this.setState({
             scale: parseFloat(e.target.value)
+        });
+    },
+    handleApply: function(e){
+        this.props.onApply({
+            image: this.refs.avatarEditor.getImage()
         });
     },
     getImageDataUrl: function () {

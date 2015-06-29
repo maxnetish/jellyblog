@@ -23,9 +23,7 @@ var actions = Reflux.createActions({
 var store = Reflux.createStore({
     listenables: actions,
     init: function () {
-        this.listenTo(avatarListFlux.actions.avatarSelect, this.onAvatarSelect);
         this.listenTo(avatarListFlux.actions.avatarRemoveCompleted, this.onAvatarRemoveCompleted);
-        this.listenTo(titleImageFlux.actions.titleImageSelect, this.onTitleImageSelect);
         this.listenTo(titleImageFlux.actions.titleImageRemoveCompleted, this.onTitleImageRemoveCompleted);
     },
     onValueChanged: function (payload) {
@@ -126,13 +124,6 @@ var store = Reflux.createStore({
             console.log(err);
         });
     },
-    onAvatarSelect: function (avatarInfo) {
-        this.onValueChanged({
-            key: 'authorAvatarUrl',
-            value: avatarInfo.url,
-            valid: true
-        });
-    },
     onAvatarRemoveCompleted: function (removedInfos) {
         if (_.any(removedInfos, function (info) {
                 return info.url === this.data.authorAvatarUrl;
@@ -143,13 +134,6 @@ var store = Reflux.createStore({
                 valid: true
             });
         }
-    },
-    onTitleImageSelect: function(fileInfo){
-        this.onValueChanged({
-            key: 'titleImageUrl',
-            value: fileInfo.url,
-            valid: true
-        });
     },
     onTitleImageRemoveCompleted: function(removedInfos){
         if (_.any(removedInfos, function (info) {

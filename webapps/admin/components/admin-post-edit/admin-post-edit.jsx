@@ -12,46 +12,191 @@ var componentFlux = require('./admin-post-edit-flux');
 //require('react-ace/node_modules/brace/mode/html');
 //require('react-ace/node_modules/brace/theme/github');
 
-var AceEditor=require('../ace-editor/ace-editor.jsx');
-
+var AceEditor = require('../ace-editor/ace-editor.jsx');
+var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
+var AvatarList = require('../avatar-list/avatar-list.jsx');
+var DateTimePicker = require('react-datetimepicker');
 
 function renderContentField(postDetails, handleChange) {
     return <div className="form-group">
-        <label ref="another" htmlFor="post-content" className="small control-label">
+        <label htmlFor="post-content" className="small control-label">
             Content
         </label>
 
         <div className="">
-
             <AceEditor ref="aceEditor" value={postDetails.content} onChange={handleChange}/>
-            {/*
-            <textarea name="content"
-                  id="post-content"
-                  className="form-control"
-                  value={postDetails.content}
-                  onChange={handleFieldChange}></textarea>
-                  */}
         </div>
     </div>;
 }
 
-function renderPostEdit(postDetails, handleFieldChange, handleContentChange) {
+function renderTitleField(postDetails, handleChange) {
+    return <div className="form-group">
+        <label htmlFor="post-title" className="small control-label">
+            Title
+        </label>
+
+        <div className="">
+            <input type="text"
+                   className="form-control input-sm"
+                   id="post-title"
+                   name="title"
+                   required
+                   value={postDetails.title}
+                   onChange={handleChange}/>
+        </div>
+    </div>;
+}
+
+function renderSlugField(postDetails, handleChange) {
+    return <div className="form-group">
+        <label htmlFor="post-slug" className="small control-label">
+            Human url
+        </label>
+
+        <div className="input-group">
+            <div className="input-group-addon">
+                <small>/post/</small>
+            </div>
+            <input type="text"
+                   className="form-control input-sm"
+                   id="post-slug"
+                   name="slug"
+                   value={postDetails.slug}
+                   onChange={handleChange}
+                   placeholder={postDetails._id}/>
+        </div>
+        &nbsp;
+    </div>;
+}
+
+function renderDateField(postDetails, handleChange) {
+    return <div className="form-group">
+        <label htmlFor="post-date" className="small control-label">
+            Date
+        </label>
+
+        <div className="">
+
+            <DateTimePicker />
+
+            {/*
+            <input type="date"
+                   className="form-control input-sm"
+                   id="post-date"
+                   name="date"
+                   value={postDetails.date}
+                   onChange={handleChange}
+                   required/>
+            */}
+        </div>
+    </div>;
+}
+
+function renderMetaTitleField(postDetails, handleChange) {
+    return <div className="form-group">
+        <label htmlFor="post-metatitle"
+               className="small control-label">
+            Meta title
+        </label>
+
+        <div className="">
+            <input type="text"
+                   className="form-control input-sm"
+                   id="post-metatitle"
+                   name="metaTitle"
+                   value={postDetails.metaTitle}
+                   onChange={handleChange}/>
+        </div>
+    </div>;
+}
+
+function renderMetaDescriptionField(postDetails, handleChange) {
+    return <div className="form-group">
+        <label htmlFor="post-metadescription"
+               className="small control-label">
+            Meta description
+        </label>
+
+        <div className="">
+            <input type="text"
+                   className="form-control input-sm"
+                   id="post-metadescription"
+                   name="metaDescription"
+                   value={postDetails.metaDescription}
+                   onChange={handleChange}/>
+        </div>
+    </div>;
+}
+
+function renderPostAvatarField(postDetails, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible) {
+    return <div className="form-group">
+        <label className="small control-label">
+            Post title image
+        </label>
+
+        <div>
+            <div className="media">
+                <div className="media-left">
+                    <img src={postDetails.image} className="media-object" style={{height:'100px',width:'100px'}}/>
+                </div>
+                <div className="media-body">
+                    <a href="javascript:void 0" className="create-avatar-button" onClick={handleCreateAvatarToggle}>
+                        <i className="caret caret-creator-toggle"></i>
+                        <span>{createAvatarVisible ? 'Cancel' : 'Create new image'}</span>
+                    </a>
+                    {createAvatarVisible ?
+                        <div>
+                            <AvatarCreator onApply={handleAvatarApply} width={100} height={100} border={25}/>
+                        </div> :
+                        <div>
+                            <span>Or choose from existing:</span>
+                            <AvatarList previewStyle={{height:'50px', width:'50px'}} onSelect={handleAvatarSelect}/>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>;
+}
+
+function renderDraftField(postDetails, handleChange) {
+    return <div className="checkbox">
+        <label className="small">
+            <input type="checkbox"
+                   name="draft"
+                   checked={postDetails.draft}
+                   onChange={handleChange}/>
+            &nbsp;Draft
+        </label>
+    </div>;
+}
+
+function renderPostEdit(postDetails, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible) {
     return <div className="panel panel-default">
         <div className="panel-heading">
             {postDetails.title}
         </div>
         <div className="panel-body">
             <form name="post-edit" id="post-edit">
+                <div className="form-inline">
+                    {renderSlugField(postDetails, handleFieldChange)}
+                    {renderDraftField(postDetails, handleFieldChange)}
+                    {renderDateField(postDetails, handleFieldChange)}
+                </div>
                 <div className="">
+                    {renderTitleField(postDetails, handleFieldChange)}
                     {renderContentField(postDetails, handleContentChange)}
+                    {renderPostAvatarField(postDetails, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible)}
+                    {renderMetaTitleField(postDetails, handleFieldChange)}
+                    {renderMetaDescriptionField(postDetails, handleFieldChange)}
                 </div>
             </form>
 
             {/*
-            <div className="post-content-preview"
-                 dangerouslySetInnerHTML={{__html: postDetails.content}}>
-            </div>
-            */}
+             <div className="post-content-preview"
+             dangerouslySetInnerHTML={{__html: postDetails.content}}>
+             </div>
+             */}
         </div>
     </div>;
 }
@@ -70,7 +215,7 @@ var AdminPostEdit = React.createClass({
     render: function () {
         return <section className="admin-post-edit">
             {this.state.post ?
-                renderPostEdit(this.state.post, this.handleFieldChange, this.handleContentChange) :
+                renderPostEdit(this.state.post, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible) :
                 <div className="alert alert-warning" role="alert">Choose post to edit or create new one</div>
             }
         </section>;
@@ -85,16 +230,32 @@ var AdminPostEdit = React.createClass({
 
     handleFieldChange: function (event) {
         var fieldName = event.target.name;
-        var fieldValue = event.target.value;
+        var fieldValue = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
         var payload = {};
         payload[fieldName] = fieldValue;
         componentFlux.actions.postFieldChanged(payload);
     },
-    handleContentChange: function(event){
+    handleContentChange: function (event) {
         var payload = {
             content: event.src.getValue()
         };
         componentFlux.actions.postFieldChanged(payload);
+    },
+    handleCreateAvatarToggle: function (event) {
+        this.setState({
+            createAvatarVisible: !this.state.createAvatarVisible
+        });
+    },
+    handleAvatarApply: function (event) {
+        componentFlux.actions.applyPostImage(event.image);
+        this.setState({
+            createAvatarVisible: false
+        });
+    },
+    handleAvatarSelect: function (event) {
+        componentFlux.actions.postFieldChanged({
+            image: event.url
+        });
     },
 
     onStoreChanged: function (newViewModel) {

@@ -30,8 +30,13 @@ function renderOneTitleImage(fileMetaObject, clickHandler, removeHandler, select
 
 var TitleImageList = React.createClass({
     mixins: [Reflux.ListenerMixin],
+    propTypes: {
+        onSelect: React.PropTypes.func
+    },
     getDefaultProps: function () {
-        return {};
+        return {
+            onSelect: _.noop
+        };
     },
     getInitialState: function () {
         var vm = _.cloneDeep(componentFlux.store.getViewModel());
@@ -54,7 +59,10 @@ var TitleImageList = React.createClass({
     },
 
     onTitleImageClick: function(fileInfo, event){
-        componentFlux.actions.titleImageSelect(fileInfo);
+        this.setState({
+            selectedTitleImage: fileInfo
+        });
+        this.props.onSelect(fileInfo);
     },
     onTitleImageRemove: function(fileInfo, event){
         componentFlux.actions.titleImageRemove(fileInfo);

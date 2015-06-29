@@ -75,7 +75,8 @@ module.exports = function (grunt) {
                 transform: ['reactify', 'aliasify'],
                 aliasifyOptions: {
                     aliases: {
-                        'moment': './node_modules/moment/min/moment-with-locales.js'
+                        'moment': './node_modules/moment/min/moment-with-locales.js',
+                        'react': './node_modules/react/addons'
                     }
                 },
                 browserifyOptions: {

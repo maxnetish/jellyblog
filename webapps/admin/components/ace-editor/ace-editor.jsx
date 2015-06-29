@@ -5,7 +5,21 @@ var _ = require('lodash');
 require('brace/mode/html');
 require('brace/theme/chrome');
 
+var editorOptions = {
+    fontSize: 16,
+    showGutter: false,
+    mode: 'ace/mode/html',
+    theme: 'ace/theme/chrome',
+    wrap: true,
+    showPrintMargin: false
+};
+
 var BraceComponent = React.createClass({
+    propTypes: {
+        className: React.PropTypes.string,
+        value: React.PropTypes.string,
+        onChange: React.PropTypes.func
+    },
     getDefaultProps: function () {
         return {
             className: 'jb-ace-editor form-control',
@@ -23,30 +37,21 @@ var BraceComponent = React.createClass({
         this.editor.$blockScrolling = Infinity;
 
         // set my params
-        this.editor.setFontSize(16);
-        this.editor.renderer.setShowGutter(false);
-        this.editor.getSession().setMode('ace/mode/html');
-        this.editor.setTheme('ace/theme/chrome');
-        this.editor.getSession().setUseWrapMode(true);
-        this.editor.setShowPrintMargin(false);
+        this.editor.setFontSize(editorOptions.fontSize);
+        this.editor.renderer.setShowGutter(editorOptions.showGutter);
+        this.editor.getSession().setMode(editorOptions.mode);
+        this.editor.setTheme(editorOptions.theme);
+        this.editor.getSession().setUseWrapMode(editorOptions.wrap);
+        this.editor.setShowPrintMargin(editorOptions.showPrintMargin);
 
+        // set initial value
         this.editor.setValue(this.props.value, -1);
 
+        // listen changes
         this.editor.getSession().on('change', this.handleChange);
-
-        //this.editor.setFontSize(this.props.fontSize);
-        //this.editor.on('change', this.onChange);
-        //this.editor.renderer.setShowGutter(this.props.showGutter);
-        //this.editor.setOption('maxLines', this.props.maxLines);
-        //this.editor.setOption('readOnly', this.props.readOnly);
-        //this.editor.setOption('highlightActiveLine', this.props.highlightActiveLine);
-        //this.editor.setShowPrintMargin(this.props.setShowPrintMargin);
-
-        //if (this.props.onLoad) {
-        //    this.props.onLoad(this.editor);
-        //}
     },
     componentWillReceiveProps: function (nextProps) {
+        // update value when prop updates
         if (this.editor && this.editor.getValue() !== nextProps.value) {
             this.editor.setValue(nextProps.value, -1);
         }
