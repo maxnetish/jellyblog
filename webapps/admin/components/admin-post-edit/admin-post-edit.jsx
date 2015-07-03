@@ -15,7 +15,7 @@ var componentFlux = require('./admin-post-edit-flux');
 var AceEditor = require('../ace-editor/ace-editor.jsx');
 var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
 var AvatarList = require('../avatar-list/avatar-list.jsx');
-var DateTimePicker = require('react-datetimepicker');
+//var DatePicker = require('react-date-picker');
 
 function renderContentField(postDetails, handleChange) {
     return <div className="form-group">
@@ -77,7 +77,7 @@ function renderDateField(postDetails, handleChange) {
 
         <div className="">
 
-            <DateTimePicker />
+            <DatePicker locale="ru" defaultDate={postDetails.date}/>
 
             {/*
             <input type="date"

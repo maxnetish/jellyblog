@@ -60,6 +60,7 @@ module.exports = function (grunt) {
                 src: [
                     'node_modules/bootstrap/dist/css/bootstrap.css',
                     'node_modules/bootstrap/dist/css/bootstrap-theme.css',
+                    'node_modules/react-date-picker/index.css',
                     publicCss + '/app.css'
                 ],
                 dest: publicCss + '/style.css'
@@ -77,7 +78,8 @@ module.exports = function (grunt) {
                     aliases: {
                         'moment': './node_modules/moment/min/moment-with-locales.js',
                         'react': './node_modules/react/addons'
-                    }
+                    },
+                    verbose: true
                 },
                 browserifyOptions: {
                     debug: true

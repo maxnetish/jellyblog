@@ -76,7 +76,8 @@ function initInBrowser(rootElementId) {
             injectedFromBackend: injectedFromBackend
         };
         // setup moment locale
-        require('moment').locale(injectedFromBackend.preferredLocale || 'en');
+        //require('moment').locale(injectedFromBackend.preferredLocale || 'en');
+        require('moment').locale('ru');
         React.render(<Root data={dataToPassAsProp}/>, document.getElementById(rootElementId), function () {
             routeActions.stateChanged(state);
         });
