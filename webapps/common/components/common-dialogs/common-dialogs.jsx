@@ -1,5 +1,5 @@
 var Q = require('q');
-var React = require('react/addons');
+var React = require('react');
 var Reflux = require('reflux');
 var ClassSet = require('classnames');
 var _ = require('lodash');

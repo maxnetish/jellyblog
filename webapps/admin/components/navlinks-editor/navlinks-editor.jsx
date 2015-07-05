@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var Reflux = require('reflux');
 var _ = require('lodash');
 var ClassSet = require('classnames');
@@ -8,7 +8,7 @@ var NavlinkEditModalDialog = require('../navlink-edit-modal-dialog/navlink-edit-
 var commonDialogs = require('../../../common/components/common-dialogs/common-dialogs-service');
 
 function renderNavlink(navlinkModel, editHandler, removeHandler) {
-    var iconClass = 'navlink-icon glyphicon ' + navlinkModel.icon;
+    var iconClass = 'navlink-icon ' + navlinkModel.icon;
     var linkClass = ClassSet({
         'navlink-ancor': true,
         'disabled': navlinkModel.disabled,

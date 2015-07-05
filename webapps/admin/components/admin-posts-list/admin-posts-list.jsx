@@ -1,11 +1,11 @@
-var React = require('react/addons');
+var React = require('react');
 var Router = require('react-router');
 var Reflux = require('reflux');
 var ClassSet = require('classnames');
 var _ = require('lodash');
 var moment = require('moment');
 
-var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+var ReactCSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup');
 var componentFlux = require('./admin-posts-list-flux');
 
 var PostEdit = require('../admin-post-edit/admin-post-edit.jsx');

@@ -1,6 +1,6 @@
-var React = require('react/addons');
+var React = require('react');
 var ClassSet = require('classnames/dedupe');
-var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+var ReactCSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup');
 
 var GLOBAL = (function () {return this}());
 var document = GLOBAL.document;

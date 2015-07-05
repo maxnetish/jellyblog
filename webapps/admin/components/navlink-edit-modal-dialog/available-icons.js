@@ -34,8 +34,8 @@ function prepare() {
 
     result = _.map(result, function (iconId) {
         return {
-            id: iconId,
-            className: iconClassTemplate + iconId
+            className: iconClassTemplate + iconId,
+            name: iconId
         };
     });
 

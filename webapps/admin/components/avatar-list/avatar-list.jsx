@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var Reflux = require('reflux');
 var _ = require('lodash');
 var ClassSet = require('classnames');

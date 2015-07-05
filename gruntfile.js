@@ -6,6 +6,7 @@ module.exports = function (grunt) {
     var buildDir = 'build',
         publicJs = buildDir + '/js',
         publicCss = buildDir + '/css',
+        publicImg = buildDir + '/img',
         publicFonts = buildDir + '/fonts';
 
     grunt.initConfig({
@@ -39,17 +40,24 @@ module.exports = function (grunt) {
                         flatten: true,
                         src: 'node_modules/bootstrap/dist/fonts/*',
                         dest: publicFonts + '/'
+                    },
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        flatten: true,
+                        src: 'node_modules/react-widgets/dist/fonts/*',
+                        dest: publicFonts + '/'
                     }
                 ]
             },
-            'moment-locales': {
+            images: {
                 files: [
                     {
                         expand: true,
                         filter: 'isFile',
                         flatten: true,
-                        src: 'node_modules/moment/locale/*.js',
-                        dest: publicJs + '/moment/locale/'
+                        src: 'node_modules/react-widgets/dist/img/*',
+                        dest: publicImg + '/'
                     }
                 ]
             }
@@ -60,7 +68,9 @@ module.exports = function (grunt) {
                 src: [
                     'node_modules/bootstrap/dist/css/bootstrap.css',
                     'node_modules/bootstrap/dist/css/bootstrap-theme.css',
-                    'node_modules/react-date-picker/index.css',
+                    'node_modules/react-widgets/dist/css/core.css',
+                    'node_modules/react-widgets/dist/css/react-widgets.css',
+                    'node_modules/react-widgets/dist/css/variables.css',
                     publicCss + '/app.css'
                 ],
                 dest: publicCss + '/style.css'
@@ -73,14 +83,7 @@ module.exports = function (grunt) {
 
         browserify: {
             options: {
-                transform: ['reactify', 'aliasify'],
-                aliasifyOptions: {
-                    aliases: {
-                        'moment': './node_modules/moment/min/moment-with-locales.js',
-                        'react': './node_modules/react/addons'
-                    },
-                    verbose: true
-                },
+                transform: ['reactify'],
                 browserifyOptions: {
                     debug: true
                 }

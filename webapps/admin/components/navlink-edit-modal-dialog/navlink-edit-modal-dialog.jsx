@@ -1,12 +1,14 @@
 var Q = require('q');
-var React = require('react/addons');
+var React = require('react');
 var ClassSet = require('classnames');
 var _ = require('lodash');
 
 var availableIcons = require('./available-icons');
 
 var ModalComponent = require('../../../common/components/modal/modal.jsx');
-var SuperSelect = require('react-super-select');
+var DropdownList = require('react-widgets/lib/DropdownList');
+var IconSelectDropdownItem = require('./navlink-icon-select-dropdown-item.jsx');
+//var SuperSelect = require('react-super-select');
 
 function resolveDialog(dialog, resolveData) {
     if (!dialog.state.visible) {
@@ -36,23 +38,38 @@ function getFormControlWrapperClassSet(validityObject, fieldName) {
     });
 }
 
+function filterSelectIconDropdownContent(iconModel, searchTerm) {
+    var search = searchTerm.toUpperCase();
+    var name = iconModel.name.toUpperCase();
+
+    if (!search.length) {
+        return true;
+    }
+
+    if (name.indexOf(search) !== -1) {
+        return true;
+    }
+
+    return false;
+}
+
 var NavlinkModalEditor = React.createClass({
     getInitialState: function () {
         return {
             visible: false,
             data: {},
             validity: {},
-            iconSelectInitialValue: null
+            dropdownSelectIconOpen: false
         };
     },
     render: function () {
-        var navlinkIconTemplate = function (model) {
-            return (
-                <div className="navlink-icon-select-item">
-                    <i className={model.className}></i>
-                    <span>{model.id}</span>
-                </div>);
-        };
+        //var navlinkIconTemplate = function (model) {
+        //    return (
+        //        <div className="navlink-icon-select-item">
+        //            <i className={model.className}></i>
+        //            <span>{model.id}</span>
+        //        </div>);
+        //};
 
         return <ModalComponent visible={this.state.visible}>
             {this.state.visible ? <div className="navlink-edit-modal-dialog">
@@ -148,13 +165,17 @@ var NavlinkModalEditor = React.createClass({
                                 <label htmlFor="link-url" className="col-md-3 control-label">Icon</label>
 
                                 <div className={getFormControlWrapperClassSet(this.state.validity, 'url')}>
-                                    <SuperSelect placeholder="Make a Selection"
-                                                 dataSource={availableIcons}
-                                                 customOptionTemplateFunction={navlinkIconTemplate}
-                                                 searchable={true}
-                                                 optionLabelKey="id"
-                                                 initialValue={this.state.iconSelectInitialValue}
-                                                 onChange={this.handleSelectIconChange}/>
+                                    <DropdownList value={this.state.data.icon}
+                                                  onChange={this.handleSelectIconChange}
+                                                  onToggle={this.handleSelectIconToggle}
+                                                  open={this.state.dropdownSelectIconOpen}
+                                                  data={availableIcons}
+                                                  valueField="className"
+                                                  valueText="name"
+                                                  valueComponent={IconSelectDropdownItem}
+                                                  itemComponent={IconSelectDropdownItem}
+                                                  filter={filterSelectIconDropdownContent}
+                                                  placeholder="Make a selection"/>
                                 </div>
                             </div>
                         </div>
@@ -193,11 +214,21 @@ var NavlinkModalEditor = React.createClass({
         });
     },
     handleSelectIconChange: function (iconSelection) {
+        console.log('handleSelectIconChange, id: ' + iconSelection.className);
         this.setState({
             data: _.assign(this.state.data, {
-                icon: 'glyphicon-' + iconSelection.id
+                icon: iconSelection.className
             })
         });
+    },
+    handleSelectIconToggle: function (isOpen) {
+        console.log('handle onToggle, isOpen: ' + isOpen + ', current dropdownSelectIconOpen: ' + this.state.dropdownSelectIconOpen);
+        //if (this.state.dropdownSelectIconOpen !== isOpen) {
+        console.log('really setState after toggle');
+        this.setState({
+            dropdownSelectIconOpen: isOpen
+        });
+        //}
     },
 
     onModalCloseClick: function () {

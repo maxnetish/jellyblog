@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var Router = require('react-router');
 var Reflux = require('reflux');
 var ClassSet = require('classnames');
@@ -15,7 +15,7 @@ var componentFlux = require('./admin-post-edit-flux');
 var AceEditor = require('../ace-editor/ace-editor.jsx');
 var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
 var AvatarList = require('../avatar-list/avatar-list.jsx');
-//var DatePicker = require('react-date-picker');
+var DatePicker = require('react-date-picker');
 
 function renderContentField(postDetails, handleChange) {
     return <div className="form-group">
@@ -83,7 +83,7 @@ function renderDateField(postDetails, handleChange) {
             <input type="date"
                    className="form-control input-sm"
                    id="post-date"
-                   name="date"
+                   name="date"n
                    value={postDetails.date}
                    onChange={handleChange}
                    required/>

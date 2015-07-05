@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var AvatarEditor = require('react-avatar-editor');
 var _ = require('lodash');
 

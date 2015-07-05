@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var Brace = require('brace');
 var _ = require('lodash');
 

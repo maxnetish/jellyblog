@@ -1,7 +1,7 @@
 var Q = require('q');
 var _ = require('lodash');
 
-var React = require('react/addons');
+var React = require('react');
 var Router = require('react-router');
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
@@ -77,7 +77,14 @@ function initInBrowser(rootElementId) {
         };
         // setup moment locale
         //require('moment').locale(injectedFromBackend.preferredLocale || 'en');
-        require('moment').locale('ru');
+        var mom = require('moment');
+        var loc = require('moment/min/locales');
+
+        mom.locale('ru');
+
+        console.log(mom.locale());
+        console.log(mom.months());
+
         React.render(<Root data={dataToPassAsProp}/>, document.getElementById(rootElementId), function () {
             routeActions.stateChanged(state);
         });

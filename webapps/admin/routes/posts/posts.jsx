@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var Router = require('react-router');
 
 var PostsFilter = require('../../components/posts-filter/posts-filter.jsx');

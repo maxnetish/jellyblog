@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var Reflux = require('reflux');
 var _ = require('lodash');
 var ClassSet = require('classnames');
@@ -7,6 +7,8 @@ var componentFlux = require('./general-settings-flux');
 var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
 var AvatarList = require('../avatar-list/avatar-list.jsx');
 var TitleImageList = require('../title-image-list/title-image-list.jsx');
+
+var DropdownList = require('react-widgets/lib/DropdownList');
 
 var defaultTextInputOpts = {
     dataObject: {},
@@ -334,6 +336,13 @@ var GeneralSettingsForm = React.createClass({
 
                         </div>
                     </form>
+
+                    <DropdownList value={this.state.selected}
+                                  onChange={function(val) {this.setState({selected:val})}}
+                                  data={['One', 'Two']}
+                                  filter={false}
+                                  placeholder="Make a selection"/>
+
                 </div>
                 <div className="panel-footer">
                     <div className="row">

@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 
 var Page404 = React.createClass({
     render: function () {
