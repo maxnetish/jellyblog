@@ -175,6 +175,7 @@ var NavlinkModalEditor = React.createClass({
                                                   valueComponent={IconSelectDropdownItem}
                                                   itemComponent={IconSelectDropdownItem}
                                                   filter={filterSelectIconDropdownContent}
+                                                  className="dropdown-select-icon"
                                                   placeholder="Make a selection"/>
                                 </div>
                             </div>

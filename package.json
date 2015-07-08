@@ -33,6 +33,7 @@
     "react-engine": "^1.6.0",
     "react-router": "^0.13.3",
     "react-widgets": "^2.7.2",
+    "react-widgets-moment-localizer": "^1.0.1",
     "reflux": "^0.2.7",
     "static-favicon": "^2.0.0-alpha",
     "superagent": "^1.2.0"

@@ -79,8 +79,11 @@ function initInBrowser(rootElementId) {
         //require('moment').locale(injectedFromBackend.preferredLocale || 'en');
         var mom = require('moment');
         var loc = require('moment/min/locales');
+        var momentLocalizer = require('react-widgets-moment-localizer');
 
         mom.locale('ru');
+
+        require('react-widgets/lib/configure').setDateLocalizer(momentLocalizer(mom));
 
         console.log(mom.locale());
         console.log(mom.months());

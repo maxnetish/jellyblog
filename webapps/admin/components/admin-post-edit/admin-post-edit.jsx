@@ -15,7 +15,8 @@ var componentFlux = require('./admin-post-edit-flux');
 var AceEditor = require('../ace-editor/ace-editor.jsx');
 var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
 var AvatarList = require('../avatar-list/avatar-list.jsx');
-var DatePicker = require('react-date-picker');
+//var DatePicker = require('react-date-picker');
+var DateTimePicker = require('react-widgets/lib/DateTimePicker');
 
 function renderContentField(postDetails, handleChange) {
     return <div className="form-group">
@@ -65,30 +66,29 @@ function renderSlugField(postDetails, handleChange) {
                    onChange={handleChange}
                    placeholder={postDetails._id}/>
         </div>
-        &nbsp;
     </div>;
 }
 
-function renderDateField(postDetails, handleChange) {
+function renderDateField(postDetails, handleDateChange) {
+    var dateAsDate = new Date(postDetails.date);
+
     return <div className="form-group">
         <label htmlFor="post-date" className="small control-label">
             Date
         </label>
 
-        <div className="">
 
-            <DatePicker locale="ru" defaultDate={postDetails.date}/>
+        <DateTimePicker value={dateAsDate} className="post-date-edit" onChange={handleDateChange} culture="ru"/>
 
-            {/*
-            <input type="date"
-                   className="form-control input-sm"
-                   id="post-date"
-                   name="date"n
-                   value={postDetails.date}
-                   onChange={handleChange}
-                   required/>
-            */}
-        </div>
+        {/*
+         <input type="date"
+         className="form-control input-sm"
+         id="post-date"
+         name="date"n
+         value={postDetails.date}
+         onChange={handleChange}
+         required/>
+         */}
     </div>;
 }
 
@@ -171,17 +171,21 @@ function renderDraftField(postDetails, handleChange) {
     </div>;
 }
 
-function renderPostEdit(postDetails, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible) {
+function renderPostEdit(postDetails, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible, handleDateChange) {
     return <div className="panel panel-default">
         <div className="panel-heading">
             {postDetails.title}
         </div>
         <div className="panel-body">
             <form name="post-edit" id="post-edit">
-                <div className="form-inline">
-                    {renderSlugField(postDetails, handleFieldChange)}
-                    {renderDraftField(postDetails, handleFieldChange)}
-                    {renderDateField(postDetails, handleFieldChange)}
+                <div className="row">
+                    <div className="col-sm-6">
+                        {renderSlugField(postDetails, handleFieldChange)}
+                    </div>
+                    {/*renderDraftField(postDetails, handleFieldChange)*/}
+                    <div className="col-sm-6">
+                        {renderDateField(postDetails, handleDateChange)}
+                    </div>
                 </div>
                 <div className="">
                     {renderTitleField(postDetails, handleFieldChange)}
@@ -215,7 +219,7 @@ var AdminPostEdit = React.createClass({
     render: function () {
         return <section className="admin-post-edit">
             {this.state.post ?
-                renderPostEdit(this.state.post, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible) :
+                renderPostEdit(this.state.post, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible, this.handleDateChange) :
                 <div className="alert alert-warning" role="alert">Choose post to edit or create new one</div>
             }
         </section>;
@@ -255,6 +259,11 @@ var AdminPostEdit = React.createClass({
     handleAvatarSelect: function (event) {
         componentFlux.actions.postFieldChanged({
             image: event.url
+        });
+    },
+    handleDateChange: function(dateAsDate){
+        componentFlux.actions.postFieldChanged({
+            date: dateAsDate.toString()
         });
     },
 
