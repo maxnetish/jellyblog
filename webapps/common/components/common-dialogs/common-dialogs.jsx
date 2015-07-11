@@ -38,10 +38,37 @@ function renderDialogConfirm(id, data, handleClose) {
     </ModalComponent>;
 }
 
+function renderDialogError(id, data, handleClose) {
+    return <ModalComponent visible={true} key={id}>
+        <div className="modal-header text-danger">
+            <button type="button"
+                    className="close"
+                    onClick={handleClose.bind(null, {id: id, result: 'reject'})}
+                    aria-label="Close">
+                <span>&times;</span>
+            </button>
+            <h4 className="modal-title">{data.title || 'Error'}</h4>
+        </div>
+        <div className="modal-body">
+            {(data.response && data.response.error && data.response.error.message) || data.message || 'Something went wrong'}
+        </div>
+        <div className="modal-footer">
+            <button type="button"
+                    className="btn btn-danger"
+                    onClick={handleClose.bind(null, {id: id, result: 'resolve'})}>
+                <i className="glyphicon glyphicon-ok"></i>
+                &nbsp;OK
+            </button>
+        </div>
+    </ModalComponent>;
+}
+
 function renderDialog(id, data, type, handleClose) {
     switch (type) {
         case 'confirm':
             return renderDialogConfirm(id, data, handleClose);
+        case 'error':
+            return renderDialogError(id, data, handleClose);
         default:
             return null;
     }

@@ -10,6 +10,16 @@ function showConfirm(data) {
     return dfr.promise;
 }
 
+function showError(err){
+    var dfr = Q.defer();
+    componentFlux.actions.showError({
+        data: err,
+        deferred: dfr
+    });
+    return dfr.promise;
+}
+
 module.exports = {
-    confirm: showConfirm
+    confirm: showConfirm,
+    error: showError
 };

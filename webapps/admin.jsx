@@ -81,12 +81,12 @@ function initInBrowser(rootElementId) {
         var loc = require('moment/min/locales');
         var momentLocalizer = require('react-widgets-moment-localizer');
 
-        mom.locale('ru');
+        mom.locale(injectedFromBackend.preferredLocale || 'en');
 
         require('react-widgets/lib/configure').setDateLocalizer(momentLocalizer(mom));
 
         console.log(mom.locale());
-        console.log(mom.months());
+        //console.log(mom.months());
 
         React.render(<Root data={dataToPassAsProp}/>, document.getElementById(rootElementId), function () {
             routeActions.stateChanged(state);

@@ -117,6 +117,14 @@ router.get('/', function (req, res) {
 //    }).then(null, next);
 //});
 
+router.get('/tags/list', function (req, res, next) {
+    dataProvider.promiseAllTags()
+        .then(function (result) {
+            res.send(result);
+        })
+        .then(null, next);
+});
+
 router.get('/post', function (req, res, next) {
     var id = req.query.id,
         slug = req.query.slug,
@@ -141,6 +149,22 @@ router.get('/post', function (req, res, next) {
                 next(createError401());
                 return result;
             }
+            res.send(result);
+            return result;
+        })
+        .then(null, next);
+});
+
+router.put('/post', function (req, res, next) {
+    var formData = req.body;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    dataProvider.promisePostUpdate(formData)
+        .then(function (result) {
             res.send(result);
             return result;
         })

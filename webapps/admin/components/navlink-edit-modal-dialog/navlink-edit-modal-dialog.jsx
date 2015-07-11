@@ -63,14 +63,6 @@ var NavlinkModalEditor = React.createClass({
         };
     },
     render: function () {
-        //var navlinkIconTemplate = function (model) {
-        //    return (
-        //        <div className="navlink-icon-select-item">
-        //            <i className={model.className}></i>
-        //            <span>{model.id}</span>
-        //        </div>);
-        //};
-
         return <ModalComponent visible={this.state.visible}>
             {this.state.visible ? <div className="navlink-edit-modal-dialog">
                 <div className="modal-header">
@@ -215,7 +207,6 @@ var NavlinkModalEditor = React.createClass({
         });
     },
     handleSelectIconChange: function (iconSelection) {
-        console.log('handleSelectIconChange, id: ' + iconSelection.className);
         this.setState({
             data: _.assign(this.state.data, {
                 icon: iconSelection.className
@@ -223,13 +214,9 @@ var NavlinkModalEditor = React.createClass({
         });
     },
     handleSelectIconToggle: function (isOpen) {
-        console.log('handle onToggle, isOpen: ' + isOpen + ', current dropdownSelectIconOpen: ' + this.state.dropdownSelectIconOpen);
-        //if (this.state.dropdownSelectIconOpen !== isOpen) {
-        console.log('really setState after toggle');
         this.setState({
             dropdownSelectIconOpen: isOpen
         });
-        //}
     },
 
     onModalCloseClick: function () {

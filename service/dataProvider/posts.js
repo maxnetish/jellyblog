@@ -67,9 +67,9 @@ function promisePostUpdate(post) {
         fields;
 
     update = _.omit(post, ['_id']);
-    fields = _.keys(update).join(' ');
+    //fields = _.keys(update).join(' ');
 
-    query = model.Post.findByIdAndUpdate(id, update, {select: fields});
+    query = model.Post.findByIdAndUpdate(id, update, {new: true});
     return query.exec();
 }
 

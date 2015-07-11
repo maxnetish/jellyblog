@@ -17,5 +17,6 @@ module.exports = {
     promiseLogEntries: require('./log').promiseLogEntries,
     promiseFileStoreMetaCreateFromMultFileInfo: require('./file-store-meta').promiseFileStoreMetaCreateFromMultFileInfo,
     promiseFileMetaList: require('./file-store-meta').promiseFileMetaList,
-    promiseFileMetaRemove: require('./file-store-meta').promiseFileMetaRemove
+    promiseFileMetaRemove: require('./file-store-meta').promiseFileMetaRemove,
+    promiseAllTags: require('./tags').promiseAllTags
 };

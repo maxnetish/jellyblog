@@ -20,6 +20,41 @@ function getPostDetails(postId) {
     return dfr.promise;
 }
 
+function getAllTags() {
+    var dfr = Q.defer();
+
+    request
+        .get('/api/tags/list')
+        .end(function (err, response) {
+            if (err) {
+                dfr.reject(err);
+                return;
+            }
+            dfr.resolve(response.body);
+        });
+
+    return dfr.promise;
+}
+
+function updatePost(post){
+    var dfr = Q.defer();
+
+    request
+        .put('/api/post')
+        .send(post)
+        .end(function (err, response) {
+            if (err) {
+                dfr.reject(err);
+                return;
+            }
+            dfr.resolve(response.body);
+        });
+
+    return dfr.promise;
+}
+
 module.exports = {
-    getPostDetails: getPostDetails
+    getPostDetails: getPostDetails,
+    getAllTags: getAllTags,
+    updatePost: updatePost
 };

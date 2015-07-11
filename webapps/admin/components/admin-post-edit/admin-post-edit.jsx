@@ -17,6 +17,7 @@ var AvatarCreator = require('../avatar-creator/avatar-creator.jsx');
 var AvatarList = require('../avatar-list/avatar-list.jsx');
 //var DatePicker = require('react-date-picker');
 var DateTimePicker = require('react-widgets/lib/DateTimePicker');
+var Multiselect = require('react-widgets/lib/Multiselect');
 
 function renderContentField(postDetails, handleChange) {
     return <div className="form-group">
@@ -26,6 +27,27 @@ function renderContentField(postDetails, handleChange) {
 
         <div className="">
             <AceEditor ref="aceEditor" value={postDetails.content} onChange={handleChange}/>
+        </div>
+    </div>;
+}
+
+function renderTagsField(postDetails, handleTagsChange, allTags) {
+    function handleCreateNewTag(newTag) {
+        var newTags = _.clone(postDetails.tags);
+        newTags.push(newTag);
+        handleTagsChange(newTags);
+    }
+
+    return <div className="form-group">
+        <label htmlFor="post-tags" className="small control-label">
+            Tags
+        </label>
+
+        <div className="">
+            <Multiselect className="multiselect-post-tags" value={postDetails.tags}
+                         onChange={handleTagsChange}
+                         onCreate={handleCreateNewTag}
+                         data={allTags}/>
         </div>
     </div>;
 }
@@ -76,19 +98,7 @@ function renderDateField(postDetails, handleDateChange) {
         <label htmlFor="post-date" className="small control-label">
             Date
         </label>
-
-
         <DateTimePicker value={dateAsDate} className="post-date-edit" onChange={handleDateChange} culture="ru"/>
-
-        {/*
-         <input type="date"
-         className="form-control input-sm"
-         id="post-date"
-         name="date"n
-         value={postDetails.date}
-         onChange={handleChange}
-         required/>
-         */}
     </div>;
 }
 
@@ -160,24 +170,52 @@ function renderPostAvatarField(postDetails, handleCreateAvatarToggle, handleAvat
 }
 
 function renderDraftField(postDetails, handleChange) {
-    return <div className="checkbox">
+    return <div className="checkbox btn">
         <label className="small">
             <input type="checkbox"
                    name="draft"
                    checked={postDetails.draft}
                    onChange={handleChange}/>
-            &nbsp;Draft
+            &nbsp;<strong>Draft</strong>
         </label>
     </div>;
 }
 
-function renderPostEdit(postDetails, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible, handleDateChange) {
+function renderPostEdit(postDetails, pristine, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible, handleDateChange, handleTagsChange, handleFormSubmit, allTags) {
+    var saveButtonClass = ClassSet({
+        'btn btn-block': true,
+        'btn-primary': postDetails.draft,
+        'btn-success': !postDetails.draft
+    });
+    var saveButtonIconClass = ClassSet({
+        'glyphicon': true,
+        'glyphicon-share': !postDetails.draft,
+        'glyphicon-save': postDetails.draft
+    });
+    var saveButtonText = postDetails.draft ? 'Save as draft' : 'Save & publish';
+
     return <div className="panel panel-default">
         <div className="panel-heading">
-            {postDetails.title}
+            <div className="row">
+                <div className="col-sm-7">
+                    <h3 className="panel-title">{postDetails.title}</h3>
+                </div>
+                <div className="col-sm-2">
+                    {renderDraftField(postDetails, handleFieldChange)}
+                </div>
+                <div className="col-sm-3">
+                    <button type="submit"
+                            form="post-edit"
+                            disabled={pristine}
+                            className={saveButtonClass}>
+                        <i className={saveButtonIconClass}></i>
+                        &nbsp;{saveButtonText}
+                    </button>
+                </div>
+            </div>
         </div>
         <div className="panel-body">
-            <form name="post-edit" id="post-edit">
+            <form name="post-edit" id="post-edit" onSubmit={handleFormSubmit}>
                 <div className="row">
                     <div className="col-sm-6">
                         {renderSlugField(postDetails, handleFieldChange)}
@@ -190,6 +228,7 @@ function renderPostEdit(postDetails, handleFieldChange, handleContentChange, han
                 <div className="">
                     {renderTitleField(postDetails, handleFieldChange)}
                     {renderContentField(postDetails, handleContentChange)}
+                    {renderTagsField(postDetails, handleTagsChange, allTags)}
                     {renderPostAvatarField(postDetails, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible)}
                     {renderMetaTitleField(postDetails, handleFieldChange)}
                     {renderMetaDescriptionField(postDetails, handleFieldChange)}
@@ -202,7 +241,8 @@ function renderPostEdit(postDetails, handleFieldChange, handleContentChange, han
              </div>
              */}
         </div>
-    </div>;
+    </div>
+        ;
 }
 
 var AdminPostEdit = React.createClass({
@@ -219,7 +259,7 @@ var AdminPostEdit = React.createClass({
     render: function () {
         return <section className="admin-post-edit">
             {this.state.post ?
-                renderPostEdit(this.state.post, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible, this.handleDateChange) :
+                renderPostEdit(this.state.post, this.state.pristine, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible, this.handleDateChange, this.handleTagsChange, this.handleFormSubmit, this.state.tags) :
                 <div className="alert alert-warning" role="alert">Choose post to edit or create new one</div>
             }
         </section>;
@@ -240,8 +280,15 @@ var AdminPostEdit = React.createClass({
         componentFlux.actions.postFieldChanged(payload);
     },
     handleContentChange: function (event) {
+        var oldContent = (this.state.post && this.state.post.content) || '';
+        var newContent = event.src.getValue() || '';
+
+        if (oldContent === newContent) {
+            return;
+        }
+
         var payload = {
-            content: event.src.getValue()
+            content: newContent
         };
         componentFlux.actions.postFieldChanged(payload);
     },
@@ -261,10 +308,19 @@ var AdminPostEdit = React.createClass({
             image: event.url
         });
     },
-    handleDateChange: function(dateAsDate){
+    handleDateChange: function (dateAsDate) {
         componentFlux.actions.postFieldChanged({
             date: dateAsDate.toString()
         });
+    },
+    handleTagsChange: function (newTags) {
+        componentFlux.actions.postFieldChanged({
+            tags: _.clone(newTags)
+        });
+    },
+    handleFormSubmit: function (event) {
+        event.preventDefault();
+        componentFlux.actions.postUpdate(this.state.post);
     },
 
     onStoreChanged: function (newViewModel) {

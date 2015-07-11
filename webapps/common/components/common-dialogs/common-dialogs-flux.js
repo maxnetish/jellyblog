@@ -6,6 +6,7 @@ var actionSyncOptions = {sync: true};
 var actionAsyncOptions = {sync: false};
 var actions = Reflux.createActions({
     'showConfirm': actionAsyncOptions,
+    'showError': actionAsyncOptions,
     'dismissDialog': actionAsyncOptions
 });
 
@@ -21,6 +22,18 @@ var store = Reflux.createStore({
             data: payload.data,
             deferred: payload.deferred,
             type: 'confirm'
+        });
+        this.trigger(this.getViewModel());
+    },
+    onShowError: function(payload){
+        /**
+         *  {data (error), deferred}
+         */
+        this._dialogs.push({
+            id: _.uniqueId('dialog-'),
+            data: payload.data,
+            deferred: payload.deferred,
+            type: 'error'
         });
         this.trigger(this.getViewModel());
     },
