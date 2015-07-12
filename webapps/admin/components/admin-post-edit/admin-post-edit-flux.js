@@ -20,7 +20,13 @@ var actions = Reflux.createActions({
     'tagsGetFailed': actionAsyncOptions,
     'postUpdate': actionAsyncOptions,
     'postUpdateCompleted': actionAsyncOptions,
-    'postUpdateFailed': actionAsyncOptions
+    'postUpdateFailed': actionAsyncOptions,
+    'postCreate': actionAsyncOptions,
+    'postCreateCompleted': actionAsyncOptions,
+    'postCreateFailed': actionAsyncOptions,
+    'postRemove': actionAsyncOptions,
+    'postRemoveCompleted': actionAsyncOptions,
+    'postRemoveFailed': actionAsyncOptions
 });
 
 var store = Reflux.createStore({
@@ -65,6 +71,18 @@ var store = Reflux.createStore({
         if (this.post && this.post._id === postId) {
             return;
         }
+        if (postId === 'NEW') {
+            // magic id
+            this.loading = false;
+            this.error = null;
+            this.pristine = true;
+            this.post = createCleanPostModel();
+            // to not handle content field changes (brace editor emit unwanted change events)
+            this._notTrackFieldChanges = true;
+            this.trigger(this.getViewModel());
+            this._notTrackFieldChanges = false;
+            return;
+        }
         getPostDetails(postId);
     },
     onPostFieldChanged: function (payload) {
@@ -104,10 +122,10 @@ var store = Reflux.createStore({
         this._tagsLoaded = true;
         console.log(err);
     },
-    onPostUpdate: function(postData){
+    onPostUpdate: function (postData) {
         updatePost(postData);
     },
-    onPostUpdateCompleted: function(postData){
+    onPostUpdateCompleted: function (postData) {
         this.loading = false;
         this.error = null;
         this.pristine = true;
@@ -117,7 +135,47 @@ var store = Reflux.createStore({
         this.trigger(this.getViewModel());
         this._notTrackFieldChanges = false;
     },
-    onPostUpdateFailed: function(err){
+    onPostUpdateFailed: function (err) {
+        this.loading = false;
+        this.error = err;
+        this.trigger(this.getViewModel());
+        commonDialogs.error(err);
+    },
+    onPostCreate: function (postData) {
+        createPost(postData);
+    },
+    onPostCreateCompleted: function (postData) {
+        this.loading = false;
+        this.error = null;
+        this.pristine = true;
+        if (!(this.post && this.post._id === 'NEW')) {
+            return;
+        }
+        this.post = _.cloneDeep(postData);
+        // to not handle content field changes (brace editor emit unwanted change events)
+        this._notTrackFieldChanges = true;
+        this.trigger(this.getViewModel());
+        this._notTrackFieldChanges = false;
+    },
+    onPostCreateFailed: function (err) {
+        this.loading = false;
+        this.error = err;
+        this.trigger(this.getViewModel());
+        commonDialogs.error(err);
+    },
+    onPostRemove: function(postId){
+      removePost(postId);
+    },
+    onPostRemoveCompleted: function(result){
+        // result is removed post model
+        this.loading = false;
+        this.error = null;
+        this.pristine = true;
+        this.post = null;
+        // to not handle content field changes (brace editor emit unwanted change events)
+        this.trigger(this.getViewModel());
+    },
+    onPostRemoveFailed: function(err){
         this.loading = false;
         this.error = err;
         this.trigger(this.getViewModel());
@@ -143,6 +201,14 @@ var store = Reflux.createStore({
         };
     }
 });
+
+function createCleanPostModel() {
+    return {
+        date: (new Date()).toString(),
+        title: 'New post',
+        _id: 'NEW' // magic id
+    };
+}
 
 function updateInternalTags(newPostTags, allTags) {
     _.each(newPostTags, function (newTag) {
@@ -188,6 +254,32 @@ function updatePost(postData) {
         })
         ['catch'](function (err) {
         actions.postUpdateFailed(err);
+        return err;
+    });
+}
+
+function createPost(postData) {
+    actions.dataGet();
+    resources.createPost(postData)
+        .then(function (result) {
+            actions.postCreateCompleted(result);
+            return result;
+        })
+        ['catch'](function (err) {
+        actions.postCreateFailed(err);
+        return err;
+    });
+}
+
+function removePost(postId){
+    actions.dataGet();
+    resources.removePost(postId)
+        .then(function (result) {
+            actions.postRemoveCompleted(result);
+            return result;
+        })
+        ['catch'](function (err) {
+        actions.postRemoveFailed(err);
         return err;
     });
 }

@@ -21,10 +21,10 @@ function renderPostInfo(postInfo, active, handleActive) {
     return <a className={itemClass} key={postInfo._id} href="javascript:void 0;"
               onClick={handleActive.bind(null, postInfo._id)}>
         <div className="row">
-            <div className="col-lg-6 col-md-12">
+            <div className="col-sm-6">
                 <span>{postInfo.title}</span>
             </div>
-            <div className="col-lg-6 col-md-12">
+            <div className="col-sm-6">
                 <time className="small" dateTime={postInfo.date}>{moment(postInfo.date).format('LLL')}</time>
             </div>
         </div>
@@ -78,7 +78,7 @@ var AdminPostsList = React.createClass({
     render: function () {
         return <section className="admin-posts-list">
             <div className="row">
-                <div className="col-sm-4 col-xs-5">
+                <div className="col-sm-4">
                     {renderPager(this.state.previousSkip, this.state.nextSkip, this.state.loading)}
                     <div className="panel panel-default">
                         <ReactCSSTransitionGroup component="div"
@@ -91,7 +91,13 @@ var AdminPostsList = React.createClass({
                         </ReactCSSTransitionGroup>
                     </div>
                 </div>
-                <div className="col-sm-8 col-xs-7">
+                <div className="col-sm-8">
+                    <div className="post-list-actions">
+                        <button type="button" className="btn btn-warning" onClick={this.handleCreateNewPost}>
+                            <i className="glyphicon glyphicon-plus"></i>
+                            &nbsp;Add new post
+                        </button>
+                    </div>
                     <PostEdit postId={this.state.activePostId}/>
                 </div>
             </div>
@@ -108,6 +114,9 @@ var AdminPostsList = React.createClass({
 
     handleActivePost: function (postId) {
         componentFlux.actions.postSelected(postId);
+    },
+    handleCreateNewPost: function(event){
+       componentFlux.actions.createNewPost();
     },
 
     onStoreChanged: function (newViewModel) {

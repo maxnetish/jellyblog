@@ -155,6 +155,23 @@ router.get('/post', function (req, res, next) {
         .then(null, next);
 });
 
+router.post('/post', function (req, res, next) {
+    var formData = req.body;
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    delete formData._id;
+
+    dataProvider.promisePostCreate(formData)
+        .then(function (result) {
+            return res.send(result);
+        })
+        .then(null, next);
+});
+
 router.put('/post', function (req, res, next) {
     var formData = req.body;
 
@@ -167,6 +184,27 @@ router.put('/post', function (req, res, next) {
         .then(function (result) {
             res.send(result);
             return result;
+        })
+        .then(null, next);
+});
+
+router.delete('/post', function (req, res, next) {
+    var id = req.query.id;
+
+    if (!id) {
+        next(createError400('id'));
+        return;
+    }
+
+    if (!req.userHasAdminRights) {
+        next(createError401());
+        return;
+    }
+
+    dataProvider.promisePostRemove(id)
+        .then(function (result) {
+            // result can be simple value!
+            return res.json(result);
         })
         .then(null, next);
 });

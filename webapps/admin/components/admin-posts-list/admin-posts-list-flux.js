@@ -2,6 +2,8 @@ var Reflux = require('reflux');
 var _ = require('lodash');
 var resources = require('./admin-posts-list-resources');
 
+var postEditFlux = require('../admin-post-edit/admin-post-edit-flux');
+
 var LIMIT = 10;
 
 var actionSyncOptions = {sync: true};
@@ -12,11 +14,18 @@ var actions = Reflux.createActions({
     'dataGetCompleted': actionAsyncOptions,
     'dataGetFailed': actionAsyncOptions,
     'queryChanged': actionAsyncOptions,
-    'postSelected': actionAsyncOptions
+    'postSelected': actionAsyncOptions,
+    'createNewPost': actionAsyncOptions
 });
 
 var store = Reflux.createStore({
     listenables: actions,
+
+    init: function () {
+        this.listenTo(postEditFlux.actions.postCreateCompleted, this.onPostCreateCompleted);
+        this.listenTo(postEditFlux.actions.postRemoveCompleted, this.onPostRemoveCompleted);
+        this.listenTo(postEditFlux.actions.postUpdateCompleted, this.onPostUpdateCompleted);
+    },
 
     onComponentMounted: function (routeQuery) {
         if ((this.loadOnce) && _.eq(routeQuery, this.currentRouteQuery)) {
@@ -82,6 +91,40 @@ var store = Reflux.createStore({
     },
     onPostSelected: function (postId) {
         this.activePostId = postId;
+        this.trigger(this.getViewModel());
+    },
+    onCreateNewPost: function () {
+        this.activePostId = 'NEW';
+        this.trigger(this.getViewModel());
+    },
+    onPostCreateCompleted: function (postData) {
+        var query = _.assign(_.cloneDeep(this.currentRouteQuery), {
+            limit: LIMIT,
+            includeDraft: true
+        });
+        this.posts.length = 0;
+        this.activePostId = postData._id;
+        updatePostsList(query);
+    },
+    onPostRemoveCompleted: function (postData) {
+        _.remove(this.posts, function (p) {
+            return p._id === postData._id
+        });
+        if (this.activePostId === postData._id) {
+            this.activePostId = null;
+        }
+        this.trigger(this.getViewModel());
+    },
+    onPostUpdateCompleted: function (postData) {
+        var updatedPostInfo = _.find(this.posts, function (p) {
+            return p._id === postData._id;
+        });
+        if (!updatedPostInfo) {
+            return;
+        }
+        updatedPostInfo.title = postData.title;
+        updatedPostInfo.date = postData.date;
+        updatedPostInfo.draft = postData.draft;
         this.trigger(this.getViewModel());
     },
 

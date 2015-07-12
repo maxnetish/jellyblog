@@ -5,6 +5,7 @@ var ClassSet = require('classnames');
 var _ = require('lodash');
 var moment = require('moment');
 
+var commonDialogs = require('../../../common/components/common-dialogs/common-dialogs-service');
 var componentFlux = require('./admin-post-edit-flux');
 
 //var brace  = require('react-ace/node_modules/brace');
@@ -98,7 +99,10 @@ function renderDateField(postDetails, handleDateChange) {
         <label htmlFor="post-date" className="small control-label">
             Date
         </label>
-        <DateTimePicker value={dateAsDate} className="post-date-edit" onChange={handleDateChange} culture="ru"/>
+        <DateTimePicker value={dateAsDate}
+                        className="post-date-edit"
+                        onChange={handleDateChange}
+                        culture={moment.locale()}/>
     </div>;
 }
 
@@ -181,7 +185,7 @@ function renderDraftField(postDetails, handleChange) {
     </div>;
 }
 
-function renderPostEdit(postDetails, pristine, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible, handleDateChange, handleTagsChange, handleFormSubmit, allTags) {
+function renderPostEdit(postDetails, pristine, handleFieldChange, handleContentChange, handleCreateAvatarToggle, handleAvatarApply, handleAvatarSelect, createAvatarVisible, handleDateChange, handleTagsChange, handleFormSubmit, handlePostRemove, allTags) {
     var saveButtonClass = ClassSet({
         'btn btn-block': true,
         'btn-primary': postDetails.draft,
@@ -192,7 +196,7 @@ function renderPostEdit(postDetails, pristine, handleFieldChange, handleContentC
         'glyphicon-share': !postDetails.draft,
         'glyphicon-save': postDetails.draft
     });
-    var saveButtonText = postDetails.draft ? 'Save as draft' : 'Save & publish';
+    var saveButtonText = postDetails.draft ? 'Save as draft' : 'Save & pub';
 
     return <div className="panel panel-default">
         <div className="panel-heading">
@@ -211,6 +215,11 @@ function renderPostEdit(postDetails, pristine, handleFieldChange, handleContentC
                         <i className={saveButtonIconClass}></i>
                         &nbsp;{saveButtonText}
                     </button>
+                    <div className="alert alert-danger post-delete-link-ct">
+                        <a href="javascript:void 0" className="alert-link" onClick={handlePostRemove}>
+                            <small>Delete</small>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -259,7 +268,7 @@ var AdminPostEdit = React.createClass({
     render: function () {
         return <section className="admin-post-edit">
             {this.state.post ?
-                renderPostEdit(this.state.post, this.state.pristine, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible, this.handleDateChange, this.handleTagsChange, this.handleFormSubmit, this.state.tags) :
+                renderPostEdit(this.state.post, this.state.pristine, this.handleFieldChange, this.handleContentChange, this.handleCreateAvatarToggle, this.handleAvatarApply, this.handleAvatarSelect, this.state.createAvatarVisible, this.handleDateChange, this.handleTagsChange, this.handleFormSubmit, this.handlePostRemove, this.state.tags) :
                 <div className="alert alert-warning" role="alert">Choose post to edit or create new one</div>
             }
         </section>;
@@ -320,7 +329,26 @@ var AdminPostEdit = React.createClass({
     },
     handleFormSubmit: function (event) {
         event.preventDefault();
-        componentFlux.actions.postUpdate(this.state.post);
+        if (this.state.post && this.state.post._id === 'NEW') {
+            componentFlux.actions.postCreate(this.state.post);
+        } else {
+            componentFlux.actions.postUpdate(this.state.post);
+        }
+    },
+    handlePostRemove: function (event) {
+        var self = this;
+
+        if (this.state.post && this.state.post._id === 'NEW') {
+            return;
+        }
+
+        commonDialogs.confirm({
+            message: 'Remove post "' + this.state.post.title + '" forever?',
+            title: 'Delete post'
+        })
+            .then(function () {
+                componentFlux.actions.postRemove(self.state.post._id);
+            });
     },
 
     onStoreChanged: function (newViewModel) {
