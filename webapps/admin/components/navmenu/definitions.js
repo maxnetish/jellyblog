@@ -9,11 +9,11 @@ var definitions = [
         routeName: 'admin-navlinks',
         icon: 'glyphicon glyphicon-tasks'
     },
-    {
-        title: 'Other settings',
-        routeName: 'admin-other',
-        icon: 'glyphicon glyphicon-wrench'
-    },
+    //{
+    //    title: 'Other settings',
+    //    routeName: 'admin-other',
+    //    icon: 'glyphicon glyphicon-wrench'
+    //},
     {
         title: 'Posts',
         routeName: 'admin-posts-index',

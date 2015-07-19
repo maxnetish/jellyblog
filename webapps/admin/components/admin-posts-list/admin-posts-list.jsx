@@ -101,7 +101,6 @@ var AdminPostsList = React.createClass({
                     <PostEdit postId={this.state.activePostId}/>
                 </div>
             </div>
-            <pre>{JSON.stringify(this.props.query, null, '\t')}</pre>
         </section>;
     },
     componentDidMount: function () {

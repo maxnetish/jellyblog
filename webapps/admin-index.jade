@@ -2,7 +2,10 @@ doctype html
 html
     head
         title= title
-        link(rel='stylesheet', href='/css/style.css')
+        if developmentMode
+            link(rel='stylesheet', href='/css/admin.css')
+        else
+            link(rel='stylesheet', href='/css/admin.min.css')
     body
         div#react-wrapper
             h1 Loading app...

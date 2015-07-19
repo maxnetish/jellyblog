@@ -1,7 +1,7 @@
 var appConfig = require('./config');
 var express = require('express');
 var path = require('path');
-var favicon = require('static-favicon');
+var favicon = require('serve-favicon');
 var logger = require('morgan');
 
 // run up jsx transformer
@@ -38,7 +38,7 @@ console.log('Express mode: ' + app.get('env'));
 
 // set up react-engine renderer
 var reactEngineInstance = reactEngine.server.create({
-    //reactRoutes: path.join(__dirname + )
+    reactRoutes: path.join(__dirname + '/webapps/public-routes.js')
 });
 
 // to properly work behind nginx
@@ -47,13 +47,14 @@ app.set("trust proxy", true);
 // view engine setup
 app.engine('.jsx', reactEngineInstance);
 app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
+app.set('view', reactEngine.expressView);
+app.set('view engine', 'jsx');
 
 // adds X-Response-Time header
 //app.use(responseTime(1));
 
 // add favicon
-app.use(favicon());
+app.use(favicon(__dirname + '/favicon.ico'));
 
 // setup logger
 app.use(logger('dev'));
@@ -64,7 +65,7 @@ app.use(logger('dev'));
 //}
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
 // session setup
@@ -73,7 +74,9 @@ app.use(session({
     name: 'sid',
     store: new MongoStore({
         db: 'jellyblogdb'
-    })
+    }),
+    resave: true,
+    saveUninitialized: true
 }));
 // passport inject
 app.use(passport.initialize());

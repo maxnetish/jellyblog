@@ -7,7 +7,21 @@ module.exports = function (grunt) {
         publicJs = buildDir + '/js',
         publicCss = buildDir + '/css',
         publicImg = buildDir + '/img',
-        publicFonts = buildDir + '/fonts';
+        publicFonts = buildDir + '/fonts',
+        webappsDir = 'webapps',
+        commonLess = webappsDir + '/less/app.less',
+        lessSource = {
+            admin: [
+                commonLess,
+                'webapps/common/components/**/*.less',
+                'webapps/admin/components/**/*.less'
+            ],
+            public: [
+                commonLess,
+                'webapps/common/components/**/*.less',
+                'webapps/public/components/**/*.less'
+            ]
+        };
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -17,17 +31,63 @@ module.exports = function (grunt) {
         ],
 
         less: {
-            build: {
+            admin: {
                 files: [
                     {
-                        src: ['webapps/less/app.less', 'webapps/common/components/**/*.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less'],
+                        src: lessSource.admin,
+                        dest: publicCss + '/admin.css'
+                    }
+                ],
+                options: {
+                    plugins: [
+                        new (require('less-plugin-npm-import')),
+                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']})
+                    ]
+                }
+            },
+            'admin-min': {
+                files: [
+                    {
+                        src: lessSource.admin,
+                        dest: publicCss + '/admin.min.css'
+                    }
+                ],
+                options: {
+                    plugins: [
+                        new (require('less-plugin-npm-import')),
+                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']}),
+                        new (require('less-plugin-clean-css'))
+                    ]
+                }
+            },
+            public: {
+                files: [
+                    {
+                        src: lessSource.public,
                         dest: publicCss + '/app.css'
                     }
-                ]
+                ],
+                options: {
+                    plugins: [
+                        new (require('less-plugin-npm-import')),
+                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']})
+                    ]
+                }
             },
-            options: {
-                // sourceMap: true
-                // cleancss: true
+            'public-min': {
+                files: [
+                    {
+                        src: lessSource.public,
+                        dest: publicCss + '/app.min.css'
+                    }
+                ],
+                options: {
+                    plugins: [
+                        new (require('less-plugin-npm-import')),
+                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']}),
+                        new (require('less-plugin-clean-css'))
+                    ]
+                }
             }
         },
 
@@ -60,24 +120,6 @@ module.exports = function (grunt) {
                         dest: publicImg + '/'
                     }
                 ]
-            }
-        },
-
-        concat: {
-            css: {
-                src: [
-                    'node_modules/bootstrap/dist/css/bootstrap.css',
-                    'node_modules/bootstrap/dist/css/bootstrap-theme.css',
-                    'node_modules/react-widgets/dist/css/core.css',
-                    'node_modules/react-widgets/dist/css/react-widgets.css',
-                    'node_modules/react-widgets/dist/css/variables.css',
-                    publicCss + '/app.css'
-                ],
-                dest: publicCss + '/style.css'
-            },
-            options: {
-                sourceMap: true
-                //sourceMapBasepath: publicCss
             }
         },
 
@@ -149,10 +191,11 @@ module.exports = function (grunt) {
 
             /**
              * When the LESS files change, we need to compile them.
+             * but not minify
              */
             less: {
                 files: ['webapps/less/**/*.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less', 'webapps/common/components/**/*.less'],
-                tasks: ['less', 'concat:css']
+                tasks: ['less:admin', 'less:public']
             }
         }
     });
@@ -171,9 +214,9 @@ module.exports = function (grunt) {
     /**
      * Watch uses in dev environment so we didn't uglify in watch task
      */
-    grunt.registerTask('watch', ['clean', 'less', 'copy', 'concat', 'browserify', 'delta']);
+    grunt.registerTask('watch', ['clean', 'less', 'copy', 'browserify', 'delta']);
 
-    grunt.registerTask('default', ['clean', 'less', 'copy', 'concat', 'browserify', 'uglify']);
+    grunt.registerTask('default', ['clean', 'less', 'copy', 'browserify', 'uglify']);
 
 
 };

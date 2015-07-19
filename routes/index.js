@@ -1,16 +1,78 @@
 var express = require('express'),
     router = express.Router();
-    //indexVm = require('../service/vm/indexVm'),
-    //urlHelper = require('../service/urlHelper'),
-    //gAnalytics = require('../config').googleAnalytics || {};
+//indexVm = require('../service/vm/indexVm'),
+//urlHelper = require('../service/urlHelper'),
+//gAnalytics = require('../config').googleAnalytics || {};
 
 //var RootReactComponent = require('../views/root/root.jsx');
+
+var Q = require('q');
+var _ = require('lodash');
+var dataProvider = require('../service/dataProvider');
 
 
 /* GET home page. */
 router.get('*', function (req, res, next) {
+    // use react-engine render
 
-    res.send('OK');
+    var modelBuilder = [];
+
+    var model = {
+        developmentMode: !!req.query.debug || express().get('env') === 'development',
+        admin: !!req.userHasAdminRights,
+        user: req.user,
+        preferredLocale: req.preferredLocale
+    };
+
+    modelBuilder.push(dataProvider.promiseNavlinkList()
+            .then(function (navlinks) {
+                return {
+                    navlinks: navlinks
+                };
+            })
+    );
+
+    modelBuilder.push(dataProvider.promiseSettings()
+            .then(function (settings) {
+                return {
+                    misc: settings.toObject()
+                };
+            })
+    );
+
+    Q.all(modelBuilder)
+        .then(function (result) {
+            var collectedModel = _.reduce(result, function (accumulator, value) {
+                return _.assign(accumulator, value);
+            }, model);
+            res.render(req.url, collectedModel);
+            return result;
+        })
+        .then(null, next);
+
+    //res.render(req.url, {
+    //    title: 'Public app ' + req.url,
+    //    developmentMode: !!req.query.debug || express().get('env') === 'development',
+    //    admin: !!req.userHasAdminRights,
+    //    user: req.user,
+    //    preferredLocale: req.preferredLocale
+    //});
+
+    //res.render('../webapps/public-index.jade', {
+    //    title: 'Public app ' + req.url,
+    //    developmentMode: !!req.query.debug || express().get('env') === 'development',
+    //    admin: !!req.userHasAdminRights,
+    //    user: req.user,
+    //    preferredLocale: req.preferredLocale,
+    //    toInject: JSON.stringify({
+    //        admin: !!req.userHasAdminRights,
+    //        user: req.user,
+    //        developmentMode: !!req.query.debug || express().get('env') === 'development',
+    //        preferredLocale: req.preferredLocale
+    //    })
+    //});
+
+    //res.send('OK');
     //RootReactComponent.doBackendRender(req, res);
 
     //Router.run()
