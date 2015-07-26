@@ -7,7 +7,7 @@ var PublicHome = React.createClass({
         return (
             <div>
                 <h2>Public Home</h2>
-                <Router.Link to="public-other">
+                <Router.Link to="public-other" params={{postId: 'whatever'}}>
                     Other
                 </Router.Link>
                 <label>Props of Home:</label>

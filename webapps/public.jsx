@@ -34,7 +34,7 @@ var App = React.createClass({
 var routes = (
     <Route handler={App} path="/">
         <Router.DefaultRoute name="public-home" handler={Views.PublicHome}/>
-        <Route name="public-other" path="other" handler={PublicOther}/>
+        <Route name="public-other" path=":postId" handler={PublicOther}/>
         <Router.NotFoundRoute handler={Views.Public404}/>
     </Route>
 );
