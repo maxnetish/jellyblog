@@ -17,7 +17,6 @@ var Layout = React.createClass({
             <body>
             {this.props.children}
             <label>Props of layout:</label>
-            <pre>{JSON.stringify(_.omit(this.props, ['children']), null, '\t')}</pre>
             </body>
             <script src={scriptSrc} async defer></script>
             </html>

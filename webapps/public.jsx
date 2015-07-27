@@ -7,21 +7,6 @@ var Route = Router.Route;
 var Views = require('./public/routes');
 var CommonDialogsComponent = require('./common/components/common-dialogs/common-dialogs.jsx');
 
-var PublicOther = React.createClass({
-    render: function render() {
-        return (
-            <div>
-                <h2>Public Other</h2>
-                <Router.Link to="public-home">
-                    Home
-                </Router.Link>
-                <label>Props of other:</label>
-                <pre>{JSON.stringify(_.omit(this.props, ['children']), null, '\t')}</pre>
-            </div>
-        );
-    }
-});
-
 var App = React.createClass({
     render: function () {
         return <Views.Layout {...this.props}>
@@ -34,7 +19,8 @@ var App = React.createClass({
 var routes = (
     <Route handler={App} path="/">
         <Router.DefaultRoute name="public-home" handler={Views.PublicHome}/>
-        <Route name="public-other" path=":postId" handler={PublicOther}/>
+        <Route name="public-post" path=":postId" handler={Views.PublicPost}/>
+        <Route name="public-tag" path="tag/:tagId" handler={Views.PublicPost}/>
         <Router.NotFoundRoute handler={Views.Public404}/>
     </Route>
 );
