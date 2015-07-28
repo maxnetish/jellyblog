@@ -30,7 +30,7 @@ function prepare() {
         return s.slice(0, s.indexOf(':'));
     });
 
-    resut = _.uniq(result);
+    result = _.uniq(result);
 
     result = _.map(result, function (iconId) {
         return {
