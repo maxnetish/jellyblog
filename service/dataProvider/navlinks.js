@@ -16,7 +16,8 @@ function promiseNavlinkList (categoryOrFilter) {
     }
 
     query = model.Navlink.find(filter, null, {
-        sort: 'order'
+        sort: 'order',
+        lean: true
     });
     return query.exec();
 }
@@ -46,5 +47,5 @@ module.exports ={
     promiseNavlinkCreate: promiseNavlinkCreate,
     promiseNavlinkUpdate: promiseNavlinkUpdate,
     promiseNavlinkRemove: promiseNavlinkRemove,
-    promiseNavlinkList: promiseNavlinkList,
+    promiseNavlinkList: promiseNavlinkList
 };

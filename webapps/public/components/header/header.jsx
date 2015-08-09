@@ -2,6 +2,7 @@ var React = require('react');
 var Router = require('react-router');
 
 var JbImage = require('../jb-image/jb-image.jsx');
+var HeadNav = require('../head-nav/head-nav.jsx');
 
 var HeaderComponent = React.createClass({
     mixins: [Router.State],
@@ -28,6 +29,8 @@ var HeaderComponent = React.createClass({
                     </div>
                 </div>
             </div>
+
+            <HeadNav navItems={this.props.navlinks}/>
         </section>;
     }
 });

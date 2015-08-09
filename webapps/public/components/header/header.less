@@ -2,6 +2,14 @@
     .header-main-image {
         width: 100%;
         max-width: 1140px;
+
+        transition: opacity 0.5s ease;
+        &.jb-img-loading {
+            opacity: 0
+        }
+        &.jb-img-loaded {
+            opacity: 1;
+        }
     }
 
     .home-link {
