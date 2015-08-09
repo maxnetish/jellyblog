@@ -320,7 +320,7 @@ var GeneralSettingsForm = React.createClass({
                                      null*/}
                                     {this.state.createNewTitleImageVisible ?
                                         <div>
-                                            <AvatarCreator width={1000} height={180} border={50} scrollable={true}
+                                            <AvatarCreator width={1140} height={180} border={50} scrollable={true}
                                                            onApply={this.handleApplyNewTitleImage}
                                                            ref="titleImageCreator"/>
                                         </div> :

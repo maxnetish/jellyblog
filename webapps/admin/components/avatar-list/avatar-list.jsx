@@ -77,4 +77,3 @@ var AvatarList = React.createClass({
 });
 
 module.exports = AvatarList;
-

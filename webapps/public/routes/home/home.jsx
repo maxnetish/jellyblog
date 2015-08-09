@@ -1,11 +1,14 @@
 var React = require('react');
 var Router = require('react-router');
-var _ = require('lodash');
+// var _ = require('lodash');
+
 
 var PublicHome = React.createClass({
     render: function render() {
         return (
             <div>
+
+
                 <h2>Public Home</h2>
                 <Router.Link to="public-post" params={{postId: 'whatever'}}>
                     Post

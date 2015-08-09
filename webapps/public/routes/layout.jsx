@@ -1,24 +1,33 @@
 var React = require('react');
-var _ = require('lodash');
+// var _ = require('lodash');
+
+var HeaderComponent = require('../components/header/header.jsx');
+
 
 var Layout = React.createClass({
     render: function render() {
-        var styleSheetHref = this.props.developmentMode ? '/css/app.css' : '/css/app.min.css';
-        var scriptSrc = this.props.developmentMode ? '/js/app.js' : '/js/app.min.js';
+        var styleSheetHref = this.props.developmentMode
+            ? '/css/app.css'
+            : '/css/app.min.css';
+        var scriptSrc = this.props.developmentMode
+            ? '/js/app.js'
+            : '/js/app.min.js';
         return (
             <html>
-            <head>
-                <meta charSet='utf-8'/>
-                <title>
-                    {this.props.misc && this.props.misc.metaTitle}
-                </title>
-                <link rel="stylesheet" href={styleSheetHref}/>
-            </head>
-            <body>
-            {this.props.children}
-            <label>Props of layout:</label>
-            </body>
-            <script src={scriptSrc} async defer></script>
+                <head>
+                    <meta charSet='utf-8'/>
+                    <title>
+                        {this.props.misc && this.props.misc.metaTitle}
+                    </title>
+                    <link href={styleSheetHref} rel="stylesheet"/>
+                </head>
+                <body>
+                    <div className="container">
+                        <HeaderComponent {...this.props}/>
+                        {this.props.children}
+                    </div>
+                </body>
+                <script async defer src={scriptSrc}></script>
             </html>
         );
     }
