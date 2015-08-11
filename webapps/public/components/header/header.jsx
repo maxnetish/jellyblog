@@ -20,7 +20,7 @@ var HeaderComponent = React.createClass({
 
             <div className="row">
                 <div className="col-xs-12">
-                    <div className="page-header">
+                    <div className="page-header jb-page-header">
                         <h1>
                             <Router.Link to="public-home" className="home-link" title="Home page">
                                 {this.props.misc.siteTitle}

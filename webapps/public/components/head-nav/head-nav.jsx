@@ -20,7 +20,7 @@ var HeadNav = React.createClass({
             'navbar-collapse': true,
             'in': !this.state.menuCollapsed
         });
-        return <nav className="navbar navbar-default">
+        return <nav className="navbar navbar-default jb-head-nav">
             <div className="">
                 <div className="">
                     <button type="button" className="navbar-toggle collapsed" onClick={this.onToggleCollapseMenu}>

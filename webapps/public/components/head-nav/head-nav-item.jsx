@@ -21,8 +21,9 @@ var HeadNavItem = React.createClass({
     },
     render: function () {
         var target = this.props.newWindow ? '_blank' : null;
-        var liClass=ClassSet({
-           'disabled-nav-item': this.props.disabled
+        var liClass = ClassSet({
+            'jb-nav-item': true,
+            'disabled-nav-item': this.props.disabled
         });
         var xResult = <li className={liClass}>
             {
