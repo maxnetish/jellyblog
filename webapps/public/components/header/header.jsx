@@ -1,5 +1,6 @@
 var React = require('react');
 var Router = require('react-router');
+var _ = require('lodash');
 
 var JbImage = require('../jb-image/jb-image.jsx');
 var HeadNav = require('../head-nav/head-nav.jsx');
@@ -14,9 +15,12 @@ var HeaderComponent = React.createClass({
             <div className="row">
                 <div className="col-xs-12">
                     {/*<img className="header-main-image" src={this.props.misc.titleImageUrl}/>*/}
-                    <JbImage className="header-main-image" src={this.props.misc.titleImageUrl}/>
+                    <div className="header-main-image-ct">
+                        <JbImage className="header-main-image" src={this.props.misc.titleImageUrl}/>
+                    </div>
                 </div>
             </div>
+
 
             <div className="row">
                 <div className="col-xs-12">

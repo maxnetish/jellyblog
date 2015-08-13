@@ -16,7 +16,8 @@ var defaultClasses = {
 var JbImage = React.createClass({
     getInitialState: function () {
         return {
-            loadingState: loadingStates.LOADING
+            loadingState: loadingStates.LOADING,
+            imageUrl: null
         };
     },
     render: function () {
@@ -31,34 +32,41 @@ var JbImage = React.createClass({
             })(this.props, this.state)
         );
 
-        return <img {...this.props} className={imgClassSet} onLoad={this.handleLoad}
+        return <img {...this.props} src={this.state.imageUrl}
+                                    className={imgClassSet}
+                                    onLoad={this.handleLoad}
                                     onError={this.handleError}/>;
     },
     componentDidMount: function () {
-        var n = React.findDOMNode(this);
-        if (n.complete) {
-            console.log('already complete');
-            this.handleLoad();
-        }
+        // We change state immediately after mount to bind onLoad,onError BEFORE set img src
+        this.setState({
+            imageUrl: this.props.src,
+            loadingState: loadingStates.LOADING
+        });
     },
     componentWillReceiveProps: function (nextProps) {
+        var self = this;
         if (this.props.src !== nextProps.src) {
             this.setState({
                 loadingState: loadingStates.LOADING
             });
+            // Change src after timeout to smoothly fade-out current image
+            setTimeout(function () {
+                self.setState({
+                    imageUrl: nextProps.src
+                })
+            }, 500);
         }
     },
     componentDidUpdate: function (prevProps, prevState) {
 
     },
     handleLoad: function () {
-        console.log('handleLoad: ' + React.findDOMNode(this).complete);
         this.setState({
             loadingState: loadingStates.LOADED
         });
     },
     handleError: function () {
-        console.log('handleError');
         this.setState({
             loadingState: loadingStates.ERROR
         });

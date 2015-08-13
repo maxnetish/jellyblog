@@ -1,18 +1,33 @@
+@nav-back-hover-color: #00b3ee;
+
 .jb-head-nav {
     background-color: transparent;
     border-left: none;
     border-right: none;
 
-    .navbar-collapse {
-        padding-left: 0;
-        padding-right: 0;
+    @media (min-width: 768px){
+        .navbar-collapse {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+
+    .navbar-toggle {
+        margin-left: 15px;
     }
 
     li.jb-nav-item {
 
-        &:hover {
-            background-color: #00b3ee;
+        transition: background-color 0.2s, color 0.2s;
 
+        &:hover {
+            background-color: @nav-back-hover-color;
+            > a {
+                color: white;
+            }
+        }
+        &:active {
+            background-color: darken(@nav-back-hover-color, 10%);
             > a {
                 color: white;
             }
