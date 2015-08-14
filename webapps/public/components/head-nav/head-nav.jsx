@@ -20,6 +20,9 @@ var HeadNav = React.createClass({
             'navbar-collapse': true,
             'in': !this.state.menuCollapsed
         });
+        if (!this.props.navItems || this.props.navItems.length === 0) {
+            return null;
+        }
         return <nav className="navbar navbar-default jb-head-nav">
             <div className="">
                 <div className="">
@@ -32,9 +35,18 @@ var HeadNav = React.createClass({
                 </div>
                 <div className={classOfCollapsablePart}>
                     <ul className="nav navbar-nav">
-                        {_.map(this.props.navItems, function (navItem) {
-                            return <HeadNavItem {...navItem} key={navItem.url} onClick={this.handleCollapseMenu}/>;
-                        }, this)}
+                        {
+                            _.chain(this.props.navItems)
+                                .where({
+                                    category: 'main',
+                                    visible: true
+                                })
+                                .map(function (navItem) {
+                                    return <HeadNavItem {...navItem} key={navItem.url}
+                                                                     onClick={this.handleCollapseMenu}/>;
+                                }, this)
+                                .value()
+                        }
                     </ul>
                 </div>
             </div>

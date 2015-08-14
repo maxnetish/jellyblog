@@ -4,6 +4,7 @@ var _ = require('lodash');
 
 var JbImage = require('../jb-image/jb-image.jsx');
 var HeadNav = require('../head-nav/head-nav.jsx');
+var NavPager = require('../nav-pager/nav-pager.jsx');
 
 var HeaderComponent = React.createClass({
     mixins: [Router.State],
@@ -35,6 +36,8 @@ var HeaderComponent = React.createClass({
             </div>
 
             <HeadNav navItems={this.props.navlinks}/>
+
+            <NavPager />
         </section>;
     }
 });

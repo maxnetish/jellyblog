@@ -1,0 +1,19 @@
+@import "../../../less/theme/vars";
+@import "../../../less/theme/mixins";
+
+.jb-pager {
+    li {
+        & > a{
+            .nav-transition();
+
+            &:hover {
+                background-color: @nav-back-hover-color;
+                color: white;
+            }
+            &:active {
+                background-color: darken(@nav-back-hover-color, 10%);
+                color: white;
+            }
+        }
+    }
+}

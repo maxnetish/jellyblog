@@ -1,11 +1,12 @@
-@nav-back-hover-color: #00b3ee;
+@import "../../../less/theme/vars";
+@import "../../../less/theme/mixins";
 
 .jb-head-nav {
     background-color: transparent;
     border-left: none;
     border-right: none;
 
-    @media (min-width: 768px){
+    @media (min-width: 768px) {
         .navbar-collapse {
             padding-left: 0;
             padding-right: 0;
@@ -18,7 +19,7 @@
 
     li.jb-nav-item {
 
-        transition: background-color 0.2s, color 0.2s;
+        .nav-transition();
 
         &:hover {
             background-color: @nav-back-hover-color;
@@ -31,6 +32,17 @@
             > a {
                 color: white;
             }
+        }
+
+        & > a {
+            &.active {
+                pointer-events: none;
+            }
+        }
+
+        &.disabled-nav-item {
+            background-color: ghostwhite;
+            pointer-events: none;
         }
 
         i {
