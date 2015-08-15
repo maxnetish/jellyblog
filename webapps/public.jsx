@@ -8,6 +8,13 @@ var Views = require('./public/routes');
 var CommonDialogsComponent = require('./common/components/common-dialogs/common-dialogs.jsx');
 
 var App = React.createClass({
+    componentWillMount: function () {
+        (function setInitialRefluxData(props) {
+            // setup reflux stores here
+            var homeReflux = require('./public/routes/home/home-flux');
+            homeReflux.actions.setInitialData(props.posts);
+        })(this.props);
+    },
     render: function () {
         return <Views.Layout {...this.props}>
             <Router.RouteHandler {...this.props}/>
@@ -24,7 +31,6 @@ var routes = (
         <Router.NotFoundRoute handler={Views.Public404}/>
     </Route>
 );
-
 
 // run up in browser:
 if (!(typeof window === 'undefined')) {
