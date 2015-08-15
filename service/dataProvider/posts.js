@@ -150,6 +150,38 @@ function promisePostGetAdjacent(idOrSlug, queryParams) {
     return dfr.promise;
 }
 
+function promisePaginationPosts(queryParams, locale, limit){
+    var dateFormat, condition, options, sort, fields, query;
+
+    locale = locale || 'en';
+    limit = parseInt(limit, 10) || 10;
+    dateFormat = 'LLL';
+    queryParams = queryParams || {};
+    condition = {
+        draft: false
+    };
+    sort = '-date';
+    options = {
+        sort: sort,
+        skip: parseInt(queryParams.skip, 10) || undefined,
+        limit: limit,
+        lean: true
+    };
+    fields = 'title slug content image date tags';
+
+    query = model.Post.find(condition, fields, options);
+
+    return query.exec()
+        .then(function(result){
+            var formatted = _.map(result, function(postInfo){
+                return _.assign(postInfo, {
+                    dateFormatted: moment(postInfo.date).locale(locale).format(dateFormat)
+                });
+            });
+            return formatted;
+        });
+}
+
 function promisePaginationAdminPostsList(queryParams, locale, dateFormat) {
     var query,
         condition,
@@ -186,6 +218,7 @@ function promisePaginationAdminPostsList(queryParams, locale, dateFormat) {
 }
 
 module.exports = {
+    promisePaginationPosts: promisePaginationPosts,
     promisePaginationAdminPostsList: promisePaginationAdminPostsList,
     promisePostGetBySlug: promisePostGetBySlug,
     promisePostGetById: promisePostGetById,

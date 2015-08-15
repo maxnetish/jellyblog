@@ -35,8 +35,16 @@ router.get('*', function (req, res, next) {
     modelBuilder.push(dataProvider.promiseSettings()
             .then(function (settings) {
                 return {
-                    misc: settings.toObject()
+                    misc: settings
                 };
+            })
+            .then(function (prevResult) {
+                return dataProvider.promisePaginationPosts(req.query, req.preferredLocale, prevResult.misc.postsPerPage)
+                    .then(function (posts) {
+                        return _.assign(prevResult, {
+                            posts: posts
+                        });
+                    });
             })
     );
 

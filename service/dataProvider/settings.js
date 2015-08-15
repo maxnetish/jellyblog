@@ -8,7 +8,8 @@ function promiseSettings () {
         dfr = Q.defer();
 
     query = model.Settings.find(null, null, {
-        limit: 1
+        limit: 1,
+        lean: true
     });
 
     query.exec()
@@ -19,7 +20,7 @@ function promiseSettings () {
                 // have to create one
                 model.Settings.create({})
                     .then(function (newSettings) {
-                        dfr.resolve(newSettings);
+                        dfr.resolve(newSettings.toObject());
                     })
                     .then(null, function (err) {
                         dfr.reject(err);
