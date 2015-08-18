@@ -12,7 +12,9 @@ var App = React.createClass({
         (function setInitialRefluxData(props) {
             // setup reflux stores here
             var homeReflux = require('./public/routes/home/home-flux');
+            var navPagerFlux = require('./public/components/nav-pager/nav-pager-flux');
             homeReflux.actions.setInitialData(props.posts);
+            homeReflux.actions.setInitialData(props.navPager);
         })(this.props);
     },
     render: function () {

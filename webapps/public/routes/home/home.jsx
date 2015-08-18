@@ -9,11 +9,6 @@ var routeFlux = require('./home-flux');
 var PublicHome = React.createClass({
     mixins: [Reflux.ListenerMixin],
     getInitialState: function(){
-        // little side effect here, none pure function
-        //console.log('call routeFlux.actions.setInitialData');
-        //routeFlux.actions.setInitialData({
-        //    posts: this.props.posts
-        //});
         var viewmodel = routeFlux.store.getViewModel();
         return {
             posts: viewmodel.posts
