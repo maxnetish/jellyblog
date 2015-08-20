@@ -150,30 +150,34 @@ function promisePostGetAdjacent(idOrSlug, queryParams) {
     return dfr.promise;
 }
 
-function promisePaginationPosts(queryParams, locale, limit){
-    var dateFormat, condition, options, sort, fields, query;
+function promisePaginationPosts(queryParams, locale, limit) {
+    var query,
+        condition,
+        skip,
+        fields = 'title slug content image date tags',
+        options,
+        sort,
+        dateFormat;
 
     locale = locale || 'en';
-    limit = parseInt(limit, 10) || 10;
     dateFormat = 'LLL';
     queryParams = queryParams || {};
-    condition = {
-        draft: false
-    };
-    sort = '-date';
+    queryParams.includeDraft = false;
+    condition = createCondition(queryParams);
+    limit = parseInt(limit, 10) || 10;
+    skip = parseInt(queryParams.skip, 10) || undefined;
+    sort = queryParams.sort || '-date';
     options = {
         sort: sort,
-        skip: parseInt(queryParams.skip, 10) || undefined,
+        skip: skip,
         limit: limit,
         lean: true
     };
-    fields = 'title slug content image date tags';
 
     query = model.Post.find(condition, fields, options);
-
     return query.exec()
-        .then(function(result){
-            var formatted = _.map(result, function(postInfo){
+        .then(function (result) {
+            var formatted = _.map(result, function (postInfo) {
                 return _.assign(postInfo, {
                     dateFormatted: moment(postInfo.date).locale(locale).format(dateFormat)
                 });
@@ -182,17 +186,18 @@ function promisePaginationPosts(queryParams, locale, limit){
         });
 }
 
-function promisePaginationAdminPostsList(queryParams, locale, dateFormat) {
+function promisePaginationAdminPostsList(queryParams, locale) {
     var query,
         condition,
         limit,
         skip,
         fields = 'title slug featured draft date',
         options,
-        sort;
+        sort,
+        dateFormat;
 
     locale = locale || 'en';
-    dateFormat = dateFormat || 'LLL';
+    dateFormat = 'LLL';
     queryParams = queryParams || {};
     condition = createCondition(queryParams);
     limit = parseInt(queryParams.limit, 10) || undefined;
@@ -207,8 +212,8 @@ function promisePaginationAdminPostsList(queryParams, locale, dateFormat) {
 
     query = model.Post.find(condition, fields, options);
     return query.exec()
-        .then(function(result){
-            var formatted = _.map(result, function(postInfo){
+        .then(function (result) {
+            var formatted = _.map(result, function (postInfo) {
                 return _.assign(postInfo, {
                     dateFormatted: moment(postInfo.date).locale(locale).format(dateFormat)
                 });

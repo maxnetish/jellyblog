@@ -8,7 +8,7 @@ var routeFlux = require('./home-flux');
 
 var PublicHome = React.createClass({
     mixins: [Reflux.ListenerMixin],
-    getInitialState: function(){
+    getInitialState: function () {
         var viewmodel = routeFlux.store.getViewModel();
         return {
             posts: viewmodel.posts
@@ -33,9 +33,25 @@ var PublicHome = React.createClass({
             </div>
         );
     },
+    componentWillMount: function () {
+        console.log('PublicHome component will mount handler');
+        // var request = require('superagent');
+        //
+        // request
+        //     .get('/api/posts')
+        //     .end(function (err, response) {
+        //         console.log('retrieve posts: '+response.body.length);
+        //     });
+
+    },
     componentDidMount: function () {
         routeFlux.actions.componentMounted();
         this.listenTo(routeFlux.store, this.onStoreChanged);
+    },
+    componentWillReceiveProps: function (nextProps) {
+        if (nextProps.query !== this.props.query) {
+            routeFlux.actions.queryChanged(nextProps.query);
+        }
     },
     onStoreChanged: function (viewmodel) {
         this.setState({

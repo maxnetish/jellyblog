@@ -7,31 +7,34 @@ var actionAsyncOptions = {sync: false};
 var actions = Reflux.createActions({
     'setInitialData': actionSyncOptions,
     'componentMounted': actionAsyncOptions,
-    'paginationContentChanged': actionSyncOptions
+    'paginationUrlsChanged': actionSyncOptions
 });
 
 var store = Reflux.createStore({
     listenables: actions,
 
-    onSetInitialData: function(data){
+    onSetInitialData: function (data) {
         data = data || {};
-        this.previousUrl = data.previousUrl || null;
-        this.nextUrl = data.nextUrl || null;
+        this.previous = data.previous || null;
+        this.next = data.next || null;
     },
     onComponentMounted: function () {
 
     },
-    onPaginationContentChanged: function () {
-
+    onPaginationStateChanged: function (data) {
+        data = data || {};
+        this.previous = data.previous || null;
+        this.next = data.next || null;
+        this.trigger(this.getViewModel());
     },
-    previousUrl: null,
-    nextUrl: null,
+    previous: null,
+    next: null,
     loading: false,
     error: null,
     getViewModel: function () {
         return {
-            previousUrl: this.previousUrl,
-            nextUrl: this.nextUrl,
+            previous: this.previous,
+            next: this.next,
             loading: this.loading,
             error: this.error
         };

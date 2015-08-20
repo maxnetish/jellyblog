@@ -9,12 +9,13 @@ var CommonDialogsComponent = require('./common/components/common-dialogs/common-
 
 var App = React.createClass({
     componentWillMount: function () {
+        console.log('App component will mount handler');
         (function setInitialRefluxData(props) {
             // setup reflux stores here
             var homeReflux = require('./public/routes/home/home-flux');
             var navPagerFlux = require('./public/components/nav-pager/nav-pager-flux');
             homeReflux.actions.setInitialData(props.posts);
-            homeReflux.actions.setInitialData(props.navPager);
+            navPagerFlux.actions.setInitialData(props.navPager);
         })(this.props);
     },
     render: function () {

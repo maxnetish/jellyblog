@@ -1,16 +1,12 @@
-var request = require('superagent');
 var Q = require('q');
-var _ = require('lodash');
+var request = require('superagent');
 
-function getPosts(query) {
+function getPosts(query){
     var dfr = Q.defer();
-    var admQuery = _.assign(_.clone(query), {
-        adm: true
-    });
 
     request
         .get('/api/posts')
-        .query(admQuery)
+        .query(query)
         .end(function (err, response) {
             if (err) {
                 dfr.reject(err);

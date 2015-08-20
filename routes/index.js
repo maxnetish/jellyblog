@@ -15,48 +15,68 @@ var dataProvider = require('../service/dataProvider');
 router.get('*', function (req, res, next) {
     // use react-engine render
 
-    var modelBuilder = [];
+    var builder = require('../service/modelBuilder/public-home-ss-builder');
 
-    var model = {
-        developmentMode: !!req.query.debug || express().get('env') === 'development',
-        admin: !!req.userHasAdminRights,
-        user: req.user,
-        preferredLocale: req.preferredLocale
-    };
-
-    modelBuilder.push(dataProvider.promiseNavlinkList()
-            .then(function (navlinks) {
-                return {
-                    navlinks: navlinks
-                };
-            })
-    );
-
-    modelBuilder.push(dataProvider.promiseSettings()
-            .then(function (settings) {
-                return {
-                    misc: settings
-                };
-            })
-            .then(function (prevResult) {
-                return dataProvider.promisePaginationPosts(req.query, req.preferredLocale, prevResult.misc.postsPerPage)
-                    .then(function (posts) {
-                        return _.assign(prevResult, {
-                            posts: posts
-                        });
-                    });
-            })
-    );
-
-    Q.all(modelBuilder)
-        .then(function (result) {
-            var collectedModel = _.reduce(result, function (accumulator, value) {
-                return _.assign(accumulator, value);
-            }, model);
-            res.render(req.url, collectedModel);
-            return result;
+    builder.build(req)
+        .then(function (model) {
+            res.render(req.url, model);
+            return model;
         })
         .then(null, next);
+
+    //var modelBuilder = [];
+    //
+    //var model = {
+    //    developmentMode: !!req.query.debug || express().get('env') === 'development',
+    //    admin: !!req.userHasAdminRights,
+    //    user: req.user,
+    //    preferredLocale: req.preferredLocale
+    //};
+    //
+    //modelBuilder.push(dataProvider.promiseNavlinkList()
+    //        .then(function (navlinks) {
+    //            return {
+    //                navlinks: navlinks
+    //            };
+    //        })
+    //);
+    //
+    //modelBuilder.push(dataProvider.promiseSettings()
+    //        .then(function (settings) {
+    //            return {
+    //                misc: settings
+    //            };
+    //        })
+    //.then(function (prevResult) {
+    //    return dataProvider.promisePaginationPosts(req.query, req.preferredLocale, prevResult.misc.postsPerPage)
+    //        .then(function (posts) {
+    //            // generate pagination urls
+    //            var ursl = {
+    //                previousUrl: null,
+    //                nextUrl: null
+    //            };
+    //            if(posts.length < prevResult.misc.postsPerPage){
+    //                if(req.query.skip>0){
+    //
+    //                }
+    //            }
+    //
+    //            return _.assign(prevResult, {
+    //                posts: posts
+    //            });
+    //        });
+    //})
+    //);
+
+    //Q.all(modelBuilder)
+    //    .then(function (result) {
+    //        var collectedModel = _.reduce(result, function (accumulator, value) {
+    //            return _.assign(accumulator, value);
+    //        }, model);
+    //        res.render(req.url, collectedModel);
+    //        return result;
+    //    })
+    //    .then(null, next);
 
     //res.render(req.url, {
     //    title: 'Public app ' + req.url,

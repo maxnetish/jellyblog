@@ -1,6 +1,7 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+    Q = require('q');
 
-function sanitizeDate (row) {
+function sanitizeDate(row) {
     var result;
 
     if (row) {
@@ -16,7 +17,7 @@ function sanitizeDate (row) {
     return result;
 }
 
-function sanitizeBoolean (row) {
+function sanitizeBoolean(row) {
     var result = false;
 
     if (_.isNull(row) || _.isUndefined(row)) {
@@ -33,7 +34,6 @@ function sanitizeBoolean (row) {
     }
     return result;
 }
-
 
 module.exports = {
     sanitizeDate: sanitizeDate,

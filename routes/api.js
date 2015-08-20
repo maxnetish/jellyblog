@@ -210,12 +210,19 @@ router.delete('/post', function (req, res, next) {
 });
 
 router.get('/posts', function (req, res, next) {
+    var dataGetter;
     if (req.query.includeDraft && !req.userHasAdminRights) {
         next(createError401()); // unauthorized
         return;
     }
 
-    dataProvider.promisePaginationAdminPostsList(req.query, req.preferredLocale)
+    if(req.query.adm){
+        dataGetter = dataProvider.promisePaginationAdminPostsList;
+    }else{
+        dataGetter = dataProvider.promisePaginationPosts;
+    }
+
+    dataGetter(req.query, req.preferredLocale)
         .then(function (result) {
             res.send(result);
         })
