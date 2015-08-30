@@ -85,7 +85,7 @@ function initInBrowser(rootElementId) {
 
         require('react-widgets/lib/configure').setDateLocalizer(momentLocalizer(mom));
 
-        console.log(mom.locale());
+        //console.log(mom.locale());
         //console.log(mom.months());
 
         React.render(<Root data={dataToPassAsProp}/>, document.getElementById(rootElementId), function () {

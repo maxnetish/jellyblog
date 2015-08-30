@@ -34,6 +34,10 @@ var NavPager = React.createClass({
         var previousQuery = _.assign(_.clone(activeStateQuery), this.state.previous);
         var nextQuery = _.assign(_.clone(activeStateQuery), this.state.next);
 
+        if(nextQuery.skip === 0){
+            delete nextQuery.skip;
+        }
+
         if (!this.state.previous && !this.state.next) {
             return null;
         }

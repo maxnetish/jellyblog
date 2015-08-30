@@ -1,22 +1,26 @@
 var React = require('react');
+var Q = require('q');
 //var _ = require('lodash');
 
 var Router = require('react-router');
-var Route = Router.Route;
+//var Route = Router.Route;
 
 var Views = require('./public/routes');
 var CommonDialogsComponent = require('./common/components/common-dialogs/common-dialogs.jsx');
 
+var refluxRouteUtils = require('./common/reflux-route-utils');
+
+// we use q promises
+require('reflux').setPromiseFactory(require('q').Promise);
+
+var fluxes = [
+    require('./public/routes/home/home-flux')
+];
+
 var App = React.createClass({
     componentWillMount: function () {
-        console.log('App component will mount handler');
-        (function setInitialRefluxData(props) {
-            // setup reflux stores here
-            var homeReflux = require('./public/routes/home/home-flux');
-            var navPagerFlux = require('./public/components/nav-pager/nav-pager-flux');
-            homeReflux.actions.setInitialData(props.posts);
-            navPagerFlux.actions.setInitialData(props.navPager);
-        })(this.props);
+        // populate stores with data from props.preloadedData
+        refluxRouteUtils.doStoresSetPreloadedData(fluxes, this.props.preloadedData);
     },
     render: function () {
         return <Views.Layout {...this.props}>
@@ -27,38 +31,45 @@ var App = React.createClass({
 });
 
 var routes = (
-    <Route handler={App} path="/">
+    <Router.Route handler={App} path="/">
         <Router.DefaultRoute name="public-home" handler={Views.PublicHome}/>
-        <Route name="public-post" path=":postId" handler={Views.PublicPost}/>
-        <Route name="public-tag" path="tag/:tagId" handler={Views.PublicPost}/>
+        <Router.Route name="public-post" path=":postId" handler={Views.PublicPost}/>
+        <Router.Route name="public-tag" path="tag/:tagId" handler={Views.PublicPost}/>
         <Router.NotFoundRoute handler={Views.Public404}/>
-    </Route>
+    </Router.Route>
 );
+
+function serverRender(req) {
+    var dfr = Q.defer();
+
+    Router.run(routes, req.path, function (Root, state) {
+        refluxRouteUtils.doStoresPreloadData(fluxes, req, state)
+            .then(function (preloadModel) {
+                var html = React.renderToString(<Root preloadedData={preloadModel}/>);
+                dfr.resolve(html);
+            })
+            .then(null, dfr.reject);
+    });
+
+    return dfr.promise;
+}
 
 // run up in browser:
 if (!(typeof window === 'undefined')) {
-
     (function runApp() {
-        var Client = require('react-engine/lib/client');
-        var options = {
-            routes: routes,
-            // supply a function that can be called
-            // to resolve the file that was rendered.
-            viewResolver: function (viewName) {
-                return require('./views/' + viewName);
-            }
-        };
-        if (document.readyState == "loading") {
-            document.addEventListener('DOMContentLoaded', function onLoad() {
-                Client.boot(options);
-            });
-        } else {
-            Client.boot(options);
-        }
-    })();
+        Router.run(routes, Router.HistoryLocation, function (Root, state) {
+            // pickup preloadModel from markup
+            var preloadModel = __PRELOADED_DATA__ || {};
+            React.render(<Root preloadedData={preloadModel}/>, document.body, function () {
 
+            });
+        });
+    })();
 }
 
+
 module.exports = {
-    routes: routes
+    routes: routes,
+    fluxes: fluxes,
+    serverRender: serverRender
 };

@@ -11,8 +11,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var serviceAuth = require('./service/auth');
 var preferredLocale = require('./service/preferredLocale');
-//var responseTime = require('response-time');
-//var morgan2Mongo = require('./service/morgan2Mongo');
 //var mobileDetect = require('./service/mobileDetectMiddleware');
 
 // session support
@@ -28,27 +26,16 @@ var routes = require('./routes/index');
 var routesAuth = require('./routes/auth');
 var routesAdmin = require('./routes/admin');
 var routesApi = require('./routes/api');
-//var routesPost = require('./routes/post');
-
-var reactEngine = require('react-engine');
 
 var app = express();
 
 console.log('Express mode: ' + app.get('env'));
 
-// set up react-engine renderer
-var reactEngineInstance = reactEngine.server.create({
-    reactRoutes: path.join(__dirname + '/webapps/public-routes.js')
-});
-
 // to properly work behind nginx
 app.set("trust proxy", true);
 
 // view engine setup
-app.engine('.jsx', reactEngineInstance);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view', reactEngine.expressView);
-app.set('view engine', 'jsx');
 
 // adds X-Response-Time header
 //app.use(responseTime(1));
@@ -97,8 +84,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-//app.use(require('less-middleware')(path.join(__dirname, 'public')));
-
 // set middleware for static public content
 app.use(express.static(path.join(__dirname, 'build'), {
     index: false
@@ -112,13 +97,6 @@ app.use('/auth', routesAuth);
 app.use('/admin', routesAdmin);
 app.use('/api', routesApi);
 app.use('/', routes);
-
-//app.use('/', routes);
-//app.use('/auth', routesAuth);
-//app.use('/admin', routesAdmin);
-//app.use('/api', routesApi);
-//app.use('/post', routesPost);
-// app.use('/users', users);
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {

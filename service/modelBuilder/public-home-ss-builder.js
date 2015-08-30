@@ -2,32 +2,7 @@ var Q = require('q');
 var _ = require('lodash');
 var express = require('express');
 var dataProvider = require('../dataProvider');
-
-function generatePaginationUrlParams(posts, skip, limit) {
-    var result = {
-        previous: null,
-        next: null
-    };
-
-    posts = posts || [];
-    skip = parseInt(skip, 10) || 0;
-    limit = parseInt(limit, 10) || Number.POSITIVE_INFINITY;
-
-    if (posts.length >= limit) {
-        // not last page
-        result.previous = {
-            skip: skip + posts.length
-        }
-    }
-
-    if (skip > 0) {
-        result.next = {
-            skip: skip - limit
-        }
-    }
-
-    return result;
-}
+var isomorphUtils = require('../isomorph-utils');
 
 function buildHomePostsModel(req) {
     var modelBuilder = [];
@@ -60,10 +35,9 @@ function buildHomePostsModel(req) {
                     .then(function (posts) {
                         // generate pagination urls
                         //prevResult
-
                         return _.assign(prevResult, {
                             posts: posts,
-                            navPager: generatePaginationUrlParams(posts, req.skip, prevResult.misc.postsPerPage)
+                            navPager: isomorphUtils.generatePaginationUrlParams(posts, req.query.skip, prevResult.misc.postsPerPage)
                         });
                     });
             })

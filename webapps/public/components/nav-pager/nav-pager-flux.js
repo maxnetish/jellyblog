@@ -21,7 +21,7 @@ var store = Reflux.createStore({
     onComponentMounted: function () {
 
     },
-    onPaginationStateChanged: function (data) {
+    onPaginationUrlChanged: function (data) {
         data = data || {};
         this.previous = data.previous || null;
         this.next = data.next || null;

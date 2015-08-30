@@ -1,28 +1,40 @@
 var express = require('express'),
     router = express.Router();
-//indexVm = require('../service/vm/indexVm'),
-//urlHelper = require('../service/urlHelper'),
-//gAnalytics = require('../config').googleAnalytics || {};
 
-//var RootReactComponent = require('../views/root/root.jsx');
+var PublicView = require('../webapps/public.jsx');
+var ReactRouter = require('react-router');
+var refluxRouteUtils = require('../webapps/common/reflux-route-utils')
 
 var Q = require('q');
 var _ = require('lodash');
-var dataProvider = require('../service/dataProvider');
-
 
 /* GET home page. */
 router.get('*', function (req, res, next) {
-    // use react-engine render
-
-    var builder = require('../service/modelBuilder/public-home-ss-builder');
-
-    builder.build(req)
-        .then(function (model) {
-            res.render(req.url, model);
-            return model;
+    PublicView.serverRender(req)
+        .then(function (html) {
+            res.send(html);
+            return html;
         })
         .then(null, next);
+
+    //ReactRouter.run(PublicView.routes, req.url, function (root, state) {
+    //    refluxRouteUtils.doStoresPreloadData(PublicView.fluxes, state)
+    //        .then(function (preloadResults) {
+    //            var preloadedModel = _.reduce(preloadResults, function(accum, value){
+    //                return _.assign(accum, value);
+    //            }, {});
+    //            res.send(PublicView.serverRender(preloadedModel));
+    //            return preloadedModel;
+    //        })
+    //        .then(null, next);
+    //});
+
+    //builder.build(req)
+    //    .then(function (model) {
+    //        res.render(req.url, model);
+    //        return model;
+    //    })
+    //    .then(null, next);
 
     //var modelBuilder = [];
     //
