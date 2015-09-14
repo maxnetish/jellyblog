@@ -10,7 +10,8 @@ var _ = require('lodash');
 
 /* GET home page. */
 router.get('*', function (req, res, next) {
-    PublicView.serverRender(req)
+    var developmentMode = !!req.query.debug || express().get('env') === 'development';
+    PublicView.serverRender(req, developmentMode)
         .then(function (html) {
             res.send(html);
             return html;

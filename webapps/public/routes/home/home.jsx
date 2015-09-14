@@ -15,10 +15,9 @@ var PublicHome = React.createClass({
         };
     },
     render: function render() {
+        console.log(this.props.query);
         return (
             <div>
-
-
                 <h2>Public Home</h2>
                 <Router.Link to="public-post" params={{postId: 'whatever'}}>
                     Post
@@ -27,9 +26,8 @@ var PublicHome = React.createClass({
                     Tag
                 </Router.Link>
                 <label>Props of Home:</label>
-                <pre>{JSON.stringify(this.props.params, null, '\t')}</pre>
-                <pre>{JSON.stringify(this.props.query, null, '\t')}</pre>
-                <pre>{JSON.stringify(this.state.posts, null, '\t')}</pre>
+                <pre>{JSON.stringify(this.props.query)}</pre>
+                <pre>{JSON.stringify(this.state.posts)}</pre>
             </div>
         );
     },

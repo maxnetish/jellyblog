@@ -54,6 +54,7 @@
     "reactify": "^1.1.1"
   },
   "browser": {
-    "./webapps/public/routes/home/home-resources-server.js": "./blank.js"
+    "./webapps/public/routes/home/home-resources-server.js": "./blank.js",
+    "./webapps/public/routes/layout/layout-resources-server.js": "./blank.js"
   }
 }

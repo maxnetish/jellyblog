@@ -14,7 +14,8 @@ var refluxRouteUtils = require('./common/reflux-route-utils');
 require('reflux').setPromiseFactory(require('q').Promise);
 
 var fluxes = [
-    require('./public/routes/home/home-flux')
+    require('./public/routes/home/home-flux'),
+    require('./public/routes/layout/layout-flux')
 ];
 
 var App = React.createClass({
@@ -39,12 +40,13 @@ var routes = (
     </Router.Route>
 );
 
-function serverRender(req) {
+function serverRender(req, developmentMode) {
     var dfr = Q.defer();
 
     Router.run(routes, req.path, function (Root, state) {
         refluxRouteUtils.doStoresPreloadData(fluxes, req, state)
             .then(function (preloadModel) {
+                preloadModel.developmentMode = !!developmentMode;
                 var html = React.renderToString(<Root preloadedData={preloadModel}/>);
                 dfr.resolve(html);
             })
@@ -56,11 +58,12 @@ function serverRender(req) {
 
 // run up in browser:
 if (!(typeof window === 'undefined')) {
-    (function runApp() {
+    (function clientRender() {
         Router.run(routes, Router.HistoryLocation, function (Root, state) {
             // pickup preloadModel from markup
             var preloadModel = __PRELOADED_DATA__ || {};
-            React.render(<Root preloadedData={preloadModel}/>, document.body, function () {
+            console.log(preloadModel);
+            React.render(<Root preloadedData={preloadModel} />, document, function () {
 
             });
         });

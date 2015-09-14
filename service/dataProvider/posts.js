@@ -157,16 +157,17 @@ function promisePaginationPosts(queryParams, locale, limit) {
         fields = 'title slug content image date tags',
         options,
         sort,
-        dateFormat;
+        dateFormat,
+        queryParamsLocal = _.cloneDeep(queryParams);
 
     locale = locale || 'en';
     dateFormat = 'LLL';
-    queryParams = queryParams || {};
-    queryParams.includeDraft = false;
-    condition = createCondition(queryParams);
+    queryParamsLocal = queryParamsLocal || {};
+    queryParamsLocal.includeDraft = false;
+    condition = createCondition(queryParamsLocal);
     limit = parseInt(limit, 10) || 10;
-    skip = parseInt(queryParams.skip, 10) || undefined;
-    sort = queryParams.sort || '-date';
+    skip = parseInt(queryParamsLocal.skip, 10) || undefined;
+    sort = queryParamsLocal.sort || '-date';
     options = {
         sort: sort,
         skip: skip,
