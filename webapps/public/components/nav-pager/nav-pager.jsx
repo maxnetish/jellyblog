@@ -1,28 +1,31 @@
 var React = require('react');
 var Router = require('react-router');
 var ClassSet = require('classnames');
-var Reflux = require('reflux');
 var _ = require('lodash');
 
-var navPagerFlux = require('./nav-pager-flux');
-
 var NavPager = React.createClass({
-    mixins: [Reflux.ListenerMixin, Router.State],
-    getInitialState: function () {
-        var viewmodel = navPagerFlux.store.getViewModel();
+    mixins: [Router.State],
+    propTypes: {
+        next: React.PropTypes.object,
+        previous: React.PropTypes.object
+    },
+    getDefaultProps: function () {
         return {
-            previous: viewmodel.previous,
-            next: viewmodel.next
+            next: null,
+            previous: null
         };
+    },
+    getInitialState: function () {
+        return {};
     },
     render: function () {
         var previousClass = ClassSet({
             'previous': true,
-            'disabled': !this.state.next
+            'disabled': !this.props.next
         });
         var nextClass = ClassSet({
             'next': true,
-            'disabled': !this.state.previous
+            'disabled': !this.props.previous
         });
         var activeStates = this.getRoutes();
         var activeStateName = activeStates[activeStates.length - 1].name;
@@ -31,14 +34,14 @@ var NavPager = React.createClass({
 
         //console.log(activeStateName);
 
-        var previousQuery = _.assign(_.clone(activeStateQuery), this.state.previous);
-        var nextQuery = _.assign(_.clone(activeStateQuery), this.state.next);
+        var previousQuery = _.assign(_.clone(activeStateQuery), this.props.previous);
+        var nextQuery = _.assign(_.clone(activeStateQuery), this.props.next);
 
-        if(nextQuery.skip === 0){
+        if (nextQuery.skip === 0) {
             delete nextQuery.skip;
         }
 
-        if (!this.state.previous && !this.state.next) {
+        if (!this.props.previous && !this.props.next) {
             return null;
         }
         return <nav>
@@ -57,16 +60,6 @@ var NavPager = React.createClass({
                 </li>
             </ul>
         </nav>;
-    },
-    componentDidMount: function () {
-        navPagerFlux.actions.componentMounted();
-        this.listenTo(navPagerFlux.store, this.onStoreChanged);
-    },
-    onStoreChanged: function (viewmodel) {
-        this.setState({
-            previous: viewmodel.previous,
-            next: viewmodel.next
-        });
     }
 });
 

@@ -3,8 +3,6 @@ var _ = require('lodash');
 var Q = require('q');
 var isomorphUtils = require('../../../../service/isomorph-utils');
 
-var pagerFlux = require('../../components/nav-pager/nav-pager-flux');
-
 var resources = require('./home-resources-client');
 var resourcesServer = require('./home-resources-server');
 
@@ -24,17 +22,22 @@ var store = Reflux.createStore({
 
     promiseDataToPreload: function getPreloads(routeState, request) {
         var dataToPreload = {};
-        if(_.isEmpty(resourcesServer)){
+        if (_.isEmpty(resourcesServer)) {
             return null;
         }
-        // TODO check routeState to determine if preload really needed
         return resourcesServer.getSettings()
             .then(function (appSettings) {
+                var queryLocal = _.cloneDeep(routeState.query);
+                queryLocal = _.assign({
+                    limit: appSettings.postsPerPage,
+                    skip: 0
+                }, queryLocal);
                 dataToPreload.settings = appSettings;
-                return resourcesServer.getPosts(routeState.query, request.preferredLocale, appSettings.postsPerPage);
+                return resourcesServer.getPosts(queryLocal, request.preferredLocale, appSettings.postsPerPage);
             })
             .then(function (initialPosts) {
                 dataToPreload.posts = initialPosts;
+                dataToPreload.pager = buildPager(routeState.query, initialPosts, dataToPreload.settings);
                 return dataToPreload;
             });
     },
@@ -42,6 +45,7 @@ var store = Reflux.createStore({
     setPreloadedData: function preload(preloadedData) {
         this.posts = preloadedData.posts;
         this.settings = preloadedData.settings;
+        this.pager = preloadedData.pager;
     },
 
     onComponentMounted: function () {
@@ -54,26 +58,32 @@ var store = Reflux.createStore({
         this.loading = true;
         this.trigger(this.getViewModel());
     },
-    onPostsGetCompleted: function (posts) {
+    onPostsGetCompleted: function (posts, query) {
         this.error = false;
         this.loading = false;
         this.posts = posts;
+        this.pager = buildPager(query, posts, this.settings);
         this.trigger(this.getViewModel());
-        // TODO should add skip and limit
-        pagerFlux.actions.paginationUrlsChanged(isomorphUtils.generatePaginationUrlParams(posts), 0, 5);
     },
     onPostsGetFailed: function (err) {
         this.error = err;
         this.loading = false;
         this.trigger(this.getViewModel());
     },
+
+    /**
+     * Data here:
+     */
     posts: [],
+    pager: {next: null, previous: null},
     settings: null,
     loading: false,
     error: null,
+
     getViewModel: function () {
         return {
             posts: this.posts,
+            pager: this.pager,
             settings: this.settings,
             loading: this.loading,
             error: this.error
@@ -85,11 +95,35 @@ function getPosts(query) {
     actions.postsGet();
     resources.getPosts(query)
         .then(function (posts) {
-            actions.postsGetCompleted(posts);
+            actions.postsGetCompleted(posts, query);
         })
         ['catch'](function (err) {
         actions.postsGetFailed(err);
     });
+}
+
+function buildPager(query, posts, settings) {
+    var result = {
+        next: null,
+        previous: null
+    };
+
+    if (query.skip) {
+        result.next = {
+            skip: query.skip - settings.postsPerPage,
+            limit: settings.postsPerPage
+        };
+        result.next.skip = result.next.skip >= 0 ? result.next.skip : 0;
+    }
+
+    if (posts.length >= settings.postsPerPage) {
+        result.previous = {
+            skip: (query.skip || 0) + settings.postsPerPage,
+            limit: settings.postsPerPage
+        };
+    }
+
+    return result;
 }
 
 module.exports = {

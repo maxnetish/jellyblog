@@ -4,6 +4,7 @@ var React = require('react');
 var layoutFlux = require('./layout-flux');
 
 var HeaderComponent = require('../../components/header/header.jsx');
+var FooterComponent = require('../../components/footer/footer.jsx');
 
 var Layout = React.createClass({
     getInitialState: function () {
@@ -35,6 +36,7 @@ var Layout = React.createClass({
             <div className="container">
                 <HeaderComponent navlinks={this.state.navlinks} {...this.state.misc}/>
                 {this.props.children}
+                <FooterComponent navlinks={this.state.navlinks} {...this.state.misc}/>
             </div>
             </body>
             <script

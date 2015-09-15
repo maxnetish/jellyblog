@@ -150,7 +150,7 @@ function promisePostGetAdjacent(idOrSlug, queryParams) {
     return dfr.promise;
 }
 
-function promisePaginationPosts(queryParams, locale, limit) {
+function promisePaginationPosts(queryParams, locale) {
     var query,
         condition,
         skip,
@@ -165,7 +165,7 @@ function promisePaginationPosts(queryParams, locale, limit) {
     queryParamsLocal = queryParamsLocal || {};
     queryParamsLocal.includeDraft = false;
     condition = createCondition(queryParamsLocal);
-    limit = parseInt(limit, 10) || 10;
+    limit = parseInt(queryParamsLocal.limit, 10) || 10;
     skip = parseInt(queryParamsLocal.skip, 10) || undefined;
     sort = queryParamsLocal.sort || '-date';
     options = {
