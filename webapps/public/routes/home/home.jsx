@@ -3,6 +3,8 @@ var Router = require('react-router');
 var Reflux = require('reflux');
 // var _ = require('lodash');
 
+var NavPager = require('../../components/nav-pager/nav-pager.jsx');
+
 var routeFlux = require('./home-flux');
 
 
@@ -11,15 +13,16 @@ var PublicHome = React.createClass({
     getInitialState: function () {
         var viewmodel = routeFlux.store.getViewModel();
         return {
-            posts: viewmodel.posts
+            posts: viewmodel.posts,
+            pager: viewmodel.pager
         };
     },
     render: function render() {
+        console.log(this.props.query);
         return (
             <div>
-
-
                 <h2>Public Home</h2>
+                <NavPager {...this.state.pager}/>
                 <Router.Link to="public-post" params={{postId: 'whatever'}}>
                     Post
                 </Router.Link>
@@ -27,9 +30,8 @@ var PublicHome = React.createClass({
                     Tag
                 </Router.Link>
                 <label>Props of Home:</label>
-                <pre>{JSON.stringify(this.props.params, null, '\t')}</pre>
-                <pre>{JSON.stringify(this.props.query, null, '\t')}</pre>
-                <pre>{JSON.stringify(this.state.posts, null, '\t')}</pre>
+                <pre>{JSON.stringify(this.props.query)}</pre>
+                <pre>{JSON.stringify(this.state.posts)}</pre>
             </div>
         );
     },
@@ -55,7 +57,8 @@ var PublicHome = React.createClass({
     },
     onStoreChanged: function (viewmodel) {
         this.setState({
-            posts: viewmodel.posts
+            posts: viewmodel.posts,
+            pager: viewmodel.pager
         });
     }
 });

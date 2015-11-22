@@ -1,7 +1,7 @@
 var dataProvider = require('../../../../service/dataProvider');
 
-function getPosts(query, preferredLocale, limit){
-    return dataProvider.promisePaginationPosts(query, preferredLocale, limit)
+function getPosts(query, preferredLocale){
+    return dataProvider.promisePaginationPosts(query, preferredLocale)
 }
 
 function getSettings(){
