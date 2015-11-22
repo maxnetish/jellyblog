@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 function doStoresPreloadData(fluxes, request, routeState) {
     var promises = [];
-    fluxes = fluxes || [];
+    fluxes = fluxStores || [];
     routeState = routeState || {};
     _.each(fluxes, function (one) {
         if (one.store && one.store.promiseDataToPreload) {
