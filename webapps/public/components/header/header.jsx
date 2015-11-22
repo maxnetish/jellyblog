@@ -17,7 +17,7 @@ var HeaderComponent = React.createClass({
                 <div className="col-xs-12">
                     {/*<img className="header-main-image" src={this.props.misc.titleImageUrl}/>*/}
                     <div className="header-main-image-ct">
-                        <JbImage className="header-main-image" src={this.props.misc.titleImageUrl}/>
+                        <JbImage className="header-main-image" src={this.props.preloadedData.settings.titleImageUrl}/>
                     </div>
                 </div>
             </div>
@@ -28,7 +28,7 @@ var HeaderComponent = React.createClass({
                     <div className="page-header jb-page-header">
                         <h1>
                             <Router.Link to="public-home" className="home-link" title="Home page">
-                                {this.props.misc.siteTitle}
+                                {this.props.preloadedData.settings.siteTitle}
                             </Router.Link>
                         </h1>
                     </div>

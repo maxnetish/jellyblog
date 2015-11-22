@@ -12,6 +12,8 @@ var Layout = React.createClass({
         var scriptSrc = this.props.developmentMode
             ? '/js/app.js'
             : '/js/app.min.js';
+        // var preloadedScript = '__PRELOADED_DATA__ = ' + JSON.stringify(this.props.preloadedData) + ';';
+        var preloadedScript = '__FOO__ = {"bar": "bla"};';
         return (
             <html>
             <head>
@@ -26,11 +28,9 @@ var Layout = React.createClass({
                 <HeaderComponent {...this.props}/>
                 {this.props.children}
             </div>
-            </body>
-            <script>
-                __PRELOADED_DATA__ = ${JSON.stringify(this.props.preloadedData)};
-            </script>
+            <script dangerouslySetInnerHTML={{__html: preloadedScript}}></script>
             <script async defer src={scriptSrc}></script>
+            </body>
             </html>
         );
     }
