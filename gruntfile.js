@@ -1,7 +1,7 @@
 /**
  * Created by Gordeev on 20.07.2014.
  */
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     var buildDir = 'build',
         publicJs = buildDir + '/js',
@@ -32,60 +32,60 @@ module.exports = function (grunt) {
 
         less: {
             admin: {
-                files: [
-                    {
-                        src: lessSource.admin,
-                        dest: publicCss + '/admin.css'
-                    }
-                ],
+                files: [{
+                    src: lessSource.admin,
+                    dest: publicCss + '/admin.css'
+                }],
                 options: {
                     plugins: [
-                        new (require('less-plugin-npm-import')),
-                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']})
+                        new(require('less-plugin-npm-import')),
+                        new(require('less-plugin-autoprefix'))({
+                            browsers: ['last 2 versions']
+                        })
                     ]
                 }
             },
             'admin-min': {
-                files: [
-                    {
-                        src: lessSource.admin,
-                        dest: publicCss + '/admin.min.css'
-                    }
-                ],
+                files: [{
+                    src: lessSource.admin,
+                    dest: publicCss + '/admin.min.css'
+                }],
                 options: {
                     plugins: [
-                        new (require('less-plugin-npm-import')),
-                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']}),
-                        new (require('less-plugin-clean-css'))
+                        new(require('less-plugin-npm-import')),
+                        new(require('less-plugin-autoprefix'))({
+                            browsers: ['last 2 versions']
+                        }),
+                        new(require('less-plugin-clean-css'))
                     ]
                 }
             },
             public: {
-                files: [
-                    {
-                        src: lessSource.public,
-                        dest: publicCss + '/app.css'
-                    }
-                ],
+                files: [{
+                    src: lessSource.public,
+                    dest: publicCss + '/app.css'
+                }],
                 options: {
                     plugins: [
-                        new (require('less-plugin-npm-import')),
-                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']})
+                        new(require('less-plugin-npm-import')),
+                        new(require('less-plugin-autoprefix'))({
+                            browsers: ['last 2 versions']
+                        })
                     ]
                 }
             },
             'public-min': {
-                files: [
-                    {
-                        src: lessSource.public,
-                        dest: publicCss + '/app.min.css'
-                    }
-                ],
+                files: [{
+                    src: lessSource.public,
+                    dest: publicCss + '/app.min.css'
+                }],
                 options: {
                     plugins: [
-                        new (require('less-plugin-npm-import')),
-                        new (require('less-plugin-autoprefix'))({browsers: ['last 2 versions']}),
-                        new (require('less-plugin-clean-css'))
+                        new(require('less-plugin-npm-import')),
+                        new(require('less-plugin-autoprefix'))({
+                            browsers: ['last 2 versions']
+                        }),
+                        new(require('less-plugin-clean-css'))
                     ]
                 }
             }
@@ -93,33 +93,28 @@ module.exports = function (grunt) {
 
         copy: {
             fonts: {
-                files: [
-                    {
-                        expand: true,
-                        filter: 'isFile',
-                        flatten: true,
-                        src: 'node_modules/bootstrap/dist/fonts/*',
-                        dest: publicFonts + '/'
-                    },
-                    {
-                        expand: true,
-                        filter: 'isFile',
-                        flatten: true,
-                        src: 'node_modules/react-widgets/dist/fonts/*',
-                        dest: publicFonts + '/'
-                    }
-                ]
+                files: [{
+                    expand: true,
+                    filter: 'isFile',
+                    flatten: true,
+                    src: 'node_modules/bootstrap/dist/fonts/*',
+                    dest: publicFonts + '/'
+                }, {
+                    expand: true,
+                    filter: 'isFile',
+                    flatten: true,
+                    src: 'node_modules/react-widgets/dist/fonts/*',
+                    dest: publicFonts + '/'
+                }]
             },
             images: {
-                files: [
-                    {
-                        expand: true,
-                        filter: 'isFile',
-                        flatten: true,
-                        src: 'node_modules/react-widgets/dist/img/*',
-                        dest: publicImg + '/'
-                    }
-                ]
+                files: [{
+                    expand: true,
+                    filter: 'isFile',
+                    flatten: true,
+                    src: 'node_modules/react-widgets/dist/img/*',
+                    dest: publicImg + '/'
+                }]
             }
         },
 
@@ -169,7 +164,7 @@ module.exports = function (grunt) {
              * plugin should auto-detect.
              */
             options: {
-                livereload: true
+                livereload: false
             },
 
             /**
@@ -197,6 +192,36 @@ module.exports = function (grunt) {
                 files: ['webapps/less/**/*.less', 'webapps/admin/components/**/*.less', 'webapps/public/components/**/*.less', 'webapps/common/components/**/*.less'],
                 tasks: ['less:admin', 'less:public']
             }
+        },
+
+        nodemon: {
+            inspect: {
+                script: '<%=pkg.main %>',
+                options: {
+                    nodeArgs: ['--debug'],
+                    ignore: ['node_modules/**', '.git/', 'bower_components/**', 'build/**', 'upload/**', 'gruntfile.js']
+                }
+            },
+            inspectBreak: {
+                script: '<%=pkg.main %>',
+                options: {
+                    nodeArgs: ['--debug-brk'],
+                    ignore: ['node_modules/**', '.git/', 'bower_components/**', 'build/**', 'upload/**', 'gruntfile.js']
+                }
+            }
+        },
+
+        concurrent: {
+            options: {
+                limit: 2,
+                logConcurrentOutput: true
+            },
+            inspect: {
+                tasks: ['nodemon:inspect', 'delta']
+            },
+            inspectBreak: {
+                tasks: ['nodemon:inspectBreak', 'delta']
+            }
         }
     });
 
@@ -218,5 +243,17 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', ['clean', 'less', 'copy', 'browserify', 'uglify']);
 
+    /**
+     * debug:break run build, starts node-inspector, start server and watch for changes
+     */
+    grunt.registerTask('debug', function(inspectBreak) {
+        var nodemonTask = inspectBreak === 'break' ? 'inspectBreak' : 'inspect';
+
+        grunt.util.spawn({
+            cmd: 'node-inspector',
+        });
+        console.log("Node inspector running at http://localhost:8080/debug?port=5858");
+        grunt.task.run(['clean', 'less', 'copy', 'browserify', 'concurrent:' + nodemonTask]);
+    });
 
 };
