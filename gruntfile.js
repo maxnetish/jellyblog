@@ -199,14 +199,16 @@ module.exports = function(grunt) {
                 script: '<%=pkg.main %>',
                 options: {
                     nodeArgs: ['--debug'],
-                    ignore: ['node_modules/**', '.git/', 'bower_components/**', 'build/**', 'upload/**', 'gruntfile.js']
+                    ignore: ['node_modules/**', '.git/', 'bower_components/**', 'build/**', 'upload/**', 'gruntfile.js'],
+                    ext: 'js,jsx'
                 }
             },
             inspectBreak: {
                 script: '<%=pkg.main %>',
                 options: {
                     nodeArgs: ['--debug-brk'],
-                    ignore: ['node_modules/**', '.git/', 'bower_components/**', 'build/**', 'upload/**', 'gruntfile.js']
+                    ignore: ['node_modules/**', '.git/', 'bower_components/**', 'build/**', 'upload/**', 'gruntfile.js'],
+                    ext: 'js,jsx'
                 }
             }
         },
@@ -250,7 +252,7 @@ module.exports = function(grunt) {
         var nodemonTask = inspectBreak === 'break' ? 'inspectBreak' : 'inspect';
 
         grunt.util.spawn({
-            cmd: 'node-inspector',
+            cmd: 'node-inspector'
         });
         console.log("Node inspector running at http://localhost:8080/debug?port=5858");
         grunt.task.run(['clean', 'less', 'copy', 'browserify', 'concurrent:' + nodemonTask]);

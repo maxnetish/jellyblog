@@ -16,7 +16,7 @@ var Layout = React.createClass({
     },
     render: function render() {
         // pick devMode flag from props!
-        var devMode = !!this.props.preloadedData.developmentMode;
+        var devMode = !!(this.props.preloadedData && this.props.preloadedData.developmentMode);
         var styleSheetHref = devMode
             ? '/css/app.css'
             : '/css/app.min.css';
