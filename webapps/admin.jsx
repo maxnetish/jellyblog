@@ -4,6 +4,7 @@ var _ = require('lodash');
 var React = require('react');
 var ReactRouter = require('react-router');
 var createHistory = require('history/lib/createBrowserHistory');
+var useBasename = require('history/lib/useBasename');
 var Router = ReactRouter.Router;
 var Route = ReactRouter.Route;
 var NotFoundRoute = Router.NotFoundRoute;
@@ -42,7 +43,7 @@ var App = React.createClass({
  * @type {XML}
  */
 var routes = (
-    <Route component={App} path="/admin">
+    <Route component={App} path="/">
         <IndexRoute component={AdminHome}/>
         <Route path="navlinks" component={adminRoutes.Navlinks}/>
         <Route path="other" component={adminRoutes.AdminOther}/>
@@ -79,7 +80,10 @@ function initInBrowser(rootElementId) {
     };
 
     // setup router history
-    var history = createHistory();
+    // with query support
+    var history = useBasename(createHistory)({
+        basename: '/admin'
+    });
 
     // setup moment locale
     var mom = require('moment');

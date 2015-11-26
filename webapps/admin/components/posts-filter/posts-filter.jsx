@@ -1,15 +1,15 @@
 var React = require('react');
-var Router = require('react-router');
+var ReactRouter = require('react-router');
 var ClassSet = require('classnames');
 var _ = require('lodash');
 
 var PostsFilter = React.createClass({
-    mixins: [Router.Navigation],
+    mixins: [ReactRouter.History],
     getDefaultProps: function () {
         return {};
     },
     getInitialState: function () {
-        return _.cloneDeep(this.props.query);
+        return _.cloneDeep(this.props.location && this.props.location.query) || {};
     },
     render: function () {
         console.log(this.state);
@@ -77,8 +77,8 @@ var PostsFilter = React.createClass({
     },
     componentWillReceiveProps: function (nextProps) {
         var stateUpdate = _.mapValues(this.state, function(val, key){
-            if(nextProps.query) {
-                return nextProps.query[key] || null;
+            if(nextProps.location && nextProps.location.query) {
+                return nextProps.location.query[key] || null;
             }
             return null;
         });
@@ -94,7 +94,8 @@ var PostsFilter = React.createClass({
     },
     handleSubmitForm: function (event) {
         event.preventDefault();
-        this.transitionTo('admin-posts-index', null, _.omit(this.state, _.isEmpty));
+        this.history.pushState(null, 'posts', _.omit(this.state, _.isEmpty))
+        // this.transitionTo('admin-posts-index', null, _.omit(this.state, _.isEmpty));
     }
 });
 

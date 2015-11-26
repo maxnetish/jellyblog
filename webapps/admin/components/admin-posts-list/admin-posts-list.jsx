@@ -1,5 +1,5 @@
 var React = require('react');
-var Router = require('react-router');
+var ReactRouter = require('react-router');
 var Reflux = require('reflux');
 var ClassSet = require('classnames');
 var _ = require('lodash');
@@ -48,9 +48,9 @@ function renderPager(previousSkip, nextSkip, loading) {
                     <a href="javascript:void 0">
                         <i className="glyphicon glyphicon-circle-arrow-left"></i>
                     </a> :
-                    <Router.Link to="admin-posts" query={{skip: previousSkip}} title="Previous page">
+                    <ReactRouter.Link to="posts" query={{skip: previousSkip}} title="Previous page">
                         <i className="glyphicon glyphicon-circle-arrow-left"></i>
-                    </Router.Link>
+                    </ReactRouter.Link>
                 }
             </li>
             <li className={nextClass}>
@@ -59,10 +59,10 @@ function renderPager(previousSkip, nextSkip, loading) {
                         Next&nbsp;
                         <i className="glyphicon glyphicon-circle-arrow-right"></i>
                     </a> :
-                    <Router.Link to="admin-posts" query={{skip: nextSkip}} title="Next page">
+                    <ReactRouter.Link to="posts" query={{skip: nextSkip}} title="Next page">
                         Next&nbsp;
                         <i className="glyphicon glyphicon-circle-arrow-right"></i>
-                    </Router.Link>
+                    </ReactRouter.Link>
                 }
             </li>
         </ul>
@@ -104,11 +104,11 @@ var AdminPostsList = React.createClass({
         </section>;
     },
     componentDidMount: function () {
-        componentFlux.actions.componentMounted(this.props.query);
+        componentFlux.actions.componentMounted(this.props.location && this.props.location.query);
         this.listenTo(componentFlux.store, this.onStoreChanged);
     },
     componentWillReceiveProps: function (nextProps) {
-        componentFlux.actions.queryChanged(nextProps.query);
+        componentFlux.actions.queryChanged(nextProps.location && nextProps.location.query);
     },
 
     handleActivePost: function (postId) {
