@@ -1,6 +1,7 @@
 var React = require('react');
 var Router = require('react-router');
 var _ = require('lodash');
+var ClassSet = require('classnames');
 
 var JbImage = require('../jb-image/jb-image.jsx');
 var HeadNav = require('../head-nav/head-nav.jsx');

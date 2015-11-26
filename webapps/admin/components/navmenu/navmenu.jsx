@@ -1,14 +1,14 @@
 var React = require('react');
-var Router = require('react-router');
+var ReactRouter = require('react-router');
 var ClassSet = require('classnames');
 
 var _ = require('lodash');
 var definitions = require('./definitions');
 
-var Link = Router.Link;
+var Link = ReactRouter.Link;
 
 var Navmenu = React.createClass({
-    mixins: [Router.State],
+    mixins: [ReactRouter.History],
 
     getInitialState: function () {
         return {
@@ -19,13 +19,13 @@ var Navmenu = React.createClass({
     render: function () {
         var navButtons = _.map(definitions, function (def) {
             var liClass = ClassSet({
-                'active': def.routeName && this.isActive(def.routeName, def.routeParams, def.routeQuery)
+                'active': def.routePath && this.history.isActive(def.routePath, def.routeQuery, true)
             });
-            var key = def.routeName || def.url;
+            var key = def.routePath || def.url;
             return <li className={liClass} key={key}>
                 {
-                    def.routeName ?
-                        <Link to={def.routeName} params={def.routeParams} target={def.target} onClick={this.handleCollapseMenu}>
+                    def.routePath ?
+                        <Link to={def.routePath} target={def.target} onClick={this.handleCollapseMenu}>
                             <i className={def.icon+' _margin-right-half'}></i>
                             {def.title}
                         </Link> :

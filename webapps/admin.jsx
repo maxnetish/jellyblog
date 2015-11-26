@@ -2,11 +2,12 @@ var Q = require('q');
 var _ = require('lodash');
 
 var React = require('react');
-var Router = require('react-router');
-var Route = Router.Route;
-var RouteHandler = Router.RouteHandler;
+var ReactRouter = require('react-router');
+var createHistory = require('history/lib/createBrowserHistory');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
 var NotFoundRoute = Router.NotFoundRoute;
-var DefaultRoute = Router.DefaultRoute;
+var IndexRoute  = ReactRouter.IndexRoute ;
 
 var Reflux = require('reflux');
 
@@ -19,15 +20,17 @@ var adminRoutes = require('./admin/routes');
 var AdminHome = adminRoutes.AdminHome;
 var AdminPageNotFound = adminRoutes.PageNotFound;
 
-var injectedFromBackend = (window && window.jb__injected) || {};
-
 var App = React.createClass({
     render: function () {
-        var isAdmin = !!(this.props.data && this.props.data.injectedFromBackend && this.props.data.injectedFromBackend.admin);
+        var injectedFromBackend = (window && window.jb__injected) || {};
+        var isAdmin = !!(injectedFromBackend && injectedFromBackend.admin);
 
         return <div>
             <Navmenu />
-            {isAdmin ? <AdminViewWrapper><RouteHandler data={this.props.data}/></AdminViewWrapper> : <AuthRedirector />}
+            {isAdmin ?
+                <AdminViewWrapper>{this.props.children}</AdminViewWrapper> :
+                <AuthRedirector />
+            }
             <CommonDialogsComponent />
         </div>;
     }
@@ -39,15 +42,15 @@ var App = React.createClass({
  * @type {XML}
  */
 var routes = (
-    <Route handler={App} path="/admin">
-        <DefaultRoute name="admin-home" handler={AdminHome}/>
-        <Route name="admin-navlinks" path="navlinks" handler={adminRoutes.Navlinks}/>
-        <Route name="admin-other" path="other" handler={adminRoutes.AdminOther}/>
-        <Route name="admin-posts" path="posts">
-            <DefaultRoute name="admin-posts-index" handler={adminRoutes.Posts} />
-            <Route name="admin-post" path=":id/edit" handler={adminRoutes.AdminOther} />
+    <Route component={App} path="/admin">
+        <IndexRoute component={AdminHome}/>
+        <Route path="navlinks" component={adminRoutes.Navlinks}/>
+        <Route path="other" component={adminRoutes.AdminOther}/>
+        <Route path="posts">
+            <IndexRoute component={adminRoutes.Posts} />
+            <Route path=":id/edit" component={adminRoutes.AdminOther} />
         </Route>
-        <NotFoundRoute handler={AdminPageNotFound}/>
+        <Route path="*" component={AdminPageNotFound}/>
     </Route>
 );
 
@@ -69,8 +72,31 @@ var routeStore = Reflux.createStore({
 });
 
 function initInBrowser(rootElementId) {
+    var injectedFromBackend = (window && window.jb__injected) || {};
+    var dataToPassAsProp = {
+        // state: state,
+        injectedFromBackend: injectedFromBackend
+    };
+
+    // setup router history
+    var history = createHistory();
+
+    // setup moment locale
+    var mom = require('moment');
+    var loc = require('moment/min/locales');
+    var momentLocalizer = require('react-widgets-moment-localizer');
+    mom.locale(injectedFromBackend.preferredLocale || 'en');
+
+    // setup react-widgets
+    require('react-widgets/lib/configure').setDateLocalizer(momentLocalizer(mom));
+
+    React.render(<Router data={dataToPassAsProp} history={history}>{routes}</Router>, document.getElementById(rootElementId), function () {
+        routeActions.stateChanged(null);
+    });
+    /*
     Router.run(routes, Router.HistoryLocation, function (Root, state) {
         // whenever the url changes, this callback is called again
+        var injectedFromBackend = (window && window.jb__injected) || {};
         var dataToPassAsProp = {
             state: state,
             injectedFromBackend: injectedFromBackend
@@ -92,7 +118,9 @@ function initInBrowser(rootElementId) {
             routeActions.stateChanged(state);
         });
     });
+    */
 }
+
 
 /**
  *
@@ -100,7 +128,7 @@ function initInBrowser(rootElementId) {
  * @param buildViewModel function that should return viewMOdel or promise that will resolve to viewModel
  * @returns {Function|promiseViewModel|promisePublicPageVm|*|promise|f} promise which resolves to html string
  */
-function doBackendRender(requestUrl, buildViewModel) {
+/*function doBackendRender(requestUrl, buildViewModel) {
     var dfr = Q.defer();
     Router.run(routes, requestUrl, function (Root, state) {
         var buildViewModelResult;
@@ -120,7 +148,7 @@ function doBackendRender(requestUrl, buildViewModel) {
         }
     });
     return dfr.promise;
-}
+}*/
 
 function isRunInBrowser() {
     return !(typeof window === 'undefined');
@@ -137,6 +165,6 @@ if (isRunInBrowser()) {
 }
 
 module.exports = {
-    doBackendRender: doBackendRender,
+    /*doBackendRender: doBackendRender,*/
     routeStore: routeStore
 };

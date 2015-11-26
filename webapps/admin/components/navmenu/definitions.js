@@ -1,12 +1,12 @@
 var definitions = [
     {
         title: 'General settings',
-        routeName: 'admin-home',
+        routePath: '/admin',
         icon: 'glyphicon glyphicon-option-vertical'
     },
     {
         title: 'Navigation links',
-        routeName: 'admin-navlinks',
+        routePath: '/admin/navlinks',
         icon: 'glyphicon glyphicon-tasks'
     },
     //{
@@ -16,7 +16,7 @@ var definitions = [
     //},
     {
         title: 'Posts',
-        routeName: 'admin-posts-index',
+        routePath: '/admin/posts',
         icon: 'glyphicon glyphicon-list'
     },
     {
