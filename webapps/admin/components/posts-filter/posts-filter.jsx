@@ -12,7 +12,6 @@ var PostsFilter = React.createClass({
         return _.cloneDeep(this.props.location && this.props.location.query) || {};
     },
     render: function () {
-        console.log(this.state);
         return <section className="posts-filter">
             <div className="panel panel-default">
                 <div className="panel-body">
