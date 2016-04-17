@@ -1,10 +1,10 @@
 var React = require('react');
-// var _ = require('lodash');
 
 var layoutFlux = require('./layout-flux');
 
-var HeaderComponent = require('../../components/header/header.jsx');
-var FooterComponent = require('../../components/footer/footer.jsx');
+var HeaderComponent = require('../header/header.jsx');
+var FooterComponent = require('../footer/footer.jsx');
+var CommonDialogsComponent = require('../../../common/components/common-dialogs/common-dialogs.jsx');
 
 var Layout = React.createClass({
     getInitialState: function () {
@@ -38,11 +38,12 @@ var Layout = React.createClass({
                 {this.props.children}
                 <FooterComponent navlinks={this.state.navlinks} {...this.state.misc}/>
             </div>
-            </body>
+            <CommonDialogsComponent />
             <script
                 dangerouslySetInnerHTML={{'__html': '__PRELOADED_DATA__ = ' + JSON.stringify(this.props.preloadedData) + ';'}}>
             </script>
             <script async defer src={scriptSrc}></script>
+            </body>
             </html>
         );
     }

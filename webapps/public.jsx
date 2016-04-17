@@ -1,12 +1,10 @@
 var React = require('react');
 var Q = require('q');
-//var _ = require('lodash');
 
-var Router = require('react-router');
-//var Route = Router.Route;
+var ReactRouter = require('react-router');
 
 var Views = require('./public/routes');
-var CommonDialogsComponent = require('./common/components/common-dialogs/common-dialogs.jsx');
+var appLayoutComponent = require('./public/components/layout/layout.jsx');
 
 var refluxRouteUtils = require('./common/reflux-route-utils');
 
@@ -14,44 +12,47 @@ var refluxRouteUtils = require('./common/reflux-route-utils');
 require('reflux').setPromiseFactory(require('q').Promise);
 
 var fluxes = [
-    require('./public/routes/home/home-flux'),
-    require('./public/routes/layout/layout-flux')
+    require('./public/routes/home/home-flux')
+    //require('./public/routes/layout/layout-flux')
 ];
 
-var App = React.createClass({
-    componentWillMount: function () {
-        // populate stores with data from props.preloadedData
-        refluxRouteUtils.doStoresSetPreloadedData(fluxes, this.props.preloadedData);
-    },
-    render: function () {
-        return <Views.Layout {...this.props}>
-            <Router.RouteHandler {...this.props}/>
-            <CommonDialogsComponent />
-        </Views.Layout>;
-    }
-});
+// var App = React.createClass({
+//     componentWillMount: function () {
+//         // populate stores with data from props.preloadedData
+//         refluxRouteUtils.doStoresSetPreloadedData(fluxes, this.props.preloadedData);
+//     },
+//     render: function () {
+//         return <Views.Layout {...this.props}>
+//             <Router.RouteHandler {...this.props}/>
+//             <CommonDialogsComponent />
+//         </Views.Layout>;
+//     }
+// });
 
 var routes = (
-    <Router.Route handler={App} path="/">
-        <Router.DefaultRoute name="public-home" handler={Views.PublicHome}/>
-        <Router.Route name="public-post" path=":postId" handler={Views.PublicPost}/>
-        <Router.Route name="public-tag" path="tag/:tagId" handler={Views.PublicPost}/>
-        <Router.NotFoundRoute handler={Views.Public404}/>
-    </Router.Route>
+    <ReactRouter.Route component={appLayoutComponent} path="/">
+        <ReactRouter.IndexRoute component={Views.PublicHome}/>
+        <ReactRouter.Route path=":postId" component={Views.PublicPost}/>
+        <ReactRouter.Route path="tag/:tagId" component={Views.PublicPost}/>
+        <ReactRouter.Route path="*" component={Views.Public404}/>
+    </ReactRouter.Route>
 );
 
 function serverRender(req, developmentMode) {
     var dfr = Q.defer();
 
-    Router.run(routes, req.path, function (Root, state) {
-        refluxRouteUtils.doStoresPreloadData(fluxes, req, state)
-            .then(function (preloadModel) {
-                preloadModel.developmentMode = !!developmentMode;
-                var html = React.renderToString(<Root preloadedData={preloadModel}/>);
-                dfr.resolve(html);
-            })
-            .then(null, dfr.reject);
-    });
+refluxRouteUtils.doStoresPreloadData(fluxes, req)
+
+
+    // Router.run(routes, req.path, function (Root, state) {
+    //     refluxRouteUtils.doStoresPreloadData(fluxes, req, state)
+    //         .then(function (preloadModel) {
+    //             preloadModel.developmentMode = !!developmentMode;
+    //             var html = React.renderToString(<Root preloadedData={preloadModel}/>);
+    //             dfr.resolve(html);
+    //         })
+    //         .then(null, dfr.reject);
+    // });
 
     return dfr.promise;
 }
