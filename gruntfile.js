@@ -52,11 +52,12 @@ module.exports = function(grunt) {
                 }],
                 options: {
                     plugins: [
-                        new(require('less-plugin-npm-import')),
+                        new(require('less-plugin-npm-import'))/*,
                         new(require('less-plugin-autoprefix'))({
                             browsers: ['last 2 versions']
                         }),
                         new(require('less-plugin-clean-css'))
+                        */
                     ]
                 }
             },
@@ -251,6 +252,7 @@ module.exports = function(grunt) {
     grunt.registerTask('debug', function(inspectBreak) {
         var nodemonTask = inspectBreak === 'break' ? 'inspectBreak' : 'inspect';
 
+        console.log('About to spawn node-inspector...');
         grunt.util.spawn({
             cmd: 'node-inspector'
         });

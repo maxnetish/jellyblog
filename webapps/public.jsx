@@ -1,7 +1,7 @@
 var React = require('react');
 // var Q = require('q');
 
-// var ReactRouter = require('react-router');
+var ReactRouter = require('react-router');
 
 var Views = require('./public/routes');
 var appLayoutComponent = require('./public/components/layout/layout.jsx');
@@ -9,7 +9,7 @@ var appLayoutComponent = require('./public/components/layout/layout.jsx');
 var refluxRouteUtils = require('./common/reflux-route-utils');
 
 // we use q promises
-require('reflux').setPromiseFactory(require('q').Promise);
+require('reflux').use(require('reflux-promise')(require('q').Promise));
 
 var fluxes = [
     require('./public/routes/home/home-flux')

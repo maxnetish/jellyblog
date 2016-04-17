@@ -2,6 +2,7 @@ var Q = require('q');
 var _ = require('lodash');
 
 var React = require('react');
+var ReactDom = require('react-dom');
 var ReactRouter = require('react-router');
 var createHistory = require('history/lib/createBrowserHistory');
 var useBasename = require('history/lib/useBasename');
@@ -43,7 +44,7 @@ function initInBrowser(rootElementId) {
 
     // setup router history
     // with query support
-    var history = useBasename(createHistory)({
+    var history = ReactRouter.useRouterHistory(createHistory)({
         basename: '/admin'
     });
 
@@ -57,7 +58,7 @@ function initInBrowser(rootElementId) {
     require('react-widgets/lib/configure').setDateLocalizer(momentLocalizer(mom));
 
     // and run react
-    React.render(<Router data={dataToPassAsProp} history={history}>{routes}</Router>, rootElement);
+    ReactDom.render(<Router data={dataToPassAsProp} history={history}>{routes}</Router>, rootElement);
 }
 
 // run up in browser here:
