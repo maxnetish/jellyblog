@@ -1,7 +1,7 @@
 var React = require('react');
-var Q = require('q');
+// var Q = require('q');
 
-var ReactRouter = require('react-router');
+// var ReactRouter = require('react-router');
 
 var Views = require('./public/routes');
 var appLayoutComponent = require('./public/components/layout/layout.jsx');
@@ -39,9 +39,12 @@ var routes = (
 );
 
 function serverRender(req, developmentMode) {
-    var dfr = Q.defer();
 
-refluxRouteUtils.doStoresPreloadData(fluxes, req)
+    return refluxRouteUtils.doStoresPreloadData(fluxes, req)
+        .then(function (preloadModel) {
+            preloadModel.developmentMode = !!developmentMode;
+            return React.renderToString(<Root preloadedData={preloadModel}/>);
+        });
 
 
     // Router.run(routes, req.path, function (Root, state) {
@@ -54,7 +57,6 @@ refluxRouteUtils.doStoresPreloadData(fluxes, req)
     //         .then(null, dfr.reject);
     // });
 
-    return dfr.promise;
 }
 
 // run up in browser:

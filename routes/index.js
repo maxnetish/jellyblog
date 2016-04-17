@@ -2,11 +2,11 @@ var express = require('express'),
     router = express.Router();
 
 var PublicView = require('../webapps/public.jsx');
-var ReactRouter = require('react-router');
-var refluxRouteUtils = require('../webapps/common/reflux-route-utils')
+// var ReactRouter = require('react-router');
+// var refluxRouteUtils = require('../webapps/common/reflux-route-utils')
 
-var Q = require('q');
-var _ = require('lodash');
+// var Q = require('q');
+// var _ = require('lodash');
 
 /* GET home page. */
 router.get('*', function (req, res, next) {
@@ -16,7 +16,10 @@ router.get('*', function (req, res, next) {
             res.send(html);
             return html;
         })
-        .then(null, next);
+        .then(null, next)
+        ['catch'](function (err) {
+            console.log(err);
+        });
 
     //ReactRouter.run(PublicView.routes, req.url, function (root, state) {
     //    refluxRouteUtils.doStoresPreloadData(PublicView.fluxes, state)
