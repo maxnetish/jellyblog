@@ -2,6 +2,7 @@
 /bower_components
 /node_modules
 /config/*.json
+/out-of-use/config/*.json
 /projectFilesBackup
 /build
 /public

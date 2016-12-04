@@ -4,9 +4,6 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 
-// run up jsx transformer
-require('node-jsx').install({extension: '.jsx'});
-
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var serviceAuth = require('./service/auth');
