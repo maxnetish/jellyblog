@@ -18,7 +18,17 @@ module.exports = function (grunt) {
         ],
 
         copy: {
-
+            favicon: {
+                files: [
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        flatten: true,
+                        src: srcDir + '/*.ico',
+                        dest: path.join(buildDir, 'pub')
+                    }
+                ]
+            }
         },
 
         babel: {
@@ -88,7 +98,7 @@ module.exports = function (grunt) {
             dev: {
                 files: [{
                     src: 'src/react-app/**/*.less',
-                    dest: buildDir + '/bundle.css'
+                    dest: path.join(buildDir,'pub/bundle.css')
                 }],
                 options: {
                     sourceMap: true,
@@ -104,7 +114,7 @@ module.exports = function (grunt) {
             prod: {
                 files: [{
                     src: 'src/react-app/**/*.less',
-                    dest: buildDir + '/bundle.css'
+                    dest: path.join(buildDir,'pub/bundle.css')
                 }],
                 options: {
                     sourceMap: false,
@@ -156,6 +166,6 @@ module.exports = function (grunt) {
      */
     grunt.renameTask('watch', 'delta');
 
-    grunt.registerTask('dev', ['clean', 'babel:dev', 'webpack:dev', 'less:dev', 'delta']);
-    grunt.registerTask('prod', ['clean', 'babel:prod', 'webpack:prod', 'less:prod']);
+    grunt.registerTask('dev', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev', 'delta']);
+    grunt.registerTask('prod', ['clean', 'copy', 'babel:prod', 'webpack:prod', 'less:prod']);
 };

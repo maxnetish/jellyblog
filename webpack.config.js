@@ -7,7 +7,7 @@ module.exports = {
     // entry: './build/client.js',
     entry: {
         'client': './build/client.js',
-        'common': ['react', 'react-dom', 'core-js/es6/promise', 'superagent', 'reflux']
+        'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise']
         // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
         // jquery: "./app/jquery",
         // bootstrap: ["!bootstrap-webpack!./app/bootstrap/bootstrap.config.js", "./app/bootstrap"],
@@ -17,7 +17,7 @@ module.exports = {
         path: 'build/pub',
         filename: '[name].js',
         chunkFilename: '[name].[id].chunk.js',
-        publicPath: '/'
+        publicPath: '/assets'
     },
     // output: {
     //     path: 'build/assets',
