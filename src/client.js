@@ -1,3 +1,10 @@
+/**
+ * Init polyfills
+ */
+require('core-js/es6/array');
+require('core-js/es6/promise');
+require('whatwg-fetch');
+
 import React from 'react'
 import {render} from 'react-dom'
 import {Router, browserHistory, match} from 'react-router'
