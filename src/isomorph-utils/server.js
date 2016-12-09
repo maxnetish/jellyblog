@@ -5,7 +5,7 @@ import {match, RouterContext} from 'react-router';
 import routes from '../react-app/routes';
 import serialize from 'serialize-javascript';
 
-import {createElementWithInitialState} from './shared'
+import {reactRootElementId, keyOfPrefetchedStatesFromServer} from './shared'
 
 function pageTemplate({reactAppMarkup, initialStatesSerialized}) {
     return `<!DOCTYPE html>
@@ -17,9 +17,9 @@ function pageTemplate({reactAppMarkup, initialStatesSerialized}) {
                     <link href="//fonts.googleapis.com/css?family=Fira+Sans&subset=latin,cyrillic" rel="stylesheet">
                 </head>
                 <body>
-                    <div id="react-app">${reactAppMarkup}</div>
+                    <div id="${reactRootElementId}">${reactAppMarkup}</div>
                     <script id="jellyblog-initial-state">
-                        window.__jellyblogInitialStates__ = ${initialStatesSerialized};
+                        window.${keyOfPrefetchedStatesFromServer} = ${initialStatesSerialized};
                     </script>
                     <script src="/assets/common.js"></script>
                     <script src="/assets/client.js"></script>
@@ -29,9 +29,13 @@ function pageTemplate({reactAppMarkup, initialStatesSerialized}) {
 
 function fetchInitialStates(renderProps) {
     let components = renderProps.components;
+
     let promises = components.map(component => {
         if (component.fetchInitialState) {
-            return component.fetchInitialState(renderProps)
+            return component.fetchInitialState({
+                routeParams: renderProps.params,
+                routeQuery: renderProps.location.query
+            })
                 .then(result => {
                     return {
                         state: result,
@@ -45,11 +49,21 @@ function fetchInitialStates(renderProps) {
     return Promise.all(promises);
 }
 
+function createElementWithInitialState(initialStates) {
+    return (Component, props) => {
+        let stateForComponent = initialStates ? initialStates.find(s => s.componentName === Component.name) : initialStates;
+        let initialState = stateForComponent && stateForComponent.state;
+        console.info(`Create element ${Component.name} with initial state: `, initialState);
+        return <Component {...props} initialState={initialState}/>;
+    };
+}
+
 function buildMarkup({req, renderProps, template}) {
-    let lightReq = _.pick(req, ['baseUrl', 'host', 'hostname', 'httpVersion', 'ip', 'method', 'path', 'query', 'route', 'originalUrl', 'params', 'user', 'url']);
 
     return fetchInitialStates(renderProps)
         .then(initialStates => {
+
+            // onUpdate не работает
             let reactAppMarkup = renderToString(<RouterContext {...renderProps}
                                                                createElement={createElementWithInitialState(initialStates)}/>);
             let initialStatesSerialized = serialize(initialStates);
@@ -70,7 +84,8 @@ function expressRouteHandler(req, res) {
             buildMarkup({req, renderProps, template: pageTemplate})
                 .then(renderedHtml => {
                     res.status(200).send(renderedHtml);
-                });
+                })
+                .catch(err => console.warn(err));
         } else {
             res.status(404).send('Not found');
         }

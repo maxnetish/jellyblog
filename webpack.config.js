@@ -7,7 +7,7 @@ module.exports = {
     // entry: './build/client.js',
     entry: {
         'client': './build/client.js',
-        'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise', 'core-js/es6/array']
+        'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise', 'core-js/es6/array', 'core-js/es6/object']
         // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
         // jquery: "./app/jquery",
         // bootstrap: ["!bootstrap-webpack!./app/bootstrap/bootstrap.config.js", "./app/bootstrap"],
@@ -61,6 +61,8 @@ module.exports = {
     },
     resolve: {
         alias: {
+            // по умолчанию будет nanoflux.min
+            'nanoflux': 'nanoflux/src/nanoflux'
             // prect-compat:
             // 'preact-compat/lib/ReactCSSTransitionGroup$': 'react/lib/ReactCSSTransitionGroup',
             // "react": "preact-compat",
