@@ -13,6 +13,7 @@ import session from 'express-session';
 
 import cookieParser from 'cookie-parser';
 
+import morphine from './resources';
 import {expressRouteHandler} from './isomorph-utils/server';
 
 var app = express();
@@ -61,6 +62,11 @@ app.use(session({
 app.use('/assets', serveStatic(path.join(__dirname, 'pub'), {
     index: false
 }));
+
+/**
+ * bind isomorhine RPC-like interface
+ */
+app.use(morphine.router);
 
 /**
  * Main entry

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as resources from '../../../resources';
+import resources from '../../../resources';
 
 import LinkBar from '../../components/linkbar';
 
@@ -47,7 +47,7 @@ class App extends React.Component {
     }
 
     static fetchInitialState({routeParams, routeQuery}) {
-        return resources.fetchAppState({routeParams, routeQuery});
+        return resources.initialStates.app({routeParams, routeQuery});
     }
 }
 

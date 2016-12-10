@@ -7,7 +7,7 @@ module.exports = {
     // entry: './build/client.js',
     entry: {
         'client': './build/client.js',
-        'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise', 'core-js/es6/array', 'core-js/es6/object']
+        'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise', 'core-js/es6/array', 'core-js/es6/object', 'isomorphine', 'superagent']
         // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
         // jquery: "./app/jquery",
         // bootstrap: ["!bootstrap-webpack!./app/bootstrap/bootstrap.config.js", "./app/bootstrap"],
@@ -32,6 +32,15 @@ module.exports = {
         ],
 
         loaders: [
+            // {
+            //     test: /\.js$/,
+            //     exclude: /(node_modules|bower_components)/,
+            //     loader: 'babel-loader',
+            //     query: {
+            //         presets: ['es2015'],
+            //         cacheDirectory: true
+            //     }
+            // }
             // make sure to exclude route components here
             // {
             //     test: /\.js$/,

@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         babel: {
             'dev': {
                 options: {
-                    sourceMap: true,
+                    sourceMap: 'inline',
                     presets: ['react', 'es2015'],
                     // plugins: ['transform-es2015-modules-commonjs'],
                     // auxiliaryCommentBefore: 'Babel jsx transform:',
@@ -56,10 +56,10 @@ module.exports = function (grunt) {
                     sourceMap: false,
                     presets: ['react', 'es2015'],
                     // uglify2JS doesn't support es6
-                    // plugins: [
-                    //     'transform-es2015-modules-commonjs',
+                    plugins: [
+                         // 'transform-es2015-modules-commonjs'
                     //     'transform-es2015-template-literals'
-                    // ],
+                    ],
                     ast: false
                 },
                 files: [

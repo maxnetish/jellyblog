@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as resources from '../../../resources';
+import resources from '../../../resources';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -43,7 +43,7 @@ class Dashboard extends React.Component {
     }
 
     static fetchInitialState({routeParams, routeQuery}) {
-        return resources.fetchDashboardState({routeParams, routeQuery});
+        return resources.initialStates.dashboard({routeParams, routeQuery});
     }
 }
 
