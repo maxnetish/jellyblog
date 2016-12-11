@@ -6,7 +6,7 @@ module.exports = {
 
     // entry: './build/client.js',
     entry: {
-        'client': './build/client.js',
+        'client': './src/client.js',
         'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise', 'core-js/es6/array', 'core-js/es6/object', 'isomorphine', 'superagent']
         // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
         // jquery: "./app/jquery",
@@ -24,6 +24,12 @@ module.exports = {
     //     filename: "[name].bundle.js",
     // },
     plugins: [
+        // 'transform-runtime', {
+        //     helpers: true, // defaults to true
+        //     polyfill: false, // defaults to true
+        //     regenerator: false, // defaults to true
+        //     moduleName: 'babel-runtime' // defaults to "babel-runtime"
+        // },
         new webpack.optimize.CommonsChunkPlugin('common', 'common.js')
     ],
     module: {
@@ -32,15 +38,22 @@ module.exports = {
         ],
 
         loaders: [
-            // {
-            //     test: /\.js$/,
-            //     exclude: /(node_modules|bower_components)/,
-            //     loader: 'babel-loader',
-            //     query: {
-            //         presets: ['es2015'],
-            //         cacheDirectory: true
-            //     }
-            // }
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                loader: 'babel-loader',
+                query: {
+                    presets: [
+                        'es2015'
+                    ],
+                    plugins: [
+                        'syntax-jsx',
+                        'transform-react-jsx',
+                        'transform-react-display-name'
+                    ],
+                    cacheDirectory: true
+                }
+            }
             // make sure to exclude route components here
             // {
             //     test: /\.js$/,
@@ -71,7 +84,7 @@ module.exports = {
     resolve: {
         alias: {
             // по умолчанию будет nanoflux.min
-            'nanoflux': 'nanoflux/src/nanoflux'
+            // 'nanoflux': 'nanoflux/src/nanoflux'
             // prect-compat:
             // 'preact-compat/lib/ReactCSSTransitionGroup$': 'react/lib/ReactCSSTransitionGroup',
             // "react": "preact-compat",

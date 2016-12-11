@@ -35,8 +35,15 @@ module.exports = function (grunt) {
             'dev': {
                 options: {
                     sourceMap: 'inline',
-                    presets: ['react', 'es2015'],
-                    // plugins: ['transform-es2015-modules-commonjs'],
+                    presets: [
+                        // 'react',
+                        'es2015'
+                    ],
+                    plugins: [
+                        // 'transform-es2015-modules-commonjs'
+                        'syntax-jsx',
+                        'transform-react-jsx'
+                    ],
                     // auxiliaryCommentBefore: 'Babel jsx transform:',
                     // auxiliaryCommentAfter: 'end of jsx transform',
                     ast: false
@@ -54,9 +61,15 @@ module.exports = function (grunt) {
             'prod': {
                 options: {
                     sourceMap: false,
-                    presets: ['react', 'es2015'],
+                    presets: [
+                        // 'react',
+                        'es2015'
+                    ],
                     // uglify2JS doesn't support es6
                     plugins: [
+                        'syntax-jsx',
+                        'transform-react-jsx',
+                        'transform-react-display-name'
                          // 'transform-es2015-modules-commonjs'
                     //     'transform-es2015-template-literals'
                     ],
@@ -77,10 +90,12 @@ module.exports = function (grunt) {
         webpack: {
             options: webpackCommonOptions,
             dev: {
-                devtool: "cheap-module-inline-source-map",
+                devtool: 'source-map',
                 debug: true
             },
             prod: {
+                // devtool: 'cheap-module-source-map',
+                debug: false,
                 plugins: webpackCommonOptions.plugins.concat([
                     new webpack.DefinePlugin({
                         "process.env": {

@@ -1,13 +1,12 @@
-import * as _ from 'lodash';
 import React from 'react';
 import {renderToString} from 'react-dom/server';
 import {match, RouterContext} from 'react-router';
 import routes from '../react-app/routes';
 import serialize from 'serialize-javascript';
 
-import {reactRootElementId, keyOfPrefetchedStatesFromServer} from './shared'
+import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext} from './shared'
 
-function pageTemplate({reactAppMarkup, initialStatesSerialized}) {
+function pageTemplate({reactAppMarkup, initialStatesSerialized, userContextSerialized}) {
     return `<!DOCTYPE html>
             <html>
                 <head>
@@ -20,6 +19,7 @@ function pageTemplate({reactAppMarkup, initialStatesSerialized}) {
                     <div id="${reactRootElementId}">${reactAppMarkup}</div>
                     <script id="jellyblog-initial-state">
                         window.${keyOfPrefetchedStatesFromServer} = ${initialStatesSerialized};
+                        window.${keyOfUserContext} = ${userContextSerialized};
                     </script>
                     <script src="/assets/common.js"></script>
                     <script src="/assets/client.js"></script>
@@ -39,7 +39,7 @@ function fetchInitialStates(renderProps) {
                 .then(result => {
                     return {
                         state: result,
-                        componentName: component.name
+                        componentId: component.componentId
                     };
                 });
         } else {
@@ -49,12 +49,16 @@ function fetchInitialStates(renderProps) {
     return Promise.all(promises);
 }
 
-function createElementWithInitialState(initialStates) {
+function getUserContextFromRequest(req) {
+    return () => (req && req.user) || {};
+}
+
+function createElementWithInitialState({initialStates, getUserContext}) {
     return (Component, props) => {
-        let stateForComponent = initialStates ? initialStates.find(s => s.componentName === Component.name) : initialStates;
+        let stateForComponent = initialStates ? initialStates.find(s => s.componentId === Component.componentId) : initialStates;
         let initialState = stateForComponent && stateForComponent.state;
         console.info(`Create element ${Component.name} with initial state: `, initialState);
-        return <Component {...props} initialState={initialState}/>;
+        return <Component {...props} initialState={initialState} getUserContext={getUserContext}/>;
     };
 }
 
@@ -62,17 +66,23 @@ function buildMarkup({req, renderProps, template}) {
 
     return fetchInitialStates(renderProps)
         .then(initialStates => {
-
-            // onUpdate не работает
             let reactAppMarkup = renderToString(<RouterContext {...renderProps}
-                                                               createElement={createElementWithInitialState(initialStates)}/>);
+                                                               createElement={createElementWithInitialState({
+                                                                   initialStates,
+                                                                   getUserContext: getUserContextFromRequest(req)
+                                                               })}/>);
             let initialStatesSerialized = serialize(initialStates);
-            return template({reactAppMarkup, initialStatesSerialized});
+            let userContext = getUserContextFromRequest(req)();
+            let userContextSerialized = serialize(userContext);
+            return template({reactAppMarkup, initialStatesSerialized, userContextSerialized});
         });
 }
 
 function expressRouteHandler(req, res) {
-    match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
+    match({
+        routes: routes({getUserContext: getUserContextFromRequest(req)}),
+        location: req.url
+    }, (error, redirectLocation, renderProps) => {
         if (error) {
             res.status(500).send(error.message)
         } else if (redirectLocation) {

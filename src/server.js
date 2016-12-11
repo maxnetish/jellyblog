@@ -7,8 +7,8 @@ import bodyParser from 'body-parser';
 import responseTime from 'response-time';
 import serveStatic from 'serve-static';
 import session from 'express-session';
-// import passport from 'passport';
-// import * as passportConfig from './passport';
+import passport from 'passport';
+import {setupPassport, authRoutes} from './passport/server';
 // import {Strategy} from 'passport-local';
 
 import cookieParser from 'cookie-parser';
@@ -21,7 +21,7 @@ var app = express();
 /**
  * Setup passport
  */
-// passportConfig.setupPassport(passport);
+setupPassport(passport);
 
 /**
  * setup mongoose
@@ -42,6 +42,7 @@ var app = express();
 app.use(favicon(path.join(__dirname, 'pub/favicon.ico')));
 app.use(responseTime());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
     cookie: {
@@ -53,8 +54,8 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 /**
  * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
@@ -62,6 +63,11 @@ app.use(session({
 app.use('/assets', serveStatic(path.join(__dirname, 'pub'), {
     index: false
 }));
+
+/**
+ * /login-logout webapi here (passport should work outside of isomorphine)
+ */
+app.use('/auth', authRoutes);
 
 /**
  * bind isomorhine RPC-like interface

@@ -45,6 +45,14 @@ class Dashboard extends React.Component {
     static fetchInitialState({routeParams, routeQuery}) {
         return resources.initialStates.dashboard({routeParams, routeQuery});
     }
+
+    static onRouteEnter({nextRouterState, replace, userContext}) {
+        // console.info(`${Dashboard.componentId} onRouteEnter: `, {nextRouterState, userContext});
+    }
+
+    static get componentId() {
+        return 'Dashboard';
+    }
 }
 
 export default Dashboard;

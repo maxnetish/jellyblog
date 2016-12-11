@@ -1,15 +1,15 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Router, browserHistory, match} from 'react-router';
-import {reactRootElementId, keyOfPrefetchedStatesFromServer} from './shared';
+import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext} from './shared';
 
-function popInitialStateForComponent(componentName) {
+function popInitialStateForComponent(componentId) {
     let result, resultIndex;
     let prefetchedStates;
     if (window.hasOwnProperty(keyOfPrefetchedStatesFromServer)) {
         prefetchedStates = window[keyOfPrefetchedStatesFromServer];
         if (Array.isArray(prefetchedStates)) {
-            resultIndex = prefetchedStates.findIndex(s => s.componentName === componentName);
+            resultIndex = prefetchedStates.findIndex(s => s.componentId === componentId);
             if (resultIndex > -1) {
                 result = prefetchedStates.splice(resultIndex, 1)[0];
             }
@@ -20,15 +20,25 @@ function popInitialStateForComponent(componentName) {
     return result;
 }
 
+function getUserContext() {
+    if (window.hasOwnProperty(keyOfUserContext)) {
+        return Object.assign({}, window[keyOfUserContext]);
+    }
+    return {};
+}
+
 function createElementWithPrefetchedState(Component, props) {
-    let stateForComponent = popInitialStateForComponent(Component.name);
+    let stateForComponent = popInitialStateForComponent(Component.componentId);
     let initialState = stateForComponent && stateForComponent.state;
-    console.info(`Create element ${Component.name} with initial state: `, initialState);
-    return <Component {...props} initialState={initialState}/>;
+    console.info(`Create element ${Component.componentId} with initial state: `, initialState);
+    return <Component {...props} initialState={initialState} getUserContext={getUserContext}/>;
 }
 
 function routerRun({routes}) {
-    match({history: browserHistory, routes}, (error, redirectLocation, renderProps) => {
+    match({
+        history: browserHistory,
+        routes: routes({getUserContext: getUserContext})
+    }, (error, redirectLocation, renderProps) => {
         render(<Router {...renderProps}
                        createElement={createElementWithPrefetchedState}
                        onUpdate={() => console.info('Router update: ', arguments)}/>, document.getElementById(reactRootElementId));

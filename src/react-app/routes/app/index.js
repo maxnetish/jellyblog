@@ -2,6 +2,7 @@ import React from 'react';
 
 import resources from '../../../resources';
 
+import {componentIdKey} from '../../../isomorph-utils/shared';
 import LinkBar from '../../components/linkbar';
 
 class App extends React.Component {
@@ -13,6 +14,10 @@ class App extends React.Component {
 
         if (props.initialState) {
             Object.assign(this.state, props.initialState, {supressFetchOnMount: true})
+        }
+
+        if(props.getUserContext) {
+            this.state.user = props.getUserContext();
         }
     }
 
@@ -32,11 +37,22 @@ class App extends React.Component {
 
         // If we should really fetch new data ?
 
+        if(this.props.getUserContext) {
+            let oldUser = prevState.user;
+            let newUser = this.props.getUserContext();
+
+            if(newUser.role!==oldUser.role || newUser.userName!==oldUser.userName){
+                this.setState({
+                    user: newUser
+                });
+            }
+        }
+
     }
 
     render() {
         return <div>
-            <LinkBar/>
+            <LinkBar {...this.props}/>
             <h2>App component</h2>
             <div>Props.params:</div>
             <pre>{JSON.stringify(this.props.params, '', 4)}</pre>
@@ -48,6 +64,14 @@ class App extends React.Component {
 
     static fetchInitialState({routeParams, routeQuery}) {
         return resources.initialStates.app({routeParams, routeQuery});
+    }
+
+    static onRouteEnter({nextRouterState, replace, userContext}) {
+        // console.info(`${App.componentId} onRouteEnter: `, {nextRouterState, userContext});
+    }
+
+    static get componentId() {
+        return 'App';
     }
 }
 
