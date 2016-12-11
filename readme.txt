@@ -2,7 +2,8 @@ Here try to implement with stack:
  * mongoose - mongo
  * express
  * react
- * reflux
+ * react-router
+ * ~~reflux~~
  * UI elements: elemental
  * isomorphine to isomorphic behavior
 
