@@ -2,7 +2,6 @@ import React from 'react';
 
 import resources from '../../../resources';
 
-import {componentIdKey} from '../../../isomorph-utils/shared';
 import LinkBar from '../../components/linkbar';
 
 class App extends React.Component {

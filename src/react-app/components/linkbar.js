@@ -35,19 +35,19 @@ class LinkBar extends React.Component {
         return <nav role="menu">
             <ul>
                 <li>
-                    <Link to="/" activeClassName="active-link" onlyActiveOnIndex={true}>Root</Link>
+                    <Link to="/p" activeClassName="active-link" onlyActiveOnIndex={true}>Root</Link>
                 </li>
                 <li>
-                    <Link to="/about" activeClassName="active-link">About</Link>
+                    <Link to="/p/about" activeClassName="active-link">About</Link>
                 </li>
                 <li>
-                    <Link to="/posts" activeClassName="active-link">Posts</Link>
+                    <Link to="/p/posts" activeClassName="active-link">Posts</Link>
                 </li>
                 <li>
-                    <Link to="/post/123" activeClassName="active-link">Posts -> 123</Link>
+                    <Link to="/p/post/123" activeClassName="active-link">Posts -> 123</Link>
                 </li>
                 <li>
-                    <Link to="/non-existent/path" activeClassName="active-link">No path</Link>
+                    <Link to="/p/non-existent/path" activeClassName="active-link">No path</Link>
                 </li>
                 <li>
                     {

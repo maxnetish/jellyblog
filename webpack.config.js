@@ -7,7 +7,17 @@ module.exports = {
     // entry: './build/client.js',
     entry: {
         'client': './src/client.js',
-        'common': ['react', 'react-dom', 'react-router', 'core-js/es6/promise', 'core-js/es6/array', 'core-js/es6/object', 'isomorphine', 'superagent']
+        'common': [
+            'react',
+            'react-dom',
+            'react-router',
+            'core-js/es6/promise',
+            'core-js/es6/array',
+            'core-js/es6/object',
+            'core-js/es6/symbol',
+            'isomorphine',
+            'superagent'
+        ]
         // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
         // jquery: "./app/jquery",
         // bootstrap: ["!bootstrap-webpack!./app/bootstrap/bootstrap.config.js", "./app/bootstrap"],

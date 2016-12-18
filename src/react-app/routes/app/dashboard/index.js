@@ -1,6 +1,6 @@
 import React from 'react';
 
-import resources from '../../../resources';
+import {DashboardStore, actions} from './store';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -8,25 +8,33 @@ class Dashboard extends React.Component {
 
         // set def state
         this.state = {};
+        this.supressFetchOnMount = false;
+
 
         if (props.initialState) {
-            Object.assign(this.state, props.initialState, {supressFetchOnMount: true})
+            Object.assign(this.state, props.initialState);
+            this.supressFetchOnMount = true;
         }
+        this.store = new DashboardStore(this.state);
     }
 
     componentDidMount() {
         console.info('Dashboard did mount, props: ', this.props);
 
-        if (!this.state.supressFetchOnMount) {
-            Dashboard.fetchInitialState({routeParams: this.props.params, routeQuery: this.props.location.query})
-                .then(result => this.setState(result));
-        }
+        this.store.on(DashboardStore.notificationEventKey, this.onStoreUpdate, this);
 
-        this.setState({supressFetchOnMount: false});
+        if (!this.supressFetchOnMount) {
+            actions.componentMounted(this.props);
+        }
+        this.supressFetchOnMount = false;
+    }
+
+    componentWillUnmount() {
+        this.store.removeListener(DashboardStore.notificationEventKey, this.onStoreUpdate, this);
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.info('Dasboard did update, props: ', this.props);
+        console.info('Dashboard did update, props: ', this.props);
 
         // If we should really fetch new data ?
 
@@ -42,8 +50,13 @@ class Dashboard extends React.Component {
         </div>;
     }
 
+    onStoreUpdate(updatedState) {
+        console.info('Store notificate: ', updatedState);
+        this.setState(updatedState)
+    }
+
     static fetchInitialState({routeParams, routeQuery}) {
-        return resources.initialStates.dashboard({routeParams, routeQuery});
+        return DashboardStore.fetchInitialState({routeParams, routeQuery})
     }
 
     static onRouteEnter({nextRouterState, replace, userContext}) {
