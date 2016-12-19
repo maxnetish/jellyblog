@@ -7,3 +7,6 @@
 /public/upload
 /config/*.json
 /projectFilesBackup
+/build
+/upload
+.project
