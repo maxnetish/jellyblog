@@ -1,10 +1,14 @@
 import {Strategy} from 'passport-local';
 import authConfig from '../../config/auth.json';
 import {Router} from 'express';
-import passport from 'passport';
 
 
-const localStrategy = new Strategy((username, password, done) => {
+const localStrategy = new Strategy({
+    usernameField: 'payload[0][username]',
+    passwordField: 'payload[0][password]',
+    passReqToCallback: false
+}, (username, password, done) => {
+
     let findedUser = authConfig.find(elem => {
         return elem.userName === username;
     });
@@ -22,20 +26,6 @@ const localStrategy = new Strategy((username, password, done) => {
         role: findedUser.role
     });
 });
-
-const router = Router();
-
-router.route('/')
-    .get((req, res) => res.json(req.user || {}));
-router.route('/login')
-    .post(passport.authenticate('local'), (req, res) => {
-        res.send(req.user); // send user context
-    });
-router.route('/logout')
-    .post((req, res) => {
-        req.logout();
-        res.send(req.user || {}); // send empty user context
-    });
 
 function setupPassport(passport) {
     passport.use(localStrategy);
@@ -58,6 +48,5 @@ function setupPassport(passport) {
 }
 
 export {
-    setupPassport,
-    router as authRoutes
+    setupPassport
 };

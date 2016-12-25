@@ -8,7 +8,7 @@ import responseTime from 'response-time';
 import serveStatic from 'serve-static';
 import session from 'express-session';
 import passport from 'passport';
-import {setupPassport, authRoutes} from './passport/server';
+import {setupPassport} from './passport/server';
 // import {Strategy} from 'passport-local';
 
 import cookieParser from 'cookie-parser';
@@ -65,11 +65,6 @@ app.use('/assets', serveStatic(path.join(__dirname, 'pub'), {
 }));
 
 /**
- * /login-logout webapi here (passport should work outside of isomorphine)
- */
-app.use('/auth', authRoutes);
-
-/**
  * bind isomorhine RPC-like interface
  */
 app.use(morphine.router);
@@ -81,7 +76,8 @@ app.get(['/', '/*'], expressRouteHandler);
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
-    res.status(500).send('Internal error');
+    let status = typeof err === 'number' ? err : 500;
+    res.status(status).send('Internal error');
 });
 
 /**

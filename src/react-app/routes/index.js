@@ -4,14 +4,16 @@ import {Route, IndexRoute, IndexRedirect}      from 'react-router';
 
 // import {routeParamsChanged, routeQueryChanged}  from '../../state-utils/shared';
 
-import App          from './app';
-import Dashboard    from './app/dashboard';
-import About        from './app/about';
-import Posts        from './app/posts';
-import Post         from './app/post';
+import PubApp          from './p';
+import Dashboard    from './p/dashboard';
+import About        from './p/about';
+import Posts        from './p/posts';
+import Post         from './p/post';
 import Page404      from './404';
-import Login        from './app/login';
+import Login        from './login';
 import AdminApp     from './admin';
+
+import UserBadge    from '../components/user-badge';
 
 function getOnRouteEnterHandler({Component, getUserContext}) {
     return (nextState, replace) => {
@@ -61,6 +63,17 @@ function getOnRouteChangeHandler({Component, getUserContext}) {
 function RootComponent(props) {
     return <div>
         {props.children}
+        <div className="root-footer">
+            <div className="root-footer-item">
+                <UserBadge user={props.getUserContext()}/>
+            </div>
+            <div className="root-footer-item">
+                <div className="image-react-logo"></div>
+            </div>
+            <div className="root-footer-item">
+                <div className="image-babel-logo"></div>
+            </div>
+        </div>
     </div>;
 }
 
@@ -70,9 +83,9 @@ function routes({getUserContext}) {
                   component={RootComponent}>
         <IndexRedirect to="/p"/>
         <Route path="p"
-               component={App}
-               onEnter={getOnRouteEnterHandler({Component: App, getUserContext})}
-               onChange={getOnRouteChangeHandler({Component: App, getUserContext})}>
+               component={PubApp}
+               onEnter={getOnRouteEnterHandler({Component: PubApp, getUserContext})}
+               onChange={getOnRouteChangeHandler({Component: PubApp, getUserContext})}>
 
             <IndexRoute component={Dashboard}
                         onEnter={getOnRouteEnterHandler({Component: Dashboard, getUserContext})}/>
@@ -92,12 +105,7 @@ function routes({getUserContext}) {
                    component={AdminApp}
                    onEnter={getOnRouteEnterHandler({Component: AdminApp, getUserContext})}
                    onChange={getOnRouteChangeHandler({Component: AdminApp, getUserContext})}>
-
             </Route>
-
-            <Route path="*"
-                   component={Page404}
-                   onEnter={getOnRouteEnterHandler({Component: Page404, getUserContext})}/>
         </Route>
         <Route path="login"
                component={Login}/>
@@ -105,8 +113,10 @@ function routes({getUserContext}) {
                component={AdminApp}
                onEnter={getOnRouteEnterHandler({Component: AdminApp, getUserContext})}
                onChange={getOnRouteChangeHandler({Component: AdminApp, getUserContext})}>
-
         </Route>
+        <Route path="*"
+               component={Page404}
+               onEnter={getOnRouteEnterHandler({Component: Page404, getUserContext})}/>
     </Route>;
 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import {Router, browserHistory, match} from 'react-router';
 import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext} from './shared';
+import ClientUserContext from '../passport/client';
 
 function popInitialStateForComponent(componentId) {
     let result, resultIndex;
@@ -21,10 +22,7 @@ function popInitialStateForComponent(componentId) {
 }
 
 function getUserContext() {
-    if (window.hasOwnProperty(keyOfUserContext)) {
-        return Object.assign({}, window[keyOfUserContext]);
-    }
-    return {};
+    return ClientUserContext;
 }
 
 function createElementWithPrefetchedState(Component, props) {

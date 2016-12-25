@@ -7,3 +7,19 @@ body {
 a.active-link {
   color: grey;
 }
+
+.root-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .root-footer-item {
+    margin: 5px;
+
+    .Card {
+      // override
+      margin-bottom: 0;
+    }
+  }
+}

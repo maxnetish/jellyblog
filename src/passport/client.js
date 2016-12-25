@@ -1,32 +1,32 @@
-import request from 'superagent';
+/**
+ *
+ */
+
+// import EventEmitter from 'eventemitter3';
 import {keyOfUserContext} from '../isomorph-utils/shared';
 
-function authGet() {
-    return request
-        .get('/auth')
-        .then(response => response.body);
-}
+// function setUserContext(userContext) {
+//     window[keyOfUserContext] = Object.assign({}, userContext);
+// }
 
-function authLogin(loginData) {
-    return request
-        .post('/auth/login')
-        .send(loginData)
-        .then(response => response.body);
-}
+let UserContext = Object.create({}, {
+    userName: {
+        enumerable: true,
+        get: () => window && window[keyOfUserContext] && window[keyOfUserContext].userName
+    },
+    role: {
+        enumerable: true,
+        get: () => window && window[keyOfUserContext] && window[keyOfUserContext].role
+    }
+});
 
-function authLogout() {
-    return request
-        .post('/auth/logout')
-        .then(response => response.body);
-}
-
-function setUserContext(userContext) {
-    window[keyOfUserContext] = Object.assign({}, userContext);
-}
-
-export {
-    authGet,
-    authLogin,
-    authLogout,
-    setUserContext
+UserContext.setContext = function (user) {
+    if (window) {
+        window[keyOfUserContext] = Object.assign({}, user);
+        // this.emit('changed', user);
+    }
 };
+
+// EventEmitter.call(UserContext);
+
+export default UserContext;

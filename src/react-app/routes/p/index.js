@@ -4,7 +4,7 @@ import resources from '../../../resources';
 
 import LinkBar from '../../components/linkbar';
 
-class App extends React.Component {
+class PubApp extends React.Component {
     constructor(props) {
         super(props);
 
@@ -24,7 +24,7 @@ class App extends React.Component {
         console.info('App did mount, props: ', this.props);
 
         if (!this.state.supressFetchOnMount) {
-            App.fetchInitialState({routeParams: this.props.params, routeQuery: this.props.location.query})
+            PubApp.fetchInitialState({routeParams: this.props.params, routeQuery: this.props.location.query})
                 .then(result => this.setState(result));
         }
 
@@ -70,8 +70,8 @@ class App extends React.Component {
     }
 
     static get componentId() {
-        return 'App';
+        return 'PubApp';
     }
 }
 
-export default App;
+export default PubApp;

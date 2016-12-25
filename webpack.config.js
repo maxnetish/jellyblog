@@ -44,7 +44,11 @@ module.exports = {
     ],
     module: {
         preLoaders: [
-            {loaders: ['isomorphine']}
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                loader: 'isomorphine'
+            }
         ],
 
         loaders: [
@@ -111,7 +115,8 @@ module.exports = {
             // bind module to the complete module
             // "jquery-ui-1.10.3$": "jquery-ui-1.10.3/ui/jquery-ui.js",
         }
-    }/*,
+    }
+    /*,
      plugins: [
      new webpack.ProvidePlugin({
      // Automtically detect jQuery and $ as free var in modules
@@ -121,4 +126,5 @@ module.exports = {
      $: "jquery"
      })
      ]*/
-};
+}
+;

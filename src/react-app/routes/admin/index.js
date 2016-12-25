@@ -52,7 +52,7 @@ class AdminApp extends React.Component {
     // }
 
     static get componentId() {
-        return 'Admin-app';
+        return 'AdminApp';
     }
 
     static get requireRoles() {
