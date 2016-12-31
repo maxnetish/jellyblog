@@ -1,4 +1,5 @@
 import React from 'react';
+import {withRouter} from 'react-router';
 
 import resources from '../../../resources';
 
@@ -85,6 +86,9 @@ class LoginDialog extends React.Component {
             .then(response => {
                 self.props.user.setContext(response);
                 self.props.onFullfill();
+                if (self.props.location && self.props.location.query && self.props.location.query.next) {
+                    self.props.router.replace(self.props.location.query.next);
+                }
             })
             .catch(err => {
                 self.setState({
@@ -102,4 +106,4 @@ LoginDialog.propTypes = {
     user: React.PropTypes.object
 };
 
-export default LoginDialog;
+export default withRouter(LoginDialog);

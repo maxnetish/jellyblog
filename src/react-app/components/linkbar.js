@@ -5,7 +5,9 @@ import {Link} from 'react-router';
 import Button from 'elemental/lib/components/Button';
 import Glyph from 'elemental/lib/components/Glyph';
 
-import {authLogout, setUserContext} from '../../passport/client';
+import userContext from '../../passport/client';
+import globalDispatcher from '../../state-utils/global-dispatcher';
+import resources from '../../resources';
 
 class LinkBar extends React.Component {
     constructor(props) {
@@ -16,6 +18,14 @@ class LinkBar extends React.Component {
         if (props.getUserContext) {
             this.state.user = props.getUserContext();
         }
+    }
+
+    componentDidMount() {
+        globalDispatcher.on(globalDispatcher.eventKeys.USER_CHANGED, this.onUserChanged, this);
+    }
+
+    componentWillUnmount() {
+        globalDispatcher.removeListener(globalDispatcher.eventKeys.USER_CHANGED, this.onUserChanged, this);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -50,27 +60,27 @@ class LinkBar extends React.Component {
                     <Link to="/p/non-existent/path" activeClassName="active-link">No path</Link>
                 </li>
                 <li>
-                    {
-                        (this.state.user && this.state.user.userName) ?
-                            <Button type="link-cancel" onClick={this.handleLogout.bind(this)}>
-                                <Glyph icon="log-out"/>
-                                &nbsp;Logout
-                            </Button> :
-                            <Link to="/login" activeClassName="active-link">Login</Link>
-                    }
+                    <Link to="/admin" activeClassName="active-link">Admin area</Link>
                 </li>
             </ul>
         </nav>;
     }
 
     handleLogout(e) {
-        authLogout()
+        let self = this;
+
+        resources.auth.logout()
             .then(res => {
-                setUserContext(res);
-                // redirect to /
-                this.props.router.replace(this.props.router.location);
+                userContext.setContext(res);
+                globalDispatcher.emit(globalDispatcher.eventKeys.USER_CHANGED, userContext);
             })
             .catch(err => console.warn(err));
+    }
+
+    onUserChanged(e) {
+        this.setState({
+            user: e
+        });
     }
 }
 

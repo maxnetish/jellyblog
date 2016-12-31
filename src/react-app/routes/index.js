@@ -10,7 +10,6 @@ import About        from './p/about';
 import Posts        from './p/posts';
 import Post         from './p/post';
 import Page404      from './404';
-import Login        from './login';
 import AdminApp     from './admin';
 
 import UserBadge    from '../components/user-badge';
@@ -22,15 +21,15 @@ function getOnRouteEnterHandler({Component, getUserContext}) {
             // Component.onRouteEnter should be sync - we use it to validate user rights
             // if user not valid we should call something like
 
-            if (nextState.location.pathname === '/login') {
+            if (nextState.location.pathname === '/401') {
                 return;
             }
 
             let userContext = getUserContext();
             if (Component.requireRoles.indexOf(userContext.role) === -1) {
                 replace({
-                    pathname: '/login',
-                    state: {nextPathname: nextState.location.pathname}
+                    pathname: '/401',
+                    query: {next: nextState.location.pathname}
                 });
             }
         }
@@ -45,15 +44,15 @@ function getOnRouteChangeHandler({Component, getUserContext}) {
             // Component.onRouteEnter should be sync - we use it to validate user rights
             // if user not valid we should call something like
 
-            if (nextState.location.pathname === '/login') {
+            if (nextState.location.pathname === '/401') {
                 return;
             }
 
             let userContext = getUserContext();
             if (Component.requireRoles.indexOf(userContext.role) === -1) {
                 replace({
-                    pathname: '/login',
-                    state: {nextPathname: nextState.location.pathname}
+                    pathname: '/401',
+                    query: {next: nextState.location.pathname}
                 });
             }
         }
@@ -77,6 +76,19 @@ function RootComponent(props) {
     </div>;
 }
 
+function UnderConstructionComponent(props) {
+    return <div>
+        <h4>Under construction now</h4>
+    </div>;
+}
+
+function NotAuthorizeComponent(props) {
+    return <div>
+        <h4>Not permitted</h4>
+        <p>You should login with eligible credentials</p>
+    </div>;
+}
+
 function routes({getUserContext}) {
 
     return <Route path="/"
@@ -86,13 +98,11 @@ function routes({getUserContext}) {
                component={PubApp}
                onEnter={getOnRouteEnterHandler({Component: PubApp, getUserContext})}
                onChange={getOnRouteChangeHandler({Component: PubApp, getUserContext})}>
-
             <IndexRoute component={Dashboard}
                         onEnter={getOnRouteEnterHandler({Component: Dashboard, getUserContext})}/>
             <Route path="about"
                    component={About}
                    onEnter={getOnRouteEnterHandler({Component: About, getUserContext})}/>
-
             <Route path="posts"
                    component={Posts}
                    onEnter={getOnRouteEnterHandler({Component: Posts, getUserContext})}/>
@@ -100,19 +110,16 @@ function routes({getUserContext}) {
                    component={Post}
                    onEnter={getOnRouteEnterHandler({Component: Post, getUserContext})}
                    onChange={getOnRouteChangeHandler({Component: Post, getUserContext})}/>
-
-            <Route path="admin"
-                   component={AdminApp}
-                   onEnter={getOnRouteEnterHandler({Component: AdminApp, getUserContext})}
-                   onChange={getOnRouteChangeHandler({Component: AdminApp, getUserContext})}>
-            </Route>
         </Route>
-        <Route path="login"
-               component={Login}/>
+        <Route path="401"
+               component={NotAuthorizeComponent}/>
         <Route path="admin"
                component={AdminApp}
                onEnter={getOnRouteEnterHandler({Component: AdminApp, getUserContext})}
                onChange={getOnRouteChangeHandler({Component: AdminApp, getUserContext})}>
+            <IndexRoute component={UnderConstructionComponent}/>
+            <Route path="settings"
+                   component={UnderConstructionComponent}/>
         </Route>
         <Route path="*"
                component={Page404}

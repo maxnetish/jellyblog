@@ -4,6 +4,7 @@
 
 // import EventEmitter from 'eventemitter3';
 import {keyOfUserContext} from '../isomorph-utils/shared';
+import globalDispatcher from '../state-utils/global-dispatcher';
 
 // function setUserContext(userContext) {
 //     window[keyOfUserContext] = Object.assign({}, userContext);
@@ -25,6 +26,7 @@ UserContext.setContext = function (user) {
         window[keyOfUserContext] = Object.assign({}, user);
         // this.emit('changed', user);
     }
+    globalDispatcher.emit(globalDispatcher.eventKeys.USER_CHANGED, this);
 };
 
 // EventEmitter.call(UserContext);

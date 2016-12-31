@@ -25,24 +25,12 @@ class AdminMenu extends React.Component {
                     <Link to="/admin" activeClassName="active-link" onlyActiveOnIndex={true}>Admin home</Link>
                 </div>
                 <div className="menu-item">
-                    <Button type="link-cancel" onClick={this.handleLogout.bind(this)}>
-                        <Glyph icon="log-out"/>
-                        &nbsp;Logout
-                    </Button>
+                    <Link to="/admin/settings" activeClassName="active-link">Settings</Link>
                 </div>
             </div>
         </nav>;
     }
 
-    handleLogout(e) {
-        authLogout()
-            .then(res => {
-                setUserContext(res);
-                // redirect to /
-                this.props.router.replace(this.props.router.location);
-            })
-            .catch(err => console.warn(err));
-    }
 }
 
 export default AdminMenu;

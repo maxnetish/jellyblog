@@ -1,4 +1,5 @@
 import React from 'react';
+import {withRouter} from 'react-router';
 
 import resources from '../../../resources';
 
@@ -85,6 +86,7 @@ class UserBadge extends React.Component {
             .then(response => {
                 self.props.user.setContext(response || {});
                 self.forceUpdate();
+                self.props.router.push('/');
             })
             .catch(err => {
                 console.warn(err);
@@ -96,4 +98,4 @@ UserBadge.propTypes = {
     user: React.PropTypes.object.isRequired
 };
 
-export default UserBadge;
+export default withRouter(UserBadge);
