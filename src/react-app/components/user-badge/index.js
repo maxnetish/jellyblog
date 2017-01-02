@@ -56,7 +56,7 @@ class UserBadge extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.info('UserBadge did update, props: ', this.props);
+        // console.info('UserBadge did update, props: ', this.props);
 
         // If we should really fetch new data ?
 

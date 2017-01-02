@@ -11,6 +11,8 @@ import Posts        from './p/posts';
 import Post         from './p/post';
 import Page404      from './404';
 import AdminApp     from './admin';
+import AdminPosts   from './admin/posts';
+import AdminPost    from './admin/edit';
 
 import UserBadge    from '../components/user-badge';
 
@@ -120,6 +122,10 @@ function routes({getUserContext}) {
             <IndexRoute component={UnderConstructionComponent}/>
             <Route path="settings"
                    component={UnderConstructionComponent}/>
+            <Route path="posts"
+                   component={AdminPosts}/>
+            <Route path="edit/:postId"
+                   component={AdminPost}/>
         </Route>
         <Route path="*"
                component={Page404}

@@ -28,7 +28,7 @@ function getUserContext() {
 function createElementWithPrefetchedState(Component, props) {
     let stateForComponent = popInitialStateForComponent(Component.componentId);
     let initialState = stateForComponent && stateForComponent.state;
-    console.info(`Create element ${Component.componentId} with initial state: `, initialState);
+    // console.info(`Create element ${Component.componentId} with initial state: `, initialState);
     return <Component {...props} initialState={initialState} getUserContext={getUserContext}/>;
 }
 

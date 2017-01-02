@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import favicon from 'serve-favicon';
-// import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
@@ -14,6 +14,7 @@ import {setupPassport} from './passport/server';
 import cookieParser from 'cookie-parser';
 
 import morphine from './resources';
+import mongooseConfig from '../config/mongoose.json';
 import {expressRouteHandler} from './isomorph-utils/server';
 
 var app = express();
@@ -26,15 +27,15 @@ setupPassport(passport);
 /**
  * setup mongoose
  */
-// mongoose.Promise = global.Promise;
-// mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.connectionOptions, {promiseLibrary: global.Promise}))
-//     .then(function (response) {
-//         console.info(`Connected to database ${mongooseConfig.connectionUri}`);
-//         return response;
-//     })
-//     .catch(function (err) {
-//         console.error(`Cannot connect to database ${mongooseConfig.connectionUri}, ${err}`);
-//     });
+mongoose.Promise = global.Promise;
+mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.connectionOptions, {promiseLibrary: global.Promise}))
+    .then(function (response) {
+        console.info(`Connected to database ${mongooseConfig.connectionUri}`);
+        return response;
+    })
+    .catch(function (err) {
+        console.error(`Cannot connect to database ${mongooseConfig.connectionUri}, ${err}`);
+    });
 
 /**
  * setup app

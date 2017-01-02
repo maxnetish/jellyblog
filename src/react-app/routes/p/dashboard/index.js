@@ -19,7 +19,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        console.info('Dashboard did mount, props: ', this.props);
+        // console.info('Dashboard did mount, props: ', this.props);
 
         this.store.on(DashboardStore.notificationEventKey, this.onStoreUpdate, this);
 
@@ -31,10 +31,11 @@ class Dashboard extends React.Component {
 
     componentWillUnmount() {
         this.store.removeListener(DashboardStore.notificationEventKey, this.onStoreUpdate, this);
+        this.store.unbind(actions);
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.info('Dashboard did update, props: ', this.props);
+        // console.info('Dashboard did update, props: ', this.props);
 
         // If we should really fetch new data ?
 
@@ -51,7 +52,7 @@ class Dashboard extends React.Component {
     }
 
     onStoreUpdate(updatedState) {
-        console.info('Store notificate: ', updatedState);
+        // console.info('Store notificate: ', updatedState);
         this.setState(updatedState)
     }
 

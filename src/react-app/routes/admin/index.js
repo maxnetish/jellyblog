@@ -15,11 +15,11 @@ class AdminApp extends React.Component {
     }
 
     componentDidMount() {
-        console.info('Admin-app did mount, props: ', this.props);
+        // console.info('Admin-app did mount, props: ', this.props);
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.info('Admin-app did update, props: ', this.props);
+        // console.info('Admin-app did update, props: ', this.props);
 
         // If we should really fetch new data ?
 
@@ -38,11 +38,6 @@ class AdminApp extends React.Component {
     render() {
         return <div>
             <AdminMenu {...this.props}/>
-            <h2>Admin-app component</h2>
-            <div>Props.params:</div>
-            <pre>{JSON.stringify(this.props.params, '', 4)}</pre>
-            <div>App state:</div>
-            <pre>{JSON.stringify(this.state, '', 4)}</pre>
             {this.props.children}
         </div>;
     }

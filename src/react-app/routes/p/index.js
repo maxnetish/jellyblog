@@ -21,7 +21,7 @@ class PubApp extends React.Component {
     }
 
     componentDidMount() {
-        console.info('App did mount, props: ', this.props);
+        // console.info('App did mount, props: ', this.props);
 
         if (!this.state.supressFetchOnMount) {
             PubApp.fetchInitialState({routeParams: this.props.params, routeQuery: this.props.location.query})
@@ -32,7 +32,7 @@ class PubApp extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.info('App did update, props: ', this.props);
+        // console.info('App did update, props: ', this.props);
 
         // If we should really fetch new data ?
 
