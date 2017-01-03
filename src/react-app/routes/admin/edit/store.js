@@ -38,7 +38,7 @@ class AdminPostStore extends StateStoreBase {
 
     onPostFieldChanged(val){
         this.assignState({
-            post: Object.assign(this.getState(), val)
+            post: Object.assign(this.getState().post, val)
         });
         this.notifyStateChanged();
     }

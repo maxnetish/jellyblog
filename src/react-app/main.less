@@ -1,4 +1,5 @@
 @import 'npm://elemental/less/elemental';
+@import "../../node_modules/elemental/less/variables";
 
 body {
   font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -27,6 +28,27 @@ a.active-link {
   }
   &._all {
     padding: 5px;
+  }
+}
+
+.jb-badge {
+  border-radius: 0.2em;
+  color: @body-bg;
+  padding: 0.1em @table-padding;
+  &.success {
+    background-color: @app-success;
+  }
+  &.danger {
+    background-color: @app-danger;
+  }
+  &.info {
+    background-color: @app-info;
+  }
+  &.warning {
+    background-color: @app-warning;
+  }
+  &.primary {
+    background-color: @app-primary;
   }
 }
 
