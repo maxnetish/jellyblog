@@ -6,6 +6,7 @@ import Form from 'elemental/lib/components/Form';
 import FormField from 'elemental/lib/components/FormField';
 import FormInput from 'elemental/lib/components/FormInput';
 import FormRow from 'elemental/lib/components/FormRow';
+import Radio from 'elemental/lib/components/Radio';
 
 import classnames from 'classnames';
 
@@ -27,10 +28,32 @@ class PostForm extends React.Component {
 
         return <div className="post-edit-form">
             <h3>Edit post</h3>
-            <div>
-                <span className={postStatusClass}>{$filter('postStatus')(this.props.value.status)}</span>
-                <span className="inline-form-statics">Created: {$filter('dateAndTime')(this.props.value.createDate)}</span>
-                <span className="inline-form-statics">Updated: {$filter('dateAndTime')(this.props.value.updateDate)}</span>
+            <div className="form-statics-ct">
+                <div className={postStatusClass}>
+                    {$filter('postStatus')(this.props.value.status)}
+                </div>
+                <div className="inline-form-statics">
+                    <span>Created: </span>
+                    <time
+                        dateTime={this.props.value.createDate}>
+                        {$filter('dateAndTime')(this.props.value.createDate)}
+                    </time>
+                </div>
+                <div className="inline-form-statics">
+                    <span>Updated: </span>
+                    <time
+                        dateTime={this.props.value.updateDate}>
+                        {$filter('dateAndTime')(this.props.value.updateDate)}
+                    </time>
+                </div>
+                <div className="inline-form-statics">
+                    <span>Author: </span>
+                    <b>{this.props.value.author}</b>
+                </div>
+                <div className="inline-form-statics">
+                    <span>Id: </span>
+                    <b>{this.props.value._id}</b>
+                </div>
             </div>
             <hr/>
             <Form type="horizontal">
@@ -45,6 +68,48 @@ class PostForm extends React.Component {
                                    onChange={this.onInputChanged.bind(this)}/>
                     </FormField>
                 </FormRow>
+                <FormRow>
+                    <FormField label="Brief annotation"
+                               htmlFor="brief">
+                        <FormInput type="text"
+                                   placeholder="Enter post annotaion"
+                                   name="brief"
+                                   value={this.props.value.brief || ''}
+                                   id="brief"
+                                   onChange={this.onInputChanged.bind(this)}
+                                   multiline
+                                   className="form-textarea-brief"/>
+                    </FormField>
+                </FormRow>
+                <FormRow>
+                    <FormField label="Post content"
+                               htmlFor="content">
+                        <FormInput type="text"
+                                   placeholder="Enter post content"
+                                   name="content"
+                                   value={this.props.value.content || ''}
+                                   id="content"
+                                   onChange={this.onInputChanged.bind(this)}
+                                   multiline
+                                   className="form-textarea-content"/>
+                    </FormField>
+                </FormRow>
+                <FormRow>
+                    <FormField label="Content type">
+                        <div className="inline-controls">
+                            <Radio name="contentType"
+                                   label="HTML"
+                                   value="HTML"
+                                   checked={this.props.value.contentType === 'HTML'}
+                                   onChange={this.onRadioChange.bind(this)}/>
+                            <Radio name="contentType"
+                                   label="Markdown MD"
+                                   value="MD"
+                                   checked={this.props.value.contentType === 'MD'}
+                                   onChange={this.onRadioChange.bind(this)}/>
+                        </div>
+                    </FormField>
+                </FormRow>
             </Form>
         </div>;
     }
@@ -53,6 +118,14 @@ class PostForm extends React.Component {
         this.props.onChange({
             [e.target.name]: e.target.value
         });
+    }
+
+    onRadioChange(e) {
+        if(e.target.checked) {
+            this.props.onChange({
+                [e.target.name]: e.target.value
+            });
+        }
     }
 
 }

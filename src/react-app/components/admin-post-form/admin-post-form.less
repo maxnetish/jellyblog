@@ -6,10 +6,28 @@
     font-weight: 600;
   }
 
-  .inline-form-statics {
-    margin-left: @component-padding;
-    &:first-of-type {
-      margin-left: 0;
+  .form-statics-ct {
+
+    display: flex;
+    align-items: baseline;
+    flex-direction: column;
+
+    @media (min-width: @screen-sm) {
+      flex-direction: row;
+    }
+
+    .inline-form-statics {
+      @media (min-width: @screen-sm) {
+        margin-left: @component-padding;
+
+        &:first-of-type {
+          margin-left: 0;
+        }
+      }
+    }
+
+    time {
+      font-weight: 600;
     }
   }
 
@@ -17,5 +35,13 @@
     // override
     margin-top: @spacing-sm;
     margin-bottom: @spacing-sm;
+  }
+
+  .form-textarea-brief {
+    min-height: 5em;
+  }
+
+  .form-textarea-content {
+    min-height: 10em;
   }
 }

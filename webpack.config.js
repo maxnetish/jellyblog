@@ -6,7 +6,7 @@ module.exports = {
 
     // entry: './build/client.js',
     entry: {
-        'client': './src/client.js',
+        'client': './build/client.js',
         'common': [
             'react',
             'react-dom',
@@ -61,9 +61,9 @@ module.exports = {
                         'es2015'
                     ],
                     plugins: [
-                        'syntax-jsx',
-                        'transform-react-jsx',
-                        'transform-react-display-name'
+                        // 'syntax-jsx',
+                        // 'transform-react-jsx',
+                        // 'transform-react-display-name'
                     ],
                     cacheDirectory: true
                 }

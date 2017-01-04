@@ -84,11 +84,13 @@ class LoginDialog extends React.Component {
             password: form.password.value
         })
             .then(response => {
-                self.props.user.setContext(response);
                 self.props.onFullfill();
-                if (self.props.location && self.props.location.query && self.props.location.query.next) {
-                    self.props.router.replace(self.props.location.query.next);
-                }
+                setTimeout(() => {
+                    self.props.user.setContext(response);
+                    if (self.props.location && self.props.location.query && self.props.location.query.next) {
+                        self.props.router.replace(self.props.location.query.next);
+                    }
+                }, 100);
             })
             .catch(err => {
                 self.setState({

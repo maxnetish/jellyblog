@@ -37,12 +37,13 @@ module.exports = function (grunt) {
                     sourceMap: 'inline',
                     presets: [
                         // 'react',
-                        'es2015'
+                        // 'es2015'
                     ],
                     plugins: [
-                        // 'transform-es2015-modules-commonjs'
+                        'transform-es2015-modules-commonjs',
                         'syntax-jsx',
-                        'transform-react-jsx'
+                        ['transform-react-jsx', {useBuiltIns: true}],
+                        'transform-react-display-name'
                     ],
                     // auxiliaryCommentBefore: 'Babel jsx transform:',
                     // auxiliaryCommentAfter: 'end of jsx transform',
