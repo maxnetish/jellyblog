@@ -18,7 +18,14 @@ function fetch({id, urlId}={}) {
     // }
 
     return Post.findById(id, null, opts)
-        .exec();
+        .populate('tags', 'value')
+        .exec()
+        .then(res => {
+            if (res && res.tags) {
+                res.tags = res.tags.map(tagWrapped => tagWrapped.value);
+            }
+            return res;
+        });
 }
 
 export default fetch;

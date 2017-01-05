@@ -15,7 +15,9 @@ class AdminPost extends React.Component {
         super(props);
 
         this.state = {
-            post: {}
+            post: {},
+            tags: [],
+            loadingTags: false
         };
         this.store = new AdminPostStore(this.state);
     }
@@ -34,9 +36,14 @@ class AdminPost extends React.Component {
         return <div className="post-edit-wrapper">
             <div className="post-edit-internal">
                 <Card>
-                    <PostForm value={this.state.post} onChange={this.onPostFieldChanged.bind(this)}/>
+                    <PostForm
+                        value={this.state.post}
+                        onChange={this.onPostFieldChanged.bind(this)}
+                        tags={this.state.tags}
+                        loadingTags={this.state.loadingTags}
+                    />
                 </Card>
-                <Button type="primary">
+                <Button type="primary" onClick={this.noSaveButtonClick.bind(this)}>
                     <Glyph icon="cloud-upload"/>
                     <span>Save</span>
                 </Button>
@@ -52,6 +59,9 @@ class AdminPost extends React.Component {
         actions.postFieldChanged(val);
     }
 
+    noSaveButtonClick(e) {
+        actions.saveButtonClick(this.state.post);
+    }
 }
 
 export default withRouter(AdminPost);

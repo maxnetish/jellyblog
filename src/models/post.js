@@ -23,7 +23,8 @@ let postSchema = new mongoose.Schema({
     },
     author: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 128
     },
     contentType: {
         type: String,
@@ -34,17 +35,20 @@ let postSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        default: () => `At ${(new Date()).toLocaleString()}`
+        default: () => `At ${(new Date()).toLocaleString()}`,
+        maxlength: 512
     },
     brief: {
         type: String,
         required: true,
-        default: 'Short annotation of post content'
+        default: 'Short annotation of post content',
+        maxlength: 1024
     },
     content: {
         type: String,
         required: true,
-        default: 'Post content'
+        default: 'Post content',
+        maxlength: 131072
     },
     tags: [
         {
@@ -53,7 +57,8 @@ let postSchema = new mongoose.Schema({
         }
     ],
     titleImgUrl: {
-        type: String
+        type: String,
+        maxlength: 1024
     }
 });
 

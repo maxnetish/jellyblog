@@ -16,6 +16,8 @@ import AdminPost    from './admin/edit';
 
 import UserBadge    from '../components/user-badge';
 
+
+
 function getOnRouteEnterHandler({Component, getUserContext}) {
     return (nextState, replace) => {
         // check rights

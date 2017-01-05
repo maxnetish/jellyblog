@@ -7,6 +7,7 @@ import FormField from 'elemental/lib/components/FormField';
 import FormInput from 'elemental/lib/components/FormInput';
 import FormRow from 'elemental/lib/components/FormRow';
 import Radio from 'elemental/lib/components/Radio';
+import {Creatable} from 'react-select';
 
 import classnames from 'classnames';
 
@@ -15,9 +16,15 @@ import $filter from '../../../filter';
 class PostForm extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            tags: []
+        };
     }
 
     render() {
+        console.info('Post Form render: ', this.props);
+
         let postStatusClass = classnames({
             'inline-form-statics': true,
             'post-status-form': true,
@@ -95,7 +102,7 @@ class PostForm extends React.Component {
                     </FormField>
                 </FormRow>
                 <FormRow>
-                    <FormField label="Content type">
+                    <FormField label="Content type" width="one-third">
                         <div className="inline-controls">
                             <Radio name="contentType"
                                    label="HTML"
@@ -109,6 +116,17 @@ class PostForm extends React.Component {
                                    onChange={this.onRadioChange.bind(this)}/>
                         </div>
                     </FormField>
+                    <FormField label="Tags" width="two-thirds">
+                        <Creatable
+                            name="tags"
+                            multi={true}
+                            value={this.props.value.tags}
+                            options={this.props.tags}
+                            onChange={this.onSelectTagsChange.bind(this)}
+                            promptTextCreator={this.onPromptTextCreator.bind(this)}
+                            isLoading={this.props.loadingTags}
+                        />
+                    </FormField>
                 </FormRow>
             </Form>
         </div>;
@@ -121,18 +139,30 @@ class PostForm extends React.Component {
     }
 
     onRadioChange(e) {
-        if(e.target.checked) {
+        if (e.target.checked) {
             this.props.onChange({
                 [e.target.name]: e.target.value
             });
         }
     }
 
+    onSelectTagsChange(e) {
+        console.info('Select Tag Change: ', e);
+        this.props.onChange({
+            tags: e
+        });
+    }
+
+    onPromptTextCreator(e) {
+        return `Add new tag "${e}"`;
+    }
 }
 
 PostForm.propTypes = {
     value: React.PropTypes.object,
-    onChange: React.PropTypes.func.isRequired
+    onChange: React.PropTypes.func.isRequired,
+    tags: React.PropTypes.array,
+    loadingTags: React.PropTypes.bool
 };
 
 export default PostForm;

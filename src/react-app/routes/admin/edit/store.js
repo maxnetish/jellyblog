@@ -8,7 +8,10 @@ const actions = new Actions({
             async: true
         },
         postFieldChanged: {
-            async:false
+            async: false
+        },
+        saveButtonClick: {
+            async: false
         }
     }
 });
@@ -20,27 +23,88 @@ class AdminPostStore extends StateStoreBase {
 
     onComponentMounted(props) {
         let self = this;
+
+        self.assignState({
+            loadingTags: true
+        });
+        self.notifyStateChanged();
+
         resources.post.get({id: props.params.postId})
             .then(res => {
+                if (res && res.tags) {
+                    res.tags = res.tags.map(t => {
+                        return {label: t, value: t};
+                    });
+                }
                 self.assignState({
                     post: res
                 });
                 self.notifyStateChanged();
             })
-            .catch(err=>{
+            .catch(err => {
                 self.assignState({
                     err: err,
                     post: {}
                 });
                 self.notifyStateChanged();
             });
+        resources.tag.list()
+            .then(tagResponse => {
+                let tags = tagResponse.items || [];
+                tags = tags.map(t => {
+                    return {
+                        value: t.value,
+                        label: t.value
+                    };
+                });
+                self.assignState({
+                    tags: tags,
+                    loadingTags: false
+                });
+                self.notifyStateChanged();
+            })
+            .catch(err => {
+                self.assignState({
+                    err: err,
+                    tags: [],
+                    loadingTags: false
+                });
+                self.notifyStateChanged();
+            });
     }
 
-    onPostFieldChanged(val){
+    onPostFieldChanged(val) {
         this.assignState({
             post: Object.assign(this.getState().post, val)
         });
         this.notifyStateChanged();
+    }
+
+    onSaveButtonClick(post) {
+        // validate ?
+        let self = this;
+        if (post && post.tags) {
+            post.tags = post.tags.map(tagWrapped => tagWrapped.value);
+        }
+        resources.post.update(post)
+            .then(res => {
+                if (res && res.tags) {
+                    res.tags = res.tags.map(t => {
+                        return {label: t, value: t};
+                    });
+                }
+                self.assignState({
+                    post: res
+                });
+                self.notifyStateChanged();
+            })
+            .catch(err => {
+                self.assignState({
+                    err: err
+                });
+                self.notifyStateChanged();
+            });
+
     }
 }
 

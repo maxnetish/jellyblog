@@ -6,7 +6,8 @@ let tagSchema = new mongoose.Schema({
         type: String,
         required: true,
         index: true,
-        unique: true
+        unique: true,
+        maxlength: 128
     }
 });
 
