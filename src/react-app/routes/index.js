@@ -45,6 +45,7 @@ function getOnRouteChangeHandler({Component, getUserContext}) {
         if (Component.requireRoles) {
             // Component.onRouteEnter should be sync - we use it to validate user rights
             // if user not valid we should call something like
+            // [changes
 
             if (nextState.location.pathname === '/401') {
                 return;

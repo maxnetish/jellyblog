@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    cache: true,
+    cache: false,
 
     // entry: './build/client.js',
     entry: {
@@ -44,30 +44,30 @@ module.exports = {
     ],
     module: {
         preLoaders: [
-            {
-                test: /\.js$/,
-                exclude: /(node_modules|bower_components)/,
-                loader: 'isomorphine'
-            }
+            // {
+            //     test: /\.js$/,
+            //     exclude: /(node_modules|bower_components)/,
+            //     loader: 'isomorphine'
+            // }
         ],
 
         loaders: [
-            {
-                test: /\.js$/,
-                exclude: /(node_modules|bower_components)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: [
-                        'es2015'
-                    ],
-                    plugins: [
-                        // 'syntax-jsx',
-                        // 'transform-react-jsx',
-                        // 'transform-react-display-name'
-                    ],
-                    cacheDirectory: true
-                }
-            }
+            // {
+            //     test: /\.js$/,
+            //     exclude: /(node_modules|bower_components)/,
+            //     loader: 'babel-loader',
+            //     query: {
+            //         presets: [
+            //             'es2015'
+            //         ],
+            //         plugins: [
+            //             // 'syntax-jsx',
+            //             // 'transform-react-jsx',
+            //             // 'transform-react-display-name'
+            //         ],
+            //         cacheDirectory: false
+            //     }
+            // }
             // make sure to exclude route components here
             // {
             //     test: /\.js$/,

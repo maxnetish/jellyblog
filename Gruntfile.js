@@ -45,8 +45,6 @@ module.exports = function (grunt) {
                         ['transform-react-jsx', {useBuiltIns: true}],
                         'transform-react-display-name'
                     ],
-                    // auxiliaryCommentBefore: 'Babel jsx transform:',
-                    // auxiliaryCommentAfter: 'end of jsx transform',
                     ast: false
                 },
                 files: [
@@ -64,15 +62,14 @@ module.exports = function (grunt) {
                     sourceMap: false,
                     presets: [
                         // 'react',
-                        'es2015'
+                        // 'es2015'
                     ],
                     // uglify2JS doesn't support es6
                     plugins: [
+                        'transform-es2015-modules-commonjs',
                         'syntax-jsx',
-                        'transform-react-jsx',
+                        ['transform-react-jsx', {useBuiltIns: true}],
                         'transform-react-display-name'
-                         // 'transform-es2015-modules-commonjs'
-                    //     'transform-es2015-template-literals'
                     ],
                     ast: false
                 },
@@ -92,7 +89,16 @@ module.exports = function (grunt) {
             options: webpackCommonOptions,
             dev: {
                 devtool: 'source-map',
-                debug: true
+                debug: true,
+                module: {
+                    preLoaders: [
+                        {
+                            test: /\.js$/,
+                            exclude: /(node_modules|bower_components)/,
+                            loader: 'isomorphine'
+                        }
+                    ]
+                }
             },
             prod: {
                 // devtool: 'cheap-module-source-map',
@@ -106,7 +112,36 @@ module.exports = function (grunt) {
                     }),
                     new webpack.optimize.DedupePlugin(),
                     new webpack.optimize.UglifyJsPlugin()
-                ])
+                ]),
+                module: {
+                    preLoaders: [
+                        {
+                            test: /\.js$/,
+                            exclude: /(node_modules|bower_components)/,
+                            loader: 'isomorphine'
+                        }
+                    ],
+                    loaders: [
+                        {
+                            test: /\.js$/,
+                            exclude: /(node_modules|bower_components)/,
+                            loader: 'babel-loader',
+                            query: {
+                                presets: [
+                                    'es2015'
+                                ],
+                                plugins: [
+                                    // 'syntax-jsx',
+                                    // 'transform-react-jsx',
+                                    // 'transform-react-display-name'
+                                ],
+                                cacheDirectory: false,
+                                cacheIdentifier: 'babel-prod'
+                            }
+                        }
+                    ]
+                }
+
             }
         },
 
