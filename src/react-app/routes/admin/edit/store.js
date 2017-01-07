@@ -86,6 +86,9 @@ class AdminPostStore extends StateStoreBase {
         if (post && post.tags) {
             post.tags = post.tags.map(tagWrapped => tagWrapped.value);
         }
+        if (post.attachments) {
+            post.attachments = post.attachments.map(a => a._id);
+        }
         resources.post.update(post)
             .then(res => {
                 if (res && res.tags) {

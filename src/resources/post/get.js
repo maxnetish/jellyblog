@@ -19,6 +19,7 @@ function fetch({id, urlId}={}) {
 
     return Post.findById(id, null, opts)
         .populate('tags', 'value')
+        .populate('attachments')
         .exec()
         .then(res => {
             if (res && res.tags) {

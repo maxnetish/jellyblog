@@ -11,6 +11,11 @@ import passport from 'passport';
 import {setupPassport} from './passport/server';
 // import {Strategy} from 'passport-local';
 
+import multer from 'multer';
+import MulterGridfsStorage from 'multer-gridfs-storage';
+import {MongoClient} from 'mongodb';
+import serveGridfs from 'serve-gridfs';
+
 import cookieParser from 'cookie-parser';
 
 import morphine from './resources';
@@ -64,6 +69,88 @@ app.use(passport.session());
 app.use('/assets', serveStatic(path.join(__dirname, 'pub'), {
     index: false
 }));
+
+/**
+ * setup upload endpoint
+ */
+const gridFsStorage = MulterGridfsStorage({
+    url: mongooseConfig.connectionUri,
+    metadata: (req, file, cb) => {
+        let meta = {
+            context: req.body && req.body.context,
+            postId: (req.body && req.body.postId) ? new mongoose.mongo.ObjectId(req.body.postId) : undefined,
+            originalName: file.originalname,
+            width: (req.body && req.body.width) ? req.body.width : undefined,
+            height: (req.body && req.body.height) ? req.body.height : undefined
+        };
+        cb(null, meta);
+    },
+    log: true,
+    logLevel: 'all'
+});
+const uploadMiddleware = multer({
+    storage: gridFsStorage,
+    fileFilter: (req, file, cb) => {
+        if (!(req.user && req.user.role === 'admin')) {
+            cb(null, false);
+            return;
+        }
+
+        cb(null, true);
+    },
+    limits: {
+        fields: 8,
+        fileSize: 134217728,
+        files: 10
+    }
+});
+const uploadMiddlewareAttachment = uploadMiddleware.fields([
+    {
+        name: 'attachment',
+        maxCount: 10
+    },
+    {
+        name: 'avatarImage',
+        maxCount: 1
+    }
+]);
+app.post('/upload', uploadMiddlewareAttachment, (req, res) => {
+    res.send({
+        files: req.files
+    });
+});
+
+/**
+ * setup static serve from gridfs
+ *
+ */
+const mongoConnectionForServeGridFs = MongoClient.connect(mongooseConfig.connectionUri);
+const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
+    // bucketName: 'fs'
+    // serve-gridfs assumes that _id will be String (not ObjectId)
+    // so serve files by names
+    byId: false,
+    acceptRanges: true,
+    cacheControl: true,
+    maxAge: 86400,
+    etag: true,
+    // serve-gridfs internally use Date.toString() which could produce string with non-ascii chars,
+    // so we use custom implementation in setHeader option
+    lastModified: false,
+    fallthrough: false,
+    setHeader: (res, path, stat) => {
+        if (stat && stat.uploadDate) {
+            let uploadDateAsISO = (new Date(stat.uploadDate)).toISOString();
+            res.setHeader('last-modified', uploadDateAsISO);
+            if (!(stat.contentType && (stat.contentType.startsWith('image') || stat.contentType.startsWith('video')))) {
+                // For video/image not set Content-Type so browser should show these files inline
+                // For other browser should prompt to download file
+                res.setHeader('Content-Disposition', `attachment; filename="${stat.metadata.originalName}"`);
+            }
+        }
+    }
+});
+app.use('/file', serveGridFsByNamemiddleware);
 
 /**
  * bind isomorhine RPC-like interface

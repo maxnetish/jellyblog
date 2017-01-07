@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import File from './file';
 
 let postSchema = new mongoose.Schema({
     // _id
@@ -59,7 +60,13 @@ let postSchema = new mongoose.Schema({
     titleImgUrl: {
         type: String,
         maxlength: 1024
-    }
+    },
+    attachments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'File'
+        }
+    ]
 });
 
 export default mongoose.model('Post', postSchema);

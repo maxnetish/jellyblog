@@ -1,4 +1,4 @@
-import {Post, Tag} from '../../models';
+import {Post, Tag, File, FileData} from '../../models';
 
 function updateTags(tags) {
     tags = tags || [];
@@ -11,6 +11,34 @@ function updateTags(tags) {
     );
 
     return Promise.all(promises);
+}
+
+function updateAttachments(postId, newAttachments) {
+    return Post.findById(postId, 'attachments', {
+        lean: true
+    })
+        .then(post => {
+            newAttachments = newAttachments || [];
+            let currentAttachments = post.attachments || [];
+            let removingAttachments = [];
+            currentAttachments.forEach(currentAttachment => {
+                if (newAttachments.indexOf(currentAttachment.toString()) === -1) {
+                    removingAttachments.push(currentAttachment);
+                }
+            });
+            if (removingAttachments.length) {
+                let removePromises = [
+                    File.remove({
+                        _id: {$in: removingAttachments}
+                    }).exec(),
+                    FileData.remove({
+                        files_id: {$in: removingAttachments}
+                    }).exec()
+                ];
+                return Promise.all(removePromises);
+            }
+            return false;
+        });
 }
 
 function updatePost(post) {
@@ -30,15 +58,21 @@ function updatePost(post) {
         title: post.title,
         brief: post.brief,
         content: post.content,
-        titleImgUrl: post.titleImgUrl
+        titleImgUrl: post.titleImgUrl,
+        attachments: post.attachments // should be array of _id
     };
 
-    return updateTags(post.tags)
-        .then(tagsIds => Post.findByIdAndUpdate(post._id, Object.assign(postData, {tags: tagsIds}), {
+    return Promise.all([
+        updateTags(post.tags),
+        updateAttachments(post._id, post.attachments)
+    ])
+        .then(preResult => Post.findByIdAndUpdate(post._id, Object.assign(postData, {tags: preResult[0]}), {
             'new': true,
             upsert: false,
             lean: true
-        }).populate('tags', 'value'))
+        })
+            .populate('tags', 'value')
+            .populate('attachments'))
         .then(res => {
             if (res && res.tags) {
                 res.tags = res.tags.map(tagWrapped => tagWrapped.value);
