@@ -1,30 +1,28 @@
-import React from 'react';
+import React                from 'react';
 
-import request from 'superagent';
-
-import Button from 'elemental/lib/components/Button';
-import Glyph from 'elemental/lib/components/Glyph';
-import Form from 'elemental/lib/components/Form';
-import FormField from 'elemental/lib/components/FormField';
-import FormInput from 'elemental/lib/components/FormInput';
-import FormRow from 'elemental/lib/components/FormRow';
-import Radio from 'elemental/lib/components/Radio';
+import Button               from 'elemental/lib/components/Button';
+import Glyph                from 'elemental/lib/components/Glyph';
+import Form                 from 'elemental/lib/components/Form';
+import FormField            from 'elemental/lib/components/FormField';
+import FormInput            from 'elemental/lib/components/FormInput';
+import FormRow              from 'elemental/lib/components/FormRow';
+import Radio                from 'elemental/lib/components/Radio';
 // import FileUpload from 'elemental/lib/components/FileUpload';
-import {Creatable} from 'react-select';
-import AvatarEditor from 'react-avatar-editor';
+import {Creatable}          from 'react-select';
+import UploadFileDialog     from '../upload-file-dialog';
+import CreateAvatarDialog   from '../create-avatar-dialog';
 
-import classnames from 'classnames';
+import classnames           from 'classnames';
 
-import $filter from '../../../filter';
+import $filter              from '../../../filter';
 
 class PostForm extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            filesToUpload: [],
-            addAvatarSource: null,
-            addAvatarScale: 1
+            uploadFileDialogVisible: false,
+            createAvatarDialogVisible: false
         };
     }
 
@@ -135,7 +133,21 @@ class PostForm extends React.Component {
                     </FormField>
                 </FormRow>
                 <FormRow>
-                    <FormField label="Attachments" width="one-third">
+                    <FormField label="Attachments">
+                        <div>
+                            <Button type="primary" onClick={this.onAddAttachmentsClick.bind(this)}>
+                                <Glyph icon="file-add"/>
+                                <span>Add attachments</span>
+                            </Button>
+                        </div>
+                        <UploadFileDialog
+                            isOpen={this.state.uploadFileDialogVisible}
+                            onCancel={this.onUploadDialogCancel.bind(this)}
+                            onFullfill={this.onUploadDialogFullfill.bind(this)}
+                            uploadMulti={true}
+                            uploadFieldName="attachment"
+                            uploadAdditionalData={{context: 'postAttachment', postId: this.props.value._id}}
+                        />
                         {this.props.value.attachments ?
                             <ol className="files-attached">
                                 {this.props.value.attachments.map(a => <li key={a._id}>
@@ -148,97 +160,28 @@ class PostForm extends React.Component {
                                     &nbsp;({a.length} bytes; {a.contentType})&nbsp;
                                     <Button
                                         type="link-delete"
-                                        onClick={this.onRemoveAttachmentClick.bind(this, a._id)}>
+                                        onClick={this.onRemoveAttachmentClick.bind(this, a._id)}
+                                        title="Remove attachment"
+                                    >
                                         <Glyph icon="trashcan"/>
                                     </Button>
                                 </li>)}
                             </ol> : null}
                     </FormField>
-                    <FormField label="Add attachments" width="two-thirds">
-                        <input
-                            type="file"
-                            style={{'display': 'none'}}
-                            ref="fileInput"
-                            multiple
-                            onChange={this.onFileInputChange.bind(this)}
-                        />
-                        <Button
-                            type="primary"
-                            onClick={this.onSelectFileClick.bind(this)}
-                        >
-                            <Glyph icon="file-add"/>
-                            <span>Select file(s) to upload</span>
-                        </Button>
-                        <ol className="files-to-upload">
-                            {this.state.filesToUpload.map(f => <li key={f.name}><b>{f.name}</b> ({f.size}
-                                bytes; {f.type})</li>)}
-                        </ol>
-                        {
-                            this.state.filesToUpload.length ?
-                                <Button
-                                    type="primary"
-                                    onClick={this.onFileUploadClick.bind(this)}
-                                >
-                                    <Glyph icon="cloud-upload"/>
-                                    <span>Upload</span>
-                                </Button>
-                                : null
-                        }
-                    </FormField>
                 </FormRow>
                 <FormRow>
                     <FormField label="Add avatar">
-                        <div style={{width: 200, height: 200}}>
-                            <AvatarEditor
-                                image={this.state.addAvatarSource}
-                                ref="avatarEditor"
-                                width={100}
-                                height={100}
-                                border={50}
-                                color={[32, 64, 64, 0.6]} // RGBA
-                                scale={this.state.addAvatarScale}
-                            />
-                        </div>
-                        <div style={{width: 200}}>
-                            <input
-                                className="range-form-control"
-                                type="range"
-                                max="10"
-                                min="1"
-                                step="0.1"
-                                value={this.state.addAvatarScale}
-                                onChange={this.onAddAvatarScaleChange.bind(this)}
-                            />
-                        </div>
-                        <input
-                            type="file"
-                            style={{'display': 'none'}}
-                            ref="addAvatarFileInput"
-                            accept="image/*"
-                            onChange={this.onAddAvatarFileInputChange.bind(this)}
-                        />
                         <div>
-                            <Button
-                                type="primary"
-                                onClick={this.onAddAvatarSelectFileClick.bind(this)}
-                                title="Select file to make avatar from"
-                            >
-                                <Glyph icon="file-media"/>
-                                <span>Select file</span>
+                            <Button type="primary" onClick={this.onAddAvatarClick.bind(this)}>
+                                <Glyph icon="file-add"/>
+                                <span>Add avatar</span>
                             </Button>
                         </div>
-                        <div className="text-right">
-                            {this.state.addAvatarSource ?
-                                <Button
-                                    type="success"
-                                    onClick={this.onAddAvatarApplyClick.bind(this)}
-                                    title="Apply and save new avatar"
-                                >
-                                    <Glyph icon="cloud-upload"/>
-                                    <span>Apply</span>
-                                </Button> : null
-                            }
-                        </div>
+                        <CreateAvatarDialog
+                            isOpen={this.state.createAvatarDialogVisible}
+                            onCancel={this.onCreateAvatarDialogCancel.bind(this)}
+                            onFullfill={this.onCreateAvatarDialogFullfill.bind(this)}
+                        />
                     </FormField>
                 </FormRow>
             </Form>
@@ -272,46 +215,26 @@ class PostForm extends React.Component {
         return `Add new tag "${e}"`;
     }
 
-    onSelectFileClick(e) {
-        this.refs.fileInput.click();
-    }
-
-    onFileInputChange(e) {
+    onAddAttachmentsClick(e) {
         this.setState({
-            filesToUpload: Array.prototype.slice.call(e.target.files, 0)
+            uploadFileDialogVisible: true
         });
     }
 
-    onFileUploadClick(e) {
-        let files = this.refs.fileInput.files;
-        let formData = new FormData();
+    onUploadDialogCancel(e) {
+        this.setState({
+            uploadFileDialogVisible: false
+        });
+    }
 
-        for (let key in files) {
-            if (files.hasOwnProperty(key) && files[key] instanceof File) {
-                formData.append('attachment', files[key]);
-            }
-        }
-
-        formData.append('context', 'postAttachment');
-        formData.append('postId', this.props.value._id);
-
-        request
-            .post('/upload')
-            .send(formData)
-            .then(res => {
-                if (res.status !== 200) {
-                    throw new Error(res.status);
-                }
-                let uploadedFiles = res.body.files.attachment || [];
-                let existentAttachment = this.props.value.attachments || [];
-                this.props.onChange({
-                    attachments: existentAttachment.concat(uploadedFiles.map(f => f.grid))
-                });
-                this.setState({
-                    filesToUpload: []
-                });
-            })
-            .catch(err => console.warn(err));
+    onUploadDialogFullfill(uploadedFiles) {
+        let existentAttachment = this.props.value.attachments || [];
+        this.props.onChange({
+            attachments: existentAttachment.concat(uploadedFiles)
+        });
+        this.setState({
+            uploadFileDialogVisible: false
+        });
     }
 
     onRemoveAttachmentClick(attachmentId, e) {
@@ -321,68 +244,22 @@ class PostForm extends React.Component {
         });
     }
 
-    onAddAvatarSelectFileClick(e) {
-        this.refs.addAvatarFileInput.click();
-    }
-
-    onAddAvatarScaleChange(e) {
+    onAddAvatarClick(e) {
         this.setState({
-            addAvatarScale: parseFloat(e.target.value)
+            createAvatarDialogVisible: true
         });
     }
 
-    onAddAvatarFileInputChange(e) {
-        let targetInput = e.target;
-        let reader;
-        let self = this;
-
-        if (!(targetInput.files && targetInput.files[0])) {
-            return;
-        }
-
-        reader = new FileReader();
-
-        reader.onload = loadEvent => {
-            let dataUri = loadEvent.target.result;
-            self.setState({
-                addAvatarSource: dataUri
-            });
-        };
-
-        reader.onerror = event => console.warn(`File could not be read! Code ${event.target.error.code}`);
-
-        reader.readAsDataURL(targetInput.files[0]);
+    onCreateAvatarDialogCancel(e) {
+        this.setState({
+            createAvatarDialogVisible: false
+        });
     }
 
-    // onAddAvatarCancelClick(e) {
-    //     this.setState({
-    //         addAvatarSource: null
-    //     });
-    // }
-
-    onAddAvatarApplyClick(e) {
-        // let blob = convertDataUrl2Blob(this.refs.avatarEditor.getImage());
-        let self = this;
-        this.refs.avatarEditor.getImage().toBlob(blob => {
-            let formData = new FormData();
-
-            formData.append('avatarImage', blob, self.refs.addAvatarFileInput.files[0].name);
-
-            formData.append('context', 'avatarImage');
-            formData.append('width', '100');
-            formData.append('height', '100');
-
-            request
-                .post('/upload')
-                .send(formData)
-                .then(res => {
-                    if (res.status !== 200) {
-                        throw new Error(res.status);
-                    }
-                    let uploadedFile = res.body.files.avatarImage || [];
-                    console.info(uploadedFile);
-                })
-                .catch(err => console.warn(err));
+    onCreateAvatarDialogFullfill(e) {
+        console.info('Create avatar: ', e);
+        this.setState({
+            createAvatarDialogVisible: false
         });
     }
 }
