@@ -29,6 +29,15 @@ class AdminPostStore extends StateStoreBase {
         });
         self.notifyStateChanged();
 
+        // DEBUG
+        // resources.file.find({
+        //     context: 'avatarImage',
+        // })
+        //     .then(res => {
+        //         console.log(res);
+        //     })
+        //     .catch(err => console.warn(err));
+
         resources.post.get({id: props.params.postId})
             .then(res => {
                 if (res && res.tags) {

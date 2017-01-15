@@ -20,9 +20,10 @@ import cookieParser from 'cookie-parser';
 
 import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
+import fileStoreConfig from '../config/file-store.json';
 import {expressRouteHandler} from './isomorph-utils/server';
 
-var app = express();
+const app = express();
 
 /**
  * Setup passport
@@ -115,8 +116,14 @@ const uploadMiddlewareAttachment = uploadMiddleware.fields([
     }
 ]);
 app.post('/upload', uploadMiddlewareAttachment, (req, res) => {
+    let filesByFieldname = Object.assign({}, req.files || {});
+    for (let fieldName in filesByFieldname) {
+        if (filesByFieldname.hasOwnProperty(fieldName)) {
+            filesByFieldname[fieldName] = filesByFieldname[fieldName].map(f => Object.assign(f, {url: path.join(fileStoreConfig.gridFsBaseUrl, f.filename)}));
+        }
+    }
     res.send({
-        files: req.files
+        files: filesByFieldname
     });
 });
 
@@ -150,7 +157,7 @@ const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
         }
     }
 });
-app.use('/file', serveGridFsByNamemiddleware);
+app.use(fileStoreConfig.gridFsBaseUrl, serveGridFsByNamemiddleware);
 
 /**
  * bind isomorhine RPC-like interface

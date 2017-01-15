@@ -14,6 +14,7 @@ import CreateAvatarDialog   from '../create-avatar-dialog';
 
 import classnames           from 'classnames';
 
+import fileStoreConfig      from '../../../../config/file-store.json';
 import $filter              from '../../../filter';
 
 class PostForm extends React.Component {
@@ -152,7 +153,7 @@ class PostForm extends React.Component {
                             <ol className="files-attached">
                                 {this.props.value.attachments.map(a => <li key={a._id}>
                                     <a
-                                        href={`/file/${a.filename}`}
+                                        href={`${fileStoreConfig.gridFsBaseUrl}/${a.filename}`}
                                         target="_blank"
                                     >
                                         <b>{a.metadata.originalName}</b>

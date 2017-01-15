@@ -53,6 +53,7 @@
     "grunt-contrib-less": "^1.4.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-webpack": "^1.0.18",
+    "json-loader": "^0.5.4",
     "less-plugin-autoprefix": "^1.5.1",
     "less-plugin-npm-import": "^2.1.0",
     "load-grunt-tasks": "^3.5.2",
