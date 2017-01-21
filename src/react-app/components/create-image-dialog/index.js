@@ -1,5 +1,5 @@
 /**
- * resize crop and upload avatar image
+ * resize crop and upload image
  */
 
 import React from 'react';
@@ -17,7 +17,24 @@ import Glyph from 'elemental/lib/components/Glyph';
 import Alert from 'elemental/lib/components/Alert';
 import AvatarEditor from 'react-avatar-editor';
 
-class CreateAvatarDialog extends React.Component {
+const componentProps = {
+    isOpen: React.PropTypes.bool,                   // Modal visible
+    onCancel: React.PropTypes.func.isRequired,      // On cancel modal handler (should reset isOpen)
+    onFullfill: React.PropTypes.func.isRequired,    // On resolve dialog handler
+    imageWidth: React.PropTypes.number,             // Image width
+    imageHeight: React.PropTypes.number,            // Image height
+    uploadUrl: React.PropTypes.string,              // url to upload image
+    context: React.PropTypes.string                 // context to set to uploded file
+};
+
+const defaultComponentProps = {
+    imageWidth: 100,
+    imageHeight: 100,
+    uploadUrl: '/upload',
+    context: 'avatarImage'
+};
+
+class CreateImageDialog extends React.Component {
 
     constructor(props) {
         super(props);
@@ -47,11 +64,11 @@ class CreateAvatarDialog extends React.Component {
 
     render() {
         let formId = 'jellyblog-create-avatar-form';
-        let avatarHeight = this.props.avatarHeight || 100;
-        let avatarWidth = this.props.avatarWidth || 100;
+        let imageHeight = this.props.imageHeight;
+        let imageWidth = this.props.imageWidth;
         let borderWidth = 50;
-        let controlWidth = avatarWidth + 2 * borderWidth;
-        let controlHeight = avatarHeight + 2 * borderWidth;
+        let controlWidth = imageWidth + 2 * borderWidth;
+        let controlHeight = imageHeight + 2 * borderWidth;
         let modalWidth = controlWidth + 40;
 
         return <Modal
@@ -86,8 +103,8 @@ class CreateAvatarDialog extends React.Component {
                                 <AvatarEditor
                                     image={this.state.avatarSource}
                                     ref="avatarEditor"
-                                    width={avatarWidth}
-                                    height={avatarHeight}
+                                    width={imageWidth}
+                                    height={imageHeight}
                                     border={borderWidth}
                                     color={[32, 64, 64, 0.6]} // RGBA
                                     scale={this.state.avatarScale}
@@ -155,15 +172,15 @@ class CreateAvatarDialog extends React.Component {
 
         this.refs.avatarEditor[retrieveCanvas]().toBlob(blob => {
             let formData = new FormData();
-            let uploadUrl = this.props.uploadUrl || '/upload';
-            let avatarHeight = self.props.avatarHeight || 100;
-            let avatarWidth = self.props.avatarWidth || 100;
+            let uploadUrl = this.props.uploadUrl;
+            let imageHeight = self.props.imageHeight;
+            let imageWidth = self.props.imageWidth;
 
-            formData.append('context', 'avatarImage');
-            formData.append('width', '' + avatarWidth);
-            formData.append('height', '' + avatarHeight);
+            formData.append('context', this.props.context);
+            formData.append('width', '' + imageWidth);
+            formData.append('height', '' + imageHeight);
 
-            formData.append('avatarImage', blob, self.refs.fileInput.files[0].name);
+            formData.append(this.props.context, blob, self.refs.fileInput.files[0].name);
 
             request
                 .post(uploadUrl)
@@ -175,7 +192,7 @@ class CreateAvatarDialog extends React.Component {
                     if (res.status !== 200) {
                         throw new Error(res.status);
                     }
-                    let uploadedFile = res.body.files.avatarImage || [];
+                    let uploadedFile = res.body.files[this.props.context] || [];
                     uploadedFile = uploadedFile.map(f => f.grid);
                     self.props.onFullfill(uploadedFile);
                 })
@@ -231,13 +248,7 @@ class CreateAvatarDialog extends React.Component {
 
 }
 
-CreateAvatarDialog.propTypes = {
-    isOpen: React.PropTypes.bool,
-    onCancel: React.PropTypes.func.isRequired,
-    onFullfill: React.PropTypes.func.isRequired,
-    avatarWidth: React.PropTypes.number,
-    avatarHeight: React.PropTypes.number,
-    uploadUrl: React.PropTypes.string
-};
+CreateImageDialog.propTypes = componentProps;
+CreateImageDialog.defaultProps = defaultComponentProps;
 
-export default CreateAvatarDialog;
+export default CreateImageDialog;

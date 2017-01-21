@@ -8,9 +8,12 @@ import FormInput            from 'elemental/lib/components/FormInput';
 import FormRow              from 'elemental/lib/components/FormRow';
 import Radio                from 'elemental/lib/components/Radio';
 // import FileUpload from 'elemental/lib/components/FileUpload';
-import {Creatable}          from 'react-select';
+
+// may be move to https://github.com/bvaughn/react-virtualized-select/
+import Select               from 'react-select';
 import UploadFileDialog     from '../upload-file-dialog';
-import CreateAvatarDialog   from '../create-avatar-dialog';
+import CreateAvatarDialog   from '../create-image-dialog';
+import ImageLibrary         from '../admin-image-library';
 
 import classnames           from 'classnames';
 
@@ -122,7 +125,7 @@ class PostForm extends React.Component {
                         </div>
                     </FormField>
                     <FormField label="Tags" width="two-thirds">
-                        <Creatable
+                        <Select.Creatable
                             name="tags"
                             multi={true}
                             value={this.props.value.tags}
@@ -171,7 +174,12 @@ class PostForm extends React.Component {
                     </FormField>
                 </FormRow>
                 <FormRow>
-                    <FormField label="Add avatar">
+                    <FormField label="Choose avatar for post" width="two-thirds">
+                        <Select
+                            options={[{value: 'opt-1', label: 'Option 1', data: 'bla bla'}]}
+                        />
+                    </FormField>
+                    <FormField label="Add avatar" width="one-third">
                         <div>
                             <Button type="primary" onClick={this.onAddAvatarClick.bind(this)}>
                                 <Glyph icon="file-add"/>
@@ -185,10 +193,24 @@ class PostForm extends React.Component {
                         />
                     </FormField>
                 </FormRow>
+                <FormRow>
+                    <FormField label="image for post title">
+                        <ImageLibrary
+                            value={this.state.titleImageFile}
+                            onChange={this.imageLibraryOnChange.bind(this)}
+                        />
+                    </FormField>
+                </FormRow>
             </Form>
         </div>;
 
         // accept="image/jpg, image/gif, image/png"
+    }
+
+    imageLibraryOnChange(e) {
+        this.setState({
+            titleImageFile: e
+        });
     }
 
     onInputChanged(e) {

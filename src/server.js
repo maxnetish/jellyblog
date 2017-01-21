@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import urljoin from 'url-join';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
 
@@ -119,7 +120,10 @@ app.post('/upload', uploadMiddlewareAttachment, (req, res) => {
     let filesByFieldname = Object.assign({}, req.files || {});
     for (let fieldName in filesByFieldname) {
         if (filesByFieldname.hasOwnProperty(fieldName)) {
-            filesByFieldname[fieldName] = filesByFieldname[fieldName].map(f => Object.assign(f, {url: path.join(fileStoreConfig.gridFsBaseUrl, f.filename)}));
+            filesByFieldname[fieldName] = filesByFieldname[fieldName].map(f => {
+                f.grid.url = urljoin(fileStoreConfig.gridFsBaseUrl, f.filename);
+                return f;
+            });
         }
     }
     res.send({

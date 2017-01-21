@@ -44,11 +44,10 @@ function updateAttachments(postId, newAttachments) {
 function updatePost(post) {
     if (!this.xhr) {
         // allow only rpc call
-        reject(500);
-        return;
+        return Promise.reject(500);
     }
     if (!(this.req.user && this.req.user.role === 'admin')) {
-        reject(401);
+        return Promise.reject(401);
     }
 
     let postData = {

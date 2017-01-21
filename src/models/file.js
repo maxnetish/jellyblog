@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import fileStoreConfig from '../../config/file-store.json';
-import path from 'path';
+import urljoin from 'url-join';
 
 let FileSchema = new mongoose.Schema({
     filename: String
@@ -9,7 +9,7 @@ let FileSchema = new mongoose.Schema({
 });
 
 FileSchema.virtual('url').get(function (i) {
-    return path.join(fileStoreConfig.gridFsBaseUrl, this.filename);
+    return urljoin(fileStoreConfig.gridFsBaseUrl, this.filename);
 });
 
 FileSchema.set('toObject', {virtuals: true});

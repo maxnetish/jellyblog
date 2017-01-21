@@ -3,11 +3,11 @@ import {Post} from '../../models';
 function createPost(post) {
     if (!this.xhr) {
         // allow only rpc call
-        reject(500);
+        return Promise.reject(500);
         return;
     }
     if (!(this.req.user && this.req.user.role === 'admin')) {
-        reject(401);
+        return Promise.reject(401);
     }
 
     let postData = Object.assign(post || {}, {

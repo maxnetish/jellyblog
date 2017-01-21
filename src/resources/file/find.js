@@ -5,11 +5,10 @@ import mongooseConfig from '../../../config/mongoose.json';
 function find({context, postId, contentType, uploadDateMax, uploadDateMin, max = mongooseConfig.paginationDefaultLimit, skip = 0} = {}) {
     if (!this.xhr) {
         // allow only rpc call
-        reject(500);
-        return;
+        return Promise.reject(500);
     }
     if (!(this.req.user && this.req.user.role === 'admin')) {
-        reject(401);
+        return Promise.reject(401);
     }
 
     let projection = '_id filename url contentType length uploadDate metadata';
@@ -18,7 +17,7 @@ function find({context, postId, contentType, uploadDateMax, uploadDateMin, max =
         lean: false,
         limit: max,
         skip: skip,
-        sort: 'uploadDate'
+        sort: '-uploadDate'
     };
     let condition = {};
 
