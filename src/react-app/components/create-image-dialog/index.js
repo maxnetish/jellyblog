@@ -5,6 +5,8 @@
 import React from 'react';
 import request from 'superagent';
 
+import {autobind} from 'core-decorators';
+
 import Modal from 'elemental/lib/components/Modal';
 import ModalBody from 'elemental/lib/components/ModalBody';
 import ModalHeader from 'elemental/lib/components/ModalHeader';
@@ -16,23 +18,6 @@ import Spinner from 'elemental/lib/components/Spinner';
 import Glyph from 'elemental/lib/components/Glyph';
 import Alert from 'elemental/lib/components/Alert';
 import AvatarEditor from 'react-avatar-editor';
-
-const componentProps = {
-    isOpen: React.PropTypes.bool,                   // Modal visible
-    onCancel: React.PropTypes.func.isRequired,      // On cancel modal handler (should reset isOpen)
-    onFullfill: React.PropTypes.func.isRequired,    // On resolve dialog handler
-    imageWidth: React.PropTypes.number,             // Image width
-    imageHeight: React.PropTypes.number,            // Image height
-    uploadUrl: React.PropTypes.string,              // url to upload image
-    context: React.PropTypes.string                 // context to set to uploded file
-};
-
-const defaultComponentProps = {
-    imageWidth: 100,
-    imageHeight: 100,
-    uploadUrl: '/upload',
-    context: 'avatarImage'
-};
 
 class CreateImageDialog extends React.Component {
 
@@ -75,22 +60,22 @@ class CreateImageDialog extends React.Component {
             className="jb-create-avatar-dialog"
             width={modalWidth}
             isOpen={this.props.isOpen}
-            onCancel={this.onCancel.bind(this)}
+            onCancel={this.onCancel}
         >
-            <ModalHeader text="Create avatar" showCloseButton onClose={this.onCancel.bind(this)}/>
+            <ModalHeader text="Create avatar" showCloseButton onClose={this.onCancel}/>
             <ModalBody>
-                <Form id={formId} onSubmit={this.onFormSubmit.bind(this)} name={formId} method="POST">
+                <Form id={formId} onSubmit={this.onFormSubmit} name={formId} method="POST">
                     <input
                         type="file"
                         style={{'display': 'none'}}
                         ref="fileInput"
                         accept="image/*"
-                        onChange={this.onFileInputChange.bind(this)}
+                        onChange={this.onFileInputChange}
                     />
                     <div>
                         <Button
                             type="primary"
-                            onClick={this.onSelectFileClick.bind(this)}
+                            onClick={this.onSelectFileClick}
                             title="Select file to make avatar from"
                         >
                             <Glyph icon="file-media"/>
@@ -118,7 +103,7 @@ class CreateImageDialog extends React.Component {
                                     min="1"
                                     step="0.1"
                                     value={this.state.avatarScale}
-                                    onChange={this.onAvatarScaleChange.bind(this)}
+                                    onChange={this.onAvatarScaleChange}
                                 />
                             </div>
                         </div>
@@ -130,7 +115,7 @@ class CreateImageDialog extends React.Component {
             <ModalFooter>
                 <Button
                     type="link-cancel"
-                    onClick={this.onCancel.bind(this)}
+                    onClick={this.onCancel}
                     disabled={this.state.loading}
                 >
                     <Glyph icon="circle-slash"/>
@@ -149,6 +134,7 @@ class CreateImageDialog extends React.Component {
         </Modal>;
     }
 
+    @autobind
     onCancel(e) {
         if (e && e.preventDefault) {
             e.preventDefault();
@@ -156,9 +142,10 @@ class CreateImageDialog extends React.Component {
         if (this.state.loading) {
             return;
         }
-        this.props.onCancel();
+        this.props.onReject('cancel');
     }
 
+    @autobind
     onFormSubmit(e) {
         e.preventDefault();
 
@@ -194,7 +181,7 @@ class CreateImageDialog extends React.Component {
                     }
                     let uploadedFile = res.body.files[this.props.context] || [];
                     uploadedFile = uploadedFile.map(f => f.grid);
-                    self.props.onFullfill(uploadedFile);
+                    self.props.onResolve(uploadedFile);
                 })
                 .catch(err => {
                     self.setState({
@@ -207,6 +194,7 @@ class CreateImageDialog extends React.Component {
         });
     }
 
+    @autobind
     onFileInputChange(e) {
         let targetInput = e.target;
         let reader;
@@ -236,10 +224,12 @@ class CreateImageDialog extends React.Component {
         reader.readAsDataURL(targetInput.files[0]);
     }
 
+    @autobind
     onSelectFileClick(e) {
         this.refs.fileInput.click();
     }
 
+    @autobind
     onAvatarScaleChange(e) {
         this.setState({
             avatarScale: parseFloat(e.target.value)
@@ -248,7 +238,23 @@ class CreateImageDialog extends React.Component {
 
 }
 
-CreateImageDialog.propTypes = componentProps;
-CreateImageDialog.defaultProps = defaultComponentProps;
+CreateImageDialog.propTypes = {
+    // Use from decorator:
+    isOpen: React.PropTypes.bool,                   // Modal visible
+    onResolve: React.PropTypes.func,                // On cancel modal handler
+    onReject: React.PropTypes.func,                 // On resolve dialog handler
+
+    // Use in .show(data)
+    imageWidth: React.PropTypes.number,             // Image width
+    imageHeight: React.PropTypes.number,            // Image height
+    uploadUrl: React.PropTypes.string,              // url to upload image
+    context: React.PropTypes.string                 // context to set to uploded file
+};
+CreateImageDialog.defaultProps = {
+    imageWidth: 100,
+    imageHeight: 100,
+    uploadUrl: '/upload',
+    context: 'avatarImage'
+};
 
 export default CreateImageDialog;

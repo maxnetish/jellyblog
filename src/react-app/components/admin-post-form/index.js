@@ -12,7 +12,6 @@ import Radio                from 'elemental/lib/components/Radio';
 // may be move to https://github.com/bvaughn/react-virtualized-select/
 import Select               from 'react-select';
 import UploadFileDialog     from '../upload-file-dialog';
-import CreateAvatarDialog   from '../create-image-dialog';
 import ImageLibrary         from '../admin-image-library';
 
 import classnames           from 'classnames';
@@ -20,13 +19,12 @@ import classnames           from 'classnames';
 import fileStoreConfig      from '../../../../config/file-store.json';
 import $filter              from '../../../filter';
 
-class PostForm extends React.Component {
+export default class PostForm extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             uploadFileDialogVisible: false,
-            createAvatarDialogVisible: false
         };
     }
 
@@ -174,26 +172,6 @@ class PostForm extends React.Component {
                     </FormField>
                 </FormRow>
                 <FormRow>
-                    <FormField label="Choose avatar for post" width="two-thirds">
-                        <Select
-                            options={[{value: 'opt-1', label: 'Option 1', data: 'bla bla'}]}
-                        />
-                    </FormField>
-                    <FormField label="Add avatar" width="one-third">
-                        <div>
-                            <Button type="primary" onClick={this.onAddAvatarClick.bind(this)}>
-                                <Glyph icon="file-add"/>
-                                <span>Add avatar</span>
-                            </Button>
-                        </div>
-                        <CreateAvatarDialog
-                            isOpen={this.state.createAvatarDialogVisible}
-                            onCancel={this.onCreateAvatarDialogCancel.bind(this)}
-                            onFullfill={this.onCreateAvatarDialogFullfill.bind(this)}
-                        />
-                    </FormField>
-                </FormRow>
-                <FormRow>
                     <FormField label="image for post title">
                         <ImageLibrary
                             value={this.state.titleImageFile}
@@ -202,6 +180,7 @@ class PostForm extends React.Component {
                     </FormField>
                 </FormRow>
             </Form>
+            {this.props.children}
         </div>;
 
         // accept="image/jpg, image/gif, image/png"
@@ -266,25 +245,6 @@ class PostForm extends React.Component {
             attachments: existentAttachment.filter(a => a._id !== attachmentId)
         });
     }
-
-    onAddAvatarClick(e) {
-        this.setState({
-            createAvatarDialogVisible: true
-        });
-    }
-
-    onCreateAvatarDialogCancel(e) {
-        this.setState({
-            createAvatarDialogVisible: false
-        });
-    }
-
-    onCreateAvatarDialogFullfill(e) {
-        console.info('Create avatar: ', e);
-        this.setState({
-            createAvatarDialogVisible: false
-        });
-    }
 }
 
 PostForm.propTypes = {
@@ -294,4 +254,5 @@ PostForm.propTypes = {
     loadingTags: React.PropTypes.bool
 };
 
-export default PostForm;
+// @fooDialog({modalHook: modalHook})
+// export default PostForm;

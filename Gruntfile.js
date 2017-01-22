@@ -40,6 +40,7 @@ module.exports = function (grunt) {
                         // 'es2015'
                     ],
                     plugins: [
+                        'transform-decorators-legacy',
                         'transform-es2015-modules-commonjs',
                         'syntax-jsx',
                         ['transform-react-jsx', {useBuiltIns: true}],
@@ -66,6 +67,7 @@ module.exports = function (grunt) {
                     ],
                     // uglify2JS doesn't support es6
                     plugins: [
+                        'transform-decorators-legacy',
                         'transform-es2015-modules-commonjs',
                         'syntax-jsx',
                         ['transform-react-jsx', {useBuiltIns: true}],
@@ -96,6 +98,25 @@ module.exports = function (grunt) {
                             test: /\.js$/,
                             exclude: /(node_modules|bower_components)/,
                             loader: 'isomorphine'
+                        }
+                    ],
+                    loaders: [
+                        {
+                            test: /\.js$/,
+                            exclude: /(node_modules|bower_components)/,
+                            loader: 'babel-loader',
+                            query: {
+                                presets: [
+                                    'es2015'
+                                ],
+                                plugins: [
+                                    // 'syntax-jsx',
+                                    // 'transform-react-jsx',
+                                    // 'transform-react-display-name'
+                                ],
+                                cacheDirectory: false,
+                                cacheIdentifier: 'babel-prod'
+                            }
                         }
                     ]
                 }

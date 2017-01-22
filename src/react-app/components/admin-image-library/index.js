@@ -11,33 +11,16 @@ import Radio                from 'elemental/lib/components/Radio';
 
 // may be move to https://github.com/bvaughn/react-virtualized-select/
 import Select               from 'react-select';
-import UploadFileDialog     from '../upload-file-dialog';
 import CreateImageDialog   from '../create-image-dialog';
 
-import classnames           from 'classnames';
+import {autobind}           from 'core-decorators';
 
-import fileStoreConfig      from '../../../../config/file-store.json';
-import $filter              from '../../../filter';
 import resources            from '../../../resources';
+import modalDialogDecorator from '../../../utils/modal-dialog-decorator';
 
-const componentProps = {
-    className: React.PropTypes.string,              // class for container
-    value: React.PropTypes.object,                  // Selected image (file info object)
-    onChange: React.PropTypes.func.isRequired,      // On change handler for controlled component
-    imageWidth: React.PropTypes.number,
-    imageHeight: React.PropTypes.number,
-    uploadUrl: React.PropTypes.string,
-    context: React.PropTypes.string
-};
+const createImageModal = {};
 
-const defaultComponentProps = {
-    imageWidth: 100,
-    imageHeight: 100,
-    uploadUrl: '/upload',
-    context: 'avatarImage',
-    className: ''
-};
-
+@modalDialogDecorator({modal: createImageModal, component: CreateImageDialog})
 class ImageLibrary extends React.Component {
 
     constructor(props) {
@@ -101,7 +84,7 @@ class ImageLibrary extends React.Component {
                         autoload={false}
                         options={this.state.selectOptions}
                         searchable={false}
-                        onOpen={this.onSelectOpen.bind(this)}
+                        onOpen={this.onSelectOpen}
                         isLoading={this.selectLoading}
                         valueRenderer={this.selectValueRenderer}
                         optionRenderer={this.selectOptionRenderer}
@@ -110,7 +93,7 @@ class ImageLibrary extends React.Component {
                     />
                 </div>
                 <div className="jb-image-library__add-button-ct">
-                    <Button type="primary" onClick={this.onAddImageClick.bind(this)}>
+                    <Button type="primary" onClick={this.onAddImageClick}>
                         <Glyph icon="file-add"/>
                         <span>Add to library</span>
                     </Button>
@@ -127,56 +110,43 @@ class ImageLibrary extends React.Component {
                     {this.props.value ?
                         <Button
                             type="link-cancel"
-                            onClick={this.onRemoveFromLibrary.bind(this)}
+                            onClick={this.onRemoveFromLibrary}
                             disabled={this.state.removing}
                         ><Glyph icon="circle-slash"/>
                             <span>Remove from library</span>
                         </Button> : null}
                 </div>
             </div>
-            <CreateImageDialog
-                isOpen={this.state.createImageDialogVisible}
-                onCancel={this.onCreateImageDialogCancel.bind(this)}
-                onFullfill={this.onCreateImageDialogFullfill.bind(this)}
-                imageWidth={this.props.imageWidth}
-                imageHeight={this.props.imageHeight}
-                uploadUrl={this.props.uploadUrl}
-                context={this.props.context}
-            />
+            {this.props.children}
         </div>;
     }
 
+    @autobind
     onAddImageClick(e) {
-        this.setState({
-            createImageDialogVisible: true
-        });
+        createImageModal.show({
+            imageWidth: this.props.imageWidth,
+            imageHeight: this.props.imageHeight,
+            uploadUrl: this.props.uploadUrl,
+            context: this.props.context
+        })
+            .then(dialogResult => {
+                let options = this.state.selectOptions || [];
+                let optionsToAdd = e.map(f => Object.assign(f, {
+                    value: f._id,
+                    label: f.filename
+                }));
+
+                Array.prototype.unshift.apply(options, optionsToAdd);
+
+                this.props.onChange(optionsToAdd[0]);
+
+                this.setState({
+                    selectOptions: options
+                });
+            })
     }
 
-    onCreateImageDialogCancel(e) {
-        this.setState({
-            createImageDialogVisible: false
-        });
-    }
-
-    onCreateImageDialogFullfill(e) {
-        console.info('Create avatar: ', e);
-
-        let options = this.state.selectOptions || [];
-        let optionsToAdd = e.map(f => Object.assign(f, {
-            value: f._id,
-            label: f.filename
-        }));
-
-        Array.prototype.unshift.apply(options, optionsToAdd);
-
-        this.props.onChange(optionsToAdd[0]);
-
-        this.setState({
-            createImageDialogVisible: false,
-            selectOptions: options
-        });
-    }
-
+    @autobind
     onSelectOpen(e) {
         let self = this;
 
@@ -212,6 +182,7 @@ class ImageLibrary extends React.Component {
             });
     }
 
+    @autobind
     onRemoveFromLibrary(e) {
         if (!this.props.value) {
             return;
@@ -257,7 +228,21 @@ class ImageLibrary extends React.Component {
     }
 }
 
-ImageLibrary.propTypes = componentProps;
-ImageLibrary.defaultProps = defaultComponentProps;
+ImageLibrary.propTypes = {
+    className: React.PropTypes.string,              // class for container
+    value: React.PropTypes.object,                  // Selected image (file info object)
+    onChange: React.PropTypes.func.isRequired,      // On change handler for controlled component
+    imageWidth: React.PropTypes.number,
+    imageHeight: React.PropTypes.number,
+    uploadUrl: React.PropTypes.string,
+    context: React.PropTypes.string
+};
+ImageLibrary.defaultProps = {
+    imageWidth: 100,
+    imageHeight: 100,
+    uploadUrl: '/upload',
+    context: 'avatarImage',
+    className: ''
+};
 
 export default ImageLibrary;
