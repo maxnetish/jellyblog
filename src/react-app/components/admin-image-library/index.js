@@ -2,16 +2,11 @@ import React                from 'react';
 
 import Button               from 'elemental/lib/components/Button';
 import Glyph                from 'elemental/lib/components/Glyph';
-import Form                 from 'elemental/lib/components/Form';
-import FormField            from 'elemental/lib/components/FormField';
-import FormInput            from 'elemental/lib/components/FormInput';
-import FormRow              from 'elemental/lib/components/FormRow';
-import Radio                from 'elemental/lib/components/Radio';
-// import FileUpload from 'elemental/lib/components/FileUpload';
 
 // may be move to https://github.com/bvaughn/react-virtualized-select/
 import Select               from 'react-select';
-import CreateImageDialog   from '../create-image-dialog';
+import CreateImageDialog    from '../create-image-dialog';
+import {Confirm}            from '../common-dialog';
 
 import {autobind}           from 'core-decorators';
 
@@ -19,7 +14,9 @@ import resources            from '../../../resources';
 import modalDialogDecorator from '../../../utils/modal-dialog-decorator';
 
 const createImageModal = {};
+const confirmModal = {};
 
+@modalDialogDecorator({modal: confirmModal, component: Confirm})
 @modalDialogDecorator({modal: createImageModal, component: CreateImageDialog})
 class ImageLibrary extends React.Component {
 
@@ -34,7 +31,6 @@ class ImageLibrary extends React.Component {
             removing: false,
             error: null
         };
-
     }
 
     componentDidMount() {
@@ -144,6 +140,12 @@ class ImageLibrary extends React.Component {
                     selectOptions: options
                 });
             })
+            .catch(err => {
+                if (['no', 'cancel'].indexOf(err) !== -1) {
+                    return;
+                }
+                console.warn(err);
+            })
     }
 
     @autobind
@@ -184,33 +186,31 @@ class ImageLibrary extends React.Component {
 
     @autobind
     onRemoveFromLibrary(e) {
+        let self = this;
+
         if (!this.props.value) {
             return;
         }
 
-        if (!confirm('Really remove file forever?')) {
-            return;
-        }
-
-        this.setState({
-            removing: true,
-            error: null
-        });
-
-        let self = this;
-        let idToRemove = this.props.value._id;
-
-        resources.file.remove(idToRemove)
-            .then(response => {
+        confirmModal.show({
+            text: `Really remove file "${this.props.value.metadata.originalName}" forever?`
+        })
+            .then(() => {
+                let idToRemove = this.props.value._id;
+                self.setState({
+                    removing: true,
+                    error: null
+                });
+                return resources.file.remove(idToRemove)
+                    .then(() => idToRemove);
+            })
+            .then(idToRemove => {
                 let options = self.state.selectOptions || [];
                 let indexToRemove = options.findIndex(f => f._id === idToRemove);
-
                 self.props.onChange(null);
-
                 if (indexToRemove === -1) {
                     return;
                 }
-
                 options.splice(indexToRemove, 1);
                 self.props.onChange(null);
                 self.setState({
@@ -219,12 +219,15 @@ class ImageLibrary extends React.Component {
                 });
             })
             .catch(err => {
+                if (['no', 'cancel'].indexOf(err) !== -1) {
+                    return;
+                }
                 console.warn(err);
                 self.setState({
                     error: err,
                     removing: false
                 });
-            })
+            });
     }
 }
 

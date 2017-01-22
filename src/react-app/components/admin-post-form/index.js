@@ -172,7 +172,7 @@ export default class PostForm extends React.Component {
                     </FormField>
                 </FormRow>
                 <FormRow>
-                    <FormField label="image for post title">
+                    <FormField label="Image for post title" width="two-thirds">
                         <ImageLibrary
                             value={this.state.titleImageFile}
                             onChange={this.imageLibraryOnChange.bind(this)}

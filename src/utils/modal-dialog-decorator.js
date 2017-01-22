@@ -112,6 +112,7 @@ function modalDialogDecorator({modal, component}) {
                         onResolve={this.state.onResolve}
                         {...this.state.modalData}
                     />
+                    {this.props.children}
                 </DecoratedComponent>;
             }
         };
