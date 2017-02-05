@@ -1,4 +1,5 @@
 import {Post} from '../../models';
+import {updateTags} from '../../utils-data';
 
 function createPost(post) {
     if (!this.xhr) {
@@ -10,15 +11,23 @@ function createPost(post) {
         return Promise.reject(401);
     }
 
-    let postData = Object.assign(post || {}, {
-        author: this.req.user.userName
-    });
-    let newPost = new Post(postData);
-    return newPost.save()
+    post = post || {};
+
+    return updateTags(post.tags)
+        .then(tagIds => {
+            let postData = Object.assign(post || {}, {
+                author: this.req.user.userName,
+                tags: tagIds
+            });
+            let newPost = new Post(postData);
+            return newPost.save();
+        })
         .catch(err => {
             console.log(err);
             throw err;
         });
+
+
 }
 
 export default createPost;

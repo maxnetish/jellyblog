@@ -145,11 +145,13 @@ class ImageLibrary extends React.Component {
                     return;
                 }
                 console.warn(err);
-            })
+            });
     }
 
     @autobind
     onSelectOpen(e) {
+        // TODO: We should use custom valueKey/labelKey here to shuffle off dance with value/label mapping
+
         let self = this;
 
         if (this.state.selectOptionsLoadedOnce) {

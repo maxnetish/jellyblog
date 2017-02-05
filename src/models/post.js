@@ -57,9 +57,9 @@ let postSchema = new mongoose.Schema({
             ref: 'Tag'
         }
     ],
-    titleImgUrl: {
-        type: String,
-        maxlength: 1024
+    titleImg: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'File'
     },
     attachments: [
         {

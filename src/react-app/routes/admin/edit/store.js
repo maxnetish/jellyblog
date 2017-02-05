@@ -40,11 +40,6 @@ class AdminPostStore extends StateStoreBase {
 
         resources.post.get({id: props.params.postId})
             .then(res => {
-                if (res && res.tags) {
-                    res.tags = res.tags.map(t => {
-                        return {label: t, value: t};
-                    });
-                }
                 self.assignState({
                     post: res
                 });
@@ -59,13 +54,7 @@ class AdminPostStore extends StateStoreBase {
             });
         resources.tag.list()
             .then(tagResponse => {
-                let tags = tagResponse.items || [];
-                tags = tags.map(t => {
-                    return {
-                        value: t.value,
-                        label: t.value
-                    };
-                });
+                let tags = tagResponse.items;
                 self.assignState({
                     tags: tags,
                     loadingTags: false
@@ -98,21 +87,32 @@ class AdminPostStore extends StateStoreBase {
         if (post.attachments) {
             post.attachments = post.attachments.map(a => a._id);
         }
-        resources.post.update(post)
+        if (post.titleImg) {
+            post.titleImg = post.titleImg._id;
+        }
+        resources.post
+            .update(post)
             .then(res => {
-                if (res && res.tags) {
-                    res.tags = res.tags.map(t => {
-                        return {label: t, value: t};
-                    });
-                }
                 self.assignState({
-                    post: res
+                    post: res,
+                    loadingTags: true
+                });
+                return resources.tag.list();
+            })
+            .then(res => {
+                // we should update tags, else tags could contain tag(s) without correct _id
+                let tags= res.items;
+                self.assignState({
+                    tags: tags,
+                    loadingTags: false
                 });
                 self.notifyStateChanged();
+                return res;
             })
             .catch(err => {
                 self.assignState({
-                    err: err
+                    err: err,
+                    loadingTags: false
                 });
                 self.notifyStateChanged();
             });

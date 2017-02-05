@@ -15,17 +15,20 @@ import UploadFileDialog     from '../upload-file-dialog';
 import ImageLibrary         from '../admin-image-library';
 
 import classnames           from 'classnames';
+import {autobind}           from 'core-decorators';
+import modalDialogDecorator from '../../../utils/modal-dialog-decorator';
 
 import fileStoreConfig      from '../../../../config/file-store.json';
 import $filter              from '../../../filter';
 
+const uploadFileModal = {};
+
+@modalDialogDecorator({modal: uploadFileModal, component: UploadFileDialog})
 export default class PostForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            uploadFileDialogVisible: false,
-        };
+        this.state = {};
     }
 
     render() {
@@ -78,7 +81,7 @@ export default class PostForm extends React.Component {
                                    name="title"
                                    value={this.props.value.title || ''}
                                    id="title"
-                                   onChange={this.onInputChanged.bind(this)}/>
+                                   onChange={this.onInputChanged}/>
                     </FormField>
                 </FormRow>
                 <FormRow>
@@ -89,7 +92,7 @@ export default class PostForm extends React.Component {
                                    name="brief"
                                    value={this.props.value.brief || ''}
                                    id="brief"
-                                   onChange={this.onInputChanged.bind(this)}
+                                   onChange={this.onInputChanged}
                                    multiline
                                    className="form-textarea-brief"/>
                     </FormField>
@@ -102,7 +105,7 @@ export default class PostForm extends React.Component {
                                    name="content"
                                    value={this.props.value.content || ''}
                                    id="content"
-                                   onChange={this.onInputChanged.bind(this)}
+                                   onChange={this.onInputChanged}
                                    multiline
                                    className="form-textarea-content"/>
                     </FormField>
@@ -114,12 +117,12 @@ export default class PostForm extends React.Component {
                                    label="HTML"
                                    value="HTML"
                                    checked={this.props.value.contentType === 'HTML'}
-                                   onChange={this.onRadioChange.bind(this)}/>
+                                   onChange={this.onRadioChange}/>
                             <Radio name="contentType"
                                    label="Markdown MD"
                                    value="MD"
                                    checked={this.props.value.contentType === 'MD'}
-                                   onChange={this.onRadioChange.bind(this)}/>
+                                   onChange={this.onRadioChange}/>
                         </div>
                     </FormField>
                     <FormField label="Tags" width="two-thirds">
@@ -128,28 +131,23 @@ export default class PostForm extends React.Component {
                             multi={true}
                             value={this.props.value.tags}
                             options={this.props.tags}
-                            onChange={this.onSelectTagsChange.bind(this)}
-                            promptTextCreator={this.onPromptTextCreator.bind(this)}
+                            onChange={this.onSelectTagsChange}
+                            promptTextCreator={this.onPromptTextCreator}
                             isLoading={this.props.loadingTags}
+                            newOptionCreator={this.tagsSelectNewOptionCreator}
+                            labelKey="value"
+                            valueKey="_id"
                         />
                     </FormField>
                 </FormRow>
                 <FormRow>
                     <FormField label="Attachments">
                         <div>
-                            <Button type="primary" onClick={this.onAddAttachmentsClick.bind(this)}>
+                            <Button type="primary" onClick={this.onAddAttachmentsClick}>
                                 <Glyph icon="file-add"/>
                                 <span>Add attachments</span>
                             </Button>
                         </div>
-                        <UploadFileDialog
-                            isOpen={this.state.uploadFileDialogVisible}
-                            onCancel={this.onUploadDialogCancel.bind(this)}
-                            onFullfill={this.onUploadDialogFullfill.bind(this)}
-                            uploadMulti={true}
-                            uploadFieldName="attachment"
-                            uploadAdditionalData={{context: 'postAttachment', postId: this.props.value._id}}
-                        />
                         {this.props.value.attachments ?
                             <ol className="files-attached">
                                 {this.props.value.attachments.map(a => <li key={a._id}>
@@ -174,8 +172,8 @@ export default class PostForm extends React.Component {
                 <FormRow>
                     <FormField label="Image for post title" width="two-thirds">
                         <ImageLibrary
-                            value={this.state.titleImageFile}
-                            onChange={this.imageLibraryOnChange.bind(this)}
+                            value={this.props.value.titleImg}
+                            onChange={this.imageLibraryOnChange}
                         />
                     </FormField>
                 </FormRow>
@@ -186,18 +184,29 @@ export default class PostForm extends React.Component {
         // accept="image/jpg, image/gif, image/png"
     }
 
+    tagsSelectNewOptionCreator({label, labelKey, valueKey}){
+        let result = {
+            [valueKey]: 'new_tag_' + label,
+            [labelKey]: label
+        };
+        return result;
+    }
+
+    @autobind
     imageLibraryOnChange(e) {
-        this.setState({
-            titleImageFile: e
+        this.props.onChange({
+            titleImg: e
         });
     }
 
+    @autobind
     onInputChanged(e) {
         this.props.onChange({
             [e.target.name]: e.target.value
         });
     }
 
+    @autobind
     onRadioChange(e) {
         if (e.target.checked) {
             this.props.onChange({
@@ -206,39 +215,46 @@ export default class PostForm extends React.Component {
         }
     }
 
+    @autobind
     onSelectTagsChange(e) {
-        console.info('Select Tag Change: ', e);
         this.props.onChange({
             tags: e
         });
     }
 
+    @autobind
     onPromptTextCreator(e) {
-        return `Add new tag "${e}"`;
+        let result = `Add new tag "${e}"`;
+        return result;
     }
 
+    @autobind
     onAddAttachmentsClick(e) {
-        this.setState({
-            uploadFileDialogVisible: true
-        });
+        let self = this;
+        uploadFileModal
+            .show({
+                uploadMulti: true,
+                uploadFieldName: 'attachment',
+                uploadAdditionalData: {
+                    context: 'postAttachment',
+                    postId: this.props.value._id
+                }
+            })
+            .then(uploadedFiles => {
+                let existentAttachment = this.props.value.attachments || [];
+                self.props.onChange({
+                    attachments: existentAttachment.concat(uploadedFiles)
+                });
+            })
+            .catch(err => {
+                if (['no', 'cancel'].indexOf(err) !== -1) {
+                    return;
+                }
+                console.warn(err);
+            });
     }
 
-    onUploadDialogCancel(e) {
-        this.setState({
-            uploadFileDialogVisible: false
-        });
-    }
-
-    onUploadDialogFullfill(uploadedFiles) {
-        let existentAttachment = this.props.value.attachments || [];
-        this.props.onChange({
-            attachments: existentAttachment.concat(uploadedFiles)
-        });
-        this.setState({
-            uploadFileDialogVisible: false
-        });
-    }
-
+    @autobind
     onRemoveAttachmentClick(attachmentId, e) {
         let existentAttachment = this.props.value.attachments || [];
         this.props.onChange({

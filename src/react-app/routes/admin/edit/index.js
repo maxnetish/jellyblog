@@ -43,7 +43,7 @@ class AdminPost extends React.Component {
                         loadingTags={this.state.loadingTags}
                     />
                 </Card>
-                <Button type="primary" onClick={this.noSaveButtonClick.bind(this)}>
+                <Button type="primary" onClick={this.onSaveButtonClick.bind(this)}>
                     <Glyph icon="cloud-upload"/>
                     <span>Save</span>
                 </Button>
@@ -59,7 +59,7 @@ class AdminPost extends React.Component {
         actions.postFieldChanged(val);
     }
 
-    noSaveButtonClick(e) {
+    onSaveButtonClick(e) {
         actions.saveButtonClick(this.state.post);
     }
 }

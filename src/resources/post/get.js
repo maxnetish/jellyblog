@@ -6,7 +6,7 @@ function fetch({id, urlId}={}) {
     // let condition = {};
     // let projection = '_id status updateDate title brief';
     let opts = {
-        lean: true
+        lean: false
     };
 
     // if (maxId) {
@@ -18,8 +18,9 @@ function fetch({id, urlId}={}) {
     // }
 
     return Post.findById(id, null, opts)
-        .populate('tags', 'value')
+        .populate('tags')
         .populate('attachments')
+        .populate('titleImg')
         .exec()
         .then(res => {
             if (res && res.tags) {

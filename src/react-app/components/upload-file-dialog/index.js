@@ -5,6 +5,8 @@
 import React from 'react';
 import request from 'superagent';
 
+import {autobind} from 'core-decorators';
+
 import Modal from 'elemental/lib/components/Modal';
 import ModalBody from 'elemental/lib/components/ModalBody';
 import ModalHeader from 'elemental/lib/components/ModalHeader';
@@ -45,22 +47,22 @@ class UploadFileDialog extends React.Component {
     render() {
         let formId = 'jellyblog-file-upload-form';
 
-        return <Modal width="medium" isOpen={this.props.isOpen} onCancel={this.onCancel.bind(this)}>
-            <ModalHeader text="Upload file(s)" showCloseButton onClose={this.onCancel.bind(this)}/>
+        return <Modal width="medium" isOpen={this.props.isOpen} onCancel={this.onCancel}>
+            <ModalHeader text="Upload file(s)" showCloseButton onClose={this.onCancel}/>
             <ModalBody>
-                <Form id={formId} onSubmit={this.onFormSubmit.bind(this)} name={formId} method="POST">
+                <Form id={formId} onSubmit={this.onFormSubmit} name={formId} method="POST">
                     <FormField label="Add attachments">
                         <input
                             type="file"
                             style={{'display': 'none'}}
                             ref="fileInput"
                             multiple={this.props.uploadMulti}
-                            onChange={this.onFileInputChange.bind(this)}
+                            onChange={this.onFileInputChange}
                         />
                         <div>
                             <Button
                                 type="primary"
-                                onClick={this.onSelectFileClick.bind(this)}
+                                onClick={this.onSelectFileClick}
                             >
                                 <Glyph icon="file-add"/>
                                 <span>Select file(s) to upload</span>
@@ -78,7 +80,7 @@ class UploadFileDialog extends React.Component {
             <ModalFooter>
                 <Button
                     type="link-cancel"
-                    onClick={this.onCancel.bind(this)}
+                    onClick={this.onCancel}
                     disabled={this.state.loading}
                 >
                     <Glyph icon="circle-slash"/>
@@ -97,6 +99,7 @@ class UploadFileDialog extends React.Component {
         </Modal>;
     }
 
+    @autobind
     onCancel(e) {
         if (e && e.preventDefault) {
             e.preventDefault();
@@ -104,9 +107,10 @@ class UploadFileDialog extends React.Component {
         if (this.state.loading) {
             return;
         }
-        this.props.onCancel();
+        this.props.onReject('cancel');
     }
 
+    @autobind
     onFormSubmit(e) {
         e.preventDefault();
 
@@ -145,7 +149,7 @@ class UploadFileDialog extends React.Component {
                 }
                 let uploadedFiles = res.body.files[uploadFieldName] || [];
                 uploadedFiles = uploadedFiles.map(f => f.grid);
-                self.props.onFullfill(uploadedFiles);
+                self.props.onResolve(uploadedFiles);
             })
             .catch(err => {
                 self.setState({
@@ -155,12 +159,14 @@ class UploadFileDialog extends React.Component {
             });
     }
 
+    @autobind
     onFileInputChange(e) {
         this.setState({
             filesToUpload: Array.prototype.slice.call(e.target.files, 0)
         });
     }
 
+    @autobind
     onSelectFileClick(e) {
         this.refs.fileInput.click();
     }
@@ -168,13 +174,22 @@ class UploadFileDialog extends React.Component {
 }
 
 UploadFileDialog.propTypes = {
-    isOpen: React.PropTypes.bool,
-    onCancel: React.PropTypes.func.isRequired,
-    onFullfill: React.PropTypes.func.isRequired,
+    // Use from decorator:
+    isOpen: React.PropTypes.bool,                   // Modal visible
+    onResolve: React.PropTypes.func,                // On cancel modal handler
+    onReject: React.PropTypes.func,                 // On resolve dialog handler
+
     uploadMulti: React.PropTypes.bool,
     uploadFieldName: React.PropTypes.string,
     uploadAdditionalData: React.PropTypes.object,
     uploadUrl: React.PropTypes.string
+};
+
+UploadFileDialog.defaultProps = {
+    uploadMulti: false,
+    uploadFieldName: 'attachment',
+    uploadAdditionalData: null,
+    uploadUrl: '/upload'
 };
 
 export default UploadFileDialog;
