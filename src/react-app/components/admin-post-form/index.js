@@ -7,7 +7,10 @@ import FormField            from 'elemental/lib/components/FormField';
 import FormInput            from 'elemental/lib/components/FormInput';
 import FormRow              from 'elemental/lib/components/FormRow';
 import Radio                from 'elemental/lib/components/Radio';
-// import FileUpload from 'elemental/lib/components/FileUpload';
+import Row                  from 'elemental/lib/components/Row';
+import Col                  from 'elemental/lib/components/Col';
+
+import marked               from 'marked'
 
 // may be move to https://github.com/bvaughn/react-virtualized-select/
 import Select               from 'react-select';
@@ -17,18 +20,72 @@ import ImageLibrary         from '../admin-image-library';
 import classnames           from 'classnames';
 import {autobind}           from 'core-decorators';
 import modalDialogDecorator from '../../../utils/modal-dialog-decorator';
+import hasDom               from '../../../utils/has-dom';
+import noop                 from '../../../utils/no-op';
 
 import fileStoreConfig      from '../../../../config/file-store.json';
 import $filter              from '../../../filter';
 
 const uploadFileModal = {};
 
+let AceEditor;
+const aceThemes = [
+    'github',
+    'dawn',
+    'clouds',
+    'katzenmilch',
+    'chrome',
+    'textmate',
+    'twilight',
+    'xcode'
+];
+const aceContentEditorModeMap = {
+    'MD': 'markdown',
+    'HTML': 'html'
+};
+if (hasDom()) {
+    AceEditor = require('react-ace').default;
+    require('brace');
+
+    require('brace/mode/markdown');
+    require('brace/mode/html');
+
+    require('brace/theme/github');
+    require('brace/theme/dawn');
+    require('brace/theme/clouds');
+    require('brace/theme/katzenmilch');
+    require('brace/theme/chrome');
+    require('brace/theme/textmate');
+    require('brace/theme/twilight');
+    require('brace/theme/xcode');
+
+    // aceThemes.forEach(t => require(`brace/theme/${t}`));
+    // require('brace/theme/twilight');
+}
+
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: false,
+    pedantic: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false
+});
+
 @modalDialogDecorator({modal: uploadFileModal, component: UploadFileDialog})
 export default class PostForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            contentEditorTheme: {id: 'github'},
+            contentEditorThemes: aceThemes.map(t => {
+                return {id: t};
+            }),
+            contentTypePresentMode: 'PREVIEW'
+        };
     }
 
     render() {
@@ -41,6 +98,75 @@ export default class PostForm extends React.Component {
             'info': this.props.value.status === 'DRAFT',
             'success': this.props.value.status === 'PUB'
         });
+
+        let contentElement;
+        switch (this.state.contentTypePresentMode) {
+            case 'SOURCE':
+                contentElement = <div>
+                    <Row className="_margin-5 _bottom">
+                        <Col xs="25%">
+                            <div className="relative-100-zindex">
+                                <Select
+                                    name="content-editor-theme"
+                                    multi={false}
+                                    value={this.state.contentEditorTheme}
+                                    options={this.state.contentEditorThemes}
+                                    onChange={this.onChangeContentEditorTheme}
+                                    labelKey="id"
+                                    valueKey="id"
+                                    clearable={false}
+                                />
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="_margin-5 _bottom">
+                        <Col xs="100%">
+                            <div className="jb-form-element-border _padding-5 _all">
+                                {AceEditor ? <AceEditor
+                                        mode={aceContentEditorModeMap[this.props.value.contentType]}
+                                        theme={this.state.contentEditorTheme.id}
+                                        height="300px"
+                                        width="100%"
+                                        fontSize={14}
+                                        showGutter={false}
+                                        showPrintMargin={false}
+                                        highlightActiveLine={true}
+                                        focus={false}
+                                        cursorStart={1}
+                                        wrapEnabled={true}
+                                        readOnly={false}
+                                        minLines={null}
+                                        maxLines={null}
+                                        enableBasicAutocompletion={true}
+                                        enableLiveAutocompletion={false}
+                                        tabSize={4}
+                                        value={this.props.value.content}
+                                        defaultValue={this.props.value.content}
+                                        onLoad={noop}
+                                        onBeforeLoad={noop}
+                                        onChange={this.onContentChange}
+                                        name="content-of-post"
+                                        editorProps={{$blockScrolling: true}}
+                                    /> : null}
+                            </div>
+                        </Col>
+                    </Row>
+                </div>;
+                break;
+            case 'PREVIEW':
+                contentElement = <div>
+                    <Row className="_margin-5 _bottom">
+                        <Col xs="100%">
+                            <div
+                                className="jb-form-element-border _padding-5 _all"
+                                dangerouslySetInnerHTML={this.getHtmlForContentPreview()}
+                            >
+                            </div>
+                        </Col>
+                    </Row>
+                </div>;
+                break;
+        }
 
         return <div className="post-edit-form">
             <h3>Edit post</h3>
@@ -100,14 +226,25 @@ export default class PostForm extends React.Component {
                 <FormRow>
                     <FormField label="Post content"
                                htmlFor="content">
-                        <FormInput type="text"
-                                   placeholder="Enter post content"
-                                   name="content"
-                                   value={this.props.value.content || ''}
-                                   id="content"
-                                   onChange={this.onInputChanged}
-                                   multiline
-                                   className="form-textarea-content"/>
+                        <Row>
+                            <Col xs="100%">
+                                <div className="inline-controls">
+                                    <Radio name="contentTypePresentMode"
+                                           label="Source"
+                                           value="SOURCE"
+                                           checked={this.state.contentTypePresentMode === 'SOURCE'}
+                                           onChange={this.onContentTypePresentModeRadioChange}
+                                    />
+                                    <Radio name="contentTypePresentMode"
+                                           label="Preview"
+                                           value="PREVIEW"
+                                           checked={this.state.contentTypePresentMode === 'PREVIEW'}
+                                           onChange={this.onContentTypePresentModeRadioChange}
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
+                        {contentElement}
                     </FormField>
                 </FormRow>
                 <FormRow>
@@ -184,12 +321,50 @@ export default class PostForm extends React.Component {
         // accept="image/jpg, image/gif, image/png"
     }
 
-    tagsSelectNewOptionCreator({label, labelKey, valueKey}){
+    @autobind
+    getHtmlForContentPreview() {
+        let parsed;
+        switch(this.props.value.contentType){
+            case 'HTML':
+                parsed = this.props.value.content;
+                break;
+            case 'MD':
+                parsed = marked(this.props.value.content);
+                break;
+        }
+        return {
+            __html: parsed
+        };
+    }
+
+    @autobind
+    onContentTypePresentModeRadioChange(e) {
+        this.setState({
+            contentTypePresentMode: e.target.value
+        });
+    }
+
+    @autobind
+    onChangeContentEditorTheme(e) {
+        this.setState({
+            contentEditorTheme: e
+        });
+    }
+
+    tagsSelectNewOptionCreator({label, labelKey, valueKey}) {
         let result = {
             [valueKey]: 'new_tag_' + label,
             [labelKey]: label
         };
         return result;
+    }
+
+    @autobind
+    onContentChange(e) {
+        console.log(`Content change: `, e);
+        this.props.onChange({
+            content: e
+        });
     }
 
     @autobind
