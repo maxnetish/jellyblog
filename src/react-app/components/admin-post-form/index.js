@@ -95,7 +95,7 @@ export default class PostForm extends React.Component {
             'inline-form-statics': true,
             'post-status-form': true,
             'jb-badge': true,
-            'info': this.props.value.status === 'DRAFT',
+            'warning': this.props.value.status === 'DRAFT',
             'success': this.props.value.status === 'PUB'
         });
 
