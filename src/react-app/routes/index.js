@@ -1,10 +1,15 @@
 import React        from 'react';
 
+import moment       from 'moment';
+import 'moment/locale/ru';
+
+import {locale}     from '../../i18n';
+
 import {Route, IndexRoute, IndexRedirect}      from 'react-router';
 
 // import {routeParamsChanged, routeQueryChanged}  from '../../state-utils/shared';
 
-import PubApp          from './p';
+import PubApp       from './p';
 import Dashboard    from './p/dashboard';
 import About        from './p/about';
 import Posts        from './p/posts';
@@ -15,8 +20,6 @@ import AdminPosts   from './admin/posts';
 import AdminPost    from './admin/edit';
 
 import UserBadge    from '../components/user-badge';
-
-
 
 function getOnRouteEnterHandler({Component, getUserContext}) {
     return (nextState, replace) => {
@@ -65,6 +68,11 @@ function getOnRouteChangeHandler({Component, getUserContext}) {
 }
 
 function RootComponent(props) {
+    // Here we should init localization from props.getUserLanguage()
+    moment.locale(props.getUserLanguage());
+    locale(props.getUserLanguage());
+    console.log(`moment now: ${moment.locale()}`);
+    console.log(`locale() now: ${locale()}`);
     return <div>
         {props.children}
         <div className="root-footer">

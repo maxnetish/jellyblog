@@ -18,6 +18,7 @@ import {MongoClient} from 'mongodb';
 import serveGridfs from 'serve-gridfs';
 
 import cookieParser from 'cookie-parser';
+import requestLanguage from 'express-request-language';
 
 import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
@@ -52,6 +53,13 @@ app.use(responseTime());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+// adds req.language
+app.use(requestLanguage({
+    // supported langs
+    languages: ['en', 'ru'],
+    // url query param
+    queryName: 'locale'
+}));
 app.use(session({
     cookie: {
         httpOnly: true,

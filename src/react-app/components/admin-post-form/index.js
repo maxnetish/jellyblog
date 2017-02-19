@@ -14,6 +14,9 @@ import marked               from 'marked'
 
 // may be move to https://github.com/bvaughn/react-virtualized-select/
 import Select               from 'react-select';
+import DatePicker           from 'react-datepicker';
+// import moment               from 'moment';
+
 import UploadFileDialog     from '../upload-file-dialog';
 import ImageLibrary         from '../admin-image-library';
 
@@ -25,6 +28,7 @@ import noop                 from '../../../utils/no-op';
 
 import fileStoreConfig      from '../../../../config/file-store.json';
 import $filter              from '../../../filter';
+import {getText}            from '../../../i18n';
 
 const uploadFileModal = {};
 
@@ -91,6 +95,8 @@ export default class PostForm extends React.Component {
     render() {
         console.info('Post Form render: ', this.props);
 
+        let locale = this.props.locale;
+
         let postStatusClass = classnames({
             'inline-form-statics': true,
             'post-status-form': true,
@@ -116,6 +122,20 @@ export default class PostForm extends React.Component {
                                     valueKey="id"
                                     clearable={false}
                                 />
+                            </div>
+                        </Col>
+                        <Col xs="25%">
+                            <div className="inline-controls">
+                                <Radio name="contentType"
+                                       label="HTML"
+                                       value="HTML"
+                                       checked={this.props.value.contentType === 'HTML'}
+                                       onChange={this.onRadioChange}/>
+                                <Radio name="contentType"
+                                       label="Markdown MD"
+                                       value="MD"
+                                       checked={this.props.value.contentType === 'MD'}
+                                       onChange={this.onRadioChange}/>
                             </div>
                         </Col>
                     </Row>
@@ -169,7 +189,7 @@ export default class PostForm extends React.Component {
         }
 
         return <div className="post-edit-form">
-            <h3>Edit post</h3>
+            <h3>{getText({key: 'Edit post'})}</h3>
             <div className="form-statics-ct">
                 <div className={postStatusClass}>
                     {$filter('postStatus')(this.props.value.status)}
@@ -178,14 +198,14 @@ export default class PostForm extends React.Component {
                     <span>Created: </span>
                     <time
                         dateTime={this.props.value.createDate}>
-                        {$filter('dateAndTime')(this.props.value.createDate)}
+                        {$filter('dateAndTime')({dateSerializedAsJson: this.props.value.createDate, locale})}
                     </time>
                 </div>
                 <div className="inline-form-statics">
                     <span>Updated: </span>
                     <time
                         dateTime={this.props.value.updateDate}>
-                        {$filter('dateAndTime')(this.props.value.updateDate)}
+                        {$filter('dateAndTime')({dateSerializedAsJson: this.props.value.updateDate, locale})}
                     </time>
                 </div>
                 <div className="inline-form-statics">
@@ -200,8 +220,11 @@ export default class PostForm extends React.Component {
             <hr/>
             <Form type="horizontal">
                 <FormRow>
-                    <FormField label="Title"
-                               htmlFor="title">
+                    <FormField
+                        label="Title"
+                        htmlFor="title"
+                        width="two-fifths"
+                    >
                         <FormInput type="text"
                                    placeholder="Enter post title"
                                    name="title"
@@ -209,10 +232,44 @@ export default class PostForm extends React.Component {
                                    id="title"
                                    onChange={this.onInputChanged}/>
                     </FormField>
+                    <FormField
+                        label="Tags"
+                        width="two-fifths"
+                    >
+                        <Select.Creatable
+                            name="tags"
+                            multi={true}
+                            value={this.props.value.tags}
+                            options={this.props.tags}
+                            onChange={this.onSelectTagsChange}
+                            promptTextCreator={this.onPromptTextCreator}
+                            isLoading={this.props.loadingTags}
+                            newOptionCreator={this.tagsSelectNewOptionCreator}
+                            labelKey="value"
+                            valueKey="_id"
+                        />
+                    </FormField>
+                    <FormField
+                        label="Date"
+                        width="one-fifth"
+                        htmlFor="pubDate"
+                    >
+                        <DatePicker
+                            selected={this.props.value.pubDate}
+                            onChange={this.onPubDateChange}
+                            name="pubDate"
+                            id="pubDate"
+                            required={this.props.value.status === 'PUB'}
+                            className="FormInput"
+                        />
+                    </FormField>
                 </FormRow>
                 <FormRow>
-                    <FormField label="Brief annotation"
-                               htmlFor="brief">
+                    <FormField
+                        label="Brief annotation"
+                        htmlFor="brief"
+                        width="one-half"
+                    >
                         <FormInput type="text"
                                    placeholder="Enter post annotaion"
                                    name="brief"
@@ -221,6 +278,15 @@ export default class PostForm extends React.Component {
                                    onChange={this.onInputChanged}
                                    multiline
                                    className="form-textarea-brief"/>
+                    </FormField>
+                    <FormField
+                        label="Image for post title"
+                        width="one-half"
+                    >
+                        <ImageLibrary
+                            value={this.props.value.titleImg}
+                            onChange={this.imageLibraryOnChange}
+                        />
                     </FormField>
                 </FormRow>
                 <FormRow>
@@ -245,36 +311,6 @@ export default class PostForm extends React.Component {
                             </Col>
                         </Row>
                         {contentElement}
-                    </FormField>
-                </FormRow>
-                <FormRow>
-                    <FormField label="Content type" width="one-third">
-                        <div className="inline-controls">
-                            <Radio name="contentType"
-                                   label="HTML"
-                                   value="HTML"
-                                   checked={this.props.value.contentType === 'HTML'}
-                                   onChange={this.onRadioChange}/>
-                            <Radio name="contentType"
-                                   label="Markdown MD"
-                                   value="MD"
-                                   checked={this.props.value.contentType === 'MD'}
-                                   onChange={this.onRadioChange}/>
-                        </div>
-                    </FormField>
-                    <FormField label="Tags" width="two-thirds">
-                        <Select.Creatable
-                            name="tags"
-                            multi={true}
-                            value={this.props.value.tags}
-                            options={this.props.tags}
-                            onChange={this.onSelectTagsChange}
-                            promptTextCreator={this.onPromptTextCreator}
-                            isLoading={this.props.loadingTags}
-                            newOptionCreator={this.tagsSelectNewOptionCreator}
-                            labelKey="value"
-                            valueKey="_id"
-                        />
                     </FormField>
                 </FormRow>
                 <FormRow>
@@ -306,14 +342,6 @@ export default class PostForm extends React.Component {
                             </ol> : null}
                     </FormField>
                 </FormRow>
-                <FormRow>
-                    <FormField label="Image for post title" width="two-thirds">
-                        <ImageLibrary
-                            value={this.props.value.titleImg}
-                            onChange={this.imageLibraryOnChange}
-                        />
-                    </FormField>
-                </FormRow>
             </Form>
             {this.props.children}
         </div>;
@@ -322,9 +350,17 @@ export default class PostForm extends React.Component {
     }
 
     @autobind
+    onPubDateChange(e) {
+        console.log(e);
+        this.props.onChange({
+            pubDate: e
+        });
+    }
+
+    @autobind
     getHtmlForContentPreview() {
         let parsed;
-        switch(this.props.value.contentType){
+        switch (this.props.value.contentType) {
             case 'HTML':
                 parsed = this.props.value.content;
                 break;
@@ -361,7 +397,6 @@ export default class PostForm extends React.Component {
 
     @autobind
     onContentChange(e) {
-        console.log(`Content change: `, e);
         this.props.onChange({
             content: e
         });
@@ -442,7 +477,12 @@ PostForm.propTypes = {
     value: React.PropTypes.object,
     onChange: React.PropTypes.func.isRequired,
     tags: React.PropTypes.array,
-    loadingTags: React.PropTypes.bool
+    loadingTags: React.PropTypes.bool,
+    locale: React.PropTypes.string
+};
+
+PostForm.defaultProps = {
+    locale: 'en'
 };
 
 // @fooDialog({modalHook: modalHook})

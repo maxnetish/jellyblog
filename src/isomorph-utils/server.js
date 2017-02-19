@@ -4,9 +4,9 @@ import {match, RouterContext} from 'react-router';
 import routes from '../react-app/routes';
 import serialize from 'serialize-javascript';
 
-import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext} from './shared'
+import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext, keyOfUserLanguage} from './shared'
 
-function pageTemplate({reactAppMarkup, initialStatesSerialized, userContextSerialized}) {
+function pageTemplate({reactAppMarkup, initialStatesSerialized, userContextSerialized, userLanguageSerialized}) {
     return `<!DOCTYPE html>
             <html>
                 <head>
@@ -20,6 +20,7 @@ function pageTemplate({reactAppMarkup, initialStatesSerialized, userContextSeria
                     <script id="jellyblog-initial-state">
                         window.${keyOfPrefetchedStatesFromServer} = ${initialStatesSerialized};
                         window.${keyOfUserContext} = ${userContextSerialized};
+                        window.${keyOfUserLanguage} = ${userLanguageSerialized};
                     </script>
                     <script src="/assets/common.js"></script>
                     <script src="/assets/client.js"></script>
@@ -53,12 +54,21 @@ function getUserContextFromRequest(req) {
     return () => (req && req.user) || {};
 }
 
-function createElementWithInitialState({initialStates, getUserContext}) {
+function getUserLanguageFromRequest(req) {
+    return () => (req && req.language) || 'en';
+}
+
+function createElementWithInitialState({initialStates, getUserContext, getUserLanguage}) {
     return (Component, props) => {
         let stateForComponent = initialStates ? initialStates.find(s => s.componentId === Component.componentId) : initialStates;
         let initialState = stateForComponent && stateForComponent.state;
         console.info(`Create element ${Component.name} with initial state: `, initialState);
-        return <Component {...props} initialState={initialState} getUserContext={getUserContext}/>;
+        return <Component
+            {...props}
+            initialState={initialState}
+            getUserContext={getUserContext}
+            getUserLanguage={getUserLanguage}
+        />;
     };
 }
 
@@ -69,12 +79,15 @@ function buildMarkup({req, renderProps, template}) {
             let reactAppMarkup = renderToString(<RouterContext {...renderProps}
                                                                createElement={createElementWithInitialState({
                                                                    initialStates,
-                                                                   getUserContext: getUserContextFromRequest(req)
+                                                                   getUserContext: getUserContextFromRequest(req),
+                                                                   getUserLanguage: getUserLanguageFromRequest(req)
                                                                })}/>);
             let initialStatesSerialized = serialize(initialStates);
             let userContext = getUserContextFromRequest(req)();
             let userContextSerialized = serialize(userContext);
-            return template({reactAppMarkup, initialStatesSerialized, userContextSerialized});
+            let userLanguage = getUserLanguageFromRequest(req)();
+            let userLanguageSerialized = serialize(userLanguage);
+            return template({reactAppMarkup, initialStatesSerialized, userContextSerialized, userLanguageSerialized});
         });
 }
 

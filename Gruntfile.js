@@ -1,6 +1,7 @@
 module.exports = function (grunt) {
 
     var buildDir = 'build';
+    var nodeModulesDir = 'node_modules';
     var srcDir = 'src';
     var mainAppFile = 'server.js';
     var webpack = require('webpack');
@@ -28,6 +29,17 @@ module.exports = function (grunt) {
                         dest: path.join(buildDir, 'pub')
                     }
                 ]
+            },
+            'json files': {
+                files: [
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        cwd: srcDir + '/',
+                        src: ['**/*.json'],
+                        dest: buildDir + '/'
+                    }
+                ]
             }
         },
 
@@ -53,7 +65,7 @@ module.exports = function (grunt) {
                         expand: true,
                         filter: 'isFile',
                         cwd: 'src/',
-                        src: ['**/*.js*'],
+                        src: ['**/*.js'],
                         dest: buildDir + '/'
                     }
                 ]
@@ -80,7 +92,7 @@ module.exports = function (grunt) {
                         expand: true,
                         filter: 'isFile',
                         cwd: 'src/',
-                        src: ['**/*.js*'],
+                        src: ['**/*.js'],
                         dest: buildDir + '/'
                     }
                 ]

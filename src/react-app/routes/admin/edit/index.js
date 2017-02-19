@@ -55,6 +55,8 @@ class AdminPost extends React.Component {
 
     render() {
 
+        let locale = this.props.getUserLanguage();
+
         let actionButtonsBlock = null;
 
         if (this.state.post.status) {
@@ -91,6 +93,7 @@ class AdminPost extends React.Component {
                         onChange={this.onPostFieldChanged.bind(this)}
                         tags={this.state.tags}
                         loadingTags={this.state.loadingTags}
+                        locale={locale}
                     />
                 </Card>
                 {actionButtonsBlock}

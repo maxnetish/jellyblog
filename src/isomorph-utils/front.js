@@ -1,7 +1,7 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Router, browserHistory, match} from 'react-router';
-import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext} from './shared';
+import {reactRootElementId, keyOfPrefetchedStatesFromServer, keyOfUserContext, keyOfUserLanguage} from './shared';
 import ClientUserContext from '../passport/client';
 
 function popInitialStateForComponent(componentId) {
@@ -25,11 +25,25 @@ function getUserContext() {
     return ClientUserContext;
 }
 
+function getUserLanguage() {
+    let result;
+    if (window.hasOwnProperty(keyOfUserContext)) {
+        result = window[keyOfUserLanguage];
+    }
+    result = result || 'en';
+    return result;
+}
+
 function createElementWithPrefetchedState(Component, props) {
     let stateForComponent = popInitialStateForComponent(Component.componentId);
     let initialState = stateForComponent && stateForComponent.state;
     // console.info(`Create element ${Component.componentId} with initial state: `, initialState);
-    return <Component {...props} initialState={initialState} getUserContext={getUserContext}/>;
+    return <Component
+        {...props}
+        initialState={initialState}
+        getUserContext={getUserContext}
+        getUserLanguage={getUserLanguage}
+    />;
 }
 
 function routerRun({routes}) {
