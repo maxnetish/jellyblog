@@ -69,4 +69,8 @@ let postSchema = new mongoose.Schema({
     ]
 });
 
+// create text index
+// See http://stackoverflow.com/questions/24714166/full-text-search-with-weight-in-mongoose
+postSchema.index({ title: 'text', brief: 'text', content: 'text'}, {name: 'My text index', weights: {title: 4, brief: 2, content: 1}});
+
 export default mongoose.model('Post', postSchema);

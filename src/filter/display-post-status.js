@@ -1,13 +1,31 @@
 const name = 'postStatus';
 
 const statuses = {
-    'DRAFT': 'Draft',
-    'PUB': 'Published'
+    'en': {
+        'DRAFT': 'Draft',
+        'PUB': 'Published'
+    },
+    'ru': {
+        'DRAFT': 'Черновик',
+        'PUB': 'Опубликован'
+    }
 };
-function func(status) {
-    return statuses[status] || status;
+
+let defaultLocale = 'en';
+
+function setLocale(localeCode = 'en') {
+    defaultLocale = localeCode;
+}
+
+function func(status, locale = defaultLocale) {
+    if (statuses[locale] && statuses[locale][status]) {
+        return statuses[locale][status];
+    }
+
+    return status;
 }
 export {
     name,
-    func
+    func,
+    setLocale
 };

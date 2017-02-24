@@ -4,6 +4,7 @@ import moment       from 'moment';
 import 'moment/locale/ru';
 
 import {locale}     from '../../i18n';
+import {setLocale as setFilterLocale}  from '../../filter';
 
 import {Route, IndexRoute, IndexRedirect}      from 'react-router';
 
@@ -36,7 +37,7 @@ function getOnRouteEnterHandler({Component, getUserContext}) {
             if (Component.requireRoles.indexOf(userContext.role) === -1) {
                 replace({
                     pathname: '/401',
-                    query: {next: nextState.location.pathname}
+                    query: {next: nextState.location.pathname + nextState.location.search}
                 });
             }
         }
@@ -60,7 +61,7 @@ function getOnRouteChangeHandler({Component, getUserContext}) {
             if (Component.requireRoles.indexOf(userContext.role) === -1) {
                 replace({
                     pathname: '/401',
-                    query: {next: nextState.location.pathname}
+                    query: {next: nextState.location.pathname + nextState.location.search}
                 });
             }
         }
@@ -71,8 +72,9 @@ function RootComponent(props) {
     // Here we should init localization from props.getUserLanguage()
     moment.locale(props.getUserLanguage());
     locale(props.getUserLanguage());
-    console.log(`moment now: ${moment.locale()}`);
-    console.log(`locale() now: ${locale()}`);
+    setFilterLocale(props.getUserLanguage());
+    // console.log(`moment now: ${moment.locale()}`);
+    // console.log(`locale() now: ${locale()}`);
     return <div>
         {props.children}
         <div className="root-footer">

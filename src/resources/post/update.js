@@ -19,7 +19,8 @@ function updatePost(post) {
         content: post.content,
         titleImg: post.titleImg,        // should be _id
         attachments: post.attachments,  // should be array of _id
-        tags: post.tags                 // should be array of strings
+        tags: post.tags,                 // should be array of strings
+        pubDate: post.pubDate
     };
 
     return Promise

@@ -1,4 +1,5 @@
 import React                from 'react';
+import moment               from 'moment';
 
 import Button               from 'elemental/lib/components/Button';
 import Glyph                from 'elemental/lib/components/Glyph';
@@ -27,7 +28,7 @@ import hasDom               from '../../../utils/has-dom';
 import noop                 from '../../../utils/no-op';
 
 import fileStoreConfig      from '../../../../config/file-store.json';
-import $filter              from '../../../filter';
+import {filter as $filter}  from '../../../filter';
 import {getText}            from '../../../i18n';
 
 const uploadFileModal = {};
@@ -93,10 +94,6 @@ export default class PostForm extends React.Component {
     }
 
     render() {
-        console.info('Post Form render: ', this.props);
-
-        let locale = this.props.locale;
-
         let postStatusClass = classnames({
             'inline-form-statics': true,
             'post-status-form': true,
@@ -104,6 +101,8 @@ export default class PostForm extends React.Component {
             'warning': this.props.value.status === 'DRAFT',
             'success': this.props.value.status === 'PUB'
         });
+
+        let pubDateAsMoment = this.props.value.pubDate ? moment(this.props.value.pubDate) : undefined;
 
         let contentElement;
         switch (this.state.contentTypePresentMode) {
@@ -189,27 +188,27 @@ export default class PostForm extends React.Component {
         }
 
         return <div className="post-edit-form">
-            <h3>{getText({key: 'Edit post'})}</h3>
+            <h3>{getText('Edit post')}</h3>
             <div className="form-statics-ct">
                 <div className={postStatusClass}>
                     {$filter('postStatus')(this.props.value.status)}
                 </div>
                 <div className="inline-form-statics">
-                    <span>Created: </span>
+                    <span>{getText('Created')}: </span>
                     <time
                         dateTime={this.props.value.createDate}>
-                        {$filter('dateAndTime')({dateSerializedAsJson: this.props.value.createDate, locale})}
+                        {$filter('dateAndTime')(this.props.value.createDate)}
                     </time>
                 </div>
                 <div className="inline-form-statics">
-                    <span>Updated: </span>
+                    <span>{getText('Updated')}: </span>
                     <time
                         dateTime={this.props.value.updateDate}>
-                        {$filter('dateAndTime')({dateSerializedAsJson: this.props.value.updateDate, locale})}
+                        {$filter('dateAndTime')(this.props.value.updateDate)}
                     </time>
                 </div>
                 <div className="inline-form-statics">
-                    <span>Author: </span>
+                    <span>{getText('Author')}: </span>
                     <b>{this.props.value.author}</b>
                 </div>
                 <div className="inline-form-statics">
@@ -255,7 +254,7 @@ export default class PostForm extends React.Component {
                         htmlFor="pubDate"
                     >
                         <DatePicker
-                            selected={this.props.value.pubDate}
+                            selected={pubDateAsMoment}
                             onChange={this.onPubDateChange}
                             name="pubDate"
                             id="pubDate"
@@ -353,7 +352,7 @@ export default class PostForm extends React.Component {
     onPubDateChange(e) {
         console.log(e);
         this.props.onChange({
-            pubDate: e
+            pubDate: e.toJSON()
         });
     }
 
@@ -477,12 +476,11 @@ PostForm.propTypes = {
     value: React.PropTypes.object,
     onChange: React.PropTypes.func.isRequired,
     tags: React.PropTypes.array,
-    loadingTags: React.PropTypes.bool,
-    locale: React.PropTypes.string
+    loadingTags: React.PropTypes.bool
 };
 
 PostForm.defaultProps = {
-    locale: 'en'
+    value: {}
 };
 
 // @fooDialog({modalHook: modalHook})

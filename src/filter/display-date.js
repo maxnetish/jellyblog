@@ -1,8 +1,8 @@
-const name = 'dateAndTime';
+const name = 'dateWithoutTime';
 
 const localeStringSupportsLocales = (function toLocaleStringSupportsLocales() {
     try {
-        new Date().toLocaleString('i');
+        new Date().toLocaleDateString('i');
     } catch (e) {
         return e instanceof RangeError;
     }
@@ -29,7 +29,7 @@ function func(dateSerializedAsJson, locale = defaultLocale) {
         result = 'No date'
     }
 
-    result = result || (localeStringSupportsLocales ? dateParsed.toLocaleString(locale) : dateParsed.toLocaleString());
+    result = result || (localeStringSupportsLocales ? dateParsed.toLocaleDateString(locale) : dateParsed.toLocaleDateString());
     return result;
 }
 export {

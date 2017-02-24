@@ -60,28 +60,26 @@ class AdminPost extends React.Component {
         let actionButtonsBlock = null;
 
         if (this.state.post.status) {
-            actionButtonsBlock = <Row>
-                <Col xs="100%" className="text-right">
-                    <ButtonGroup>
-                        <Button
-                            type={postStatusMap[this.state.post.status].type}
-                            onClick={this.onPostStatusButtonClick}
-                            disabled={this.state.dirty || this.state.changingStatus}
-                        >
-                            <Glyph icon={postStatusMap[this.state.post.status].icon}/>
-                            <span>{postStatusMap[this.state.post.status].text}</span>
-                        </Button>
-                        <Button
-                            type={this.state.dirty ? 'primary' : 'default-primary'}
-                            disabled={!this.state.dirty}
-                            onClick={this.onSaveButtonClick.bind(this)}
-                        >
-                            <Glyph icon="cloud-upload"/>
-                            <span>{this.state.dirty ? 'Save' : 'Saved'}</span>
-                        </Button>
-                    </ButtonGroup>
-                </Col>
-            </Row>;
+            actionButtonsBlock = <div className="text-right">
+                <ButtonGroup>
+                    <Button
+                        type={postStatusMap[this.state.post.status].type}
+                        onClick={this.onPostStatusButtonClick}
+                        disabled={this.state.dirty || this.state.changingStatus}
+                    >
+                        <Glyph icon={postStatusMap[this.state.post.status].icon}/>
+                        <span>{postStatusMap[this.state.post.status].text}</span>
+                    </Button>
+                    <Button
+                        type={this.state.dirty ? 'primary' : 'default-primary'}
+                        disabled={!this.state.dirty}
+                        onClick={this.onSaveButtonClick.bind(this)}
+                    >
+                        <Glyph icon="cloud-upload"/>
+                        <span>{this.state.dirty ? 'Save' : 'Saved'}</span>
+                    </Button>
+                </ButtonGroup>
+            </div>;
         }
 
         return <div className="post-edit-wrapper">
@@ -93,7 +91,6 @@ class AdminPost extends React.Component {
                         onChange={this.onPostFieldChanged.bind(this)}
                         tags={this.state.tags}
                         loadingTags={this.state.loadingTags}
-                        locale={locale}
                     />
                 </Card>
                 {actionButtonsBlock}

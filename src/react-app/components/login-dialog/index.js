@@ -57,7 +57,8 @@ class LoginDialog extends React.Component {
                     <Alert type="danger"><strong>Error:</strong> {this.state.error.message}</Alert> : null}
             </ModalBody>
             <ModalFooter>
-                <Button type="primary" submit form={formId} disabled={this.state.loading}>
+                {/* FIXME: https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/7327649-add-support-for-the-form-attribute form attr didn't work in IE*/}
+                <Button type="primary" submit form={formId} disabled={this.state.loading} value="login">
                     {this.state.loading ? <Spinner type="inverted"/> : <Glyph icon="log-in"/>}
                     &nbsp;Login
                 </Button>

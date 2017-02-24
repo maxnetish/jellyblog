@@ -1,16 +1,8 @@
 import {Post} from '../../models';
 import {updateTags} from '../../utils-data';
+import {applyCheckPermissions} from '../../utils-data';
 
 function createPost(post) {
-    if (!this.xhr) {
-        // allow only rpc call
-        return Promise.reject(500);
-        return;
-    }
-    if (!(this.req.user && this.req.user.role === 'admin')) {
-        return Promise.reject(401);
-    }
-
     post = post || {};
 
     return updateTags(post.tags)
@@ -30,4 +22,8 @@ function createPost(post) {
 
 }
 
-export default createPost;
+export default applyCheckPermissions({
+    rpcCall: true,
+    roles: ['admin'],
+    resourceFn: createPost
+});

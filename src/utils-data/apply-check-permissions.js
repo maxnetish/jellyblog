@@ -17,7 +17,7 @@ function applyCheckPermissions({rpcCall = false, roles = [], resourceFn} = {}) {
         }
 
         if (roles.length) {
-            if (!(this.req && this.req.user && this.req.user.role && roles.indexOf(this.req.user.role)) > -1) {
+            if (!(this.req && this.req.user && this.req.user.role && roles.indexOf(this.req.user.role) > -1)) {
                 return Promise.reject(401);
             }
         }

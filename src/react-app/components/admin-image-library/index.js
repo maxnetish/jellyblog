@@ -119,6 +119,8 @@ class ImageLibrary extends React.Component {
 
     @autobind
     onAddImageClick(e) {
+        var self = this;
+
         createImageModal.show({
             imageWidth: this.props.imageWidth,
             imageHeight: this.props.imageHeight,
@@ -126,19 +128,19 @@ class ImageLibrary extends React.Component {
             context: this.props.context
         })
             .then(dialogResult => {
-                let options = this.state.selectOptions || [];
-                let optionsToAdd = e.map(f => Object.assign(f, {
+                let options = self.state.selectOptions || [];
+                let optionsToAdd = dialogResult.map(f => Object.assign(f, {
                     value: f._id,
                     label: f.filename
                 }));
 
                 Array.prototype.unshift.apply(options, optionsToAdd);
 
-                this.props.onChange(optionsToAdd[0]);
-
-                this.setState({
+                self.setState({
                     selectOptions: options
                 });
+
+                self.props.onChange(optionsToAdd[0]);
             })
             .catch(err => {
                 if (['no', 'cancel'].indexOf(err) !== -1) {

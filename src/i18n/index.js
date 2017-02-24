@@ -20,12 +20,12 @@ function getOrSetLocale(newLocale) {
     return defaultLocale;
 }
 
-function getText({key, locale = defaultLocale} = {}) {
-    if(!texts.hasOwnProperty(locale)) {
+function getText(key = '', locale = defaultLocale) {
+    if (!texts.hasOwnProperty(locale)) {
         return key;
     }
 
-    if(!texts[locale].hasOwnProperty(key)) {
+    if (!texts[locale].hasOwnProperty(key)) {
         return key;
     }
 
