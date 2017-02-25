@@ -19,6 +19,7 @@ import Page404      from './404';
 import AdminApp     from './admin';
 import AdminPosts   from './admin/posts';
 import AdminPost    from './admin/edit';
+import LogPage      from './admin/log';
 
 import UserBadge    from '../components/user-badge';
 
@@ -139,6 +140,8 @@ function routes({getUserContext}) {
                    component={AdminPosts}/>
             <Route path="edit/:postId"
                    component={AdminPost}/>
+            <Route path="log"
+                   component={LogPage}/>
         </Route>
         <Route path="*"
                component={Page404}

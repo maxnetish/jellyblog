@@ -1,19 +1,15 @@
 import React                        from 'react';
 import {withRouter, Link}           from 'react-router';
 
-import Row                          from 'elemental/lib/components/Row';
-import Col                          from 'elemental/lib/components/Col';
-import Button                       from 'elemental/lib/components/Button';
-import Glyph                        from 'elemental/lib/components/Glyph';
 import FormInput                    from 'elemental/lib/components/FormInput';
 import FormIconField                from 'elemental/lib/components/FormIconField';
 
 import {autobind}                   from 'core-decorators';
 
 import PostBrief                    from '../../../components/admin-post-brief';
+import JbPaginationComponent        from '../../../components/pagination';
 
 import {getText}                    from '../../../../i18n';
-import resources                    from '../../../../resources';
 import {AdminPostsStore, actions}   from './store';
 
 class AdminPosts extends React.Component {
@@ -64,39 +60,10 @@ class AdminPosts extends React.Component {
     }
 
     render() {
-        let currentQuery = this.props.location.query;
-        let currentPage = parseInt(currentQuery.page, 10) || 1;
-        let leftPaginationVisible = currentPage > 1;
-        let rightPaginationVisible = this.state.hasMore;
-        let leftPage = currentPage - 1;
-        leftPage = leftPage === 1 ? undefined : leftPage;
-        let rightPage = currentPage + 1;
-        let currentPathname = this.props.location.pathname;
-
-        let paginationRow = <div className="posts-list-pagination-ct">
-            {leftPaginationVisible ?
-                <Button
-                    className="posts-list-pagination-button"
-                    type="hollow-primary"
-                    component={<Link
-                        to={{pathname: currentPathname, query: Object.assign({}, currentQuery, {page: leftPage})}}/>}
-                    disabled={this.state.searching}
-                >
-                    <Glyph icon="chevron-left"/>
-                    <span className="posts-list-pagination-button-text">{getText('Here')}</span>
-                </Button> : null}
-            {rightPaginationVisible ?
-                <Button
-                    className="posts-list-pagination-button right"
-                    type="hollow-primary"
-                    component={<Link
-                        to={{pathname: currentPathname, query: Object.assign({}, currentQuery, {page: rightPage})}}/>}
-                    disabled={this.state.searching}
-                >
-                    <span className="posts-list-pagination-button-text">{getText('There')}</span>
-                    <Glyph icon="chevron-right"/>
-                </Button> : null}
-        </div>;
+        let paginationRow = <JbPaginationComponent
+            searching={this.state.searching}
+            hasMore={this.state.hasMore}
+        />;
 
         return <div className="posts-list-wrapper">
             <div className="posts-list-internal">
@@ -141,12 +108,6 @@ class AdminPosts extends React.Component {
                 })
             });
         }
-    }
-
-    @autobind
-    onCreateNewClick(e) {
-        resources.post.create()
-            .then(response => console.info(response));
     }
 
     @autobind

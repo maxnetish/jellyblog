@@ -5,5 +5,9 @@
   "Author": "Автор",
   "Here": "Сюда",
   "There": "Туда",
-  "Enter 3 or more chars to find": "Для поиска введите слово из трёх или более букв"
+  "Enter 3 or more chars to find": "Для поиска введите слово из трёх или более букв",
+  "Date": "Дата",
+  "Request": "Запрос",
+  "Remote address": "Откуда",
+  "Response time": "Время на ответ"
 }

@@ -69,6 +69,15 @@ class AdminMenu extends React.Component {
                     </div>
                     <div className={getClassOfMenuItem({
                         router: this.props.router,
+                        target: '/admin/log',
+                        forceVisible: this.state.forceVisible
+                    })}>
+                        <Button type={menuButtonType}
+                                onClick={this.onMenuButtonClick.bind(this)}
+                                component={<Link to="/admin/log" activeClassName="active-link">Log</Link>}/>
+                    </div>
+                    <div className={getClassOfMenuItem({
+                        router: this.props.router,
                         target: '/admin/posts',
                         forceVisible: this.state.forceVisible
                     })}>

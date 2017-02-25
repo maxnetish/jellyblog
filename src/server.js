@@ -4,6 +4,7 @@ import urljoin from 'url-join';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
 
+import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
 import serveStatic from 'serve-static';
@@ -24,6 +25,7 @@ import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
 import {expressRouteHandler} from './isomorph-utils/server';
+import {addEntryFromMorgan} from './utils-data';
 
 const app = express();
 
@@ -48,8 +50,13 @@ mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.conn
 /**
  * setup app
  */
+// to properly work behind nginx
+app.set("trust proxy", true);
 app.use(favicon(path.join(__dirname, 'pub/favicon.ico')));
 app.use(responseTime());
+// setup logger
+morgan.token('user-name', function (req, res) { return req.user && req.user.userName; });
+app.use(morgan(addEntryFromMorgan));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cookieParser());
