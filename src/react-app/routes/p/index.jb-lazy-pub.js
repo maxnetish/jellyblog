@@ -3,6 +3,7 @@ import React from 'react';
 import resources from '../../../resources';
 
 import LinkBar from '../../components/linkbar';
+import HeaderComponent from '../../components/pub-header';
 
 class PubApp extends React.Component {
     constructor(props) {
@@ -51,6 +52,7 @@ class PubApp extends React.Component {
 
     render() {
         return <div>
+            <HeaderComponent/>
             <LinkBar {...this.props}/>
             <h2>App component</h2>
             <div>Props.params:</div>

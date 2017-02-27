@@ -58,8 +58,8 @@ class LogPage extends React.Component {
     }
 
     render() {
-        return <div className="posts-list-wrapper">
-            <div className="posts-list-internal">
+        return <div className="log-page-wrapper">
+            <div className="log-page-internal">
                 <JbPaginationComponent
                     className="_margin-5 _top _bottom"
                     searching={this.state.searching}
@@ -72,6 +72,7 @@ class LogPage extends React.Component {
                             <col width=""/>
                             <col width="30%"/>
                             <col width="15%"/>
+                            <col width=""/>
                         </colgroup>
                         <thead>
                         <tr>
@@ -79,6 +80,7 @@ class LogPage extends React.Component {
                             <th>{getText('Request')}</th>
                             <th>{getText('Remote address')}</th>
                             <th>{getText('Response time')}</th>
+                            <th>{getText('Error')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -87,6 +89,7 @@ class LogPage extends React.Component {
                             <td>{l.requestMethod} {l.requestUrl}</td>
                             <td>{l.remoteAddress}</td>
                             <td>{l.responseTime}</td>
+                            <td>{l.error}</td>
                         </tr>)}
                         </tbody>
                     </Table>

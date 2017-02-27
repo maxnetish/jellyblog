@@ -9,5 +9,6 @@
   "Date": "Дата",
   "Request": "Запрос",
   "Remote address": "Откуда",
-  "Response time": "Время на ответ"
+  "Response time": "Время на ответ",
+  "Error": "Исключение"
 }

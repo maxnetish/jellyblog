@@ -1,4 +1,5 @@
 import React        from 'react';
+import isBrowser from 'is-in-browser';
 
 import moment       from 'moment';
 import 'moment/locale/ru';
@@ -10,18 +11,39 @@ import {Route, IndexRoute, IndexRedirect}      from 'react-router';
 
 // import {routeParamsChanged, routeQueryChanged}  from '../../state-utils/shared';
 
-import PubApp       from './p';
-import Dashboard    from './p/dashboard';
-import About        from './p/about';
-import Posts        from './p/posts';
-import Post         from './p/post';
+import PubApp       from './p/index.jb-lazy-pub';
+import Dashboard    from './p/dashboard/index.jb-lazy-pub';
+import About        from './p/about.jb-lazy-pub';
+import Posts        from './p/posts.jb-lazy-pub';
+import Post         from './p/post.jb-lazy-pub';
+
 import Page404      from './404';
-import AdminApp     from './admin';
-import AdminPosts   from './admin/posts';
-import AdminPost    from './admin/edit';
-import LogPage      from './admin/log';
+
+import AdminApp     from './admin/index.jb-lazy-admin';
+import AdminPosts   from './admin/posts/index.jb-lazy-admin';
+import AdminPost    from './admin/edit/index.jb-lazy-admin';
+import LogPage      from './admin/log/index.jb-lazy-admin';
 
 import UserBadge    from '../components/user-badge';
+
+function loadComponent(moduleOrComponent) {
+    if (isBrowser) {
+        return lazyLoadModule(moduleOrComponent);
+    }
+    return syncLoadComponent(moduleOrComponent);
+}
+
+function syncLoadComponent (syncComponent) {
+    return (location, cb) => cb(null, syncComponent);
+}
+
+function lazyLoadModule(lazyModule) {
+    return (location, cb) => {
+        lazyModule(module => {
+            cb(null, module.default)
+        })
+    };
+}
 
 function getOnRouteEnterHandler({Component, getUserContext}) {
     return (nextState, replace) => {
@@ -111,40 +133,40 @@ function routes({getUserContext}) {
                   component={RootComponent}>
         <IndexRedirect to="/p"/>
         <Route path="p"
-               component={PubApp}
+               getComponent={loadComponent(PubApp)}
                onEnter={getOnRouteEnterHandler({Component: PubApp, getUserContext})}
                onChange={getOnRouteChangeHandler({Component: PubApp, getUserContext})}>
-            <IndexRoute component={Dashboard}
+            <IndexRoute getComponent={loadComponent(Dashboard)}
                         onEnter={getOnRouteEnterHandler({Component: Dashboard, getUserContext})}/>
             <Route path="about"
-                   component={About}
+                   getComponent={loadComponent(About)}
                    onEnter={getOnRouteEnterHandler({Component: About, getUserContext})}/>
             <Route path="posts"
-                   component={Posts}
+                   getComponent={loadComponent(Posts)}
                    onEnter={getOnRouteEnterHandler({Component: Posts, getUserContext})}/>
             <Route path="post/:id"
-                   component={Post}
+                   getComponent={loadComponent(Post)}
                    onEnter={getOnRouteEnterHandler({Component: Post, getUserContext})}
                    onChange={getOnRouteChangeHandler({Component: Post, getUserContext})}/>
         </Route>
         <Route path="401"
                component={NotAuthorizeComponent}/>
         <Route path="admin"
-               component={AdminApp}
+               getComponent={loadComponent(AdminApp)}
                onEnter={getOnRouteEnterHandler({Component: AdminApp, getUserContext})}
                onChange={getOnRouteChangeHandler({Component: AdminApp, getUserContext})}>
             <IndexRoute component={UnderConstructionComponent}/>
             <Route path="settings"
                    component={UnderConstructionComponent}/>
             <Route path="posts"
-                   component={AdminPosts}/>
+                   getComponent={loadComponent(AdminPosts)}/>
             <Route path="edit/:postId"
-                   component={AdminPost}/>
+                   getComponent={loadComponent(AdminPost)}/>
             <Route path="log"
-                   component={LogPage}/>
+                   getComponent={loadComponent(LogPage)}/>
         </Route>
         <Route path="*"
-               component={Page404}
+               getComponent={loadComponent(Page404)}
                onEnter={getOnRouteEnterHandler({Component: Page404, getUserContext})}/>
     </Route>;
 }

@@ -42,6 +42,7 @@ class Dashboard extends React.Component {
     }
 
     render() {
+        console.log('render Dashboard with state: ', this.state);
         return <div>
             <h3>Dashboard component</h3>
             <div>Props.params:</div>

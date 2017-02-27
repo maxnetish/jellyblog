@@ -103,35 +103,7 @@ module.exports = function (grunt) {
             options: webpackCommonOptions,
             dev: {
                 devtool: 'source-map',
-                debug: true,
-                module: {
-                    preLoaders: [
-                        {
-                            test: /\.js$/,
-                            exclude: /(node_modules|bower_components)/,
-                            loader: 'isomorphine'
-                        }
-                    ],
-                    loaders: [
-                        {
-                            test: /\.js$/,
-                            exclude: /(node_modules|bower_components)/,
-                            loader: 'babel-loader',
-                            query: {
-                                presets: [
-                                    'es2015'
-                                ],
-                                plugins: [
-                                    // 'syntax-jsx',
-                                    // 'transform-react-jsx',
-                                    // 'transform-react-display-name'
-                                ],
-                                cacheDirectory: false,
-                                cacheIdentifier: 'babel-prod'
-                            }
-                        }
-                    ]
-                }
+                debug: true
             },
             prod: {
                 // devtool: 'cheap-module-source-map',
@@ -145,36 +117,7 @@ module.exports = function (grunt) {
                     }),
                     new webpack.optimize.DedupePlugin(),
                     new webpack.optimize.UglifyJsPlugin()
-                ]),
-                module: {
-                    preLoaders: [
-                        {
-                            test: /\.js$/,
-                            exclude: /(node_modules|bower_components)/,
-                            loader: 'isomorphine'
-                        }
-                    ],
-                    loaders: [
-                        {
-                            test: /\.js$/,
-                            exclude: /(node_modules|bower_components)/,
-                            loader: 'babel-loader',
-                            query: {
-                                presets: [
-                                    'es2015'
-                                ],
-                                plugins: [
-                                    // 'syntax-jsx',
-                                    // 'transform-react-jsx',
-                                    // 'transform-react-display-name'
-                                ],
-                                cacheDirectory: false,
-                                cacheIdentifier: 'babel-prod'
-                            }
-                        }
-                    ]
-                }
-
+                ])
             }
         },
 

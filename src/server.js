@@ -25,7 +25,7 @@ import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
 import {expressRouteHandler} from './isomorph-utils/server';
-import {addEntryFromMorgan} from './utils-data';
+import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
 
 const app = express();
 
@@ -189,6 +189,7 @@ app.use(morphine.router);
 app.get(['/', '/*'], expressRouteHandler);
 
 app.use(function (err, req, res, next) {
+    addEntryFromErrorResponse(req, res, err);
     console.error(err.stack);
     let status = typeof err === 'number' ? err : 500;
     res.status(status).send('Internal error');
