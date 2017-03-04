@@ -23,6 +23,7 @@ import AdminApp     from './admin/index.jb-lazy-admin';
 import AdminPosts   from './admin/posts/index.jb-lazy-admin';
 import AdminPost    from './admin/edit/index.jb-lazy-admin';
 import LogPage      from './admin/log/index.jb-lazy-admin';
+import AdminSettingsPage    from './admin/settings/index.jb-lazy-admin';
 
 import UserBadge    from '../components/user-badge';
 
@@ -33,7 +34,7 @@ function loadComponent(moduleOrComponent) {
     return syncLoadComponent(moduleOrComponent);
 }
 
-function syncLoadComponent (syncComponent) {
+function syncLoadComponent(syncComponent) {
     return (location, cb) => cb(null, syncComponent);
 }
 
@@ -157,7 +158,7 @@ function routes({getUserContext}) {
                onChange={getOnRouteChangeHandler({Component: AdminApp, getUserContext})}>
             <IndexRoute component={UnderConstructionComponent}/>
             <Route path="settings"
-                   component={UnderConstructionComponent}/>
+                   getComponent={loadComponent(AdminSettingsPage)}/>
             <Route path="posts"
                    getComponent={loadComponent(AdminPosts)}/>
             <Route path="edit/:postId"

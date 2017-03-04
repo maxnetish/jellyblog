@@ -34,6 +34,43 @@ function remove(items, tag) {
         });
 }
 
+function update(items, tag) {
+    let existentItems = items.filter(i => !!item._id);
+
+    let updates = existentItems.map(i => {
+        let modelToUpdate = Object.assign({
+            tag: tag
+        }, i);
+        delete modelToUpdate._id;
+        return MediaSrcset.update({
+            _id: i._id
+        }, modelToUpdate, {
+            upsert: false,
+            multi: false,
+            runValidators: true
+        });
+    });
+
+    return Promise.all(updates);
+}
+
+function add(items, tag) {
+    // We should add files first
+    let newItems = items.filter(i => !item._id);
+    newItems = newItems.map(i => Object.assign({tag: tag}, i));
+    return MediaSrcset.create(newItems);
+}
+
+function clearItems(items) {
+    return items.map(i => {
+        return {
+            mediaQuery: i.mediaQuery,
+            mediaFile: i.mediaFile,
+            visible: i.visible
+        };
+    });
+}
+
 function resourceFn({items = [], tag}={}) {
     // we should check that all tags in items are same as in tag parameter
 
@@ -43,45 +80,22 @@ function resourceFn({items = [], tag}={}) {
 
     //http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate
 
+    if (!tag) {
+        throw new Error('You should provide tag');
+    }
 
-    let postData = {
-        updateDate: new Date(),
-        author: this.req.user.userName,
-        contentType: post.contentType,
-        title: post.title,
-        brief: post.brief,
-        content: post.content,
-        titleImg: post.titleImg,        // should be _id
-        attachments: post.attachments,  // should be array of _id
-        tags: post.tags,                 // should be array of strings
-        pubDate: post.pubDate
-    };
+    let clearedItems = clearItems(items);
 
-    return Promise
-        .all([
-            updateTags(postData.tags),
-            updatePostAttachments(post._id, postData.attachments)
-        ])
-        .then(preResult => Post
-            .findByIdAndUpdate(post._id, Object.assign(postData, {tags: preResult[0]}), {
-                'new': true,
-                upsert: false,
-                lean: false
-            })
-            .populate('tags')
-            .populate('attachments')
-            .populate('titleImg'))
-        .then(res => {
-            if (res && res.tags) {
-                res.tags = res.tags.map(tagWrapped => tagWrapped.value);
-            }
-            return res;
-        })
-        .catch(err => {
-            console.log(err);
-            throw err;
+    return Promise.all([
+        remove(clearedItems, tag),
+        update(clearedItems, tag),
+        add(clearedItems, tag)
+    ])
+        .then(result => {
+            return MediaSrcset.find({tag: tag}, null, {lean: true})
+                .populate('mediaFile')
+                .exec();
         });
-
 }
 
 export default applyCheckPermissions({
