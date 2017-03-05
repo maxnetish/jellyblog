@@ -13,11 +13,8 @@ import {autobind}           from 'core-decorators';
 import resources            from '../../../resources';
 import modalDialogDecorator from '../../../utils/modal-dialog-decorator';
 
-const createImageModal = {};
-const confirmModal = {};
-
-@modalDialogDecorator({modal: confirmModal, component: Confirm})
-@modalDialogDecorator({modal: createImageModal, component: CreateImageDialog})
+@modalDialogDecorator({modalHookPropKey: 'confirmModal', component: Confirm})
+@modalDialogDecorator({modalHookPropKey: 'createImageModal', component: CreateImageDialog})
 class ImageLibrary extends React.Component {
 
     constructor(props) {
@@ -121,7 +118,7 @@ class ImageLibrary extends React.Component {
     onAddImageClick(e) {
         var self = this;
 
-        createImageModal.show({
+        this.props.createImageModal.show({
             imageWidth: this.props.imageWidth,
             imageHeight: this.props.imageHeight,
             uploadUrl: this.props.uploadUrl,
@@ -196,7 +193,7 @@ class ImageLibrary extends React.Component {
             return;
         }
 
-        confirmModal.show({
+        this.props.confirmModal.show({
             text: `Really remove file "${this.props.value.metadata.originalName}" forever?`
         })
             .then(() => {

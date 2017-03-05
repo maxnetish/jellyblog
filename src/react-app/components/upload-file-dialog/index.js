@@ -18,13 +18,16 @@ import Spinner from 'elemental/lib/components/Spinner';
 import Glyph from 'elemental/lib/components/Glyph';
 import Alert from 'elemental/lib/components/Alert';
 
+import {convertFileToDataUrl} from '../../../utils/convert-blob-to-dataurl';
+
 class UploadFileDialog extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            filesToUpload: []
+            filesToUpload: [],
+            previewOfFiles: []
         };
     }
 
@@ -42,6 +45,13 @@ class UploadFileDialog extends React.Component {
                 filesToUpload: []
             });
         }
+    }
+
+    createPreview(ind) {
+        if (!this.state.previewOfFiles[ind]) {
+            return null;
+        }
+        return <div><img src={this.state.previewOfFiles[ind]} className="upload-dialog-image-preview"/></div>;
     }
 
     render() {
@@ -69,8 +79,11 @@ class UploadFileDialog extends React.Component {
                             </Button>
                         </div>
                         <ol className="files-to-upload">
-                            {this.state.filesToUpload.map(f => <li key={f.name}><b>{f.name}</b> ({f.size}
-                                bytes; {f.type})</li>)}
+                            {this.state.filesToUpload.map((f, ind) => <li key={f.name}>
+                                <b>{f.name}</b>
+                                &nbsp;({f.size} bytes; {f.type})
+                                {this.createPreview(ind)}
+                            </li>)}
                         </ol>
                     </FormField>
                 </Form>
@@ -161,8 +174,34 @@ class UploadFileDialog extends React.Component {
 
     @autobind
     onFileInputChange(e) {
+        let filesAsArray = Array.prototype.slice.call(e.target.files, 0);
         this.setState({
-            filesToUpload: Array.prototype.slice.call(e.target.files, 0)
+            filesToUpload: filesAsArray,
+            previewOfFiles: new Array(e.target.files.length).fill(null)
+        });
+        this.updatePreview(filesAsArray);
+    }
+
+    @autobind
+    updatePreview(filesAsArray) {
+        let self = this;
+
+        filesAsArray.forEach((file, ind) => {
+            if (file.type.indexOf('image') === -1) {
+                return;
+            }
+            convertFileToDataUrl(file)
+                .then(dataUrl => {
+                    if (!dataUrl) {
+                        return dataUrl;
+                    }
+
+                    let currentPreviews = this.state.previewOfFiles;
+                    currentPreviews[ind] = dataUrl;
+                    self.setState({
+                        previewOfFiles: currentPreviews
+                    });
+                });
         });
     }
 

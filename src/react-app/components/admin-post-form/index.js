@@ -20,6 +20,7 @@ import DatePicker           from 'react-datepicker';
 
 import UploadFileDialog     from '../upload-file-dialog';
 import ImageLibrary         from '../admin-image-library';
+import AttachmentLink       from '../attachment-link';
 
 import classnames           from 'classnames';
 import {autobind}           from 'core-decorators';
@@ -79,7 +80,7 @@ marked.setOptions({
     smartypants: false
 });
 
-@modalDialogDecorator({modal: uploadFileModal, component: UploadFileDialog})
+@modalDialogDecorator({modalHookPropKey: 'uploadFileModal', component: UploadFileDialog})
 export default class PostForm extends React.Component {
     constructor(props) {
         super(props);
@@ -94,6 +95,8 @@ export default class PostForm extends React.Component {
     }
 
     render() {
+        let self = this;
+
         let postStatusClass = classnames({
             'inline-form-statics': true,
             'post-status-form': true,
@@ -323,12 +326,7 @@ export default class PostForm extends React.Component {
                         {this.props.value.attachments ?
                             <ol className="files-attached">
                                 {this.props.value.attachments.map(a => <li key={a._id}>
-                                    <a
-                                        href={`${fileStoreConfig.gridFsBaseUrl}/${a.filename}`}
-                                        target="_blank"
-                                    >
-                                        <b>{a.metadata.originalName}</b>
-                                    </a>
+                                    <AttachmentLink attachment={a}/>
                                     &nbsp;({a.length} bytes; {a.contentType})&nbsp;
                                     <Button
                                         type="link-delete"
@@ -440,7 +438,7 @@ export default class PostForm extends React.Component {
     @autobind
     onAddAttachmentsClick(e) {
         let self = this;
-        uploadFileModal
+        this.props.uploadFileModal
             .show({
                 uploadMulti: true,
                 uploadFieldName: 'attachment',

@@ -19,11 +19,18 @@ const actions = new Actions({
         },
         resourceError: {
             async: false
+        },
+        headerImageSrcsetAddItem: {
+            async: true
+        },
+        headerImageSrcsetItemChange: {
+            async: true
+        },
+        headerImageSrcsetItemRemove: {
+            async: true
         }
     }
 });
-
-const headerImageSrcsetTag = 'HEADER_IMAGE';
 
 class AdminSettingsStore extends StateStoreBase {
     constructor(initialState) {
@@ -35,12 +42,13 @@ class AdminSettingsStore extends StateStoreBase {
     }
 
     onNeedReloadHeaderImageSrcset() {
+        let tag = this.getState().headerImageSrcsetTag;
         this.assignState({
             headerImageSrcsetLoading: true
         });
         this.notifyStateChanged();
 
-        resources.mediaSrcset.get({tag: headerImageSrcsetTag})
+        resources.mediaSrcset.get({tag: tag})
             .then(actions.headerImageSrcsetReceived)
             .catch(actions.resourceError);
     }
@@ -58,6 +66,45 @@ class AdminSettingsStore extends StateStoreBase {
         this.assignState({
             headerImageSrcsetLoading: false,
             headerImageSrcsetError: err
+        });
+        this.notifyStateChanged();
+    }
+
+    onHeaderImageSrcsetAddItem(defaultSrcsetItem){
+        let current = this.getState().headerImageSrcset;
+        let tag = this.getState().headerImageSrcsetTag;
+        let actualSrcsetItem = Object.assign({
+            tag: tag,
+            mediaFile: null,
+            mediaQuery: null,
+            visible: true
+        }, defaultSrcsetItem);
+        current = current || [];
+        current.push(actualSrcsetItem);
+        this.assignState({
+            headerImageSrcset: current
+        });
+        this.notifyStateChanged();
+    }
+
+    onHeaderImageSrcsetItemChange (index, changedProps) {
+        let currentState = this.getState();
+        let currentSrcsetItem = currentState.headerImageSrcset[index];
+        let currentSrcset = currentState.headerImageSrcset;
+        let updatedSrcsetItem = Object.assign({}, currentSrcsetItem, changedProps);
+        currentSrcset[index] = updatedSrcsetItem;
+        this.assignState({
+            headerImageSrcset: currentSrcset
+        });
+        this.notifyStateChanged();
+    }
+
+    onHeaderImageSrcsetItemRemove (index) {
+        let currentState = this.getState();
+        let currentSrcset = currentState.headerImageSrcset;
+        currentSrcset.splice(index, 1);
+        this.assignState({
+            headerImageSrcset: currentSrcset
         });
         this.notifyStateChanged();
     }

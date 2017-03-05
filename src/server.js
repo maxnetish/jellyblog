@@ -98,7 +98,8 @@ const gridFsStorage = MulterGridfsStorage({
             postId: (req.body && req.body.postId) ? new mongoose.mongo.ObjectId(req.body.postId) : undefined,
             originalName: file.originalname,
             width: (req.body && req.body.width) ? req.body.width : undefined,
-            height: (req.body && req.body.height) ? req.body.height : undefined
+            height: (req.body && req.body.height) ? req.body.height : undefined,
+            srcsetTag: (req.body && req.body.srcsetTag) ? req.body.srcsetTag : undefined
         };
         cb(null, meta);
     },
@@ -129,6 +130,10 @@ const uploadMiddlewareAttachment = uploadMiddleware.fields([
     {
         name: 'avatarImage',
         maxCount: 1
+    },
+    {
+        name: 'srcset',
+        maxCount: 1
     }
 ]);
 app.post('/upload', uploadMiddlewareAttachment, (req, res) => {
@@ -151,6 +156,7 @@ app.post('/upload', uploadMiddlewareAttachment, (req, res) => {
  *
  */
 const mongoConnectionForServeGridFs = MongoClient.connect(mongooseConfig.connectionUri);
+const contentTypeToShowInline = /^(image|video|text)\//;
 const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
     // bucketName: 'fs'
     // serve-gridfs assumes that _id will be String (not ObjectId)
@@ -168,10 +174,10 @@ const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
         if (stat && stat.uploadDate) {
             let uploadDateAsISO = (new Date(stat.uploadDate)).toISOString();
             res.setHeader('last-modified', uploadDateAsISO);
-            if (!(stat.contentType && (stat.contentType.startsWith('image') || stat.contentType.startsWith('video')))) {
+            if (!(stat.contentType && (contentTypeToShowInline.test(stat.contentType)))) {
                 // For video/image not set Content-Type so browser should show these files inline
                 // For other browser should prompt to download file
-                res.setHeader('Content-Disposition', `attachment; filename="${stat.metadata.originalName}"`);
+                res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(stat.metadata.originalName)}"`);
             }
         }
     }
