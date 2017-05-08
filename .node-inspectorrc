@@ -1,0 +1,10 @@
+{
+  "web-port": 8080,
+  "web-host": "localhost",
+  "debug-port": 5858,
+  "save-live-edit": false,
+  "preload": false,
+  "hidden": [".git/", ".idea/", "bower_components/", "build/", "node_modules/", "upload/"],
+  "nodejs": ["--harmony"],
+  "stack-trace-limit": 4
+}

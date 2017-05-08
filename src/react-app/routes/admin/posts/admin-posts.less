@@ -1,0 +1,31 @@
+@import "../../../../../node_modules/elemental/less/variables";
+
+.posts-list-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+
+  .posts-list-internal {
+    //display: flex;
+    //flex-direction: row;
+    //flex-wrap: wrap;
+    //justify-content: flex-start;
+    //align-items: flex-start;
+    width: 100%;
+
+    @media (min-width: @screen-lg) {
+      width: @screen-lg;
+    }
+
+    .posts-list-items {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      clear: both;
+    }
+  }
+}

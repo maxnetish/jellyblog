@@ -1,29 +1,13 @@
-Deployment
-==========
-You have to execute:
+Here try to implement with stack:
+ * mongoose - mongo
+ * express
+ * react
+ * react-router
+ * ~~reflux~~
+ * UI elements: elemental
+ * isomorphine to isomorphic behavior
 
-npm install
-bower install
-grunt
+Build with grunt - babel - webpack
 
-Edit config files in /config:
-    1. auth.json:
-        "admin": "<example@gmail.com>" // google e-mail of user who will be admin
-    2. url.json:
-        "host": "<http://localhost:3000>" // public url
-    3. google-app.json:
-        This file contains app identification data to use with google oauth service.
-        You need to register web application at https://console.developers.google.com
-        and download json file from 'credentials'.
-    4. google-analytics.json:
-        "identificator": "UA-XXX-Y" // google analytics identificator
-
-Run:
-
-NODE_ENV=production node bin/www
-
-Admin interface here: <host>/admin
-
-http://gordeev.me
-
+ES7, flex etc...
 

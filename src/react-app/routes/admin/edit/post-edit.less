@@ -1,0 +1,25 @@
+@import "../../../../../node_modules/elemental/less/variables";
+
+.post-edit-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding-top: 1em;
+
+  .post-edit-internal {
+    //display: flex;
+    //flex-direction: row;
+    //flex-wrap: wrap;
+    //justify-content: flex-start;
+    //align-items: flex-start;
+    width: 100%;
+
+    @media (min-width: @screen-lg) {
+      width: @screen-lg;
+    }
+
+  }
+}
