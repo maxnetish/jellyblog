@@ -1,0 +1,15 @@
+doctype html
+html(lang='ru')
+    head
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(charset='UTF-8')
+        title= "Admin area"
+        link(rel="stylesheet", href='/assets/normalize.css')
+        link(rel="stylesheet", href='/assets/styles.css')
+        link(rel='stylesheet', href='//fonts.googleapis.com/css?family=Fira+Sans&subset=latin,cyrillic')
+    body
+        #vue-app.app-wrapper
+        a(href="/admin/logout")= getText("Logout")
+        script(src="/assets/common.js")
+        script(src="/assets/adm.js")
+        script(src="https://use.fontawesome.com/b0902e84c6.js")

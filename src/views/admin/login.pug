@@ -1,0 +1,32 @@
+doctype html
+html(lang='ru')
+    head
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(charset='UTF-8')
+        title= getText("Login")
+        link(rel="stylesheet", href='/assets/bootstrap.css')
+body
+    .container
+        .row
+            .col-md-6.col-md-offset-3.col-xs-12
+                .panel.panel-default
+                    .panel-heading #{getText("Login")}
+                    .panel-body
+                        form.form-horizontal(action="/admin/login", method="post")
+                            .form-group
+                                label.col-xs-3.control-label(for="login-username") #{getText("Username")}:
+                                .col-xs-9
+                                    input#login-username.form-control(type="text", name="username", required, placeholder=getText("Enter username"))
+                            .form-group
+                                label.col-xs-3.control-label(for="login-password") #{getText("Password")}:
+                                .col-xs-9
+                                    input#login-password.form-control(type="password", name="password", required, placeholder=getText("Enter password"))
+                            .form-group
+                                .col-xs-12.text-right
+                                    button.btn.btn-primary(type="submit", value="Log In") #{getText("Login")}
+                            if (messages && messages.error)
+                                each errMessage in messages.error
+                                    .row
+                                        .col-xs-offset-3.col-xs-9
+                                            .alert.alert-danger(role="alert") #{errMessage}
+

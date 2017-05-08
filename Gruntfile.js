@@ -29,7 +29,7 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            'json files': {
+            'json-files': {
                 files: [
                     {
                         expand: true,
@@ -37,6 +37,25 @@ module.exports = function (grunt) {
                         cwd: srcDir + '/',
                         src: ['**/*.json'],
                         dest: buildDir + '/'
+                    }
+                ]
+            },
+            'pug-views': {
+                files: [
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        cwd: srcDir + '/views',
+                        src: ['**/*.pug'],
+                        dest: buildDir + '/views'
+                    }
+                ]
+            },
+            'bootstrap-base': {
+                files: [
+                    {
+                        src: 'node_modules/bootstrap/dist/css/bootstrap.css',
+                        dest: path.join(buildDir, 'pub/bootstrap.css')
                     }
                 ]
             }
@@ -110,7 +129,7 @@ module.exports = function (grunt) {
         webpack: {
             options: webpackCommonOptions,
             dev: {
-                devtool: 'source-map'
+                devtool: '#source-map'
             },
             prod: {
                 // devtool: 'cheap-module-source-map',
@@ -122,17 +141,31 @@ module.exports = function (grunt) {
                         }
                     }),
                     // new webpack.optimize.DedupePlugin(),
-                    new webpack.optimize.UglifyJsPlugin()
+                    new webpack.optimize.UglifyJsPlugin({
+                        sourceMap: true,
+                        compress: {
+                            warnings: false
+                        }
+                    }),
+                    new webpack.LoaderOptionsPlugin({
+                        minimize: true
+                    })
                 ])
             }
         },
 
         less: {
             dev: {
-                files: [{
-                    src: 'src/**/*.less',
-                    dest: path.join(buildDir,'pub/bundle.css')
-                }],
+                files: [
+                    {
+                        src: 'node_modules/bootstrap/less/normalize.less',
+                        dest: path.join(buildDir, 'pub/normalize.css')
+                    },
+                    {
+                        src: 'src/**/*.less',
+                        dest: path.join(buildDir, 'pub/bundle.css')
+                    }
+                ],
                 options: {
                     sourceMap: true,
                     outputSourceFiles: true,
@@ -145,10 +178,16 @@ module.exports = function (grunt) {
                 }
             },
             prod: {
-                files: [{
-                    src: 'src/**/*.less',
-                    dest: path.join(buildDir,'pub/bundle.css')
-                }],
+                files: [
+                    {
+                        src: 'node_modules/bootstrap/less/normalize.less',
+                        dest: path.join(buildDir, 'pub/normalize.css')
+                    },
+                    {
+                        src: 'src/**/*.less',
+                        dest: path.join(buildDir, 'pub/bundle.css')
+                    }
+                ],
                 options: {
                     sourceMap: false,
                     plugins: [
@@ -171,8 +210,20 @@ module.exports = function (grunt) {
              * but uglifying really not needed
              */
             'js-files': {
-                files: [srcDir + '/**/*.js*'],
+                files: [srcDir + '/**/*.js'],
                 tasks: ['babel:dev', 'webpack:dev']
+            },
+            'vue-files': {
+                files: [srcDir + '/**/*.js', srcDir + '/**/*.vue', srcDir + '/admin-vue-app/**/*.pug', srcDir + '/admin-vue-app/**/*.less'],
+                tasks: ['webpack:dev']
+            },
+            'pug files': {
+                files: [srcDir + '/views/**/*.pug'],
+                tasks: ['copy:pug-views']
+            },
+            'json-files': {
+                files: [srcDir + '/**/*.json'],
+                tasks: ['copy:json-files']
             },
             // 'html-files': {
             //     files: [srcDir + '/**/*.html'],

@@ -1,0 +1,17 @@
+doctype html
+html(lang='ru')
+    head
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(charset='UTF-8')
+        title= "Maksim Gordeev"
+        link(rel="stylesheet", href='/assets/normalize.css')
+        link(rel="stylesheet", href='/assets/styles.css')
+        link(rel='stylesheet', href='//fonts.googleapis.com/css?family=Fira+Sans&subset=latin,cyrillic')
+    body
+        .main-wrapper
+            .clear.body-row.page-content
+                .body-row-content.flex-ct
+                    section.main-content
+                        block content
+        script(src="/assets/common.js")
+        script(src="https://use.fontawesome.com/b0902e84c6.js")

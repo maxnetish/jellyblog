@@ -20,6 +20,8 @@ import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
 import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
+import flash from 'express-flash';
+import * as i18n from './i18n'
 
 const app = express();
 
@@ -46,10 +48,14 @@ mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.conn
  */
 // to properly work behind nginx
 app.set("trust proxy", true);
+app.set('view engine', 'pug');
+app.set('views', './views');
 app.use(favicon(path.join(__dirname, 'pub/favicon.ico')));
 app.use(responseTime());
 // setup logger
-morgan.token('user-name', function (req, res) { return req.user && req.user.userName; });
+morgan.token('user-name', function (req, res) {
+    return req.user && req.user.userName;
+});
 app.use(morgan(addEntryFromMorgan));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -71,8 +77,19 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+/**
+ * fill locals to pass it to view
+ */
+app.use((req, res, next) => {
+    res.locals.getText = key => i18n.getText(key, req.language);
+    res.locals.language = req.language;
+    res.locals.user = req.user;
+    next();
+});
 
 /**
  * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
@@ -184,9 +201,43 @@ app.use(fileStoreConfig.gridFsBaseUrl, serveGridFsByNamemiddleware);
 app.use(morphine.router);
 
 /**
+ * admin area
+ */
+app.get('/admin', (req, res) => {
+    // admin area, require auth
+    if (req.user && req.user.role === 'admin') {
+        res.render('admin/index', {});
+    } else {
+        res.render('admin/login', {});
+    }
+});
+app.get('/admin/login', (req, res) => {
+    if (req.user && req.user.role === 'admin') {
+        res.redirect('/admin');
+    } else {
+        res.render('admin/login', {});
+    }
+});
+app.post('/admin/login',
+    passport.authenticate('local', {
+        successRedirect: '/admin',
+        failureRedirect: '/admin/login',
+        failureFlash: true
+    })
+);
+app.get('/admin/logout', (req, res) => {
+    if (req.user) {
+        req.logout();
+        res.redirect(req.query.next || '/');
+    } else {
+        res.send(400);
+    }
+});
+
+/**
  * Main entry
  */
-app.get(['/', '/*'], (req, res) => res.send(200));
+app.get(['/'], (req, res) => res.render('pub/index', {}));
 
 app.use(function (err, req, res, next) {
     addEntryFromErrorResponse(req, res, err);

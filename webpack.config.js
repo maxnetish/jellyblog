@@ -42,6 +42,15 @@ module.exports = {
                 enforce: 'pre'
             },
             {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: {
+                    loaders: {
+                    }
+                    // other vue-loader options go here
+                }
+            },
+            {
                 test: jsonFiles,
                 loader: 'json-loader'
             },

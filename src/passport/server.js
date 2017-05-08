@@ -3,22 +3,18 @@ import authConfig from '../../config/auth.json';
 import {Router} from 'express';
 
 
-const localStrategy = new Strategy({
-    usernameField: 'payload[0][username]',
-    passwordField: 'payload[0][password]',
-    passReqToCallback: false
-}, (username, password, done) => {
+const localStrategy = new Strategy((username, password, done) => {
 
     let findedUser = authConfig.find(elem => {
         return elem.userName === username;
     });
 
     if (!findedUser) {
-        return done(null, false);
+        return done(null, false, {message: 'Incorrect login'});
     }
 
     if (findedUser.password !== password) {
-        return done(null, false);
+        return done(null, false, {message: 'Incorrect login'});
     }
 
     return done(null, {

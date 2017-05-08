@@ -10,5 +10,11 @@
   "Request": "Запрос",
   "Remote address": "Откуда",
   "Response time": "Время на ответ",
-  "Error": "Исключение"
+  "Error": "Исключение",
+  "Login": "Вход",
+  "Username": "Логин",
+  "Enter username": "Введите имя пользователя",
+  "Password": "Пароль",
+  "Enter password": "Введите пароль",
+  "Logout": "Выход"
 }
