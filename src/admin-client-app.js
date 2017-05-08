@@ -6,7 +6,6 @@ require('core-js/es6/promise');
 require('core-js/es6/object');
 require('core-js/es6/symbol');
 
-import routes from './react-app/routes';
-import {routerRun} from './isomorph-utils/front';
+import resource from './resources';
 
-routerRun({routes});
+resource.post.get({id: props.params.postId});

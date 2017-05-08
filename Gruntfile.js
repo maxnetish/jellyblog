@@ -8,7 +8,6 @@ module.exports = function (grunt) {
     var webpackCommonOptions = require('./webpack.config.js');
     var path = require('path');
 
-    require('time-grunt')(grunt);
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
@@ -48,8 +47,14 @@ module.exports = function (grunt) {
                 options: {
                     sourceMap: 'inline',
                     presets: [
-                        // 'react',
-                        // 'es2015'
+                        [
+                            'env',
+                            {
+                                'targets': {
+                                    'node': 'current'
+                                }
+                            }
+                        ]
                     ],
                     plugins: [
                         'transform-decorators-legacy',
@@ -57,8 +62,7 @@ module.exports = function (grunt) {
                         'syntax-jsx',
                         ['transform-react-jsx', {useBuiltIns: true}],
                         'transform-react-display-name'
-                    ],
-                    ast: false
+                    ]
                 },
                 files: [
                     {
@@ -74,18 +78,22 @@ module.exports = function (grunt) {
                 options: {
                     sourceMap: false,
                     presets: [
-                        // 'react',
-                        // 'es2015'
+                        [
+                            'env',
+                            {
+                                'targets': {
+                                    'node': 'current'
+                                }
+                            }
+                        ]
                     ],
-                    // uglify2JS doesn't support es6
                     plugins: [
                         'transform-decorators-legacy',
                         'transform-es2015-modules-commonjs',
                         'syntax-jsx',
                         ['transform-react-jsx', {useBuiltIns: true}],
                         'transform-react-display-name'
-                    ],
-                    ast: false
+                    ]
                 },
                 files: [
                     {
@@ -102,12 +110,10 @@ module.exports = function (grunt) {
         webpack: {
             options: webpackCommonOptions,
             dev: {
-                devtool: 'source-map',
-                debug: true
+                devtool: 'source-map'
             },
             prod: {
                 // devtool: 'cheap-module-source-map',
-                debug: false,
                 plugins: webpackCommonOptions.plugins.concat([
                     new webpack.DefinePlugin({
                         "process.env": {
@@ -115,7 +121,7 @@ module.exports = function (grunt) {
                             "NODE_ENV": JSON.stringify("production")
                         }
                     }),
-                    new webpack.optimize.DedupePlugin(),
+                    // new webpack.optimize.DedupePlugin(),
                     new webpack.optimize.UglifyJsPlugin()
                 ])
             }
@@ -124,7 +130,7 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: [{
-                    src: 'src/react-app/**/*.less',
+                    src: 'src/**/*.less',
                     dest: path.join(buildDir,'pub/bundle.css')
                 }],
                 options: {
@@ -140,7 +146,7 @@ module.exports = function (grunt) {
             },
             prod: {
                 files: [{
-                    src: 'src/react-app/**/*.less',
+                    src: 'src/**/*.less',
                     dest: path.join(buildDir,'pub/bundle.css')
                 }],
                 options: {
@@ -178,7 +184,7 @@ module.exports = function (grunt) {
              * but not minify
              */
             less: {
-                files: ['src/react-app/**/*.less'],
+                files: ['src/**/*.less'],
                 tasks: ['less:dev']
             }
         }

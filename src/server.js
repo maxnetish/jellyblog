@@ -3,7 +3,6 @@ import path from 'path';
 import urljoin from 'url-join';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
-
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
@@ -11,20 +10,15 @@ import serveStatic from 'serve-static';
 import session from 'express-session';
 import passport from 'passport';
 import {setupPassport} from './passport/server';
-// import {Strategy} from 'passport-local';
-
 import multer from 'multer';
 import MulterGridfsStorage from 'multer-gridfs-storage';
 import {MongoClient} from 'mongodb';
 import serveGridfs from 'serve-gridfs';
-
 import cookieParser from 'cookie-parser';
 import requestLanguage from 'express-request-language';
-
 import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
-import {expressRouteHandler} from './isomorph-utils/server';
 import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
 
 const app = express();
@@ -192,7 +186,7 @@ app.use(morphine.router);
 /**
  * Main entry
  */
-app.get(['/', '/*'], expressRouteHandler);
+app.get(['/', '/*'], (req, res) => res.send(200));
 
 app.use(function (err, req, res, next) {
     addEntryFromErrorResponse(req, res, err);

@@ -1,19 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const lazyChunkFiles = {
-    pub: {
-        template: /\.jb-lazy-pub\.js$/,
-        name: 'pub'
-    },
-    admin: {
-        template: /\.jb-lazy-admin\.js$/,
-        name: 'admin'
-    },
-    misc: {
-        template: /\.jb-lazy-misc\.js$/
-    }
-};
 const fileToExcludeFromBabel = /(node_modules|bower_components|\.lazy\.js$)/;
 const jsFiles = /\.js$/;
 const jsonFiles = /\.json$/;
@@ -22,11 +9,8 @@ module.exports = {
     cache: true,
 
     entry: {
-        'client': './build/client.js',
+        'adm': './src/admin-client-app.js',
         'common': [
-            'react',
-            'react-dom',
-            'react-router',
             'core-js/es6/promise',
             'core-js/es6/array',
             'core-js/es6/object',
@@ -40,60 +24,36 @@ module.exports = {
         // react: "./app/react"
     },
     output: {
-        path: 'build/pub',
+        path: path.resolve(__dirname, 'build/pub'),
         filename: '[name].js',
         chunkFilename: '[id].chunk.js',
         publicPath: '/assets/'
     },
     plugins: [
-        new webpack.optimize.CommonsChunkPlugin('common', 'common.js')
+        new webpack.optimize.CommonsChunkPlugin({name: 'common', filename: 'common.js'})
     ],
     module: {
-        preLoaders: [
+        rules: [
             {
                 test: jsFiles,
                 exclude: fileToExcludeFromBabel,
-                include: path.resolve(__dirname, 'build'),
-                loader: 'isomorphine'
-            }
-        ],
-        loaders: [
+                include: path.resolve(__dirname, 'src'),
+                loader: 'isomorphine',
+                enforce: 'pre'
+            },
             {
                 test: jsonFiles,
                 loader: 'json-loader'
             },
             {
                 test: jsFiles,
-                exclude: function (path) {
-                    for (let key in lazyChunkFiles) {
-                        if (lazyChunkFiles[key].template.test(path)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                },
-                include: path.resolve(__dirname, 'build'),
+                include: path.resolve(__dirname, 'src'),
                 loader: 'babel-loader',
                 query: {
                     presets: ['es2015'],
-                    plugins: ['transform-runtime'],
+                    // plugins: ['transform-runtime'],
                     cacheDirectory: '.babel-cache'
                 }
-            },
-            {
-                test: lazyChunkFiles.admin.template,
-                include: path.resolve(__dirname, 'build'),
-                loaders: ['bundle-loader?lazy&name=' + lazyChunkFiles.admin.name, 'babel-loader?presets[]=es2015&plugins[]=transform-runtime&cacheDirectory=.babel-cache']
-            },
-            {
-                test: lazyChunkFiles.pub.template,
-                include: path.resolve(__dirname, 'build'),
-                loaders: ['bundle-loader?lazy&name=' + lazyChunkFiles.pub.name, 'babel-loader?presets[]=es2015&plugins[]=transform-runtime&cacheDirectory=.babel-cache']
-            },
-            {
-                test: lazyChunkFiles.misc.template,
-                include: path.resolve(__dirname, 'build'),
-                loaders: ['bundle-loader?lazy', 'babel-loader?presets[]=es2015&cacheDirectory=.babel-cache']
             }
             // {
             //     test: /\.js$/,
