@@ -1,7 +1,7 @@
 /.idea
 /bower_components
 /node_modules
-/config/*.json
+/config/*.js*
 /out-of-use/config/*.json
 /projectFilesBackup
 /build
