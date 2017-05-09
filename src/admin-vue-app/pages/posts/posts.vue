@@ -19,7 +19,8 @@
         },
         methods: {
             fetchPageData() {
-                resources.post.list({page: this.page})
+                resources.post
+                    .list({page: this.page, statuses: ['PUB', 'DRAFT']})
                     .then(result => console.info(result));
             }
         },
