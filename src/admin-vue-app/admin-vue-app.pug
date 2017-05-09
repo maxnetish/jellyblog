@@ -1,3 +1,12 @@
-.conainer
-    h1.example Vue app
-    p {{msg}}
+.container-fluid
+    .row
+        .col-sm-3.col-lg-2
+            ul.nav.nav-pills.nav-stacked
+                li(v-bind:class="{active: $route.name==='options' }")
+                    router-link(:to="{ name: 'options', params: { }}") Options
+                li(v-bind:class="{active: $route.name==='posts' }")
+                    router-link(:to="{ name: 'posts', params: { }}") Posts
+                li
+                    a(href="/admin/logout") Logout
+        .col-sm-9.col-lg-10
+            router-view

@@ -13,10 +13,47 @@ import resource from './resources';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import App from './admin-vue-app/admin-vue-app.vue';
+import OptionsPage from './admin-vue-app/pages/options/options.vue';
+import PostsPage from './admin-vue-app/pages/posts/posts.vue';
+
+
+const router = new VueRouter({
+   routes: [
+       {
+           path: '/',
+           name: 'root_entry',
+           component: App,
+           children: [
+               {
+                   path: '',
+                   redirect: {
+                       name: 'options'
+                   }
+               },
+               {
+                   path: 'options',
+                   name: 'options',
+                   component: OptionsPage
+               },
+               {
+                   path: 'posts',
+                   name: 'posts',
+                   component: PostsPage,
+                   props: route => ({page: parseInt(route.query.p) || 1 })
+               }
+           ]
+       }
+   ]
+});
 
 Vue.use(VueRouter);
 
-new Vue({
+const app = new Vue({
+    router,
     el: '#vue-app',
-    render: h => h(App)
+    render (h) {
+        return h('router-view');
+    }
 });
+
+export default app;

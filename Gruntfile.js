@@ -162,8 +162,8 @@ module.exports = function (grunt) {
                         dest: path.join(buildDir, 'pub/normalize.css')
                     },
                     {
-                        src: 'src/**/*.less',
-                        dest: path.join(buildDir, 'pub/bundle.css')
+                        src: 'src/less-common/**/*.less',
+                        dest: path.join(buildDir, 'pub/common.css')
                     }
                 ],
                 options: {
@@ -184,8 +184,8 @@ module.exports = function (grunt) {
                         dest: path.join(buildDir, 'pub/normalize.css')
                     },
                     {
-                        src: 'src/**/*.less',
-                        dest: path.join(buildDir, 'pub/bundle.css')
+                        src: 'src/less-common/**/*.less',
+                        dest: path.join(buildDir, 'pub/common.css')
                     }
                 ],
                 options: {
@@ -235,7 +235,7 @@ module.exports = function (grunt) {
              * but not minify
              */
             less: {
-                files: ['src/**/*.less'],
+                files: ['src/less-common/**/*.less'],
                 tasks: ['less:dev']
             }
         }

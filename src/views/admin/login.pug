@@ -12,15 +12,15 @@ body
                 .panel.panel-default
                     .panel-heading #{getText("Login")}
                     .panel-body
-                        form.form-horizontal(action="/admin/login", method="post")
+                        form.form-horizontal(action="/admin/login", method="post", autocomplete="on")
                             .form-group
                                 label.col-xs-3.control-label(for="login-username") #{getText("Username")}:
                                 .col-xs-9
-                                    input#login-username.form-control(type="text", name="username", required, placeholder=getText("Enter username"))
+                                    input#login-username.form-control(autocomplete="on", type="text", name="username", required, placeholder=getText("Enter username"))
                             .form-group
                                 label.col-xs-3.control-label(for="login-password") #{getText("Password")}:
                                 .col-xs-9
-                                    input#login-password.form-control(type="password", name="password", required, placeholder=getText("Enter password"))
+                                    input#login-password.form-control(autocomplete="on", type="password", name="password", required, placeholder=getText("Enter password"))
                             .form-group
                                 .col-xs-12.text-right
                                     button.btn.btn-primary(type="submit", value="Log In") #{getText("Login")}
