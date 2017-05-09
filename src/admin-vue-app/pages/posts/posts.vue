@@ -1,6 +1,4 @@
-<template lang="pug">
-    p {{msg}}, Pagination page: {{page}}
-</template>
+<template src="./posts.pug" lang="pug"></template>
 <script>
     import resources from '../../../resources';
 
@@ -8,7 +6,8 @@
         name: 'posts',
         data () {
             return {
-                msg: 'Posts page here'
+                msg: 'Posts page here',
+                posts: []
             }
         },
         props: {
@@ -21,7 +20,9 @@
             fetchPageData() {
                 resources.post
                     .list({page: this.page, statuses: ['PUB', 'DRAFT']})
-                    .then(result => console.info(result));
+                    .then(result => {
+                        this.posts = result.items || [];
+                    });
             }
         },
         created () {
@@ -29,7 +30,7 @@
         },
         watch: {
             '$route': 'fetchPageData'
-        },
+        }
     }
 </script>
 <style lang="less">

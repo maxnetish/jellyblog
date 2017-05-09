@@ -1,0 +1,22 @@
+.panel.panel-primary
+    .panel-heading Posts
+    .panel-body
+        table.table.table-hover
+            thead
+                tr
+                    th Title
+                    th Date
+                    th Status
+                    th Actions
+            tbody
+                tr(v-for="post in posts", :key="post._id")
+                    td {{post.title}}
+                    td
+                        display-date(:value="new Date(post.createDate)")
+                    td
+                        post-status-label(:value="post.status")
+                    td
+                        button.btn.btn-primary
+                            i.fa.fa-chain-broken.fa-fw
+    .panel-footer Footer here
+

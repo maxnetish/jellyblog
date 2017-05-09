@@ -46,6 +46,8 @@ module.exports = {
                 loader: 'vue-loader',
                 options: {
                     loaders: {
+                        // vue-loader does not apply babel transpiling as default, so required:
+                        js: 'babel-loader?presets[]=es2015'
                     }
                     // other vue-loader options go here
                 }

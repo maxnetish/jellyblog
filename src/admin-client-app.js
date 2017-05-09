@@ -12,6 +12,8 @@ import resource from './resources';
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import './admin-vue-app/filters';
+import './admin-vue-app/components';
 import App from './admin-vue-app/admin-vue-app.vue';
 import OptionsPage from './admin-vue-app/pages/options/options.vue';
 import PostsPage from './admin-vue-app/pages/posts/posts.vue';
@@ -21,11 +23,11 @@ const router = new VueRouter({
    routes: [
        {
            path: '/',
-           name: 'root_entry',
            component: App,
            children: [
                {
                    path: '',
+                   name: 'root_entry',
                    redirect: {
                        name: 'options'
                    }
