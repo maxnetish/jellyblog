@@ -7,7 +7,8 @@
         data () {
             return {
                 msg: 'Posts page here',
-                posts: []
+                posts: [],
+                hasMore: false
             }
         },
         props: {
@@ -22,6 +23,7 @@
                     .list({page: this.page, statuses: ['PUB', 'DRAFT']})
                     .then(result => {
                         this.posts = result.items || [];
+                        this.hasMore = result.hasMore;
                     });
             }
         },

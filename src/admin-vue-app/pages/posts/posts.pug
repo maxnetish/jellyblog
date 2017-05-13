@@ -1,22 +1,46 @@
 .panel.panel-primary
     .panel-heading Posts
     .panel-body
-        table.table.table-hover
-            thead
-                tr
-                    th Title
-                    th Date
-                    th Status
-                    th Actions
-            tbody
-                tr(v-for="post in posts", :key="post._id")
-                    td {{post.title}}
-                    td
-                        display-date(:value="new Date(post.createDate)")
-                    td
-                        post-status-label(:value="post.status")
-                    td
-                        button.btn.btn-primary
-                            i.fa.fa-chain-broken.fa-fw
-    .panel-footer Footer here
+        nav(aria-label="Page navigation")
+            ul.pager
+                li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
+                    router-link(:to="{ name: 'posts', query: { p: page<3 ? undefined : page-1}}")
+                        i.fa.fa-chevron-left.fa-fw(aria-hidden="true")
+                        .
+                            {{'Previous page' | get-text}}
+                li.next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
+                    router-link(:to="{ name: 'posts', query: { p: page+1}}")
+                        .
+                            {{'Next page' | get-text}}
+                        i.fa.fa-chevron-right.fa-fw(aria-hidden="true")
+    table.table.table-hover
+        thead
+            tr
+                th {{'Title' | get-text}}
+                th {{'Date' | get-text}}
+                th {{'Status' | get-text}}
+                th {{'Actions' | get-text}}
+        tbody
+            tr(v-for="post in posts", :key="post._id")
+                td {{post.title}}
+                td
+                    display-date(:value="new Date(post.createDate)")
+                td
+                    post-status-label(:value="post.status")
+                td
+                    button.btn.btn-primary
+                        i.fa.fa-chain-broken.fa-fw
+    .panel-body
+        nav(aria-label="Page navigation")
+            ul.pager
+                li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
+                    router-link(:to="{ name: 'posts', query: { p: page<3 ? undefined : page-1}}")
+                        i.fa.fa-chevron-left.fa-fw(aria-hidden="true")
+                        .
+                            {{'Previous page' | get-text}}
+                li.next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
+                    router-link(:to="{ name: 'posts', query: { p: page+1}}")
+                        .
+                            {{'Next page' | get-text}}
+                        i.fa.fa-chevron-right.fa-fw(aria-hidden="true")
 
