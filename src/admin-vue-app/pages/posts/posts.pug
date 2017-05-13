@@ -22,14 +22,18 @@
                 th {{'Actions' | get-text}}
         tbody
             tr(v-for="post in posts", :key="post._id")
-                td {{post.title}}
+                td
+                    router-link(:to="{name: 'post', query: {id: post._id}}") {{post.title}}
                 td
                     display-date(:value="new Date(post.createDate)")
                 td
                     post-status-label(:value="post.status")
                 td
-                    button.btn.btn-primary
-                        i.fa.fa-chain-broken.fa-fw
+                    .btn-group(role="group" aria-label="Actions")
+                        router-link.btn.btn-info(:to="{name: 'post', query: {id: post._id}}", :title="'Edit post' | get-text")
+                            i.fa.fa-pencil-square-o.fa-fw
+                        button.btn.btn-primary(type="button")
+                            i.fa.fa-chain-broken.fa-fw
     .panel-body
         nav(aria-label="Page navigation")
             ul.pager

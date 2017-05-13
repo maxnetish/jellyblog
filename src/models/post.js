@@ -69,6 +69,19 @@ let postSchema = new mongoose.Schema({
     ]
 });
 
+// Add static methods
+postSchema.static({
+    createNewDefaultPost: function () {
+        return {
+            status: 'DRAFT',
+            contentType: 'MD',
+            title: `At ${(new Date()).toLocaleString()}`,
+            tags: [],
+            attachments: []
+        }
+    }
+});
+
 // create text index
 // See http://stackoverflow.com/questions/24714166/full-text-search-with-weight-in-mongoose
 postSchema.index({ title: 'text', brief: 'text', content: 'text'}, {name: 'My text index', weights: {title: 4, brief: 2, content: 1}});

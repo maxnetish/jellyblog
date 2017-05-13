@@ -1,0 +1,27 @@
+form(name="jb-post-form", @submit.prevent="onSubmit")
+    .jb-form-ct
+        .form-horizontal
+            .form-group
+                label.col-sm-2.control-label {{'Create date' | get-text}}
+                .col-sm-10
+                    .form-control-static
+                        display-date(:value="post.createDate")
+            .form-group
+                label.col-sm-2.control-label {{'Update date' | get-text}}
+                .col-sm-10
+                    .form-control-static
+                        display-date(:value="post.updateDate")
+            .form-group
+                label.col-sm-2.control-label {{'Publication date' | get-text}}
+                .col-sm-10
+                    .form-control-static
+                        display-date(:value="post.pubDate")
+            .form-group
+                label.col-sm-2.control-label {{'Title' | get-text}}
+                .col-sm-10
+                    input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
+        .row.form-after-buttons-row
+            .col-sm-12.text-right
+                button.btn.btn-primary(type="submit")
+                    i.fa.fa-upload.fa-fw(aria="hidden")
+                    span {{'Save' | get-text}}

@@ -2,9 +2,10 @@ import {Post} from '../../models';
 import mongooseConfig from '../../../config/mongoose.json';
 
 
-function fetch({id, urlId}={}) {
+function fetch({id} = {}) {
     // let condition = {};
     // let projection = '_id status updateDate title brief';
+    let self = this;
     let opts = {
         lean: false
     };
@@ -17,12 +18,27 @@ function fetch({id, urlId}={}) {
     //     });
     // }
 
+    if (!id) {
+        return Post.createNewDefaultPost();
+    }
+
     return Post.findById(id, null, opts)
         .populate('tags')
         .populate('attachments')
         .populate('titleImg')
         .exec()
         .then(res => {
+
+            if (res && res.status !== 'PUB' && !self.xhr) {
+                // allow draft only throw rpc call
+                return Promise.reject(401);
+            }
+
+            if (res && res.status !== 'PUB' && self.req.user.userName !== res.author) {
+                // allow draft only for it owner
+                return Promise.reject(401);
+            }
+
             if (res && res.tags) {
                 res.tags = res.tags.map(tagWrapped => tagWrapped.value);
             }

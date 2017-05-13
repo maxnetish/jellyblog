@@ -17,6 +17,7 @@ import './admin-vue-app/components';
 import App from './admin-vue-app/admin-vue-app.vue';
 import OptionsPage from './admin-vue-app/pages/options/options.vue';
 import PostsPage from './admin-vue-app/pages/posts/posts.vue';
+import PostPage from './admin-vue-app/pages/post/post.vue';
 
 
 const router = new VueRouter({
@@ -42,6 +43,12 @@ const router = new VueRouter({
                    name: 'posts',
                    component: PostsPage,
                    props: route => ({page: parseInt(route.query.p) || 1 })
+               },
+               {
+                   path: 'post',
+                   name: 'post',
+                   component: PostPage,
+                   props: route => ({id: route.query.id})
                }
            ]
        }
