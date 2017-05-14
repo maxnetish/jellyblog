@@ -20,6 +20,36 @@ form(name="jb-post-form", @submit.prevent="onSubmit")
                 label.col-sm-2.control-label {{'Title' | get-text}}
                 .col-sm-10
                     input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
+            .form-group
+                label.col-sm-2.control-label {{'Post content type' | get-text}}
+                .col-sm-10
+                    label.radio-inline
+                        input(type="radio", value="MD", v-model="post.contentType")
+                        .
+                            {{'Markdown' | get-text}}
+                    label.radio-inline
+                        input(type="radio", value="HTML", v-model="post.contentType")
+                        .
+                            {{'HTML' | get-text}}
+            .form-group
+                label.col-sm-2.control-label {{'Post brief' | get-text}}
+                .col-sm-10
+                    ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value.sync="post.brief", :config="{mode: post.contentType, theme: 'Chrome'}")
+            .form-group
+                label.col-sm-2.control-label {{'Post content' | get-text}}
+                .col-sm-10
+                    div
+                        label.radio-inline
+                            input(type="radio", value="EDIT", v-model="contentMode")
+                            .
+                                {{'Edit' | get-text}}
+                        label.radio-inline
+                            input(type="radio", value="PREVIEW", v-model="contentMode")
+                            .
+                                {{'Preview' | get-text}}
+                    ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value.sync="post.content", :config="{mode: post.contentType, theme: 'Chrome'}")
+                    markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post.content")
+                    .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
         .row.form-after-buttons-row
             .col-sm-12.text-right
                 button.btn.btn-primary(type="submit")

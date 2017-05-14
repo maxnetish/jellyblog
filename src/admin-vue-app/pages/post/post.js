@@ -1,10 +1,13 @@
 import resources from '../../../resources';
+import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
+import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
 
 export default {
     name: 'post',
     data () {
         return {
-            post: {}
+            post: {},
+            contentMode: 'EDIT'
         }
     },
     props: {
@@ -31,5 +34,9 @@ export default {
     },
     watch: {
         '$route': 'fetchData'
+    },
+    components: {
+        'ace-editor': AceEditor,
+        'markdown-preview': MarkdownPreview
     }
 }
