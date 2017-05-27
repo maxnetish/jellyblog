@@ -1,4 +1,4 @@
-form(name="jb-post-form", @submit.prevent="onSubmit")
+form(name="jb-post-form")
     .jb-form-ct
         .form-horizontal
             .form-group
@@ -20,6 +20,38 @@ form(name="jb-post-form", @submit.prevent="onSubmit")
                 label.col-sm-2.control-label {{'Title' | get-text}}
                 .col-sm-10
                     input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
+            .form-group
+                label.col-sm-2.control-label {{'Title image' | get-text}}
+                .col-sm-8
+                    multiselect(
+                    v-model="post.titleImg",
+                    :placeholder="'Select title image' | get-text",
+                    label="filename",
+                    track-by="_id",
+                    :options="availableTitleImages",
+                    :option-height="110",
+                    :custom-label="getFileInfoLabel",
+                    :show-labels="false",
+                    :multiple="false",
+                    @search-change="onTitleImageSelectSearch"
+                    )
+                .col-sm-1
+                    button.btn.btn-info(type="button", @click="onAddTitleImageClick")
+                        i.fa.fa-picture-o.fa-fw(aria="hidden")
+                        span {{'Add image' | get-text}}
+            .form-group
+                label.col-sm-2.control-label {{'Tags' | get-text}}
+                .col-sm-10.util-zindex-100
+                    multiselect(
+                    v-model="post.tags",
+                    :tag-placeholder="'Add as new tag' | get-text",
+                    :placeholder="'Select or add tags' | get-text",
+                    :options="availableTags",
+                    :multiple="true",
+                    :taggable="true",
+                    :loading="tagsIsLoading",
+                    @search-change="onTagSelectSearch"
+                    )
             .form-group
                 label.col-sm-2.control-label {{'Post content type' | get-text}}
                 .col-sm-10
@@ -52,6 +84,7 @@ form(name="jb-post-form", @submit.prevent="onSubmit")
                     .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
         .row.form-after-buttons-row
             .col-sm-12.text-right
-                button.btn.btn-primary(type="submit")
+                button.btn.btn-primary(type="button", @click="onSubmitButtonClick")
                     i.fa.fa-upload.fa-fw(aria="hidden")
                     span {{'Save' | get-text}}
+    vuedals

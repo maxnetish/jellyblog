@@ -1,3 +1,6 @@
+/**
+ * DEPRECATED
+ */
 import {Tag} from '../models';
 
 /**

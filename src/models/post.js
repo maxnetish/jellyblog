@@ -53,8 +53,8 @@ let postSchema = new mongoose.Schema({
     },
     tags: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Tag'
+            type: String,
+            maxlength: 32
         }
     ],
     titleImg: {
@@ -79,7 +79,8 @@ postSchema.static({
             tags: [],
             attachments: []
         }
-    }
+    },
+
 });
 
 // create text index

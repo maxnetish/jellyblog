@@ -1,5 +1,6 @@
 <template src="./post.pug" lang="pug"></template>
 <script src="./post.js"></script>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="less">
     .jb-ace-editor-brief {
         height: 5em;

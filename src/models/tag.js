@@ -1,3 +1,6 @@
+/**
+ * DEPRECATED
+ */
 import mongoose from 'mongoose';
 
 let tagSchema = new mongoose.Schema({

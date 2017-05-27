@@ -5,6 +5,10 @@
         font-family: 'Fira Sans', sans-serif;
     }
 
+    .util-zindex-100 {
+        z-index: 100;
+    }
+
     .jb-form-ct {
         border: solid 2px lightskyblue;
         border-radius: 0.25em;

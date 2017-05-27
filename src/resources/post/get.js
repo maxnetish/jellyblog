@@ -23,7 +23,6 @@ function fetch({id} = {}) {
     }
 
     return Post.findById(id, null, opts)
-        .populate('tags')
         .populate('attachments')
         .populate('titleImg')
         .exec()
@@ -39,9 +38,6 @@ function fetch({id} = {}) {
                 return Promise.reject(401);
             }
 
-            if (res && res.tags) {
-                res.tags = res.tags.map(tagWrapped => tagWrapped.value);
-            }
             return res;
         });
 }
