@@ -7,4 +7,5 @@
 // Also we shouldn't use string 'isomorphine[dot]proxy()' even in comments
 
 import isomorphine from 'isomorphine';
-export default isomorphine.proxy(__dirname);
+// export default isomorphine [dot] proxy(__dirname);
+export default isomorphine.proxy();
