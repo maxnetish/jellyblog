@@ -11,15 +11,24 @@ export default {
         return {
             post: {},
             contentMode: 'EDIT',
-            availableTags: [],
+            tagsFromServer: [],
+            tagsJustAdded: [],
             tagsIsLoading: false,
-            availableTitleImages: []
+            tagSelectOpen: false,
+            availableTitleImages: [],
+            titleImagesLoading: false,
+            titleImageSelectOpen: false
         }
     },
     props: {
         id: {
             type: String,
             'default': null
+        }
+    },
+    computed: {
+        availableTags () {
+            return this.tagsJustAdded.concat(this.tagsFromServer);
         }
     },
     methods: {
@@ -46,9 +55,19 @@ export default {
 
             this.promiseForAvailableTags
                 .then(function (tagsWithCount) {
-                    self.availableTags = tagsWithCount.map(o => o.tag);
+                    self.tagsFromServer = tagsWithCount.map(o => o.tag);
                     self.tagsIsLoading = false;
                 });
+        },
+        onTagSelectOpen (e) {
+            this.tagSelectOpen = true;
+        },
+        onTagSelectClose (e) {
+            this.tagSelectOpen = false;
+        },
+        addPostTag (newTag) {
+            this.tagsJustAdded.push(newTag);
+            this.post.tags.push(newTag);
         },
         onAddTitleImageClick(e) {
             this.$emit('vuedals:new', {
@@ -70,8 +89,20 @@ export default {
         getFileInfoLabel (attachmentInfo) {
             return attachmentInfo.metadata.originalName;
         },
-        onTitleImageSelectSearch (e) {
-
+        onTitleImageSelectOpen (e) {
+            let self = this;
+            this.promiseForTitleImages = this.promiseForTitleImages ||
+                resources.file.find({context: 'avatarImage', max: 1000});
+            this.titleImagesLoading = true;
+            this.titleImageSelectOpen = true;
+            this.promiseForTitleImages
+                .then(response => {
+                    self.availableTitleImages = response.items || [];
+                    this.titleImagesLoading = false;
+                });
+        },
+        onTitleImageSelectClose (e){
+            this.titleImageSelectOpen = false;
         }
     },
     created () {

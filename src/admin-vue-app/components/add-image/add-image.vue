@@ -3,18 +3,22 @@
         .row
             .col-sm-12.text-center
                 div.vue-avatar-ct
-                    vue-avatar(:border="props.editorBorder",
+                    vue-avatar(
+                    :border="props.editorBorder",
                     :border-radius="props.imageBorderRadius",
                     :width="props.imageWidth",
                     :height="props.imageHeight",
                     ref="vueavatar",
-                    @vue-avatar-editor:image-ready="onImageReady")
-                    vue-avatar-scale(ref="vueavatarscale",
+                    @vue-avatar-editor:image-ready="onImageReady"
+                    )
+                    vue-avatar-scale(
+                    ref="vueavatarscale",
                     @vue-avatar-editor-scale:change-scale="onChangeScale",
                     :width="props.scaleWidth",
                     :min="props.scaleMin",
                     :max="props.scaleMax",
-                    :step="props.scaleStep")
+                    :step="props.scaleStep"
+                    )
         .row
             .col-sm-12.text-right
                 .btn-group(role="group")
@@ -65,7 +69,7 @@
                 this.$emit('vuedals:close');
             },
             onOkButtonClick(e){
-                this.$emit('vuedals:close');
+                this.$emit('vuedals:close', this.$refs.vueavatar.getImageScaled());
             }
         },
         components: {

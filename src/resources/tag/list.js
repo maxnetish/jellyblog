@@ -35,7 +35,11 @@ function fetch({token, statuses = ['PUB']} = {}) {
     };
 
     return Post.mapReduce(mapReduceOptions)
-        .then(reduceResult => reduceResult.map(item => ({tag: item._id, count: item.value})));
+        .then(reduceResult => {
+            let mappedResult = reduceResult.map(item => ({tag: item._id, count: item.value}));
+            let sortedResult = mappedResult.sort((a, b) => b.count - a.count);
+            return sortedResult;
+        });
 
     /*
      let condition = {};

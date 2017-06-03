@@ -22,26 +22,28 @@ form(name="jb-post-form")
                     input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
             .form-group
                 label.col-sm-2.control-label {{'Title image' | get-text}}
-                .col-sm-8
+                .col-sm-6(:class="{'util-zindex-100': titleImageSelectOpen}")
                     multiselect(
                     v-model="post.titleImg",
                     :placeholder="'Select title image' | get-text",
                     label="filename",
                     track-by="_id",
                     :options="availableTitleImages",
-                    :option-height="110",
                     :custom-label="getFileInfoLabel",
                     :show-labels="false",
                     :multiple="false",
-                    @search-change="onTitleImageSelectSearch"
+                    :searchable="false",
+                    :loading="titleImagesLoading",
+                    @open="onTitleImageSelectOpen",
+                    @close="onTitleImageSelectClose"
                     )
-                .col-sm-1
-                    button.btn.btn-info(type="button", @click="onAddTitleImageClick")
+                .col-sm-4
+                    button.btn.btn-link.btn-near-multiselect(type="button", @click="onAddTitleImageClick")
                         i.fa.fa-picture-o.fa-fw(aria="hidden")
-                        span {{'Add image' | get-text}}
+                        span {{'Or add new one' | get-text}}
             .form-group
                 label.col-sm-2.control-label {{'Tags' | get-text}}
-                .col-sm-10.util-zindex-100
+                .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
                     multiselect(
                     v-model="post.tags",
                     :tag-placeholder="'Add as new tag' | get-text",
@@ -49,8 +51,11 @@ form(name="jb-post-form")
                     :options="availableTags",
                     :multiple="true",
                     :taggable="true",
+                    @tag="addPostTag",
                     :loading="tagsIsLoading",
-                    @search-change="onTagSelectSearch"
+                    @search-change="onTagSelectSearch",
+                    @open="onTagSelectOpen",
+                    @close="onTagSelectClose"
                     )
             .form-group
                 label.col-sm-2.control-label {{'Post content type' | get-text}}

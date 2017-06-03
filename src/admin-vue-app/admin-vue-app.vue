@@ -9,6 +9,10 @@
         z-index: 100;
     }
 
+    .btn-near-multiselect {
+        min-height: 40px;
+    }
+
     .jb-form-ct {
         border: solid 2px lightskyblue;
         border-radius: 0.25em;
