@@ -110,6 +110,7 @@ const gridFsStorage = MulterGridfsStorage({
             originalName: file.originalname,
             width: (req.body && req.body.width) ? req.body.width : undefined,
             height: (req.body && req.body.height) ? req.body.height : undefined,
+            description: (req.body && req.body.description) ? req.body.description : undefined,
             srcsetTag: (req.body && req.body.srcsetTag) ? req.body.srcsetTag : undefined
         };
         cb(null, meta);

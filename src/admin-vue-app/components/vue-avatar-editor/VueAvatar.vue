@@ -5,7 +5,7 @@
         <canvas :width="canvasWidth" :height="canvasHeight" ref="canvas" @dragover.prevent @drop="onDrop"
                 @mousedown="onDragStart" @mouseup="onDragEnd" @mousemove="onMouseMove" @click="clicked"
                 v-bind:class="cursor"></canvas>
-        <input type="file" id='ab-1' @change="fileSelected" style="display:none;"/>
+        <input type="file" ref="fileInput" @change="fileSelected" style="display:none;"/>
     </div>
 </template>
 <style type="text/css">
@@ -374,6 +374,13 @@
 
                 return canvas
             },
+            getOriginalFilename: function () {
+                let fi = this.$refs.fileInput;
+                if (fi.files && fi.files.length) {
+                    return fi.files[0].name;
+                }
+                return null;
+            },
             imageChanged: function () {
                 return this.changed
             },
@@ -393,7 +400,8 @@
                     this.dragged = false
                 }
                 else {
-                    document.getElementById('ab-1').click()
+                    this.$refs.fileInput.click();
+//                    document.getElementById('ab-1').click()
                 }
             },
             fileSelected: function (e) {

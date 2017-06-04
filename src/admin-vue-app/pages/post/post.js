@@ -4,6 +4,8 @@ import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-pr
 import AddImage from '../../components/add-image/add-image.vue';
 import {Component as VuedalComponent} from 'vuedals';
 import Multiselect from 'vue-multiselect';
+import uploadCanvas from '../../../utils/upload-image-from-canvas';
+import {getText} from '../../filters';
 
 export default {
     name: 'post',
@@ -15,7 +17,8 @@ export default {
             tagsJustAdded: [],
             tagsIsLoading: false,
             tagSelectOpen: false,
-            availableTitleImages: [],
+            titleImagesFromServer: [],
+            titleImagesJustAdded: [],
             titleImagesLoading: false,
             titleImageSelectOpen: false
         }
@@ -29,6 +32,9 @@ export default {
     computed: {
         availableTags () {
             return this.tagsJustAdded.concat(this.tagsFromServer);
+        },
+        availableTitleImages () {
+            return this.titleImagesJustAdded.concat(this.titleImagesFromServer);
         }
     },
     methods: {
@@ -70,8 +76,9 @@ export default {
             this.post.tags.push(newTag);
         },
         onAddTitleImageClick(e) {
+            let self = this;
             this.$emit('vuedals:new', {
-                title: 'Modal title from client',
+                title: getText('Add title image'),
                 props: {
                     imageWidth: 100,
                     imageHeight: 100,
@@ -82,7 +89,26 @@ export default {
                 component: AddImage,
                 size: 'xs',
                 dismissable: true,
-                onClose: res => console.log(`Result from modal: ${res}`),
+                onClose: dialogResult => {
+                    if(!dialogResult) {
+                        return;
+                    }
+                    uploadCanvas({
+                        canvas: dialogResult.canvas,
+                        context: 'avatarImage',
+                        metadata: {
+                            height: 100,
+                            width: 100,
+                            description: dialogResult.description
+                        },
+                        originalFilename: dialogResult.originalFilename,
+                        url: '/upload'
+                    })
+                        .then(fileInfo => {
+                            self.titleImagesJustAdded.unshift(fileInfo);
+                            self.post.titleImg = Object.assign({}, fileInfo);
+                        }, err => console.warn(err));
+                },
                 onDismiss: () => console.log('Modal dismissed')
             });
         },
@@ -97,7 +123,7 @@ export default {
             this.titleImageSelectOpen = true;
             this.promiseForTitleImages
                 .then(response => {
-                    self.availableTitleImages = response.items || [];
+                    self.titleImagesFromServer = response.items || [];
                     this.titleImagesLoading = false;
                 });
         },

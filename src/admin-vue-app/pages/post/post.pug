@@ -22,25 +22,43 @@ form(name="jb-post-form")
                     input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
             .form-group
                 label.col-sm-2.control-label {{'Title image' | get-text}}
-                .col-sm-6(:class="{'util-zindex-100': titleImageSelectOpen}")
-                    multiselect(
+                .col-sm-8(:class="{'util-zindex-100': titleImageSelectOpen}")
+                    .selected-avatar-ct(v-if="post.titleImg")
+                        img.selected-avatar(:src="post.titleImg.url", :alt="post.titleImg.metadata.originalName")
+                        .selected-avatar-desc
+                            .selected-avatar-title {{ post.titleImg.metadata.originalName }}
+                            display-date(:value="post.titleImg.uploadDate")
+                            div
+                                small {{ post.titleImg.metadata.description }}
+                    multiselect.multiselect-avatar(
                     v-model="post.titleImg",
                     :placeholder="'Select title image' | get-text",
                     label="filename",
                     track-by="_id",
                     :options="availableTitleImages",
+                    :option-height="74",
                     :custom-label="getFileInfoLabel",
                     :show-labels="false",
                     :multiple="false",
                     :searchable="false",
+                    :hide-selected="true",
+                    :allow-empty="true",
                     :loading="titleImagesLoading",
                     @open="onTitleImageSelectOpen",
                     @close="onTitleImageSelectClose"
                     )
-                .col-sm-4
-                    button.btn.btn-link.btn-near-multiselect(type="button", @click="onAddTitleImageClick")
-                        i.fa.fa-picture-o.fa-fw(aria="hidden")
-                        span {{'Or add new one' | get-text}}
+                        template(slot="beforeList", scope="props")
+                            button.btn.btn-link.btn-in-select(type="button", @click="onAddTitleImageClick")
+                                i.fa.fa-plus.fa-fw(aria="hidden")
+                                span._margin-5._left {{'Add new one' | get-text}}
+                        template(slot="option", scope="props")
+                            .option__avatar-ct
+                                img.option__avatar-image(:src="props.option.url", :alt="props.option.metadata.originalName")
+                                .option__avatar-desc
+                                    .option__avatar-title {{ props.option.metadata.originalName }}
+                                    display-date(:value="props.option.uploadDate")
+                                    div
+                                        small {{ props.option.metadata.description }}
             .form-group
                 label.col-sm-2.control-label {{'Tags' | get-text}}
                 .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")

@@ -19,6 +19,9 @@
                     :max="props.scaleMax",
                     :step="props.scaleStep"
                     )
+        .row._margin-5._bottom
+            .col-sm-12
+                input.form-control(type="text", :placeholder="'Description' | get-text", v-model.lazy="description")
         .row
             .col-sm-12.text-right
                 .btn-group(role="group")
@@ -49,7 +52,8 @@
         name: 'add-image',
         data () {
             return {
-                imageSource: null
+                description: '',
+
             }
         },
         props: {
@@ -69,7 +73,11 @@
                 this.$emit('vuedals:close');
             },
             onOkButtonClick(e){
-                this.$emit('vuedals:close', this.$refs.vueavatar.getImageScaled());
+                this.$emit('vuedals:close', {
+                    canvas: this.$refs.vueavatar.getImageScaled(),
+                    originalFilename: this.$refs.vueavatar.getOriginalFilename(),
+                    description: this.description
+                });
             }
         },
         components: {

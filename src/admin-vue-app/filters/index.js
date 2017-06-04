@@ -5,6 +5,12 @@ const lang = document.getElementsByTagName('html')[0].lang || 'en';
 
 i18n.locale(lang);
 
-Vue.filter('get-text', function getLocaleText(key) {
+function getLocaleText(key) {
     return i18n.getText(key);
-});
+}
+
+Vue.filter('get-text',getLocaleText);
+
+export {
+    getLocaleText as getText
+};
