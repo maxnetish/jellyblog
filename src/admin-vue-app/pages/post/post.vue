@@ -17,16 +17,25 @@
 
     .option__avatar-ct {
         display: flex;
+        & > * {
+            margin-right: 10px;
+        }
+        & > *:last-child {
+            margin-right: 0;
+        }
         .option__avatar-image {
             height: 50px;
-            margin: 0 10px 0 0;
         }
         .option__avatar-desc {
             .option__avatar-title {
-                word-wrap: break-word;
-                word-break: keep-all;
-                white-space: normal;
+
             }
+        }
+        .option__avatar-buttons {
+            visibility: hidden;
+        }
+        &:hover .option__avatar-buttons {
+            visibility: visible;
         }
     }
     .btn-in-select {
@@ -38,16 +47,32 @@
             overflow-x: hidden;
         }
         .multiselect__single {
-            word-wrap: break-word;
-            word-break: keep-all;
+            word-break: break-word;
+            white-space: normal;
         }
     }
     .selected-avatar-ct {
         margin: 10px 0 5px 0;
         display: flex;
+        & > * {
+            margin-right: 10px;
+        }
+        & > *:last-child {
+            margin-right: 0;
+        }
         .selected-avatar {
             height: 100px;
-            margin: 0 10px 0 0;
+        }
+        .selected-avatar-desc {
+        }
+    }
+    .post-form-attachment-ct {
+        display: flex;
+        & > * {
+            margin-right: 10px;
+        }
+        & > *:last-child {
+            margin-right: 0;
         }
     }
 </style>

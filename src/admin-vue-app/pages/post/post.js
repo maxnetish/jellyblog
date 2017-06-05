@@ -2,6 +2,7 @@ import resources from '../../../resources';
 import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
 import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
 import AddImage from '../../components/add-image/add-image.vue';
+import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
 import {Component as VuedalComponent} from 'vuedals';
 import Multiselect from 'vue-multiselect';
 import uploadCanvas from '../../../utils/upload-image-from-canvas';
@@ -46,7 +47,7 @@ export default {
                     this.post = result || {};
                 });
         },
-        onSubmitButtonClick(e) {
+        onSubmit(e) {
             resources.post
                 .createOrUpdate(this.post)
                 .then(response => this.post = response);
@@ -90,7 +91,7 @@ export default {
                 size: 'xs',
                 dismissable: true,
                 onClose: dialogResult => {
-                    if(!dialogResult) {
+                    if (!dialogResult) {
                         return;
                     }
                     uploadCanvas({
@@ -129,6 +130,37 @@ export default {
         },
         onTitleImageSelectClose (e){
             this.titleImageSelectOpen = false;
+        },
+        onClearTitleImageClick (e){
+            this.post.titleImg = null;
+        },
+        onRemoveTitleImageFromServerClick: function(fileInfo, e) {
+            this.$emit('vuedals:new', {
+                title: getText('Remove file'),
+                props: {
+                    message: getText('Remove image from server forever? Links in posts will can be broken.')
+                },
+                component: DialogConfirm,
+                size: 'xs',
+                dismissable: false,
+                onClose: dialogResult => {
+                    let self = this;
+                    if (dialogResult !== 'YES') {
+                        return;
+                    }
+                    // remove image here
+                    resources.file.remove(fileInfo._id)
+                        .then(() => {
+                            let indexToRemove = self.titleImagesFromServer.findIndex(fi => fi._id === fileInfo._id);
+                            if (indexToRemove > -1) {
+                                self.titleImagesFromServer.splice(indexToRemove, 1);
+                            }
+                            if (self.post.titleImg && self.post.titleImg._id === fileInfo._id) {
+                                self.post.titleImg = null;
+                            }
+                        })
+                }
+            });
         }
     },
     created () {

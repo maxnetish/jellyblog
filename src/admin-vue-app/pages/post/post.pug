@@ -1,4 +1,4 @@
-form(name="jb-post-form")
+form(name="jb-post-form", @submit.prevent="onSubmit")
     .jb-form-ct
         .form-horizontal
             .form-group
@@ -22,14 +22,17 @@ form(name="jb-post-form")
                     input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
             .form-group
                 label.col-sm-2.control-label {{'Title image' | get-text}}
-                .col-sm-8(:class="{'util-zindex-100': titleImageSelectOpen}")
+                .col-sm-10(:class="{'util-zindex-100': titleImageSelectOpen}")
                     .selected-avatar-ct(v-if="post.titleImg")
                         img.selected-avatar(:src="post.titleImg.url", :alt="post.titleImg.metadata.originalName")
-                        .selected-avatar-desc
+                        .selected-avatar-desc.word-break-all
                             .selected-avatar-title {{ post.titleImg.metadata.originalName }}
                             display-date(:value="post.titleImg.uploadDate")
                             div
                                 small {{ post.titleImg.metadata.description }}
+                        .selected-avatar-buttons
+                            button.btn.btn-xs.btn-danger(type="button", @click="onClearTitleImageClick", :title="'Clear' | get-text")
+                                i.fa.fa-times.fa-fw(aria="hidden")
                     multiselect.multiselect-avatar(
                     v-model="post.titleImg",
                     :placeholder="'Select title image' | get-text",
@@ -54,11 +57,14 @@ form(name="jb-post-form")
                         template(slot="option", scope="props")
                             .option__avatar-ct
                                 img.option__avatar-image(:src="props.option.url", :alt="props.option.metadata.originalName")
-                                .option__avatar-desc
+                                .option__avatar-desc.word-break-word
                                     .option__avatar-title {{ props.option.metadata.originalName }}
                                     display-date(:value="props.option.uploadDate")
                                     div
                                         small {{ props.option.metadata.description }}
+                                .option__avatar-buttons
+                                    button.btn.btn-xs.btn-danger(type="button", @mousedown.capture.stop="onRemoveTitleImageFromServerClick(props.option, $event)", :title="'Remove' | get-text")
+                                        i.fa.fa-times.fa-fw(aria="hidden")
             .form-group
                 label.col-sm-2.control-label {{'Tags' | get-text}}
                 .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
@@ -75,6 +81,21 @@ form(name="jb-post-form")
                     @open="onTagSelectOpen",
                     @close="onTagSelectClose"
                     )
+            .form-group
+                label.col-sm-2.control-label {{'Attachments' | get-text}}
+                .col-sm-10
+                    ul.list-unstyled
+                        li(v-for="(attachment, index) in post.attachments")
+                            .post-form-attachment-ct
+                                .post-form-attachment__icon
+                                    i.fa.fa-fw(aria-hidden="true", :class="attachment.contentType | content-type-to-icon")
+                                .post-form-attachment__desc
+                                    .post-form-attachment__original-name
+                                        a._margin-5._right(:href="attachment.url", target="_blank") {{attachment.metadata.originalName}}
+                                        display-date(:value="attachment.uploadDate")
+                                    .post-form-attachment__content-type {{attachment.contentType}}, {{attachment.length}} bytes
+                                    .post-form-attachment__description
+                                        small {{attachment.metadata.description}}
             .form-group
                 label.col-sm-2.control-label {{'Post content type' | get-text}}
                 .col-sm-10
@@ -107,7 +128,7 @@ form(name="jb-post-form")
                     .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
         .row.form-after-buttons-row
             .col-sm-12.text-right
-                button.btn.btn-primary(type="button", @click="onSubmitButtonClick")
+                button.btn.btn-primary(type="submit")
                     i.fa.fa-upload.fa-fw(aria="hidden")
                     span {{'Save' | get-text}}
     vuedals
