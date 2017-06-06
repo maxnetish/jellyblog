@@ -1,5 +1,5 @@
-import {Post, Tag, File, FileData} from '../../models';
-import {applyCheckPermissions} from '../../utils-data';
+import {Post} from '../../models';
+import {applyCheckPermissions, updatePostAttachments} from '../../utils-data';
 
 
 const request2PostModel = {
@@ -11,8 +11,8 @@ const request2PostModel = {
             brief: postFromRequest.brief,
             content: postFromRequest.content,
             tags: postFromRequest.tags,
-            // titleImg: postFromRequest.titleImg,
-            // attachments: postFromRequest.attachments
+            titleImg: postFromRequest.titleImg ? postFromRequest.titleImg._id : null,
+            attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a._id) : []
         };
     },
     UPDATE({postFromRequest = {}, user = {}} = {}) {
@@ -23,8 +23,8 @@ const request2PostModel = {
             brief: postFromRequest.brief,
             content: postFromRequest.content,
             tags: postFromRequest.tags,
-            // titleImg: postFromRequest.titleImg,
-            // attachments: postFromRequest.attachments
+            titleImg: postFromRequest.titleImg ? postFromRequest.titleImg._id : null,
+            attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a._id) : []
         };
     }
 };
@@ -34,13 +34,16 @@ const dbOperation = {
         return Post.create(postData);
     },
     UPDATE ({postData = {}, _id} = {}) {
-        return Post
-            .findByIdAndUpdate(_id, postData, {
-                'new': true,
-                upsert: false,
-                lean: false
-            })
-            .exec();
+        return updatePostAttachments(_id, postData.attachments)
+            .then(() => {
+                return Post
+                    .findByIdAndUpdate(_id, postData, {
+                        'new': true,
+                        upsert: false,
+                        lean: false
+                    })
+                    .exec();
+            });
     }
 };
 
@@ -52,7 +55,6 @@ function createOrUpdatePost(post) {
         .then(createdOrUpdatedPost => {
             return Post.populate(createdOrUpdatedPost, {path: 'attachments titleImg'});
         });
-
 }
 
 export default applyCheckPermissions({

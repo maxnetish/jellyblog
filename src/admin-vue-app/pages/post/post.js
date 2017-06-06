@@ -8,6 +8,8 @@ import {Component as VuedalComponent} from 'vuedals';
 import Multiselect from 'vue-multiselect';
 import uploadCanvas from '../../../utils/upload-image-from-canvas';
 import {getText} from '../../filters';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 
 export default {
     name: 'post',
@@ -22,7 +24,8 @@ export default {
             titleImagesFromServer: [],
             titleImagesJustAdded: [],
             titleImagesLoading: false,
-            titleImageSelectOpen: false
+            titleImageSelectOpen: false,
+            statusUpdating: false
         }
     },
     props: {
@@ -37,6 +40,9 @@ export default {
         },
         availableTitleImages () {
             return this.titleImagesJustAdded.concat(this.titleImagesFromServer);
+        },
+        dirty () {
+            return !isEqual(this.post, this.postOriginal);
         }
     },
     methods: {
@@ -46,12 +52,21 @@ export default {
                 .get({id: this.id})
                 .then(result => {
                     this.post = result || {};
+                    this.postOriginal = cloneDeep(this.post);
                 });
         },
         onSubmit(e) {
+            let self = this;
+            let isCreateNew = !this.post._id;
             resources.post
                 .createOrUpdate(this.post)
-                .then(response => this.post = response);
+                .then(response => {
+                    if (isCreateNew) {
+                        self.$router.replace({name: 'post', query: {id: response._id}});
+                    }
+                    self.post = response;
+                    self.postOriginal = cloneDeep(this.post);
+                });
         },
         onTagSelectSearch (query) {
             let self = this;
@@ -163,6 +178,23 @@ export default {
                 }
             });
         },
+        onRemoveAttachmentButtonClick (attachmentIndex) {
+            this.$emit('vuedals:new', {
+                title: getText('Remove file'),
+                props: {
+                    message: getText('Remove attachment? File will be removed forever with post saving.')
+                },
+                component: DialogConfirm,
+                size: 'xs',
+                dismissable: false,
+                onClose: dialogResult => {
+                    if (dialogResult !== 'YES') {
+                        return;
+                    }
+                    this.post.attachments.splice(attachmentIndex, 1);
+                }
+            });
+        },
         onAddAttachmentButtonClick(e) {
             let self = this;
             this.$emit('vuedals:new', {
@@ -182,6 +214,37 @@ export default {
                     self.post.attachments.unshift(Object.assign({}, dialogResult));
                 }
             });
+        },
+        onToggleStatusButtonClick (e) {
+            let update;
+            let self = this;
+            let currentStatus = this.post.status;
+            switch (currentStatus) {
+                case 'PUB':
+                    update = resources.post.unpublish;
+                    break;
+                case 'DRAFT':
+                    update = resources.post.publish;
+                    break;
+                default:
+                    update = resources.post.unpublish;
+            }
+            this.statusUpdating = true;
+            update({id: this.post._id})
+                .then(response => {
+                    self.statusUpdating = false;
+                    switch (currentStatus) {
+                        case 'PUB':
+                            self.postOriginal.status = self.post.status = 'DRAFT';
+                            break;
+                        case 'DRAFT':
+                            self.postOriginal.status = self.post.status = 'PUB';
+                            break;
+                    }
+                }, err => {
+                    self.statusUpdating = false;
+                    console.warn(`Toggle status failed: ${err}`);
+                });
         }
     },
     created () {

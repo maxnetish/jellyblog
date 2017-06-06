@@ -1,137 +1,151 @@
-form(name="jb-post-form", @submit.prevent="onSubmit")
-    .jb-form-ct
-        .form-horizontal
-            .form-group
-                label.col-sm-2.control-label {{'Create date' | get-text}}
-                .col-sm-10
-                    .form-control-static
-                        display-date(:value="post.createDate")
-            .form-group
-                label.col-sm-2.control-label {{'Update date' | get-text}}
-                .col-sm-10
-                    .form-control-static
-                        display-date(:value="post.updateDate")
-            .form-group
-                label.col-sm-2.control-label {{'Publication date' | get-text}}
-                .col-sm-10
-                    .form-control-static
-                        display-date(:value="post.pubDate")
-            .form-group
-                label.col-sm-2.control-label {{'Title' | get-text}}
-                .col-sm-10
-                    input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
-            .form-group
-                label.col-sm-2.control-label {{'Title image' | get-text}}
-                .col-sm-10(:class="{'util-zindex-100': titleImageSelectOpen}")
-                    .selected-avatar-ct(v-if="post.titleImg")
-                        img.selected-avatar(:src="post.titleImg.url", :alt="post.titleImg.metadata.originalName")
-                        .selected-avatar-desc.word-break-all
-                            .selected-avatar-title {{ post.titleImg.metadata.originalName }}
-                            display-date(:value="post.titleImg.uploadDate")
-                            div
-                                small {{ post.titleImg.metadata.description }}
-                        .selected-avatar-buttons
-                            button.btn.btn-xs.btn-danger(type="button", @click="onClearTitleImageClick", :title="'Clear' | get-text")
-                                i.fa.fa-times.fa-fw(aria="hidden")
-                    multiselect.multiselect-avatar(
-                    v-model="post.titleImg",
-                    :placeholder="'Select title image' | get-text",
-                    label="filename",
-                    track-by="_id",
-                    :options="availableTitleImages",
-                    :option-height="74",
-                    :custom-label="getFileInfoLabel",
-                    :show-labels="false",
-                    :multiple="false",
-                    :searchable="false",
-                    :hide-selected="true",
-                    :allow-empty="true",
-                    :loading="titleImagesLoading",
-                    @open="onTitleImageSelectOpen",
-                    @close="onTitleImageSelectClose"
-                    )
-                        template(slot="beforeList", scope="props")
-                            button.btn.btn-link.btn-in-select(type="button", @click="onAddTitleImageClick")
-                                i.fa.fa-plus.fa-fw(aria="hidden")
-                                span._margin-5._left {{'Add new one' | get-text}}
-                        template(slot="option", scope="props")
-                            .option__avatar-ct
-                                img.option__avatar-image(:src="props.option.url", :alt="props.option.metadata.originalName")
-                                .option__avatar-desc.word-break-word
-                                    .option__avatar-title {{ props.option.metadata.originalName }}
-                                    display-date(:value="props.option.uploadDate")
-                                    div
-                                        small {{ props.option.metadata.description }}
-                                .option__avatar-buttons
-                                    button.btn.btn-xs.btn-danger(type="button", @mousedown.capture.stop="onRemoveTitleImageFromServerClick(props.option, $event)", :title="'Remove' | get-text")
-                                        i.fa.fa-times.fa-fw(aria="hidden")
-            .form-group
-                label.col-sm-2.control-label {{'Tags' | get-text}}
-                .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
-                    multiselect(
-                    v-model="post.tags",
-                    :tag-placeholder="'Add as new tag' | get-text",
-                    :placeholder="'Select or add tags' | get-text",
-                    :options="availableTags",
-                    :multiple="true",
-                    :taggable="true",
-                    @tag="addPostTag",
-                    :loading="tagsIsLoading",
-                    @search-change="onTagSelectSearch",
-                    @open="onTagSelectOpen",
-                    @close="onTagSelectClose"
-                    )
-            .form-group
-                label.col-sm-2.control-label {{'Attachments' | get-text}}
-                .col-sm-10
-                    button.btn.btn-primary._margin-5._bottom(type="button", @click="onAddAttachmentButtonClick")
-                        i.fa.fa-fw.fa-plus(aria-hidden="true")
-                        span._margin-5._left {{'Add attachment' | get-text}}
-                    ul.list-unstyled
-                        li(v-for="(attachment, index) in post.attachments")
-                            .post-form-attachment-ct
-                                .post-form-attachment__icon
-                                    i.fa.fa-fw(aria-hidden="true", :class="attachment.contentType | content-type-to-icon")
-                                .post-form-attachment__desc
-                                    .post-form-attachment__original-name
-                                        a._margin-5._right(:href="attachment.url", target="_blank") {{attachment.metadata.originalName}}
-                                        display-date(:value="attachment.uploadDate")
-                                    .post-form-attachment__content-type {{attachment.contentType}}, {{attachment.length | number-to-locale-string}} {{'bytes' | get-text}}
-                                    .post-form-attachment__description
-                                        small {{attachment.metadata.description}}
-            .form-group
-                label.col-sm-2.control-label {{'Post content type' | get-text}}
-                .col-sm-10
-                    label.radio-inline
-                        input(type="radio", value="MD", v-model="post.contentType")
-                        .
-                            {{'Markdown' | get-text}}
-                    label.radio-inline
-                        input(type="radio", value="HTML", v-model="post.contentType")
-                        .
-                            {{'HTML' | get-text}}
-            .form-group
-                label.col-sm-2.control-label {{'Post brief' | get-text}}
-                .col-sm-10
-                    ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value.sync="post.brief", :config="{mode: post.contentType, theme: 'Chrome'}")
-            .form-group
-                label.col-sm-2.control-label {{'Post content' | get-text}}
-                .col-sm-10
-                    div
+div
+    form(name="jb-post-form", @submit.prevent="onSubmit")
+        .jb-form-ct
+            .form-horizontal
+                .form-group
+                    label.col-sm-2.control-label {{'Status' | get-text}}
+                    .col-sm-10
+                        .form-control-static
+                            post-status-label(:value="post.status")
+                .form-group
+                    label.col-sm-2.control-label {{'Create date' | get-text}}
+                    .col-sm-10
+                        .form-control-static
+                            display-date(:value="post.createDate")
+                .form-group
+                    label.col-sm-2.control-label {{'Update date' | get-text}}
+                    .col-sm-10
+                        .form-control-static
+                            display-date(:value="post.updateDate")
+                .form-group
+                    label.col-sm-2.control-label {{'Publication date' | get-text}}
+                    .col-sm-10
+                        .form-control-static
+                            display-date(:value="post.pubDate")
+                .form-group
+                    label.col-sm-2.control-label {{'Title' | get-text}}
+                    .col-sm-10
+                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
+                .form-group
+                    label.col-sm-2.control-label {{'Title image' | get-text}}
+                    .col-sm-10(:class="{'util-zindex-100': titleImageSelectOpen}")
+                        .selected-avatar-ct(v-if="post.titleImg")
+                            img.selected-avatar(:src="post.titleImg.url", :alt="post.titleImg.metadata.originalName")
+                            .selected-avatar-desc.word-break-all
+                                .selected-avatar-title {{ post.titleImg.metadata.originalName }}
+                                display-date(:value="post.titleImg.uploadDate")
+                                div
+                                    small {{ post.titleImg.metadata.description }}
+                            .selected-avatar-buttons
+                                button.btn.btn-xs.btn-default(type="button", @click="onClearTitleImageClick", :title="'Clear' | get-text")
+                                    i.fa.fa-times.fa-fw(aria="hidden")
+                        multiselect.multiselect-avatar(
+                        v-model="post.titleImg",
+                        :placeholder="'Select title image' | get-text",
+                        label="filename",
+                        track-by="_id",
+                        :options="availableTitleImages",
+                        :option-height="74",
+                        :custom-label="getFileInfoLabel",
+                        :show-labels="false",
+                        :multiple="false",
+                        :searchable="false",
+                        :hide-selected="true",
+                        :allow-empty="true",
+                        :loading="titleImagesLoading",
+                        @open="onTitleImageSelectOpen",
+                        @close="onTitleImageSelectClose"
+                        )
+                            template(slot="beforeList", scope="props")
+                                button.btn.btn-link.btn-in-select(type="button", @click="onAddTitleImageClick")
+                                    i.fa.fa-plus.fa-fw(aria="hidden")
+                                    span._margin-5._left {{'Add new one' | get-text}}
+                            template(slot="option", scope="props")
+                                .option__avatar-ct
+                                    img.option__avatar-image(:src="props.option.url", :alt="props.option.metadata.originalName")
+                                    .option__avatar-desc.word-break-word
+                                        .option__avatar-title {{ props.option.metadata.originalName }}
+                                        display-date(:value="props.option.uploadDate")
+                                        div
+                                            small {{ props.option.metadata.description }}
+                                    .option__avatar-buttons
+                                        button.btn.btn-xs.btn-danger(type="button", @mousedown.capture.stop="onRemoveTitleImageFromServerClick(props.option, $event)", :title="'Remove' | get-text")
+                                            i.fa.fa-times.fa-fw(aria="hidden")
+                .form-group
+                    label.col-sm-2.control-label {{'Tags' | get-text}}
+                    .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
+                        multiselect(
+                        v-model="post.tags",
+                        :tag-placeholder="'Add as new tag' | get-text",
+                        :placeholder="'Select or add tags' | get-text",
+                        :options="availableTags",
+                        :multiple="true",
+                        :taggable="true",
+                        @tag="addPostTag",
+                        :loading="tagsIsLoading",
+                        @search-change="onTagSelectSearch",
+                        @open="onTagSelectOpen",
+                        @close="onTagSelectClose"
+                        )
+                .form-group
+                    label.col-sm-2.control-label {{'Attachments' | get-text}}
+                    .col-sm-10
+                        button.btn.btn-primary._margin-5._bottom(type="button", @click="onAddAttachmentButtonClick")
+                            i.fa.fa-fw.fa-plus(aria-hidden="true")
+                            span._margin-5._left {{'Add attachment' | get-text}}
+                        ul.list-unstyled
+                            li(v-for="(attachment, attachmentIndex) in post.attachments")
+                                .post-form-attachment-ct
+                                    .post-form-attachment__icon
+                                        i.fa.fa-fw(aria-hidden="true", :class="attachment.contentType | content-type-to-icon")
+                                    .post-form-attachment__desc.word-break-word
+                                        .post-form-attachment__original-name
+                                            a._margin-5._right(:href="attachment.url", target="_blank") {{attachment.metadata.originalName}}
+                                            display-date(:value="attachment.uploadDate")
+                                        .post-form-attachment__content-type {{attachment.contentType}}, {{attachment.length | number-to-locale-string}} {{'bytes' | get-text}}
+                                        .post-form-attachment__description
+                                            small {{attachment.metadata.description}}
+                                    .post-form-attachment__buttons
+                                        button.btn.btn-xs.btn-default(type="button", @click="onRemoveAttachmentButtonClick(attachmentIndex)", :title="'Remove' | get-text")
+                                            i.fa.fa-times.fa-fw(aria="hidden")
+                .form-group
+                    label.col-sm-2.control-label {{'Post content type' | get-text}}
+                    .col-sm-10
                         label.radio-inline
-                            input(type="radio", value="EDIT", v-model="contentMode")
+                            input(type="radio", value="MD", v-model="post.contentType")
                             .
-                                {{'Edit' | get-text}}
+                                {{'Markdown' | get-text}}
                         label.radio-inline
-                            input(type="radio", value="PREVIEW", v-model="contentMode")
+                            input(type="radio", value="HTML", v-model="post.contentType")
                             .
-                                {{'Preview' | get-text}}
-                    ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value.sync="post.content", :config="{mode: post.contentType, theme: 'Chrome'}")
-                    markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post.content")
-                    .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
-        .row.form-after-buttons-row
-            .col-sm-12.text-right
-                button.btn.btn-primary(type="submit")
-                    i.fa.fa-upload.fa-fw(aria="hidden")
-                    span {{'Save' | get-text}}
+                                {{'HTML' | get-text}}
+                .form-group
+                    label.col-sm-2.control-label {{'Post brief' | get-text}}
+                    .col-sm-10
+                        ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value.sync="post.brief", :config="{mode: post.contentType, theme: 'Chrome'}")
+                .form-group
+                    label.col-sm-2.control-label {{'Post content' | get-text}}
+                    .col-sm-10
+                        div
+                            label.radio-inline
+                                input(type="radio", value="EDIT", v-model="contentMode")
+                                .
+                                    {{'Edit' | get-text}}
+                            label.radio-inline
+                                input(type="radio", value="PREVIEW", v-model="contentMode")
+                                .
+                                    {{'Preview' | get-text}}
+                        ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value.sync="post.content", :config="{mode: post.contentType, theme: 'Chrome'}")
+                        markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post.content")
+                        .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
+                .form-group
+                    .col-sm-12.text-right
+                        .btn-group(role="group")
+                            button.btn(type="button", :disabled="!post._id || statusUpdating", :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}", @click="onToggleStatusButtonClick")
+                                i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
+                                span._margin-5._left(v-if="post.status==='DRAFT'") {{'Publish' | get-text}}
+                                span._margin-5._left(v-if="post.status==='PUB'") {{'Make draft' | get-text}}
+                            button.btn(type="submit", :disabled="!dirty", :class="{'btn-primary': dirty, 'btn-default': !dirty}")
+                                i.fa.fa-upload.fa-fw(aria="hidden")
+                                span._margin-5._left {{'Save' | get-text}}
     vuedals

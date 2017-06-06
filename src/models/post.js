@@ -76,8 +76,11 @@ postSchema.static({
             status: 'DRAFT',
             contentType: 'MD',
             title: `At ${(new Date()).toLocaleString()}`,
+            titleImg: null,
             tags: [],
-            attachments: []
+            attachments: [],
+            postBrief: null,
+            content: null
         }
     },
 

@@ -1,18 +1,22 @@
 .panel.panel-primary
-    .panel-heading Posts
+    .panel-heading {{'Posts' | get-text}}
     .panel-body
         nav(aria-label="Page navigation")
             ul.pager
                 li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
                     router-link(:to="{ name: 'posts', query: { p: page<3 ? undefined : page-1}}")
-                        i.fa.fa-chevron-left.fa-fw(aria-hidden="true")
+                        i.fa.fa-arrow-left.fa-fw(aria-hidden="true")
                         .
                             {{'Previous page' | get-text}}
                 li.next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
                     router-link(:to="{ name: 'posts', query: { p: page+1}}")
                         .
                             {{'Next page' | get-text}}
-                        i.fa.fa-chevron-right.fa-fw(aria-hidden="true")
+                        i.fa.fa-arrow-right.fa-fw(aria-hidden="true")
+    .panel-body
+        router-link.btn.btn-primary.btn-lg(:to="{name: 'post'}")
+            i.fa.fa-fw.fa-pencil(aria-hidden="true")
+            span._margin-5._left {{'Create new post' | get-text}}
     table.table.table-hover
         thead
             tr
@@ -30,21 +34,27 @@
                     post-status-label(:value="post.status")
                 td
                     .btn-group(role="group" aria-label="Actions")
-                        router-link.btn.btn-info(:to="{name: 'post', query: {id: post._id}}", :title="'Edit post' | get-text")
+                        router-link.btn.btn-default(:to="{name: 'post', query: {id: post._id}}", :title="'Edit post' | get-text")
                             i.fa.fa-pencil-square-o.fa-fw
-                        button.btn.btn-primary(type="button")
-                            i.fa.fa-chain-broken.fa-fw
+                        button.btn(
+                        type="button",
+                        :disabled="post.statusUpdating",
+                        :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}",
+                        @click="onToggleStatusButtonClick(post)",
+                        :title="post.status==='DRAFT' ? 'Publish' : 'Make draft'"
+                        )
+                            i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
     .panel-body
         nav(aria-label="Page navigation")
             ul.pager
                 li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
                     router-link(:to="{ name: 'posts', query: { p: page<3 ? undefined : page-1}}")
-                        i.fa.fa-chevron-left.fa-fw(aria-hidden="true")
+                        i.fa.fa-arrow-left.fa-fw(aria-hidden="true")
                         .
                             {{'Previous page' | get-text}}
                 li.next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
                     router-link(:to="{ name: 'posts', query: { p: page+1}}")
                         .
                             {{'Next page' | get-text}}
-                        i.fa.fa-chevron-right.fa-fw(aria-hidden="true")
+                        i.fa.fa-arrow-right.fa-fw(aria-hidden="true")
 
