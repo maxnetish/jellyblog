@@ -1,3 +1,6 @@
+/**
+ * DEPRECATED
+ */
 import {Post, Tag, File, FileData} from '../../models';
 import {updateTags, updatePostAttachments} from '../../utils-data';
 

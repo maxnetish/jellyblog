@@ -35,14 +35,6 @@
 <script>
     /**
      * props:
-     *      editorBorder: width of border in image editor
-     *      imageBorderRadius,
-     *      imageWidth,
-     *      imageHeight,
-     *      scaleWidth,
-     *      scaleMin,
-     *      scaleMax,
-     *      scaleStep
      */
 
     import VueAvatar from '../../components/vue-avatar-editor/VueAvatar.vue';

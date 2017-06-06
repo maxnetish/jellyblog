@@ -84,6 +84,9 @@ form(name="jb-post-form", @submit.prevent="onSubmit")
             .form-group
                 label.col-sm-2.control-label {{'Attachments' | get-text}}
                 .col-sm-10
+                    button.btn.btn-primary._margin-5._bottom(type="button", @click="onAddAttachmentButtonClick")
+                        i.fa.fa-fw.fa-plus(aria-hidden="true")
+                        span._margin-5._left {{'Add attachment' | get-text}}
                     ul.list-unstyled
                         li(v-for="(attachment, index) in post.attachments")
                             .post-form-attachment-ct
@@ -93,7 +96,7 @@ form(name="jb-post-form", @submit.prevent="onSubmit")
                                     .post-form-attachment__original-name
                                         a._margin-5._right(:href="attachment.url", target="_blank") {{attachment.metadata.originalName}}
                                         display-date(:value="attachment.uploadDate")
-                                    .post-form-attachment__content-type {{attachment.contentType}}, {{attachment.length}} bytes
+                                    .post-form-attachment__content-type {{attachment.contentType}}, {{attachment.length | number-to-locale-string}} {{'bytes' | get-text}}
                                     .post-form-attachment__description
                                         small {{attachment.metadata.description}}
             .form-group

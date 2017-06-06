@@ -3,6 +3,7 @@ import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
 import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
 import AddImage from '../../components/add-image/add-image.vue';
 import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
+import DialogUploadFile from '../../components/dialog-upload-file/dialog-upload-file.vue';
 import {Component as VuedalComponent} from 'vuedals';
 import Multiselect from 'vue-multiselect';
 import uploadCanvas from '../../../utils/upload-image-from-canvas';
@@ -134,7 +135,7 @@ export default {
         onClearTitleImageClick (e){
             this.post.titleImg = null;
         },
-        onRemoveTitleImageFromServerClick: function(fileInfo, e) {
+        onRemoveTitleImageFromServerClick: function (fileInfo, e) {
             this.$emit('vuedals:new', {
                 title: getText('Remove file'),
                 props: {
@@ -159,6 +160,26 @@ export default {
                                 self.post.titleImg = null;
                             }
                         })
+                }
+            });
+        },
+        onAddAttachmentButtonClick(e) {
+            let self = this;
+            this.$emit('vuedals:new', {
+                title: getText('Upload attachment'),
+                props: {
+                    context: 'attachment',
+                    postId: this.post._id
+                },
+                component: DialogUploadFile,
+                size: 'xs',
+                dismissable: false,
+                onClose: dialogResult => {
+                    if (!dialogResult) {
+                        return;
+                    }
+                    self.post.attachments = self.post.attachments || [];
+                    self.post.attachments.unshift(Object.assign({}, dialogResult));
                 }
             });
         }

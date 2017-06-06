@@ -19,11 +19,8 @@
      *      message
      */
 
-    import VueAvatar from '../../components/vue-avatar-editor/VueAvatar.vue';
-    import VueAvatarScale from '../../components/vue-avatar-editor/VueAvatarScale.vue';
-
     export default {
-        name: 'add-image',
+        name: 'dialog-confirm',
         data () {
             return {
 
@@ -42,10 +39,6 @@
             onYesButtonClick(e){
                 this.$emit('vuedals:close', 'YES');
             }
-        },
-        components: {
-            'vue-avatar': VueAvatar,
-            'vue-avatar-scale': VueAvatarScale
         }
     };
 </script>
