@@ -58,6 +58,17 @@ module.exports = function (grunt) {
                         dest: path.join(buildDir, 'pub/bootstrap.css')
                     }
                 ]
+            },
+            'images': {
+                files: [
+                    {
+                        expand: true,
+                        filter: 'isFile',
+                        cwd: 'src/images',
+                        src: ['**/*.jpg', '**/*.png', '**/*.gif'],
+                        dest: path.join(buildDir, 'pub')
+                    }
+                ]
             }
         },
 
@@ -164,6 +175,10 @@ module.exports = function (grunt) {
                     {
                         src: 'src/less-common/**/*.less',
                         dest: path.join(buildDir, 'pub/common.css')
+                    },
+                    {
+                        src: 'src/less-pub/**/*.less',
+                        dest: path.join(buildDir, 'pub/pub.css')
                     }
                 ],
                 options: {
@@ -186,6 +201,10 @@ module.exports = function (grunt) {
                     {
                         src: 'src/less-common/**/*.less',
                         dest: path.join(buildDir, 'pub/common.css')
+                    },
+                    {
+                        src: 'src/less-pub/**/*.less',
+                        dest: path.join(buildDir, 'pub/pub.css')
                     }
                 ],
                 options: {

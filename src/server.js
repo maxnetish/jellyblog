@@ -4,6 +4,7 @@ import urljoin from 'url-join';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import moment from 'moment';
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
 import serveStatic from 'serve-static';
@@ -24,6 +25,7 @@ import flash from 'express-flash';
 import * as i18n from './i18n'
 
 const app = express();
+const resources = morphine;
 
 /**
  * Setup passport
@@ -86,6 +88,13 @@ app.use(passport.session());
  */
 app.use((req, res, next) => {
     res.locals.getText = key => i18n.getText(key, req.language);
+    res.locals.dateTimeToLocaleString = function ({date, format = 'LL'} = {}) {
+        if (!date) {
+            return null;
+        }
+        moment.locale(req.language);
+        return moment(date).format(format);
+    };
     res.locals.language = req.language;
     res.locals.user = req.user;
     next();
@@ -238,8 +247,23 @@ app.get('/admin/logout', (req, res) => {
 /**
  * Main entry
  */
-app.get(['/'], (req, res) => res.render('pub/index', {}));
+app.get(['/'], (req, res) => {
+    Promise.all([
+        resources.post.pubList({
+            page: req.query.page,
+            postsPerPage: 5,
+            q: req.query.q
+        }),
+        resources.tag.list()
+    ])
+        .then(responses => {
+            res.render('pub/index', Object.assign({}, responses[0], {tags: responses[1]}));
+        });
+});
 
+/**
+ * General error
+ */
 app.use(function (err, req, res, next) {
     addEntryFromErrorResponse(req, res, err);
     console.error(err.stack);

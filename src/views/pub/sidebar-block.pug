@@ -1,0 +1,48 @@
+aside.sidebar
+    div.sidebar-content
+        ul.unstyled
+            li.sidebar-listitem
+                ul.unstyled
+                    each tagInfo in tags
+                        li
+                            a(href=tagInfo.url)
+                                span #{tagInfo.tag} (#{tagInfo.count})
+            li.sidebar-listitem
+                ul.unstyled
+                    li
+                        div.soc-line
+                            div.soc-icon
+                                i.fa.fa-github.fa-fw(aria-hidden="true")
+                            div#github-card.soc-ct
+                                a(href="https://github.com/maxnetish") Гитхаб с полезным и безполезным кодом
+                    li
+                        div.soc-line
+                            div.soc-icon
+                                i.fa.fa-linkedin-square.fa-fw(aria-hidden="true")
+                            div.soc-ct
+                                a(href="https://ru.linkedin.com/in/maksim-gordeev-8b44a834") Social network and online platform for professionals
+                    li
+                        div.soc-line
+                            div.soc-icon
+                                i.fa.fa-twitter.fa-fw(aria-hidden="true")
+                            div.soc-ct
+                                a(href="https://twitter.com/maxnetish") Твиттер, когда не&#769;кому писа&#769;ть
+                    li
+                        div.soc-line
+                            div.soc-icon
+                                i.fa.fa-facebook-official.fa-fw(aria-hidden="true")
+                            div.soc-ct
+                                a(href="https://www.facebook.com/maksim.gordeev") В фейсбук заглядываю иногда
+                    li
+                        div.soc-line
+                            div.soc-icon
+                                i.fa.fa-google-plus-official.fa-fw(aria-hidden="true")
+                            div.soc-ct
+                                a(href="https://plus.google.com/+MaksimGordeev") Гуглоплюс на любителя
+                    li
+                        div.soc-line
+                            div.soc-icon
+                                i.fa.fa-vk.fa-fw(aria-hidden="true")
+                            div.soc-ct
+                                a(href="https://vk.com/id44057134") Особо популярно в этой стране
+

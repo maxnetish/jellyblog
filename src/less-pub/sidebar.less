@@ -1,0 +1,47 @@
+@import "main-variables";
+
+.sidebar {
+  background-color: @m_nospa_aside_bg_color;
+  color: @m_nospa_aside_text_color;
+
+  @media only screen and (max-width: @m_nospa_wpoint-1), only screen and (max-device-width: @m_nospa_wpoint-1) {
+    width: 100%;
+  }
+  width: 36%;
+}
+
+.sidebar-content {
+  position: sticky;
+  top: 10px;
+  width: 100%;
+  margin: auto;
+}
+
+.sidebar-listitem {
+  margin: 2em 0.5em 0;
+}
+
+.categ-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  font-weight: bold;
+
+  a {
+    padding: 0 0.5em;
+  }
+
+}
+
+.soc-line {
+  display: flex;
+  align-items: center;
+  .soc-icon {
+    font-size: 2.5rem;
+    margin-right: 0.15em;
+    color: @m_nospa_anchor_text_color;
+  }
+  .soc-ct {
+    padding: 0.25em 0;
+  }
+}

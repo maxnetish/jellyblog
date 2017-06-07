@@ -14,9 +14,9 @@ module.exports = {
             'core-js/es6/promise',
             'core-js/es6/array',
             'core-js/es6/object',
-            'core-js/es6/symbol',
+            'core-js/es6/symbol'/*,
             'isomorphine',
-            'superagent'
+            'superagent'*/
         ]
         // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
         // jquery: "./app/jquery",

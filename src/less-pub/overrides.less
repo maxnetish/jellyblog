@@ -1,0 +1,35 @@
+@import "main-variables";
+
+a {
+  color: @m_nospa_anchor_text_color;
+  transition: color 0.5s ease 0s, background-color 0.5s ease 0s;
+
+  &:visited {
+    color: @m_nospa_anchor_text_color;
+  }
+
+  &:hover, &:active {
+    color: contrast(@m_nospa_anchor_text_color);
+    background-color: @m_nospa_anchor_text_color;
+  }
+
+  &:focus {
+    outline: dotted 1px @m_nospa_anchor_text_color;
+  }
+
+}
+
+hr {
+  border-color: @m_nospa_anchor_text_color;
+  border-style: dashed;
+}
+
+article {
+  padding: @m_nospa_base_margin;
+}
+
+pre {
+  overflow: auto;
+  border: @m_nospa_anchor_text_color dotted 1px;
+  background-color: @m_nospa_pre_bg_color;
+}

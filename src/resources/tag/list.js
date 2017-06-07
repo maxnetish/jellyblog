@@ -1,17 +1,17 @@
 import {Post} from '../../models';
-import mongooseConfig from '../../../config/mongoose.json';
+import routesMap from '../../../config/routes-map.json';
+import urljoin from 'url-join';
 
-
-function fetch({token, statuses = ['PUB']} = {}) {
+function fetch({statuses = ['PUB']} = {}) {
 
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
 
-    if (!this.xhr && allowDrafts) {
+    if (allowDrafts && !this.xhr) {
         // allow only rpc call if qeury for drafts
         return Promise.reject(500);
     }
 
-    if (!this.req.user && allowDrafts) {
+    if (allowDrafts && !this.req.user) {
         // allow only authirized user query for drafts
         return Promise.reject(401);
     }
@@ -36,7 +36,11 @@ function fetch({token, statuses = ['PUB']} = {}) {
 
     return Post.mapReduce(mapReduceOptions)
         .then(reduceResult => {
-            let mappedResult = reduceResult.map(item => ({tag: item._id, count: item.value}));
+            let mappedResult = reduceResult.map(item => ({
+                tag: item._id,
+                count: item.value,
+                url: urljoin(routesMap.tag, encodeURIComponent(item._id))
+            }));
             let sortedResult = mappedResult.sort((a, b) => b.count - a.count);
             return sortedResult;
         });

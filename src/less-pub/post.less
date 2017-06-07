@@ -1,0 +1,50 @@
+@import "main-variables";
+
+.post {
+
+  .post-date-ct {
+    border: solid 1px lighten(@m_nospa_body_text_color, 33%);
+    border-radius: 0.25em;
+    padding: 0 0.5em;
+    background-color: lighten(@m_nospa_body_text_color, 33%);
+    color: @m_nospa_body_bg_color;
+    i {
+      margin-right: 0.25em;
+    }
+  }
+
+  .tags {
+    margin-top: 0.5em;
+    .post-tag-ct {
+      margin-right: 0.5em;
+      a {
+        padding: 0 0.5em;
+      }
+      &:last-child {
+        margin-right: inherit;
+      }
+    }
+
+  }
+
+  h1 {
+    a {
+      color: @m_nospa_body_text_color;
+      text-decoration: none;
+
+      &:visited {
+        color: @m_nospa_body_text_color;
+      }
+
+      &:hover, &:active {
+        color: @m_nospa_body_text_color;
+        background-color: inherit;
+      }
+
+      &:focus {
+        outline: dotted 1px @m_nospa_body_text_color;
+      }
+    }
+  }
+
+}

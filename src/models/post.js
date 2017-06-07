@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import File from './file';
+import urljoin from 'url-join';
+import routesMap from '../../config/routes-map.json';
 
 let postSchema = new mongoose.Schema({
     // _id
@@ -83,7 +85,10 @@ postSchema.static({
             content: null
         }
     },
+});
 
+postSchema.virtual('url').get(function (i) {
+    return urljoin(routesMap.post, this._id);
 });
 
 // create text index
