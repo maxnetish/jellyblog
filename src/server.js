@@ -21,6 +21,7 @@ import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
 import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
+import createPaginationModel from './utils/create-pagination-model';
 import flash from 'express-flash';
 import * as i18n from './i18n'
 
@@ -257,7 +258,16 @@ app.get(['/'], (req, res) => {
         resources.tag.list()
     ])
         .then(responses => {
-            res.render('pub/index', Object.assign({}, responses[0], {tags: responses[1]}));
+            let findPosts = responses[0];
+            let tags = responses[1];
+            let pagination = createPaginationModel({
+                currentUrl: req.url,
+                currentPage: findPosts.page,
+                hasMore: findPosts.hasMore
+            });
+            let locals = Object.assign({}, findPosts, {tags}, {pagination});
+
+            res.render('pub/index', locals);
         });
 });
 

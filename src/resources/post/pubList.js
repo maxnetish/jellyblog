@@ -50,7 +50,7 @@ function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, 
             findResult = findResult || [];
             let findedLen = findResult.length;
             if (findedLen > postsPerPage) {
-                findResult.splice(mongooseConfig.paginationDefaultLimit, findedLen - mongooseConfig.paginationDefaultLimit);
+                findResult.splice(postsPerPage, findedLen - postsPerPage);
             }
             return {
                 items: findResult.map(mapPost),
