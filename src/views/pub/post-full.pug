@@ -1,7 +1,6 @@
 article.post
     h1
-        a(href=post.url)
-            = post.title
+        = post.title
     span.post-date-ct
         i.fa.fa-calendar.fa-fw(aria-hidden="true")
         time.date(datetime=post.createDate.toISOString()) #{dateTimeToLocaleString({date: post.createDate})}
@@ -13,12 +12,4 @@ article.post
                         i.fa.fa-tag.fa-fw(aria-hidden="true")
                         span.post-tag-label #{tagInfo.tag}
     div.content
-        != post.preview
-        if post.useCut
-            .poet-read-more.tags
-                span.post-tag-ct
-                    a(href=post.url, title=`Read more of ${post.title}`)
-                        i.fa.fa-fw.fa-caret-square-o-down(aria-hidden="true")
-                        span #{getText('Read more')}
-
-
+        != post.content

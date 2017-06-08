@@ -20,8 +20,10 @@ import requestLanguage from 'express-request-language';
 import morphine from './resources';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
+import routesMap from '../config/routes-map.json';
 import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
 import createPaginationModel from './utils/create-pagination-model';
+import createTagsCloudModel from './utils/create-tags-cloude-model';
 import flash from 'express-flash';
 import * as i18n from './i18n'
 
@@ -246,6 +248,22 @@ app.get('/admin/logout', (req, res) => {
 });
 
 /**
+ * Page /post/12344...
+ */
+app.get(routesMap.post + '/:id', (req, res) => {
+    Promise.all([
+        resources.post.pubGet({id: req.params.id}),
+        resources.tag.list()
+    ])
+        .then(responses => {
+            let post = responses[0];
+            let tags = createTagsCloudModel(responses[1]);
+            let locals = Object.assign({}, {post}, {tags});
+            res.render('pub/post', locals);
+        })
+});
+
+/**
  * Main entry
  */
 app.get(['/'], (req, res) => {
@@ -259,7 +277,7 @@ app.get(['/'], (req, res) => {
     ])
         .then(responses => {
             let findPosts = responses[0];
-            let tags = responses[1];
+            let tags = createTagsCloudModel(responses[1]);
             let pagination = createPaginationModel({
                 currentUrl: req.url,
                 currentPage: findPosts.page,

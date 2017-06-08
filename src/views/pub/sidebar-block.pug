@@ -2,11 +2,11 @@ aside.sidebar
     div.sidebar-content
         ul.unstyled
             li.sidebar-listitem
-                ul.unstyled
+                .jb-tags-cloud
                     each tagInfo in tags
-                        li
+                        span(class=`level-${tagInfo.relativeCount}`)
                             a(href=tagInfo.url)
-                                span #{tagInfo.tag} (#{tagInfo.count})
+                                span #{tagInfo.tag}
             li.sidebar-listitem
                 ul.unstyled
                     li

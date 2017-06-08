@@ -3,20 +3,10 @@ import mongooseConfig from '../../../config/mongoose.json';
 
 
 function fetch({id} = {}) {
-    // let condition = {};
-    // let projection = '_id status updateDate title brief';
     let self = this;
     let opts = {
         lean: false
     };
-
-    // if (maxId) {
-    //     Object.assign(condition, {
-    //         _id: {
-    //             $lt: maxId
-    //         }
-    //     });
-    // }
 
     if (!id) {
         return Post.createNewDefaultPost();

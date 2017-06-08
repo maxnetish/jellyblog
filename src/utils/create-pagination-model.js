@@ -16,12 +16,12 @@ function createPaginationModel({currentUrl = '/', currentPage = 1, hasMore = fal
         }
         result.previous = urlObj.set('query', newQuery).href;
     } else if (currentPage > 2) {
-        newQuery = Object.assign(currentQuery, {page: currentPage - 1});
+        newQuery = Object.assign(currentQuery, {page: currentPageAsNumber - 1});
         result.previous = urlObj.set('query', newQuery).href;
     }
 
     if (hasMore) {
-        newQuery = Object.assign(currentQuery, {page: currentPage + 1});
+        newQuery = Object.assign(currentQuery, {page: currentPageAsNumber + 1});
         result.next = urlObj.set('query', newQuery).href;
     }
 

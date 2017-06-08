@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    if post
+        include post-full
+    if !post
+        include no-content-404

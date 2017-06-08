@@ -45,3 +45,42 @@
     padding: 0.25em 0;
   }
 }
+
+.jb-tags-cloud {
+
+  padding: 0 10px;
+  line-height: 2.0em;
+  border: 2px dotted @m_nospa_pre_bg_color;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: stretch;
+
+  > span {
+    position: relative;
+    white-space: nowrap;
+    margin: 0 5px;
+
+    &.level-1 {
+      font-size: 0.8em;
+      font-weight: 100;
+    }
+    &.level-2 {
+      font-size: 1em;
+      font-weight: 300;
+    }
+    &.level-3 {
+      font-size: 1.2em;
+      font-weight: 500;
+    }
+    &.level-4 {
+      font-size: 1.4em;
+      font-weight: 700;
+    }
+    &.level-5 {
+      font-size: 1.6em;
+      font-weight: 900;
+    }
+
+  }
+}
