@@ -27,6 +27,33 @@
 
   }
 
+  .post-header-ct {
+    display: flex;
+
+    > * {
+      margin-right: 10px;
+    }
+    > *:last-child {
+      margin-right: 0;
+    }
+
+    .post-header__title-img {
+      flex-shrink: 0;
+      img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    .post-header__content {
+      flex-grow: 1;
+
+      h1 {
+        margin: 0 0 0.25em;
+      }
+    }
+  }
+
   h1 {
     a {
       color: @m_nospa_body_text_color;

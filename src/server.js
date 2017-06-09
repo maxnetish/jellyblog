@@ -264,6 +264,33 @@ app.get(routesMap.post + '/:id', (req, res) => {
 });
 
 /**
+ * Page /tag/coolposts...
+ */
+app.get(routesMap.tag + '/:tag', (req, res) => {
+    Promise.all([
+        resources.post.pubList({
+            page: req.query.page,
+            postsPerPage: 5,
+            q: req.query.q,
+            tag: req.params.tag
+        }),
+        resources.tag.list()
+    ])
+        .then(responses => {
+            let findPosts = responses[0];
+            let tags = createTagsCloudModel(responses[1]);
+            let pagination = createPaginationModel({
+                currentUrl: req.url,
+                currentPage: findPosts.page,
+                hasMore: findPosts.hasMore
+            });
+            let locals = Object.assign({}, findPosts, {tags}, {pagination});
+
+            res.render('pub/tag', locals);
+        });
+});
+
+/**
  * Main entry
  */
 app.get(['/'], (req, res) => {

@@ -26,7 +26,7 @@ function mapPost(p) {
     };
 }
 
-function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, q} = {}) {
+function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, tag, q} = {}) {
     page = parseInt(page, 10) || 1;
 
     let projection = '_id contentType createDate updateDate pubDate titleImg title brief content tags';
@@ -39,6 +39,12 @@ function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, 
     let condition = {
         status: 'PUB'
     };
+
+    if (tag) {
+        Object.assign(condition, {
+            tags: tag
+        });
+    }
 
     if (q) {
         // apply full text query
@@ -63,7 +69,8 @@ function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, 
             return {
                 items: findResult.map(mapPost),
                 hasMore: findedLen > postsPerPage,
-                page: page
+                page: page,
+                tag: tag
             };
         });
 }

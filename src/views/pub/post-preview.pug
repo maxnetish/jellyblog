@@ -1,17 +1,5 @@
 article.post
-    h1
-        a(href=post.url)
-            = post.title
-    span.post-date-ct
-        i.fa.fa-calendar.fa-fw(aria-hidden="true")
-        time.date(datetime=post.createDate.toISOString()) #{dateTimeToLocaleString({date: post.createDate})}
-    if (post.tags && post.tags.length)
-        div.tags
-            each tagInfo in post.tags
-                span.post-tag-ct
-                    a(href=tagInfo.url)
-                        i.fa.fa-tag.fa-fw(aria-hidden="true")
-                        span.post-tag-label #{tagInfo.tag}
+    include post-header
     div.content
         != post.preview
         if post.useCut

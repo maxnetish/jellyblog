@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    .section-header
+        h3
+            span #{getText('Posts with tag ')}
+            q #{tag}
+    each post in items
+        include post-preview
+    include pagination
