@@ -10,6 +10,19 @@ function updateStatus({ids = [], status = 'DRAFT'} = {}) {
         status: status
     };
 
+    switch (status) {
+        case 'PUB':
+            Object.assign(updateData, {
+                pubDate: new Date()
+            });
+            break;
+        case 'DRAFT':
+            Object.assign(updateData, {
+                pubDate: null
+            });
+            break;
+    }
+
     let condition = {
         _id: {$in: ids}
     };

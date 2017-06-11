@@ -1,10 +1,9 @@
 import resources from '../../../resources';
 import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
 import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
-import AddImage from '../../components/add-image/add-image.vue';
+import DialogAddImage from '../../components/dialog-add-image/dialog-add-image.vue';
 import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
 import DialogUploadFile from '../../components/dialog-upload-file/dialog-upload-file.vue';
-import {Component as VuedalComponent} from 'vuedals';
 import Multiselect from 'vue-multiselect';
 import uploadCanvas from '../../../utils/upload-image-from-canvas';
 import {getText} from '../../filters';
@@ -94,7 +93,7 @@ export default {
         },
         onAddTitleImageClick(e) {
             let self = this;
-            this.$emit('vuedals:new', {
+            this.$vuedals.open({
                 title: getText('Add title image'),
                 props: {
                     imageWidth: 100,
@@ -103,9 +102,9 @@ export default {
                     scaleMax: 10,
                     scaleStep: 0.2
                 },
-                component: AddImage,
+                component: DialogAddImage,
                 size: 'xs',
-                dismissable: true,
+                dismisable: true,
                 onClose: dialogResult => {
                     if (!dialogResult) {
                         return;
@@ -127,7 +126,7 @@ export default {
                         }, err => console.warn(err));
                 },
                 onDismiss: () => console.log('Modal dismissed')
-            });
+            })
         },
         getFileInfoLabel (attachmentInfo) {
             return attachmentInfo.metadata.originalName;
@@ -151,14 +150,14 @@ export default {
             this.post.titleImg = null;
         },
         onRemoveTitleImageFromServerClick: function (fileInfo, e) {
-            this.$emit('vuedals:new', {
+            this.$vuedals.open({
                 title: getText('Remove file'),
                 props: {
                     message: getText('Remove image from server forever? Links in posts will can be broken.')
                 },
                 component: DialogConfirm,
                 size: 'xs',
-                dismissable: false,
+                dismisable: false,
                 onClose: dialogResult => {
                     let self = this;
                     if (dialogResult !== 'YES') {
@@ -179,14 +178,14 @@ export default {
             });
         },
         onRemoveAttachmentButtonClick (attachmentIndex) {
-            this.$emit('vuedals:new', {
+            this.$vuedals.open({
                 title: getText('Remove file'),
                 props: {
                     message: getText('Remove attachment? File will be removed forever with post saving.')
                 },
                 component: DialogConfirm,
                 size: 'xs',
-                dismissable: false,
+                dismisable: false,
                 onClose: dialogResult => {
                     if (dialogResult !== 'YES') {
                         return;
@@ -197,7 +196,7 @@ export default {
         },
         onAddAttachmentButtonClick(e) {
             let self = this;
-            this.$emit('vuedals:new', {
+            this.$vuedals.open({
                 title: getText('Upload attachment'),
                 props: {
                     context: 'attachment',
@@ -205,7 +204,7 @@ export default {
                 },
                 component: DialogUploadFile,
                 size: 'xs',
-                dismissable: false,
+                dismisable: false,
                 onClose: dialogResult => {
                     if (!dialogResult) {
                         return;
@@ -256,7 +255,6 @@ export default {
     components: {
         'ace-editor': AceEditor,
         'markdown-preview': MarkdownPreview,
-        'vuedals': VuedalComponent,
         'multiselect': Multiselect
     }
 }

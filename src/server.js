@@ -62,8 +62,8 @@ morgan.token('user-name', function (req, res) {
     return req.user && req.user.userName;
 });
 app.use(morgan(addEntryFromMorgan));
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({limit: '5mb', extended: false}));
+app.use(bodyParser.json({limit: '5mb'}));
 app.use(cookieParser());
 // adds req.language
 app.use(requestLanguage({

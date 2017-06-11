@@ -4,20 +4,20 @@
             .col-sm-12.text-center
                 div.vue-avatar-ct
                     vue-avatar(
-                    :border="props.editorBorder",
-                    :border-radius="props.imageBorderRadius",
-                    :width="props.imageWidth",
-                    :height="props.imageHeight",
+                    :border="editorBorder",
+                    :border-radius="imageBorderRadius",
+                    :width="imageWidth",
+                    :height="imageHeight",
                     ref="vueavatar",
                     @vue-avatar-editor:image-ready="onImageReady"
                     )
                     vue-avatar-scale(
                     ref="vueavatarscale",
                     @vue-avatar-editor-scale:change-scale="onChangeScale",
-                    :width="props.scaleWidth",
-                    :min="props.scaleMin",
-                    :max="props.scaleMax",
-                    :step="props.scaleStep"
+                    :width="scaleWidth",
+                    :min="scaleMin",
+                    :max="scaleMax",
+                    :step="scaleStep"
                     )
         .row._margin-5._bottom
             .col-sm-12
@@ -48,12 +48,16 @@
 
             }
         },
-        props: {
-            'props': {
-                type: Object,
-                'default': {}
-            }
-        },
+        props: [
+            'editorBorder',
+            'imageBorderRadius',
+            'imageWidth',
+            'imageHeight',
+            'scaleWidth',
+            'scaleMin',
+            'scaleMax',
+            'scaleStep'
+        ],
         methods: {
             onChangeScale (scale) {
                 this.$refs.vueavatar.changeScale(scale)
@@ -65,7 +69,7 @@
                 this.$emit('vuedals:close');
             },
             onOkButtonClick(e){
-                this.$emit('vuedals:close', {
+                this.$vuedals.close({
                     canvas: this.$refs.vueavatar.getImageScaled(),
                     originalFilename: this.$refs.vueavatar.getOriginalFilename(),
                     description: this.description

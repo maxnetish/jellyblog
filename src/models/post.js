@@ -68,7 +68,14 @@ let postSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'File'
         }
-    ]
+    ],
+    hru: {
+        type: String,
+        required: false,
+        index: true,
+        unique: true,
+        maxlength: 64
+    }
 });
 
 // Add static methods
@@ -81,14 +88,16 @@ postSchema.static({
             titleImg: null,
             tags: [],
             attachments: [],
-            postBrief: null,
-            content: null
+            postBrief: '',
+            content: ''
         }
     },
 });
 
-postSchema.virtual('url').get(function (i) {
-    return urljoin(routesMap.post, this._id);
+postSchema.virtual('url').get(function () {
+    let urlId = this.hru || this._id;
+    urlId = encodeURIComponent(urlId);
+    return urljoin(routesMap.post, urlId);
 });
 
 // create text index

@@ -111,6 +111,7 @@ module.exports = {
     },
     resolve: {
         alias: {
+            // 'vuedals': 'vuedals/src/main'
             // по умолчанию будет nanoflux.min
             // 'nanoflux': 'nanoflux/src/nanoflux'
             // prect-compat:

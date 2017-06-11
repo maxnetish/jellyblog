@@ -2,7 +2,7 @@
     .add-image-component-ct
         .row._margin-5._bottom
             .col-sm-12
-                .alert.alert-warning(role="confirm") {{props.message}}
+                .alert.alert-warning(role="confirm") {{message}}
         .row
             .col-sm-12.text-right
                 .btn-group(role="group")
@@ -22,22 +22,20 @@
     export default {
         name: 'dialog-confirm',
         data () {
-            return {
-
-            }
+            return {}
         },
         props: {
-            'props': {
-                type: Object,
-                'default': {}
+            'message': {
+                type: String,
+                default: 'Yes or no?'
             }
         },
         methods: {
             onNoButtonClick(e){
-                this.$emit('vuedals:close', 'NO');
+                this.$vuedals.close('NO');
             },
             onYesButtonClick(e){
-                this.$emit('vuedals:close', 'YES');
+                this.$vuedals.close('YES');
             }
         }
     };

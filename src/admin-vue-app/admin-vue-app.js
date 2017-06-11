@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {default as VuedalsPlugin} from 'vuedals';
+import {default as VuedalsPlugin, Component as VuedalComponent} from 'vuedals';
 
 Vue.use(VuedalsPlugin);
 
@@ -9,5 +9,8 @@ export default {
         return {
             msg: 'Welcome to Your Vue.js App'
         }
+    },
+    components: {
+        'vuedals': VuedalComponent
     }
 }

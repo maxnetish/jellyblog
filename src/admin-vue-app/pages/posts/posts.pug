@@ -17,7 +17,13 @@
         router-link.btn.btn-primary.btn-lg(:to="{name: 'post'}")
             i.fa.fa-fw.fa-pencil(aria-hidden="true")
             span._margin-5._left {{'Create new post' | get-text}}
+        button.btn.btn-warning._margin-5._left(type="bbutton", @click="exportFromOldJsonClick") Export posts from old version json
+        input(type="file", style="display:none", ref="exportFromOldJsonFileInput", @change="exportFromOldJsonFileInputChanged")
     table.table.table-hover
+        colgroup
+        colgroup
+        colgroup
+        colgroup(style="width: 250px;")
         thead
             tr
                 th {{'Title' | get-text}}
@@ -33,17 +39,32 @@
                 td
                     post-status-label(:value="post.status")
                 td
-                    .btn-group(role="group" aria-label="Actions")
-                        router-link.btn.btn-default(:to="{name: 'post', query: {id: post._id}}", :title="'Edit post' | get-text")
+                    dropdown(:type="post.status==='DRAFT' ? 'info' : 'danger'")
+                        router-link.btn(:class="{'btn-info': post.status==='DRAFT', 'btn-danger': post.status==='PUB'}", :to="{name: 'post', query: {id: post._id}}", slot="before", type="button")
                             i.fa.fa-pencil-square-o.fa-fw
-                        button.btn(
-                        type="button",
-                        :disabled="post.statusUpdating",
-                        :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}",
-                        @click="onToggleStatusButtonClick(post)",
-                        :title="post.status==='DRAFT' ? 'Publish' : 'Make draft'"
-                        )
-                            i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
+                            span._margin-5._left {{'Edit post' | get-text}}
+                        li
+                            a(href="javascript:void 0;", :disabled="post.statusUpdating", @click="onToggleStatusButtonClick(post)")
+                                i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
+                                span._margin-5._left {{(post.status==='DRAFT' ? 'Publish' : 'Make draft') | get-text}}
+                        li
+                            a(href="javascript:void 0;", @click="onRemovePostButtonClick(post)")
+                                i.fa.fa-times.fa-fw(aria-hidden="true")
+                                span._margin-5._left {{'Remove' | get-text }}
+
+
+                    //.btn-group(role="group" aria-label="Actions")
+                    //    router-link.btn.btn-default(:to="{name: 'post', query: {id: post._id}}", :title="'Edit post' | get-text")
+                    //        i.fa.fa-pencil-square-o.fa-fw
+                    //    button.btn(
+                    //    type="button",
+                    //    :disabled="post.statusUpdating",
+                    //    :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}",
+                    //    @click="onToggleStatusButtonClick(post)",
+                    //    :title="post.status==='DRAFT' ? 'Publish' : 'Make draft'"
+                    //    )
+                    //        i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
+                    //    button.btn.btn-danger(type="button", @click="onRemovePostButtonClick(post)") Remove
     .panel-body
         nav(aria-label="Page navigation")
             ul.pager

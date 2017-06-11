@@ -1,6 +1,9 @@
 <template src="./posts.pug" lang="pug"></template>
 <script>
+    import {dropdown} from 'vue-strap';
+    import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
     import resources from '../../../resources';
+    import {getText} from '../../filters';
 
     export default {
         name: 'posts',
@@ -56,6 +59,68 @@
                         post.statusUpdating = false;
                         console.warn(`Toggle status failed: ${err}`);
                     });
+            },
+            onRemovePostButtonClick (post) {
+                let self = this;
+
+                this.$vuedals.open({
+                    title: getText('Remove post'),
+                    props: {
+                        message: getText('Remove post from server forever? Also removes attached files.')
+                    },
+                    component: DialogConfirm,
+                    size: 'xs',
+                    dismisable: false,
+                    onClose: dialogResult => {
+                        let self = this;
+                        if (dialogResult !== 'YES') {
+                            return;
+                        }
+                        resources.post.remove({id: post._id})
+                            .then(response => {
+                                self.fetchPageData();
+                            }, err => console.warn(err));
+                    }
+                });
+            },
+            exportFromOldJsonClick(e) {
+                this.$refs.exportFromOldJsonFileInput.click();
+            },
+            exportFromOldJsonFileInputChanged(e){
+                let self = this;
+                let f = e.target.files[0];
+                let reader = new FileReader();
+
+                reader.onload = loadEvent => {
+                    let parsedFromFile;
+                    let mappedFromFile = [];
+                    let promises = [];
+                    try {
+                        parsedFromFile = JSON.parse(loadEvent.target.result) || [];
+                        mappedFromFile = parsedFromFile.map(oldPost => {
+                            let newPost = {
+                                status: 'DRAFT',
+                                createDate: new Date(oldPost.date.$date),
+                                title: oldPost.title,
+                                content: oldPost.content || 'No content',
+                                tags: oldPost.tags || [],
+                                hru: oldPost.slug || undefined,
+                            };
+                            return newPost;
+                        });
+                    } catch (err) {
+                        console.warn(`Failed to parse json from file: ${err}`);
+                    }
+
+                    resources.post.export(mappedFromFile)
+                        .then(response => {
+                            console.info(`Export result: ${response}`);
+                            self.fetchPageData();
+                        }, err => console.warn(err));
+                };
+
+                // Read file as text .
+                reader.readAsText(f);
             }
         },
         created () {
@@ -63,6 +128,9 @@
         },
         watch: {
             '$route': 'fetchPageData'
+        },
+        components: {
+            'dropdown': dropdown
         }
     }
 </script>

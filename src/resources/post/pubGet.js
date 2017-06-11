@@ -21,23 +21,29 @@ function mapPost(p) {
         titleImg: p.titleImg,
         title: p.title,
         content: contentConverter[p.contentType](p.content),
+        description: p.brief,
         tags: p.tags.map(t => ({tag: t, url: urljoin(routesMap.tag, encodeURIComponent(t))}))
     };
 }
 
 function fetch({id} = {}) {
 
-    let projection = '_id status createDate pubDate updateDate contentType title content tags titleImg';
+    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg';
 
     let opts = {
         lean: false,
     };
 
-    return Post.findById(id, projection, opts)
+    return Post.findOne({
+        $or: [
+            {_id: id},
+            {hru: id}
+        ]
+    }, projection, opts)
         .populate('titleImg')
         .exec()
         .then(res => {
-            if(!res) {
+            if (!res) {
                 return Promise.reject(404);
             }
             if (res && res.status !== 'PUB') {

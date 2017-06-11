@@ -51,9 +51,13 @@
             }
         },
         props: {
-            'props': {
-                type: Object,
-                'default': {}
+            'context': {
+                type: String,
+                default: ''
+            },
+            'postId': {
+                type: String,
+                default: ''
             }
         },
         methods: {
@@ -71,16 +75,16 @@
                 this.uploading = true;
                 uploadFile({
                     file: this.choosedFile,
-                    context: this.props.context,
+                    context: this.context,
                     metadata: {
-                        postId: this.props.postId,
+                        postId: this.postId,
                         description: this.description
                     },
                     url: '/upload'
                 })
                     .then(attachmentInfo => {
                         self.uploading = false;
-                        self.$emit('vuedals:close', attachmentInfo);
+                        self.$vuedals.close(attachmentInfo);
                     }, function (err) {
                         self.uploading = false;
                         console.warn(`Upload failed: ${err}`);

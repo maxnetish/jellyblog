@@ -20,7 +20,7 @@ function mapPost(p) {
         pubDate: p.pubDate,
         titleImg: p.titleImg,
         title: p.title,
-        preview: contentConverter[p.contentType](p.brief || p.content),
+        preview: p.brief ? p.brief : contentConverter[p.contentType](p.content),
         useCut: !!p.brief,
         tags: p.tags.map(t => ({tag: t, url: urljoin(routesMap.tag, encodeURIComponent(t))}))
     };
