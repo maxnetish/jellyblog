@@ -13,25 +13,50 @@
                         .
                             {{'Next page' | get-text}}
                         i.fa.fa-arrow-right.fa-fw(aria-hidden="true")
-    .panel-body
-        router-link.btn.btn-primary.btn-lg(:to="{name: 'post'}")
-            i.fa.fa-fw.fa-pencil(aria-hidden="true")
-            span._margin-5._left {{'Create new post' | get-text}}
-        button.btn.btn-warning._margin-5._left(type="bbutton", @click="exportFromOldJsonClick") Export posts from old version json
-        input(type="file", style="display:none", ref="exportFromOldJsonFileInput", @change="exportFromOldJsonFileInputChanged")
+        .row._margin-5._bottom
+            .col-xs-12
+                router-link.btn.btn-primary(:to="{name: 'post'}")
+                    i.fa.fa-fw.fa-pencil(aria-hidden="true")
+                    span._margin-5._left {{'Create new post' | get-text}}
+                button.btn.btn-warning._margin-5._left(type="bbutton", @click="exportFromOldJsonClick") Export posts from old version json
+                input(type="file", style="display:none", ref="exportFromOldJsonFileInput", @change="exportFromOldJsonFileInputChanged")
+        .row
+            .col-xs-12
+                dropdown(type="primary", :disabled="!someChecked")
+                    span(slot="button")
+                        i.fa.fa-fw.fa-check-square-o(aria-hidden="true")
+                        span._margin-5._left {{ 'With checked' | get-text }}
+                    ul.dropdown-menu(slot="dropdown-menu")
+                        li
+                            a(href="javascript:void 0;", @click="onPublishCheckedClick")
+                                i.fa.fa-fw.fa-eye(aria-hidden="true")
+                                span._margin-5._left {{'Publish' | get-text }}
+                        li
+                            a(href="javascript:void 0;", @click="onMakeDraftCheckedClick")
+                                i.fa.fa-fw.fa-eye-slash(aria-hidden="true")
+                                span._margin-5._left {{ 'Make draft' | get-text }}
+                        li
+                            a(href="javascript:void 0;", @click="onRemoveCheckedClick")
+                                i.fa.fa-times.fa-fw(aria-hidden="true")
+                                span._margin-5._left {{'Remove' | get-text }}
     table.table.table-hover
+        colgroup
         colgroup
         colgroup
         colgroup
         colgroup(style="width: 250px;")
         thead
             tr
+                th
+                    checkbox.without-label(v-model="checkAll", type="primary")
                 th {{'Title' | get-text}}
                 th {{'Date' | get-text}}
                 th {{'Status' | get-text}}
                 th {{'Actions' | get-text}}
         tbody
-            tr(v-for="post in posts", :key="post._id")
+            tr(v-for="(post, postIndex) in posts", :key="post._id")
+                td
+                    checkbox.without-label(v-model="post.checked", @input="onPostCheckedCange(postIndex)", type="primary")
                 td
                     router-link(:to="{name: 'post', query: {id: post._id}}") {{post.title}}
                 td

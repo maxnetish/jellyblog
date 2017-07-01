@@ -128,7 +128,7 @@ const gridFsStorage = MulterGridfsStorage({
         cb(null, meta);
     },
     log: true,
-    logLevel: 'all'
+    logLevel: 'file'
 });
 const uploadMiddleware = multer({
     storage: gridFsStorage,

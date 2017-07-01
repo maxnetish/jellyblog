@@ -1,6 +1,6 @@
 <template src="./posts.pug" lang="pug"></template>
 <script>
-    import {dropdown} from 'vue-strap';
+    import {dropdown, checkbox} from 'vue-strap';
     import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
     import resources from '../../../resources';
     import {getText} from '../../filters';
@@ -11,7 +11,8 @@
             return {
                 msg: 'Posts page here',
                 posts: [],
-                hasMore: false
+                hasMore: false,
+                checkAll: false
             }
         },
         props: {
@@ -20,68 +21,115 @@
                 default: 1
             }
         },
+        computed: {
+            someChecked: function () {
+                return this.posts.some(p => p.checked);
+            }
+        },
         methods: {
+            onCheckAllChanged(newVal, oldVal) {
+                this.posts.forEach(p => {
+                    p.checked = newVal;
+                });
+            },
             fetchPageData() {
                 resources.post
                     .list({page: this.page, statuses: ['PUB', 'DRAFT']})
                     .then(result => {
                         this.posts = result.items || [];
                         this.hasMore = result.hasMore;
+                        this.checkAll = false;
                     });
             },
-            onToggleStatusButtonClick(post) {
-                let update;
-                let self = this;
-                let currentStatus = post.status;
-                switch (currentStatus) {
-                    case 'PUB':
-                        update = resources.post.unpublish;
-                        break;
-                    case 'DRAFT':
-                        update = resources.post.publish;
-                        break;
-                    default:
-                        update = resources.post.unpublish;
-                }
-                post.statusUpdating = true;
-                update({id: post._id})
+            publishPosts(posts) {
+                posts.forEach(p => {
+                    p.statusUpdating = true;
+                });
+                resources.post.publish({
+                    ids: posts.map(p => p._id)
+                })
                     .then(response => {
-                        post.statusUpdating = false;
-                        switch (currentStatus) {
-                            case 'PUB':
-                                post.status = 'DRAFT';
-                                break;
-                            case 'DRAFT':
-                                post.status = 'PUB';
-                                break;
-                        }
+                        posts.forEach(post => {
+                            post.statusUpdating = false;
+                            post.status = 'PUB';
+                        });
                     }, err => {
-                        post.statusUpdating = false;
-                        console.warn(`Toggle status failed: ${err}`);
+                        posts.forEach(post => {
+                            post.statusUpdating = false;
+                        });
+                        console.warn(`Set status failed: ${err}`);
                     });
             },
-            onRemovePostButtonClick (post) {
+            makeDraftPosts(posts) {
+                posts.forEach(p => {
+                    p.statusUpdating = true;
+                });
+                resources.post.unpublish({
+                    ids: posts.map(p => p._id)
+                })
+                    .then(response => {
+                        posts.forEach(post => {
+                            post.statusUpdating = false;
+                            post.status = 'DRAFT';
+                        });
+                    }, err => {
+                        posts.forEach(post => {
+                            post.statusUpdating = false;
+                        });
+                        console.warn(`Set status failed: ${err}`);
+                    });
+            },
+            removePosts(posts) {
                 let self = this;
 
                 this.$vuedals.open({
                     title: getText('Remove post'),
                     props: {
-                        message: getText('Remove post from server forever? Also removes attached files.')
+                        message: posts.length > 1 ? getText(`Remove ${posts.length} selected posts from server forever? Also removes attached files.`) : getText('Remove post from server forever? Also removes attached files.')
                     },
                     component: DialogConfirm,
                     size: 'xs',
                     dismisable: false,
                     onClose: dialogResult => {
-                        let self = this;
                         if (dialogResult !== 'YES') {
                             return;
                         }
-                        resources.post.remove({id: post._id})
+                        resources.post.remove({ids: posts.map(p => p._id)})
                             .then(response => {
                                 self.fetchPageData();
                             }, err => console.warn(err));
                     }
                 });
+            },
+            onToggleStatusButtonClick(post) {
+                let update;
+                let currentStatus = post.status;
+                switch (currentStatus) {
+                    case 'PUB':
+                        this.makeDraftPosts([post]);
+                        break;
+                    case 'DRAFT':
+                        this.publishPosts([post]);
+                        break;
+                    default:
+                        this.makeDraftPosts([post]);
+                }
+            },
+            onRemovePostButtonClick (post) {
+                this.removePosts([post]);
+            },
+            onPublishCheckedClick (e) {
+                this.publishPosts(this.posts.filter(p => p.checked));
+            },
+            onMakeDraftCheckedClick (e) {
+                this.makeDraftPosts(this.posts.filter(p => p.checked));
+            },
+            onRemoveCheckedClick (e) {
+                this.removePosts(this.posts.filter(p => p.checked));
+            },
+            onPostCheckedCange (index) {
+                // to recompute 'someChecked'
+                this.$set(this.posts, index, Object.assign({}, this.posts[index]));
             },
             exportFromOldJsonClick(e) {
                 this.$refs.exportFromOldJsonFileInput.click();
@@ -127,13 +175,19 @@
             this.fetchPageData()
         },
         watch: {
-            '$route': 'fetchPageData'
+            '$route': 'fetchPageData',
+            'checkAll': 'onCheckAllChanged'
         },
         components: {
-            'dropdown': dropdown
+            'dropdown': dropdown,
+            'checkbox': checkbox
         }
     }
 </script>
 <style lang="less">
-
+    label.without-label.checkbox {
+        padding-left: 0;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
 </style>
