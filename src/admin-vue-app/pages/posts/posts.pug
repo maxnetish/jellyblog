@@ -15,11 +15,20 @@
                         i.fa.fa-arrow-right.fa-fw(aria-hidden="true")
         .row._margin-5._bottom
             .col-xs-12
-                router-link.btn.btn-primary(:to="{name: 'post'}")
-                    i.fa.fa-fw.fa-pencil(aria-hidden="true")
-                    span._margin-5._left {{'Create new post' | get-text}}
-                button.btn.btn-warning._margin-5._left(type="bbutton", @click="exportFromOldJsonClick") Export posts from old version json
+                dropdown(type="primary")
+                    router-link.btn.btn-primary(:to="{name: 'post'}", slot="before", type="button")
+                        i.fa.fa-fw.fa-pencil(aria-hidden="true")
+                        span._margin-5._left {{'Create new post' | get-text}}
+                    li
+                        a(href="javascript:void 0;", @click="exportFromOldJsonClick")
+                            i.fa.fa-fw.fa-upload(aria-hidden="true")
+                            span._margin-5._left {{'Export posts from old version json' | get-text}}
+                    li
+                        a(href="javascript:void 0;", @click="exportFromCurrentJsonClick")
+                            i.fa.fa-fw.fa-upload(aria-hidden="true")
+                            span._margin-5._left {{'Export posts from current version json' | get-text}}
                 input(type="file", style="display:none", ref="exportFromOldJsonFileInput", @change="exportFromOldJsonFileInputChanged")
+                input(type="file", style="display:none", ref="exportFromCurrentJsonFileInput", @change="exportFromCurrentJsonFileInputChanged")
         .row
             .col-xs-12
                 dropdown(type="primary", :disabled="!someChecked")
@@ -35,6 +44,10 @@
                             a(href="javascript:void 0;", @click="onMakeDraftCheckedClick")
                                 i.fa.fa-fw.fa-eye-slash(aria-hidden="true")
                                 span._margin-5._left {{ 'Make draft' | get-text }}
+                        li
+                            a(href="javascript:void 0;", @click="onImportCheckedToJsonClick()")
+                                i.fa.fa-download.fa-fw(aria-hidden="true")
+                                span._margin-5._left {{'Import to file' | get-text }}
                         li
                             a(href="javascript:void 0;", @click="onRemoveCheckedClick")
                                 i.fa.fa-times.fa-fw(aria-hidden="true")
@@ -72,6 +85,10 @@
                             a(href="javascript:void 0;", :disabled="post.statusUpdating", @click="onToggleStatusButtonClick(post)")
                                 i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
                                 span._margin-5._left {{(post.status==='DRAFT' ? 'Publish' : 'Make draft') | get-text}}
+                        li
+                            a(href="javascript:void 0;", @click="onImportToJsonClick(post)")
+                                i.fa.fa-download.fa-fw(aria-hidden="true")
+                                span._margin-5._left {{'Import to file' | get-text }}
                         li
                             a(href="javascript:void 0;", @click="onRemovePostButtonClick(post)")
                                 i.fa.fa-times.fa-fw(aria-hidden="true")
