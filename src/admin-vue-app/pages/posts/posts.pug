@@ -1,6 +1,8 @@
 .panel.panel-primary
     .panel-heading {{'Posts' | get-text}}
     .panel-body
+        search-block(:q="searchParameters.q")
+    .panel-body
         nav(aria-label="Page navigation")
             ul.pager
                 li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")

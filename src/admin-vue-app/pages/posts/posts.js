@@ -1,17 +1,23 @@
 import {dropdown, checkbox} from 'vue-strap';
 import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
+import DialogAlertMixin from '../../components/dialog-alert/mixin';
 import resources from '../../../resources';
 import {getText} from '../../filters';
 import saveAsJson from '../../../utils/save-obj-as-json-file';
+import SearchBlock from './posts-search-block.vue';
 
 export default {
     name: 'posts',
+    mixins: [DialogAlertMixin],
     data () {
         return {
             msg: 'Posts page here',
             posts: [],
             hasMore: false,
-            checkAll: false
+            checkAll: false,
+            searchParameters: {
+                q: null
+            }
         }
     },
     props: {
@@ -41,6 +47,7 @@ export default {
                 });
         },
         publishPosts(posts) {
+            let self = this;
             posts.forEach(p => {
                 p.statusUpdating = true;
             });
@@ -56,10 +63,11 @@ export default {
                     posts.forEach(post => {
                         post.statusUpdating = false;
                     });
-                    console.warn(`Set status failed: ${err}`);
+                    self.showAlert({message: `Set status failed: ${err}`});
                 });
         },
         makeDraftPosts(posts) {
+            let self = this;
             posts.forEach(p => {
                 p.statusUpdating = true;
             });
@@ -75,7 +83,7 @@ export default {
                     posts.forEach(post => {
                         post.statusUpdating = false;
                     });
-                    console.warn(`Set status failed: ${err}`);
+                    self.showAlert({message: `Set status failed: ${err}`});
                 });
         },
         removePosts(posts) {
@@ -96,7 +104,7 @@ export default {
                     resources.post.remove({ids: posts.map(p => p._id)})
                         .then(response => {
                             self.fetchPageData();
-                        }, err => console.warn(err));
+                        }, err => self.showAlert({message: err}));
                 }
             });
         },
@@ -160,14 +168,13 @@ export default {
                 try {
                     parsedFromFile = JSON.parse(loadEvent.target.result) || [];
                 } catch (err) {
-                    console.warn(`Failed to parse json from file: ${err}`);
+                    this.showAlert({message: `Failed to parse json from file: ${err}`});
                 }
 
                 resources.post.export(parsedFromFile)
                     .then(response => {
-                        console.info(`Export result: ${response}`);
                         self.fetchPageData();
-                    }, err => console.warn(err));
+                    }, err => this.showAlert({message: err}));
             };
 
             // Read file as text .
@@ -196,14 +203,13 @@ export default {
                         return newPost;
                     });
                 } catch (err) {
-                    console.warn(`Failed to parse json from file: ${err}`);
+                    this.showAlert({message: `Failed to parse json from file: ${err}`});
                 }
 
                 resources.post.export(mappedFromFile)
                     .then(response => {
-                        console.info(`Export result: ${response}`);
                         self.fetchPageData();
-                    }, err => console.warn(err));
+                    }, err => this.showAlert({message: err}));
             };
 
             // Read file as text .
@@ -219,6 +225,7 @@ export default {
     },
     components: {
         'dropdown': dropdown,
-        'checkbox': checkbox
+        'checkbox': checkbox,
+        'search-block': SearchBlock
     }
 }

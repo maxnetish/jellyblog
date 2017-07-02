@@ -41,7 +41,4 @@
     };
 </script>
 <style lang="less">
-    .vue-avatar-ct {
-        display: inline-block;
-    }
 </style>
