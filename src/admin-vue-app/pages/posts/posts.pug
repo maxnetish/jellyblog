@@ -1,7 +1,7 @@
 .panel.panel-primary
     .panel-heading {{'Posts' | get-text}}
     .panel-body
-        search-block(:q="searchParameters.q")
+        search-block(:q="searchParameters.q", @searchSubmit="onSearchSubmit")
     .panel-body
         nav(aria-label="Page navigation")
             ul.pager

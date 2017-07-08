@@ -151,6 +151,9 @@ export default {
             // to recompute 'someChecked'
             this.$set(this.posts, index, Object.assign({}, this.posts[index]));
         },
+        onSearchSubmit (searchParameters) {
+            console.info('Search submit: ', searchParameters);
+        },
         exportFromOldJsonClick(e) {
             this.$refs.exportFromOldJsonFileInput.click();
         },
