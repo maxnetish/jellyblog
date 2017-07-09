@@ -21,38 +21,45 @@ import PostPage from './admin-vue-app/pages/post/post.vue';
 
 
 const router = new VueRouter({
-   routes: [
-       {
-           path: '/',
-           component: App,
-           children: [
-               {
-                   path: '',
-                   name: 'root_entry',
-                   redirect: {
-                       name: 'options'
-                   }
-               },
-               {
-                   path: 'options',
-                   name: 'options',
-                   component: OptionsPage
-               },
-               {
-                   path: 'posts',
-                   name: 'posts',
-                   component: PostsPage,
-                   props: route => ({page: parseInt(route.query.p) || 1 })
-               },
-               {
-                   path: 'post',
-                   name: 'post',
-                   component: PostPage,
-                   props: route => ({id: route.query.id})
-               }
-           ]
-       }
-   ]
+    routes: [
+        {
+            path: '/',
+            component: App,
+            children: [
+                {
+                    path: '',
+                    name: 'root_entry',
+                    redirect: {
+                        name: 'options'
+                    }
+                },
+                {
+                    path: 'options',
+                    name: 'options',
+                    component: OptionsPage
+                },
+                {
+                    path: 'posts',
+                    name: 'posts',
+                    component: PostsPage,
+                    props: route => ({
+                        page: parseInt(route.query.p, 10) || 1,
+                        searchParameters: {
+                            fullText: route.query.q,
+                            dateFrom: route.query.from,
+                            dateTo: route.query.to
+                        }
+                    })
+                },
+                {
+                    path: 'post',
+                    name: 'post',
+                    component: PostPage,
+                    props: route => ({id: route.query.id})
+                }
+            ]
+        }
+    ]
 });
 
 Vue.use(VueRouter);

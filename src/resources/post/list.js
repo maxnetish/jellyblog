@@ -2,7 +2,7 @@ import {Post} from '../../models';
 import mongooseConfig from '../../../config/mongoose.json';
 
 
-function fetch({q, page = 1, statuses = ['PUB']}={}) {
+function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
     let condition = {};
     let projection = '_id status createDate updateDate pubDate titleImg title brief';
     let opts = {
@@ -11,6 +11,10 @@ function fetch({q, page = 1, statuses = ['PUB']}={}) {
         sort: {createDate: 'desc'}
     };
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
+    let sanitizedFrom = from ? new Date(from) : null;
+    let sanitizedTo = to ? new Date(to) : null;
+    let sanitizedQ = q ? q.substring(0, 64) : null;
+    let createDateCondition;
 
     if (!this.xhr && allowDrafts) {
         // allow only rpc call if qeury for drafts
@@ -22,14 +26,32 @@ function fetch({q, page = 1, statuses = ['PUB']}={}) {
         return Promise.reject(401);
     }
 
-    if (q) {
+    if (sanitizedQ) {
         // apply full text query
         Object.assign(condition, {
             $text: {
-                $search: q,
+                $search: sanitizedQ,
                 $caseSensitive: false,
                 $diacriticSensitive: false
             }
+        });
+    }
+
+    if (sanitizedFrom) {
+        createDateCondition = Object.assign(createDateCondition || {}, {
+            $gte: sanitizedFrom
+        });
+    }
+
+    if (sanitizedTo) {
+        createDateCondition = Object.assign(createDateCondition || {}, {
+            $lte: sanitizedTo
+        });
+    }
+
+    if (createDateCondition) {
+        Object.assign(condition, {
+            createDate: createDateCondition
         });
     }
 

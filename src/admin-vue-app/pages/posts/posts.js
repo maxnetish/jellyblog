@@ -5,6 +5,7 @@ import resources from '../../../resources';
 import {getText} from '../../filters';
 import saveAsJson from '../../../utils/save-obj-as-json-file';
 import SearchBlock from './posts-search-block.vue';
+import {merge as queryMerge} from '../../../utils/query';
 
 export default {
     name: 'posts',
@@ -14,21 +15,52 @@ export default {
             msg: 'Posts page here',
             posts: [],
             hasMore: false,
-            checkAll: false,
-            searchParameters: {
-                q: null
-            }
+            checkAll: false
         }
     },
     props: {
         page: {
             type: Number,
             default: 1
+        },
+        searchParameters: {
+            type: Object,
+            default: function () {
+                return {
+                    fullText: '',
+                    dateFrom: '',
+                    dateTo: ''
+                };
+            }
         }
     },
     computed: {
         someChecked: function () {
             return this.posts.some(p => p.checked);
+        },
+        prevPageLocation: function () {
+            let newQuery = queryMerge({
+                newQuery: {
+                    p: this.page < 3 ? undefined : this.page - 1
+                },
+                oldQuery: this.$route.query
+            });
+            return {
+                name: 'posts',
+                query: newQuery
+            };
+        },
+        nextPageLocation: function () {
+            let newQuery = queryMerge({
+                newQuery: {
+                    p: this.page + 1
+                },
+                oldQuery: this.$route.query
+            });
+            return {
+                name: 'posts',
+                query: newQuery
+            };
         }
     },
     methods: {
@@ -39,7 +71,13 @@ export default {
         },
         fetchPageData() {
             resources.post
-                .list({page: this.page, statuses: ['PUB', 'DRAFT']})
+                .list({
+                    page: this.page,
+                    statuses: ['PUB', 'DRAFT'],
+                    q: this.searchParameters.fullText,
+                    from: this.searchParameters.dateFrom,
+                    to: this.searchParameters.dateTo
+                })
                 .then(result => {
                     this.posts = result.items || [];
                     this.hasMore = result.hasMore;
@@ -152,7 +190,22 @@ export default {
             this.$set(this.posts, index, Object.assign({}, this.posts[index]));
         },
         onSearchSubmit (searchParameters) {
-            console.info('Search submit: ', searchParameters);
+            let newQuery = queryMerge({
+                newQuery: {
+                    p: undefined,
+                    q: searchParameters.fullText,
+                    from: searchParameters.dateFrom,
+                    to: searchParameters.dateTo
+                },
+                oldQuery: this.$route.query
+            });
+            this.$router.push({
+                name: 'posts',
+                query: newQuery
+            });
+        },
+        onRouteChanged (newVal, oldVal) {
+            this.fetchPageData();
         },
         exportFromOldJsonClick(e) {
             this.$refs.exportFromOldJsonFileInput.click();
@@ -223,7 +276,7 @@ export default {
         this.fetchPageData();
     },
     watch: {
-        '$route': 'fetchPageData',
+        '$route': 'onRouteChanged',
         'checkAll': 'onCheckAllChanged'
     },
     components: {
