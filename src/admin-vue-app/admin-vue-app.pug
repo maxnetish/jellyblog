@@ -7,7 +7,7 @@
                 li(v-bind:class="{active: $route.name==='posts' }")
                     router-link(:to="{ name: 'posts', params: { }}") Posts
                 li
-                    a(href="/admin/logout") Logout
+                    a(:href="logoutUrl") Logout
         .col-sm-9.col-lg-10
             router-view
     vuedals

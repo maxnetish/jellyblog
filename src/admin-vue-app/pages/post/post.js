@@ -9,6 +9,7 @@ import uploadCanvas from '../../../utils/upload-image-from-canvas';
 import {getText} from '../../filters';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import routesMap from '../../../../config/routes-map.json';
 
 export default {
     name: 'post',
@@ -24,7 +25,8 @@ export default {
             titleImagesJustAdded: [],
             titleImagesLoading: false,
             titleImageSelectOpen: false,
-            statusUpdating: false
+            statusUpdating: false,
+            routesMap: routesMap
         }
     },
     props: {

@@ -29,7 +29,7 @@ function mapPost(p) {
 function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, tag, q} = {}) {
     page = parseInt(page, 10) || 1;
 
-    let projection = '_id contentType createDate updateDate pubDate titleImg title brief content tags';
+    let projection = '_id contentType createDate updateDate pubDate titleImg title brief content tags hru';
     let opts = {
         // lean: true,
         skip: (page - 1) * postsPerPage,

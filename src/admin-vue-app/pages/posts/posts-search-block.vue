@@ -10,7 +10,6 @@
                     label.col-sm-2.control-label {{ 'Create date' | get-text }}
                     .col-lg-3.col-md-4.col-sm-5.col-xs-12
                         input.form-control(type="date", v-model="dateFrom",:lang="lang", :placeholder="'Date from' | get-text")
-                        span dateFrom: {{ new Date(dateFrom) }}
                     .col-lg-3.col-md-4.col-sm-5.col-xs-12
                         input.form-control(type="date", v-model="dateTo",:lang="lang", :placeholder="'Date from' | get-text")
                 .form-group

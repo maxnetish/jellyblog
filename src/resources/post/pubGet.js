@@ -3,6 +3,7 @@ import mongooseConfig from '../../../config/mongoose.json';
 import routesMap from '../../../config/routes-map.json';
 import urljoin from 'url-join';
 import showdown from 'showdown';
+import validObjectId from '../../utils/valid-object-id';
 
 const showdownConverter = new showdown.Converter();
 
@@ -26,28 +27,31 @@ function mapPost(p) {
     };
 }
 
-function fetch({id} = {}) {
+function fetch({id, allowDraft = false} = {}) {
 
-    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg';
+    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru';
 
     let opts = {
         lean: false,
     };
 
-    return Post.findOne({
-        $or: [
-            {_id: id},
-            {hru: id}
-        ]
-    }, projection, opts)
+    let criteria = {
+        $or: [{hru: id}]
+    };
+
+    if (validObjectId(id)) {
+        criteria.$or.push({_id: id})
+    }
+
+    return Post.findOne(criteria, projection, opts)
         .populate('titleImg')
         .exec()
         .then(res => {
             if (!res) {
-                return Promise.reject(404);
+                return null;
             }
-            if (res && res.status !== 'PUB') {
-                return Promise.reject(404);
+            if (res && res.status !== 'PUB' && !allowDraft) {
+                return null;
             }
 
             return mapPost(res);

@@ -18,6 +18,7 @@ import serveGridfs from 'serve-gridfs';
 import cookieParser from 'cookie-parser';
 import requestLanguage from 'express-request-language';
 import morphine from './resources';
+import httpStatuses from 'statuses';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
 import routesMap from '../config/routes-map.json';
@@ -100,6 +101,7 @@ app.use((req, res, next) => {
     };
     res.locals.language = req.language;
     res.locals.user = req.user;
+    res.locals.routesMap = routesMap;
     next();
 });
 
@@ -216,7 +218,7 @@ app.use(morphine.router);
 /**
  * admin area
  */
-app.get('/admin', (req, res) => {
+app.get(routesMap.admin, (req, res) => {
     // admin area, require auth
     if (req.user && req.user.role === 'admin') {
         res.render('admin/index', {});
@@ -224,21 +226,21 @@ app.get('/admin', (req, res) => {
         res.render('admin/login', {});
     }
 });
-app.get('/admin/login', (req, res) => {
+app.get(routesMap.login, (req, res) => {
     if (req.user && req.user.role === 'admin') {
-        res.redirect('/admin');
+        res.redirect(routesMap.admin);
     } else {
         res.render('admin/login', {});
     }
 });
-app.post('/admin/login',
+app.post(routesMap.login,
     passport.authenticate('local', {
         successRedirect: '/admin',
         failureRedirect: '/admin/login',
         failureFlash: true
     })
 );
-app.get('/admin/logout', (req, res) => {
+app.get(routesMap.logout, (req, res) => {
     if (req.user) {
         req.logout();
         res.redirect(req.query.next || '/');
@@ -248,9 +250,32 @@ app.get('/admin/logout', (req, res) => {
 });
 
 /**
+ * Preview of post (include DRAFT)
+ */
+app.get(routesMap.preview + '/:id', (req, res, next) => {
+    // admin area, require auth
+    if (!(req.user && req.user.role === 'admin')) {
+        next(403);
+        return;
+    }
+
+    Promise.all([
+        resources.post.pubGet({id: req.params.id, allowDraft: true}),
+        resources.tag.list()
+    ])
+        .then(responses => {
+            let post = responses[0];
+            let tags = createTagsCloudModel(responses[1]);
+            let locals = Object.assign({}, {post}, {tags});
+            res.render('pub/post', locals);
+        }, err => next(err));
+
+});
+
+/**
  * Page /post/12344...
  */
-app.get(routesMap.post + '/:id', (req, res) => {
+app.get(routesMap.post + '/:id', (req, res, next) => {
     Promise.all([
         resources.post.pubGet({id: req.params.id}),
         resources.tag.list()
@@ -260,13 +285,13 @@ app.get(routesMap.post + '/:id', (req, res) => {
             let tags = createTagsCloudModel(responses[1]);
             let locals = Object.assign({}, {post}, {tags});
             res.render('pub/post', locals);
-        })
+        }, err => next(err));
 });
 
 /**
  * Page /tag/coolposts...
  */
-app.get(routesMap.tag + '/:tag', (req, res) => {
+app.get(routesMap.tag + '/:tag', (req, res, next) => {
     Promise.all([
         resources.post.pubList({
             page: req.query.page,
@@ -287,13 +312,13 @@ app.get(routesMap.tag + '/:tag', (req, res) => {
             let locals = Object.assign({}, findPosts, {tags}, {pagination});
 
             res.render('pub/tag', locals);
-        });
+        }, err => next(err));
 });
 
 /**
  * Main entry
  */
-app.get(['/'], (req, res) => {
+app.get(['/'], (req, res, next) => {
     Promise.all([
         resources.post.pubList({
             page: req.query.page,
@@ -313,7 +338,7 @@ app.get(['/'], (req, res) => {
             let locals = Object.assign({}, findPosts, {tags}, {pagination});
 
             res.render('pub/index', locals);
-        });
+        }, err => next(err));
 });
 
 /**
@@ -323,7 +348,7 @@ app.use(function (err, req, res, next) {
     addEntryFromErrorResponse(req, res, err);
     console.error(err.stack);
     let status = typeof err === 'number' ? err : 500;
-    res.status(status).send('Internal error');
+    res.status(status).send(httpStatuses[status] || 'Internal error');
 });
 
 /**

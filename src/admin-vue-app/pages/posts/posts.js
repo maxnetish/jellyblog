@@ -6,6 +6,7 @@ import {getText} from '../../filters';
 import saveAsJson from '../../../utils/save-obj-as-json-file';
 import SearchBlock from './posts-search-block.vue';
 import {merge as queryMerge} from '../../../utils/query';
+import routesMap from '../../../../config/routes-map.json';
 
 export default {
     name: 'posts',
@@ -15,7 +16,8 @@ export default {
             msg: 'Posts page here',
             posts: [],
             hasMore: false,
-            checkAll: false
+            checkAll: false,
+            routesMap: routesMap
         }
     },
     props: {

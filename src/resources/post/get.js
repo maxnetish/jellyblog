@@ -28,7 +28,9 @@ function fetch({id} = {}) {
                 return Promise.reject(401);
             }
 
-            return res;
+            let normalized = Post.normalizeForBinding({post: res});
+
+            return normalized;
         });
 }
 

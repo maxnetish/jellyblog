@@ -23,9 +23,13 @@ div
                         .form-control-static
                             display-date(:value="post.pubDate")
                 .form-group
+                    label.col-sm-2.control-label {{'URL' | get-text}}
+                    .col-sm-10
+                        input.form-control(type="text", :placeholder="post._id", v-model="post.hru")
+                .form-group
                     label.col-sm-2.control-label {{'Title' | get-text}}
                     .col-sm-10
-                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model.lazy="post.title")
+                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model="post.title")
                 .form-group
                     label.col-sm-2.control-label {{'Title image' | get-text}}
                     .col-sm-10(:class="{'util-zindex-100': titleImageSelectOpen}")
@@ -141,6 +145,9 @@ div
                 .form-group
                     .col-sm-12.text-right
                         .btn-group(role="group")
+                            a.btn.btn-primary(:disabled="!post._id", :href="post._id ? routesMap.preview + '/' + post._id : 'javascript:void 0'", target="_blank")
+                                i.fa.fa-plug.fa-fw(aria="hidden")
+                                span._margin-5._left {{'Post preview' | get-text}}
                             button.btn(type="button", :disabled="!post._id || statusUpdating", :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}", @click="onToggleStatusButtonClick")
                                 i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
                                 span._margin-5._left(v-if="post.status==='DRAFT'") {{'Publish' | get-text}}

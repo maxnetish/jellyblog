@@ -12,7 +12,7 @@ body
                 .panel.panel-default
                     .panel-heading #{getText("Login")}
                     .panel-body
-                        form.form-horizontal(action="/admin/login", method="post", autocomplete="on")
+                        form.form-horizontal(action=routesMap.login, method="post", autocomplete="on")
                             .form-group
                                 label.col-xs-3.control-label(for="login-username") #{getText("Username")}:
                                 .col-xs-9
