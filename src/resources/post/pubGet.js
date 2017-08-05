@@ -28,7 +28,7 @@ function mapPost(p) {
 }
 
 function fetch({id, allowDraft = false} = {}) {
-
+    // FIXME: disallow rpc call to prevent anauthorized draft view
     let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru';
 
     let opts = {
