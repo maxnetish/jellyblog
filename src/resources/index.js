@@ -1,5 +1,7 @@
 /**
  * We use https://github.com/d-oliveros/isomorphine
+ *
+ * TODO Надо избавиться от isomorphine: похоже не поддерживается, есть проблемы с серверной сборкой вебпаком
  */
 
 //

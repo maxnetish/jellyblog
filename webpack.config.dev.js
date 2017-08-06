@@ -1,0 +1,158 @@
+const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
+const path = require('path');
+const jsFiles = /\.js$/;
+const vueComponents = /\.vue$/;
+const jsonFiles = /\.json$/;
+const fileToExcludeFromBabel = /(node_modules|bower_components)/;
+
+module.exports = [
+    {
+        // back
+        cache: true,
+        entry: './src/server.js',
+        output: {
+            path: path.resolve(__dirname, 'build'),
+            filename: 'server.js'
+        },
+        target: 'node',
+        externals: [nodeExternals()],
+        module: {
+            rules: [
+                // {
+                //     test: jsFiles,
+                //     include: path.resolve(__dirname, 'src'),
+                //     loader: 'isomorphine',
+                //     enforce: 'pre'
+                // },
+                {
+                    test: vueComponents,
+                    loader: 'vue-loader',
+                    options: {
+                        loaders: {
+                            // vue-loader does not apply babel transpiling as default, so required:
+                            // js: 'babel-loader?presets[]=es2015'
+                            js: {
+                                loader: 'babel-loader',
+                                options: {
+                                    presets: [
+                                        [
+                                            'env',
+                                            {
+                                                'targets': {
+                                                    'node': 'current'
+                                                }
+                                            }
+                                        ]
+                                    ],
+                                    plugins: [
+                                        'transform-decorators-legacy'
+                                    ]
+                                }
+                            }
+                        }
+                        // other vue-loader options go here
+                    }
+                },
+                {
+                    test: jsonFiles,
+                    loader: 'json-loader'
+                },
+                {
+                    test: jsFiles,
+                    include: path.resolve(__dirname, 'src'),
+                    exclude: fileToExcludeFromBabel,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                [
+                                    'env',
+                                    {
+                                        'targets': {
+                                            'node': 'current'
+                                        }
+                                    }
+                                ]
+                            ],
+                            plugins: [
+                                'transform-decorators-legacy'
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        devtool: '#source-map',
+        plugins: [
+
+        ]
+    },
+    {
+        // front
+        cache: true,
+        entry: {
+            'adm': './src/admin-client-app.js',
+            'common': [
+                'core-js/es6/promise',
+                'core-js/es6/array',
+                'core-js/es6/object',
+                'core-js/es6/symbol'/*,
+            'isomorphine',
+            'superagent'*/
+            ]
+            // vendor: ['core-js/es6/promise', 'whatwg-fetch', 'react', 'react-dom']
+            // jquery: "./app/jquery",
+            // bootstrap: ["!bootstrap-webpack!./app/bootstrap/bootstrap.config.js", "./app/bootstrap"],
+            // react: "./app/react"
+        },
+        output: {
+            path: path.resolve(__dirname, 'build/pub'),
+            filename: '[name].js',
+            chunkFilename: '[id].chunk.js',
+            publicPath: '/assets/'
+        },
+        target: 'web',
+        plugins: [
+            new webpack.optimize.CommonsChunkPlugin({name: 'common', filename: 'common.js'})
+        ],
+        module: {
+            rules: [
+                {
+                    test: jsFiles,
+                    exclude: fileToExcludeFromBabel,
+                    include: path.resolve(__dirname, 'src'),
+                    loader: 'isomorphine',
+                    enforce: 'pre'
+                },
+                {
+                    test: vueComponents,
+                    loader: 'vue-loader',
+                    options: {
+                        loaders: {
+                            // vue-loader does not apply babel transpiling as default, so required:
+                            js: 'babel-loader?presets[]=es2015'
+                        }
+                        // other vue-loader options go here
+                    }
+                },
+                {
+                    test: jsonFiles,
+                    loader: 'json-loader'
+                },
+                {
+                    test: jsFiles,
+                    include: path.resolve(__dirname, 'src'),
+                    loader: 'babel-loader',
+                    query: {
+                        presets: ['es2015'],
+                        // plugins: ['transform-runtime'],
+                        cacheDirectory: '.babel-cache'
+                    }
+                }
+
+            ]
+        },
+        devtool: '#source-map',
+    }
+];

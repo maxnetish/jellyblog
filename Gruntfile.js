@@ -6,6 +6,7 @@ module.exports = function (grunt) {
     var mainAppFile = 'server.js';
     var webpack = require('webpack');
     var webpackCommonOptions = require('./webpack.config.js');
+    var webpackDevOptions = require('./webpack.config.dev.js');
     var path = require('path');
 
     require('load-grunt-tasks')(grunt);
@@ -138,10 +139,11 @@ module.exports = function (grunt) {
         },
 
         webpack: {
-            options: webpackCommonOptions,
-            dev: {
-                devtool: '#source-map'
-            },
+            // options: webpackCommonOptions,
+            dev: webpackDevOptions,
+            // dev: {
+            //     devtool: '#source-map'
+            // },
             prod: {
                 // devtool: 'cheap-module-source-map',
                 plugins: webpackCommonOptions.plugins.concat([
@@ -269,7 +271,8 @@ module.exports = function (grunt) {
      */
     grunt.renameTask('watch', 'delta');
 
-    grunt.registerTask('dev', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev']);
+    // grunt.registerTask('dev', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev']);
+    grunt.registerTask('dev', ['clean', 'copy', 'webpack:dev', 'less:dev']);
     grunt.registerTask('dev-delta', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev', 'delta']);
     grunt.registerTask('prod', ['clean', 'copy', 'babel:prod', 'webpack:prod', 'less:prod']);
 };
