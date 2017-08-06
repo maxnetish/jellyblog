@@ -34,13 +34,13 @@ module.exports = {
     ],
     module: {
         rules: [
-            {
-                test: jsFiles,
-                exclude: fileToExcludeFromBabel,
-                include: path.resolve(__dirname, 'src'),
-                loader: 'isomorphine',
-                enforce: 'pre'
-            },
+            // {
+            //     test: jsFiles,
+            //     exclude: fileToExcludeFromBabel,
+            //     include: path.resolve(__dirname, 'src'),
+            //     loader: 'isomorphine',
+            //     enforce: 'pre'
+            // },
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',

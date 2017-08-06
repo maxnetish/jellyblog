@@ -1,5 +1,5 @@
 /**
- * check permission for isomorphine resource methods
+ * check permission for resource methods
  * @param rpcCall - permit only call throw rpc interface
  * @param roles - permit user with one of specified roles
  * @param resourceFn - decorated isomorphine resource function

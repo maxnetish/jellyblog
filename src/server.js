@@ -26,7 +26,9 @@ import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
 import createPaginationModel from './utils/create-pagination-model';
 import createTagsCloudModel from './utils/create-tags-cloude-model';
 import flash from 'express-flash';
-import * as i18n from './i18n'
+import * as i18n from './i18n';
+
+import backResource from 'jb-resources';
 
 const app = express();
 const resources = morphine;
@@ -40,7 +42,11 @@ setupPassport(passport);
  * setup mongoose
  */
 mongoose.Promise = global.Promise;
-mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.connectionOptions, {promiseLibrary: global.Promise}))
+mongoose.connect(mongooseConfig.connectionUri,
+    Object.assign(mongooseConfig.connectionOptions, {
+        promiseLibrary: global.Promise,
+        useMongoClient: true
+    }))
     .then(function (response) {
         console.info(`Connected to database ${mongooseConfig.connectionUri}`);
         return response;
@@ -56,7 +62,7 @@ mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.conn
 app.set("trust proxy", true);
 app.set('view engine', 'pug');
 app.set('views', './views');
-app.use(favicon(path.join(__dirname, 'pub/favicon.ico')));
+app.use(favicon(path.resolve('pub/favicon.ico')));
 app.use(responseTime());
 // setup logger
 morgan.token('user-name', function (req, res) {
@@ -212,8 +218,9 @@ app.use(fileStoreConfig.gridFsBaseUrl, serveGridFsByNamemiddleware);
 
 /**
  * bind isomorhine RPC-like interface
+ * TODO переписать бех isomorphine
  */
-app.use(morphine.router);
+// app.use(morphine.router);
 
 /**
  * admin area

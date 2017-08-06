@@ -8,6 +8,9 @@
 // We should _require_ isomorphine else isomorphine webpack loader will not be able to recognize 'isomorphine[dot]proxy()' token
 // Also we shouldn't use string 'isomorphine[dot]proxy()' even in comments
 
-import isomorphine from 'isomorphine';
+// import isomorphine from 'isomorphine';
 // export default isomorphine [dot] proxy(__dirname);
-export default isomorphine.proxy();
+// export default isomorphine.proxy();
+export default {
+    old: true
+};

@@ -86,7 +86,17 @@ module.exports = [
         devtool: '#source-map',
         plugins: [
 
-        ]
+        ],
+        resolve: {
+            alias: {
+                // in back use direct calls
+                'jb-resources': 'resources-back.js'
+            },
+            modules: [
+                path.resolve(__dirname, 'src/resources'),
+                'node_modules'
+            ]
+        }
     },
     {
         // front
@@ -118,13 +128,13 @@ module.exports = [
         ],
         module: {
             rules: [
-                {
-                    test: jsFiles,
-                    exclude: fileToExcludeFromBabel,
-                    include: path.resolve(__dirname, 'src'),
-                    loader: 'isomorphine',
-                    enforce: 'pre'
-                },
+                // {
+                //     test: jsFiles,
+                //     exclude: fileToExcludeFromBabel,
+                //     include: path.resolve(__dirname, 'src'),
+                //     loader: 'isomorphine',
+                //     enforce: 'pre'
+                // },
                 {
                     test: vueComponents,
                     loader: 'vue-loader',
