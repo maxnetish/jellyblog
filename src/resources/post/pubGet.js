@@ -4,6 +4,7 @@ import routesMap from '../../../config/routes-map.json';
 import urljoin from 'url-join';
 import showdown from 'showdown';
 import validObjectId from '../../utils/valid-object-id';
+import {applyCheckPermissions} from '../../utils-data';
 
 const showdownConverter = new showdown.Converter();
 
@@ -28,7 +29,6 @@ function mapPost(p) {
 }
 
 function fetch({id, allowDraft = false} = {}) {
-    // FIXME: disallow rpc call to prevent anauthorized draft view
     let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru';
 
     let opts = {
@@ -58,4 +58,7 @@ function fetch({id, allowDraft = false} = {}) {
         });
 }
 
-export default fetch;
+export default applyCheckPermissions({
+    directCall: true,
+    resourceFn: fetch
+});

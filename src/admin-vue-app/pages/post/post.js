@@ -1,4 +1,4 @@
-import resources from '../../../resources';
+import resources from 'jb-resources';
 import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
 import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
 import DialogAddImage from '../../components/dialog-add-image/dialog-add-image.vue';
@@ -166,7 +166,7 @@ export default {
                         return;
                     }
                     // remove image here
-                    resources.file.remove(fileInfo._id)
+                    resources.file.remove({id: fileInfo._id})
                         .then(() => {
                             let indexToRemove = self.titleImagesFromServer.findIndex(fi => fi._id === fileInfo._id);
                             if (indexToRemove > -1) {

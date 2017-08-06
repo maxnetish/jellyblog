@@ -5,8 +5,9 @@ module.exports = function (grunt) {
     var srcDir = 'src';
     var mainAppFile = 'server.js';
     var webpack = require('webpack');
-    var webpackCommonOptions = require('./webpack.config.js');
+    // var webpackCommonOptions = require('./webpack.config.js');
     var webpackDevOptions = require('./webpack.config.dev.js');
+    var webpackProdOptions = require('./webpack.config.prod');
     var path = require('path');
 
     require('load-grunt-tasks')(grunt);
@@ -73,98 +74,9 @@ module.exports = function (grunt) {
             }
         },
 
-        babel: {
-            'dev': {
-                options: {
-                    sourceMap: 'inline',
-                    presets: [
-                        [
-                            'env',
-                            {
-                                'targets': {
-                                    'node': 'current'
-                                }
-                            }
-                        ]
-                    ],
-                    plugins: [
-                        'transform-decorators-legacy',
-                        'transform-es2015-modules-commonjs',
-                        'syntax-jsx',
-                        ['transform-react-jsx', {useBuiltIns: true}],
-                        'transform-react-display-name'
-                    ]
-                },
-                files: [
-                    {
-                        expand: true,
-                        filter: 'isFile',
-                        cwd: 'src/',
-                        src: ['**/*.js'],
-                        dest: buildDir + '/'
-                    }
-                ]
-            },
-            'prod': {
-                options: {
-                    sourceMap: false,
-                    presets: [
-                        [
-                            'env',
-                            {
-                                'targets': {
-                                    'node': 'current'
-                                }
-                            }
-                        ]
-                    ],
-                    plugins: [
-                        'transform-decorators-legacy',
-                        'transform-es2015-modules-commonjs',
-                        'syntax-jsx',
-                        ['transform-react-jsx', {useBuiltIns: true}],
-                        'transform-react-display-name'
-                    ]
-                },
-                files: [
-                    {
-                        expand: true,
-                        filter: 'isFile',
-                        cwd: 'src/',
-                        src: ['**/*.js'],
-                        dest: buildDir + '/'
-                    }
-                ]
-            }
-        },
-
         webpack: {
-            // options: webpackCommonOptions,
             dev: webpackDevOptions,
-            // dev: {
-            //     devtool: '#source-map'
-            // },
-            prod: {
-                // devtool: 'cheap-module-source-map',
-                plugins: webpackCommonOptions.plugins.concat([
-                    new webpack.DefinePlugin({
-                        "process.env": {
-                            // This has effect on the react lib size
-                            "NODE_ENV": JSON.stringify("production")
-                        }
-                    }),
-                    // new webpack.optimize.DedupePlugin(),
-                    new webpack.optimize.UglifyJsPlugin({
-                        sourceMap: true,
-                        compress: {
-                            warnings: false
-                        }
-                    }),
-                    new webpack.LoaderOptionsPlugin({
-                        minimize: true
-                    })
-                ])
-            }
+            prod: webpackProdOptions
         },
 
         less: {
@@ -271,8 +183,7 @@ module.exports = function (grunt) {
      */
     grunt.renameTask('watch', 'delta');
 
-    // grunt.registerTask('dev', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev']);
     grunt.registerTask('dev', ['clean', 'copy', 'webpack:dev', 'less:dev']);
     grunt.registerTask('dev-delta', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev', 'delta']);
-    grunt.registerTask('prod', ['clean', 'copy', 'babel:prod', 'webpack:prod', 'less:prod']);
+    grunt.registerTask('prod', ['clean', 'copy', 'webpack:prod', 'less:prod']);
 };

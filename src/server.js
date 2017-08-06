@@ -17,7 +17,6 @@ import {MongoClient} from 'mongodb';
 import serveGridfs from 'serve-gridfs';
 import cookieParser from 'cookie-parser';
 import requestLanguage from 'express-request-language';
-import morphine from './resources';
 import httpStatuses from 'statuses';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
@@ -27,11 +26,9 @@ import createPaginationModel from './utils/create-pagination-model';
 import createTagsCloudModel from './utils/create-tags-cloude-model';
 import flash from 'express-flash';
 import * as i18n from './i18n';
-
-import backResource from 'jb-resources';
+import resources from 'jb-resources';
 
 const app = express();
-const resources = morphine;
 
 /**
  * Setup passport
@@ -114,7 +111,7 @@ app.use((req, res, next) => {
 /**
  * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
  */
-app.use('/assets', serveStatic(path.join(__dirname, 'pub'), {
+app.use('/assets', serveStatic(path.resolve('pub'), {
     index: false
 }));
 
@@ -275,8 +272,8 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
             let tags = createTagsCloudModel(responses[1]);
             let locals = Object.assign({}, {post}, {tags});
             res.render('pub/post', locals);
-        }, err => next(err));
-
+        })
+        .then(null, err => next(err));
 });
 
 /**
@@ -292,7 +289,8 @@ app.get(routesMap.post + '/:id', (req, res, next) => {
             let tags = createTagsCloudModel(responses[1]);
             let locals = Object.assign({}, {post}, {tags});
             res.render('pub/post', locals);
-        }, err => next(err));
+        })
+        .then(null, err => next(err));
 });
 
 /**
@@ -319,7 +317,8 @@ app.get(routesMap.tag + '/:tag', (req, res, next) => {
             let locals = Object.assign({}, findPosts, {tags}, {pagination});
 
             res.render('pub/tag', locals);
-        }, err => next(err));
+        })
+        .then(null, err => next(err));
 });
 
 /**
@@ -345,7 +344,8 @@ app.get(['/'], (req, res, next) => {
             let locals = Object.assign({}, findPosts, {tags}, {pagination});
 
             res.render('pub/index', locals);
-        }, err => next(err));
+        })
+        .then(null, err => next(err));
 });
 
 /**

@@ -37,8 +37,9 @@ function routeFunctionFactory(resourceFunc) {
 
         return Promise.resolve(resourceFunc.call(resourceFuncContext, arg))
             .then(actualFuncResult => {
-                res.send(actualFuncResult);
-            }, next);
+                return res.send(actualFuncResult);
+            })
+            .then(null, next);
     };
 }
 

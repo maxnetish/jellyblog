@@ -6,10 +6,6 @@ require('core-js/es6/promise');
 require('core-js/es6/object');
 require('core-js/es6/symbol');
 
-import resource from './resources';
-
-// resource.post.get({id: props.params.postId});
-
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import './admin-vue-app/filters';

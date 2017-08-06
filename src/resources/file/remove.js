@@ -1,6 +1,6 @@
 import {File, FileData} from '../../models';
 
-function remove(id) {
+function remove({id} = {}) {
     if (!this.xhr) {
         // allow only rpc call
         return Promise.reject(500);

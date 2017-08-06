@@ -6,8 +6,10 @@ import sortBy from 'lodash/sortBy';
 const steps = 5;
 
 function createTagsCloudModel(tags = []) {
-    let countMin = minBy(tags, 'count').count || 1;
-    let countMax = maxBy(tags, 'count').count || 1;
+    let tagMin = minBy(tags, 'count');
+    let tagMax = maxBy(tags, 'count');
+    let countMin = (tagMin && tagMin.count) || 1;
+    let countMax = (tagMax && tagMax.count) || 1;
     let dispenceWidth = countMax - countMin;
     let dispenceUnit = dispenceWidth / steps;
 

@@ -1,7 +1,7 @@
 import {dropdown, checkbox} from 'vue-strap';
 import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
 import DialogAlertMixin from '../../components/dialog-alert/mixin';
-import resources from '../../../resources';
+import resources from 'jb-resources';
 import {getText} from '../../filters';
 import saveAsJson from '../../../utils/save-obj-as-json-file';
 import SearchBlock from './posts-search-block.vue';

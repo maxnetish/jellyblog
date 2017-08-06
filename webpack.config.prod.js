@@ -25,7 +25,6 @@ module.exports = [
                     options: {
                         loaders: {
                             // vue-loader does not apply babel transpiling as default, so required:
-                            // js: 'babel-loader?presets[]=es2015'
                             js: {
                                 loader: 'babel-loader',
                                 options: {
@@ -77,7 +76,6 @@ module.exports = [
                 }
             ]
         },
-        devtool: '#source-map',
         plugins: [
 
         ],
@@ -113,7 +111,17 @@ module.exports = [
         },
         target: 'web',
         plugins: [
-            new webpack.optimize.CommonsChunkPlugin({name: 'common', filename: 'common.js'})
+            new webpack.optimize.CommonsChunkPlugin({name: 'common', filename: 'common.js'}),
+            // new webpack.optimize.DedupePlugin(),
+            new webpack.optimize.UglifyJsPlugin({
+                sourceMap: false,
+                compress: {
+                    warnings: false
+                }
+            }),
+            new webpack.LoaderOptionsPlugin({
+                minimize: true
+            })
         ],
         module: {
             rules: [
@@ -145,7 +153,6 @@ module.exports = [
 
             ]
         },
-        devtool: '#source-map',
         resolve: {
             alias: {
                 // in front use rpc calls
