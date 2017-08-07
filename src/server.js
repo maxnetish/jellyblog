@@ -27,6 +27,7 @@ import createTagsCloudModel from './utils/create-tags-cloude-model';
 import flash from 'express-flash';
 import * as i18n from './i18n';
 import resources from 'jb-resources';
+import resourcesRouter from './resources/resources-router';
 
 const app = express();
 
@@ -214,10 +215,9 @@ const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
 app.use(fileStoreConfig.gridFsBaseUrl, serveGridFsByNamemiddleware);
 
 /**
- * bind isomorhine RPC-like interface
- * TODO переписать бех isomorphine
+ * add api router
  */
-// app.use(morphine.router);
+app.use(routesMap.api, resourcesRouter);
 
 /**
  * admin area

@@ -5,7 +5,7 @@
  * @param roles - permit user with one of specified roles
  * @param resourceFn - decorated isomorphine resource function
  */
-function applyCheckPermissions({rpcCall = false, directCall = true, roles = [], resourceFn} = {}) {
+function applyCheckPermissions({rpcCall = false, directCall = false, roles = [], resourceFn} = {}) {
     if (typeof resourceFn !== 'function') {
         throw new Error(`applyCheckPermissions should decorates only functions`);
     }

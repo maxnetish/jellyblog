@@ -1,6 +1,7 @@
 import {File} from '../../models';
 import mongoose from 'mongoose';
 import mongooseConfig from '../../../config/mongoose.json';
+import toInteger from 'lodash/toInteger';
 
 function find({context, postId, contentType, uploadDateMax, uploadDateMin, max = mongooseConfig.paginationDefaultLimit, skip = 0} = {}) {
     if (!this.xhr) {
@@ -15,8 +16,8 @@ function find({context, postId, contentType, uploadDateMax, uploadDateMin, max =
     let opts = {
         // We souldn't use lean because of virtual property 'url'
         lean: false,
-        limit: max,
-        skip: skip,
+        limit: toInteger(max),
+        skip: toInteger(skip),
         sort: '-uploadDate'
     };
     let condition = {};

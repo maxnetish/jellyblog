@@ -14,7 +14,7 @@ function resourceFactory(descriptor) {
     return function resourceFunction(arg) {
         let r = request(methodVerb, url);
 
-        if (verbsForJsonSend.indexOf(methodVerb)) {
+        if (verbsForJsonSend.indexOf(methodVerb) > -1) {
             r = r
                 .type('json')
                 .accept('json')
