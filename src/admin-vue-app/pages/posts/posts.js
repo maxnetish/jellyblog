@@ -5,8 +5,9 @@ import resources from 'jb-resources';
 import {getText} from '../../filters';
 import saveAsJson from '../../../utils/save-obj-as-json-file';
 import SearchBlock from './posts-search-block.vue';
-import {merge as queryMerge} from '../../../utils/query';
 import routesMap from '../../../../config/routes-map.json';
+import JbPagination from '../../components/jb-pagination/jb-pagination.vue';
+import {merge as queryMerge} from '../../../utils/query';
 
 export default {
     name: 'posts',
@@ -39,30 +40,6 @@ export default {
     computed: {
         someChecked: function () {
             return this.posts.some(p => p.checked);
-        },
-        prevPageLocation: function () {
-            let newQuery = queryMerge({
-                newQuery: {
-                    p: this.page < 3 ? undefined : this.page - 1
-                },
-                oldQuery: this.$route.query
-            });
-            return {
-                name: 'posts',
-                query: newQuery
-            };
-        },
-        nextPageLocation: function () {
-            let newQuery = queryMerge({
-                newQuery: {
-                    p: this.page + 1
-                },
-                oldQuery: this.$route.query
-            });
-            return {
-                name: 'posts',
-                query: newQuery
-            };
         }
     },
     methods: {
@@ -82,8 +59,8 @@ export default {
                 })
                 .then(result => {
                     this.posts = result.items || [];
-                    this.hasMore = result.hasMore;
                     this.checkAll = false;
+                    this.hasMore = result.hasMore;
                 });
         },
         publishPosts(posts) {
@@ -284,6 +261,7 @@ export default {
     components: {
         'dropdown': dropdown,
         'checkbox': checkbox,
-        'search-block': SearchBlock
+        'search-block': SearchBlock,
+        'jb-pagination': JbPagination
     }
 }

@@ -3,18 +3,7 @@
     .panel-body
         search-block(:initialFullText="searchParameters.fullText", :initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", @searchSubmit="onSearchSubmit")
     .panel-body
-        nav(aria-label="Page navigation")
-            ul.pager
-                li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
-                    router-link(:to="prevPageLocation")
-                        i.fa.fa-arrow-left.fa-fw(aria-hidden="true")
-                        .
-                            {{'Previous page' | get-text}}
-                li.next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
-                    router-link(:to="nextPageLocation")
-                        .
-                            {{'Next page' | get-text}}
-                        i.fa.fa-arrow-right.fa-fw(aria-hidden="true")
+        jb-pagination(:page="page", :hasMore="hasMore")
         .row._margin-5._bottom
             .col-xs-12
                 dropdown(type="primary")
@@ -114,16 +103,5 @@
                     //        i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
                     //    button.btn.btn-danger(type="button", @click="onRemovePostButtonClick(post)") Remove
     .panel-body
-        nav(aria-label="Page navigation")
-            ul.pager
-                li.previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
-                    router-link(:to="prevPageLocation")
-                        i.fa.fa-arrow-left.fa-fw(aria-hidden="true")
-                        .
-                            {{'Previous page' | get-text}}
-                li.next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
-                    router-link(:to="nextPageLocation")
-                        .
-                            {{'Next page' | get-text}}
-                        i.fa.fa-arrow-right.fa-fw(aria-hidden="true")
+        jb-pagination(:page="page", :hasMore="hasMore")
 

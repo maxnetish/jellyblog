@@ -39,21 +39,21 @@ export default [
         method: 'GET',
         rpcPath: 'post.list'
     },
-    {
-        url: '/post/pubGet',
-        method: 'GET',
-        rpcPath: 'post.pubGet'
-    },
+    // {
+    //     url: '/post/pubGet',
+    //     method: 'GET',
+    //     rpcPath: 'post.pubGet'
+    // },
     {
         url: '/post/publish',
         method: 'POST',
         rpcPath: 'post.publish'
     },
-    {
-        url: '/post/pubList',
-        method: 'GET',
-        rpcPath: 'post.pubList'
-    },
+    // {
+    //     url: '/post/pubList',
+    //     method: 'GET',
+    //     rpcPath: 'post.pubList'
+    // },
     {
         url: '/post/remove',
         method: 'DELETE',
@@ -63,5 +63,10 @@ export default [
         url: '/post/unpublish',
         method: 'POST',
         rpcPath: 'post.unpublish'
+    },
+    {
+        url: '/tag/list',
+        method: 'GET',
+        rpcPath: 'tag.list'
     }
 ]

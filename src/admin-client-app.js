@@ -14,6 +14,9 @@ import App from './admin-vue-app/admin-vue-app.vue';
 import OptionsPage from './admin-vue-app/pages/options/options.vue';
 import PostsPage from './admin-vue-app/pages/posts/posts.vue';
 import PostPage from './admin-vue-app/pages/post/post.vue';
+import FilesPage from './admin-vue-app/pages/files/files.vue';
+
+import toInteger from 'lodash/toInteger';
 
 
 const router = new VueRouter({
@@ -39,7 +42,7 @@ const router = new VueRouter({
                     name: 'posts',
                     component: PostsPage,
                     props: route => ({
-                        page: parseInt(route.query.p, 10) || 1,
+                        page: toInteger(route.query.p) || 1,
                         searchParameters: {
                             fullText: route.query.q,
                             dateFrom: route.query.from,
@@ -52,6 +55,20 @@ const router = new VueRouter({
                     name: 'post',
                     component: PostPage,
                     props: route => ({id: route.query.id})
+                },
+                {
+                    path: 'files',
+                    name: 'files',
+                    component: FilesPage,
+                    props: route => ({
+                        page: toInteger(route.query.p) || 1,
+                        searchParameters: {
+                            context: route.query.c,
+                            contentType: route.query.t,
+                            uploadDateMax: route.query.to,
+                            uploadDateMin: route.query.from
+                        }
+                    })
                 }
             ]
         }

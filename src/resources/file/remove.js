@@ -1,13 +1,7 @@
 import {File, FileData} from '../../models';
+import {applyCheckPermissions} from '../../utils-data';
 
 function remove({id} = {}) {
-    if (!this.xhr) {
-        // allow only rpc call
-        return Promise.reject(500);
-    }
-    if (!(this.req.user && this.req.user.role === 'admin')) {
-        return Promise.reject(401);
-    }
     if (!id) {
         return Promise.reject(400);
     }
@@ -22,4 +16,8 @@ function remove({id} = {}) {
     ]);
 }
 
-export default remove;
+export default applyCheckPermissions({
+    rpcCall: true,
+    roles: ['admin'],
+    resourceFn: remove
+});
