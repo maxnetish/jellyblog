@@ -139,6 +139,9 @@ div
                                 input(type="radio", value="PREVIEW", v-model="contentMode")
                                 .
                                     {{'Preview' | get-text}}
+                        a(v-if="post.contentType==='MD'", href="https://docs.gitlab.com/ee/user/markdown.html#standard-markdown", target="_blank")
+                            span Markdown docs
+                            i.fa.fa-external-link._margin-5._left
                         ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value.sync="post.content", :config="{mode: post.contentType, theme: 'Chrome'}")
                         markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post.content")
                         .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")

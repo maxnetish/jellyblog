@@ -22,6 +22,10 @@ const contentTypeToIconMap = [
     {
         contentType: /pdf/,
         icon: 'fa-file-pdf-o'
+    },
+    {
+        contentType: /msword/,
+        icon: 'fa-file-word-o'
     }
 ];
 const contentTypeToIconDefault = {

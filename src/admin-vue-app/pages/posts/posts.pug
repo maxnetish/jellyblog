@@ -1,7 +1,7 @@
 .panel.panel-primary
     .panel-heading {{'Posts' | get-text}}
     .panel-body
-        search-block(:initialFullText="searchParameters.fullText", :initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", @searchSubmit="onSearchSubmit")
+        search-block(:initialFullText="searchParameters.fullText", :initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", )
     .panel-body
         jb-pagination(:page="page", :hasMore="hasMore")
         .row._margin-5._bottom

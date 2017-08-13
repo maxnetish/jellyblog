@@ -100,6 +100,13 @@ module.exports = [
                 'core-js/es6/array',
                 'core-js/es6/object',
                 'core-js/es6/symbol',
+                'vue',
+                'vue-router',
+                'vuedals',
+                'vue-multiselect',
+                'vue-strap',
+                'showdown',
+                'brace',
                 'superagent'
             ]
         },

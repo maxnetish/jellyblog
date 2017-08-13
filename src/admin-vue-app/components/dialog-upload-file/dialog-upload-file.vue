@@ -20,6 +20,20 @@
                                 display-date(:value="choosedFile.lastModifiedDate")
             .row._margin-5._bottom
                 .col-sm-12(v-if="choosedFile")
+                    multiselect(
+                    v-if="allowContextEdit",
+                    v-model="contextInternal",
+                    :options="availableContexts",
+                    :multiple="false",
+                    :taggable="false",
+                    :close-on-select="true",
+                    placeholder="Select one context",
+                    :allowEmpty="false"
+                    )
+                    // input.form-control(type="text", v-if="allowContextEdit", :placeholder="'Context' | get-text", v-model.lazy="contextInternal")
+                    span(v-else) {{contextInternal}}
+            .row._margin-5._bottom
+                .col-sm-12(v-if="choosedFile")
                     input.form-control(type="text", :placeholder="'Description' | get-text", v-model.lazy="description")
             .row
                 .col-sm-12.text-right
@@ -35,19 +49,26 @@
     /**
      * props:
      *      context,
-     *      postId
+     *      postId,
+     *      allowContextEdit
      */
 
     import uploadFile from '../../../utils/upload-file';
+    import DialogAlertMixin from '../dialog-alert/mixin';
+    import routesMap from '../../../../config/routes-map.json';
+    import Multiselect from 'vue-multiselect';
+    import fileStoreConfig from '../../../../config/file-store.json';
 
     export default {
         name: 'add-image',
-        data () {
+        mixins: [DialogAlertMixin],
+        data() {
             return {
                 uploading: false,
                 choosedFile: null,
-                description: ''
-
+                description: '',
+                contextInternal: this.context,
+                availableContexts: fileStoreConfig.fields.map(c => c.name)
             }
         },
         props: {
@@ -58,6 +79,10 @@
             'postId': {
                 type: String,
                 default: ''
+            },
+            'allowContextEdit': {
+                type: Boolean,
+                default: false
             }
         },
         methods: {
@@ -67,29 +92,34 @@
             onFileInputChange(e) {
                 this.choosedFile = this.$refs.fileInput.files[0];
             },
-            onCancelButtonClick(e){
+            onCancelButtonClick(e) {
                 this.$emit('vuedals:close');
             },
-            onSubmit(e){
+            onSubmit(e) {
                 let self = this;
                 this.uploading = true;
                 uploadFile({
                     file: this.choosedFile,
-                    context: this.context,
+                    context: this.contextInternal,
                     metadata: {
                         postId: this.postId,
                         description: this.description
                     },
-                    url: '/upload'
+                    url: routesMap.upload
                 })
                     .then(attachmentInfo => {
                         self.uploading = false;
                         self.$vuedals.close(attachmentInfo);
                     }, function (err) {
                         self.uploading = false;
-                        console.warn(`Upload failed: ${err}`);
+                        self.showAlert({
+                            message: `Upload failed: ${err}`
+                        });
                     })
             }
+        },
+        components: {
+            'multiselect': Multiselect
         }
     };
 </script>

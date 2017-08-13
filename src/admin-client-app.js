@@ -65,8 +65,8 @@ const router = new VueRouter({
                         searchParameters: {
                             context: route.query.c,
                             contentType: route.query.t,
-                            uploadDateMax: route.query.to,
-                            uploadDateMin: route.query.from
+                            dateTo: route.query.to,
+                            dateFrom: route.query.from
                         }
                     })
                 }

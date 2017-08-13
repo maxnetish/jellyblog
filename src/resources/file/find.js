@@ -3,19 +3,21 @@ import mongoose from 'mongoose';
 import mongooseConfig from '../../../config/mongoose.json';
 import toInteger from 'lodash/toInteger';
 import {applyCheckPermissions} from '../../utils-data';
+import convertToBoolean from '../../utils/convert-to-boolean';
 
 /**
  *
  * @param context
+ * @param withoutPostId
  * @param postId
  * @param contentType
- * @param uploadDateMax
- * @param uploadDateMin
+ * @param dateTo
+ * @param dateFrom
  * @param max
  * @param skip ignore if page setted
  * @param page
  */
-function find({context, postId, contentType, uploadDateMax, uploadDateMin, max = mongooseConfig.paginationDefaultLimit, skip = 0, page} = {}) {
+function find({context, withoutPostId = false, postId, contentType, dateTo, dateFrom, max = mongooseConfig.paginationDefaultLimit, skip = 0, page} = {}) {
     let projection = '_id filename url contentType length uploadDate metadata';
     max = toInteger(max);
     let opts = {
@@ -26,6 +28,10 @@ function find({context, postId, contentType, uploadDateMax, uploadDateMin, max =
         sort: '-uploadDate'
     };
     let condition = {};
+    let sanitizedFrom = dateFrom ? new Date(dateFrom) : null;
+    let sanitizedTo = dateTo ? new Date(dateTo) : null;
+
+    withoutPostId = convertToBoolean(withoutPostId);
 
     if (context) {
         Object.assign(condition, {
@@ -37,6 +43,10 @@ function find({context, postId, contentType, uploadDateMax, uploadDateMin, max =
         Object.assign(condition, {
             'metadata.postId': new mongoose.mongo.ObjectId(postId)
         });
+    } else if (withoutPostId) {
+        Object.assign(condition, {
+            'metadata.postId': null
+        });
     }
 
     if (contentType) {
@@ -45,17 +55,17 @@ function find({context, postId, contentType, uploadDateMax, uploadDateMin, max =
         });
     }
 
-    if (uploadDateMax) {
+    if (sanitizedTo) {
         condition.uploadDate = condition.uploadDate || {};
         Object.assign(condition.uploadDate, {
-            $lte: uploadDateMax
+            $lte: sanitizedTo
         });
     }
 
-    if (uploadDateMin) {
+    if (sanitizedFrom) {
         condition.uploadDate = condition.uploadDate || {};
         Object.assign(condition.uploadDate, {
-            $gte: uploadDateMin
+            $gte: sanitizedFrom
         });
     }
 

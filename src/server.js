@@ -152,21 +152,8 @@ const uploadMiddleware = multer({
         files: 10
     }
 });
-const uploadMiddlewareAttachment = uploadMiddleware.fields([
-    {
-        name: 'attachment',
-        maxCount: 10
-    },
-    {
-        name: 'avatarImage',
-        maxCount: 1
-    },
-    {
-        name: 'srcset',
-        maxCount: 1
-    }
-]);
-app.post('/upload', uploadMiddlewareAttachment, (req, res) => {
+const uploadMiddlewareAttachment = uploadMiddleware.fields(fileStoreConfig.fields);
+app.post(routesMap.upload, uploadMiddlewareAttachment, (req, res) => {
     let filesByFieldname = Object.assign({}, req.files || {});
     for (let fieldName in filesByFieldname) {
         if (filesByFieldname.hasOwnProperty(fieldName)) {
@@ -354,7 +341,13 @@ app.get(['/'], (req, res, next) => {
 app.use(function (err, req, res, next) {
     addEntryFromErrorResponse(req, res, err);
     console.error(err.stack);
+
     let status = typeof err === 'number' ? err : 500;
+
+    if(err && err.message === 'FileNotFound') {
+        status = 404;
+    }
+
     res.status(status).send(httpStatuses[status] || 'Internal error');
 });
 

@@ -2,7 +2,6 @@ import resources from 'jb-resources';
 import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
 import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
 import DialogAddImage from '../../components/dialog-add-image/dialog-add-image.vue';
-import DialogConfirm from '../../components/dialog-confirm/dialog-confirm.vue';
 import DialogUploadFile from '../../components/dialog-upload-file/dialog-upload-file.vue';
 import Multiselect from 'vue-multiselect';
 import uploadCanvas from '../../../utils/upload-image-from-canvas';
@@ -10,10 +9,13 @@ import {getText} from '../../filters';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import routesMap from '../../../../config/routes-map.json';
+import DialogAlertMixin from '../../components/dialog-alert/mixin';
+import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
 
 export default {
     name: 'post',
-    data () {
+    mixins: [DialogAlertMixin, DialogConfirmMixin],
+    data() {
         return {
             post: {},
             contentMode: 'EDIT',
@@ -36,13 +38,13 @@ export default {
         }
     },
     computed: {
-        availableTags () {
+        availableTags() {
             return this.tagsJustAdded.concat(this.tagsFromServer);
         },
-        availableTitleImages () {
+        availableTitleImages() {
             return this.titleImagesJustAdded.concat(this.titleImagesFromServer);
         },
-        dirty () {
+        dirty() {
             return !isEqual(this.post, this.postOriginal);
         }
     },
@@ -69,7 +71,7 @@ export default {
                     self.postOriginal = cloneDeep(this.post);
                 });
         },
-        onTagSelectSearch (query) {
+        onTagSelectSearch(query) {
             let self = this;
 
             this.promiseForAvailableTags = this.promiseForAvailableTags ||
@@ -83,13 +85,13 @@ export default {
                     self.tagsIsLoading = false;
                 });
         },
-        onTagSelectOpen (e) {
+        onTagSelectOpen(e) {
             this.tagSelectOpen = true;
         },
-        onTagSelectClose (e) {
+        onTagSelectClose(e) {
             this.tagSelectOpen = false;
         },
-        addPostTag (newTag) {
+        addPostTag(newTag) {
             this.tagsJustAdded.push(newTag);
             this.post.tags.push(newTag);
         },
@@ -120,7 +122,7 @@ export default {
                             description: dialogResult.description
                         },
                         originalFilename: dialogResult.originalFilename,
-                        url: '/upload'
+                        url: routesMap.upload
                     })
                         .then(fileInfo => {
                             self.titleImagesJustAdded.unshift(fileInfo);
@@ -130,10 +132,10 @@ export default {
                 onDismiss: () => console.log('Modal dismissed')
             })
         },
-        getFileInfoLabel (attachmentInfo) {
+        getFileInfoLabel(attachmentInfo) {
             return attachmentInfo.metadata.originalName;
         },
-        onTitleImageSelectOpen (e) {
+        onTitleImageSelectOpen(e) {
             let self = this;
             this.promiseForTitleImages = this.promiseForTitleImages ||
                 resources.file.find({context: 'avatarImage', max: 1000});
@@ -145,28 +147,22 @@ export default {
                     this.titleImagesLoading = false;
                 });
         },
-        onTitleImageSelectClose (e){
+        onTitleImageSelectClose(e) {
             this.titleImageSelectOpen = false;
         },
-        onClearTitleImageClick (e){
+        onClearTitleImageClick(e) {
             this.post.titleImg = null;
         },
         onRemoveTitleImageFromServerClick: function (fileInfo, e) {
-            this.$vuedals.open({
-                title: getText('Remove file'),
-                props: {
-                    message: getText('Remove image from server forever? Links in posts will can be broken.')
-                },
-                component: DialogConfirm,
-                size: 'xs',
-                dismisable: false,
-                onClose: dialogResult => {
-                    let self = this;
-                    if (dialogResult !== 'YES') {
-                        return;
-                    }
+            let self = this;
+
+            this.showConfirm({
+                message: getText('Remove image from server forever? Links in posts will can be broken.'),
+                title: getText('Remove file')
+            })
+                .then(() => {
                     // remove image here
-                    resources.file.remove({id: fileInfo._id})
+                    return resources.file.remove({id: fileInfo._id})
                         .then(() => {
                             let indexToRemove = self.titleImagesFromServer.findIndex(fi => fi._id === fileInfo._id);
                             if (indexToRemove > -1) {
@@ -176,28 +172,51 @@ export default {
                                 self.post.titleImg = null;
                             }
                         })
-                }
-            });
-        },
-        onRemoveAttachmentButtonClick (attachmentIndex) {
-            this.$vuedals.open({
-                title: getText('Remove file'),
-                props: {
-                    message: getText('Remove attachment? File will be removed forever with post saving.')
-                },
-                component: DialogConfirm,
-                size: 'xs',
-                dismisable: false,
-                onClose: dialogResult => {
-                    if (dialogResult !== 'YES') {
+                })
+                .then(() => {
+                    // remove local copy
+                    let indexToRemove = self.titleImagesFromServer.findIndex(fi => fi._id === fileInfo._id);
+                    if (indexToRemove > -1) {
+                        self.titleImagesFromServer.splice(indexToRemove, 1);
+                    }
+                    if (self.post.titleImg && self.post.titleImg._id === fileInfo._id) {
+                        self.post.titleImg = null;
+                    }
+                })
+                .then(null, err => {
+                    // err handler
+                    if (err === 'NO') {
                         return;
                     }
-                    this.post.attachments.splice(attachmentIndex, 1);
-                }
-            });
+                    self.showAlert({
+                        message: err
+                    });
+                });
+        },
+        onRemoveAttachmentButtonClick(attachmentIndex) {
+            let self = this;
+
+            this.showConfirm({
+                title: getText('Remove file'),
+                message: getText('Remove attachment? File will be removed forever with post saving.')
+            })
+                .then(() => {
+                    self.post.attachments.splice(attachmentIndex, 1);
+                })
+                .then(null, err=>{
+                    if(err!=='NO') {
+                        self.showAlert({message: err});
+                    }
+                });
         },
         onAddAttachmentButtonClick(e) {
             let self = this;
+
+            if (!this.post._id) {
+                this.showAlert({message: 'You should first save save new post'});
+                return;
+            }
+
             this.$vuedals.open({
                 title: getText('Upload attachment'),
                 props: {
@@ -216,7 +235,7 @@ export default {
                 }
             });
         },
-        onToggleStatusButtonClick (e) {
+        onToggleStatusButtonClick(e) {
             let update;
             let self = this;
             let currentStatus = this.post.status;
@@ -248,7 +267,7 @@ export default {
                 });
         }
     },
-    created () {
+    created() {
         this.fetchData()
     },
     watch: {
