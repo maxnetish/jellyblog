@@ -13,7 +13,7 @@ import {getText} from '../../filters';
 export default {
     name: 'files',
     mixins: [DialogUploadMixin, DialogConfirmMixin, DialogAlertMixin],
-    data () {
+    data() {
         return {
             files: [],
             hasMore: false,
@@ -60,7 +60,7 @@ export default {
                     this.checkAll = false;
                 });
         },
-        onRouteChanged (newVal, oldVal) {
+        onRouteChanged(newVal, oldVal) {
             this.fetchPageData();
         },
         onCheckAllChanged(newVal, oldVal) {
@@ -68,11 +68,11 @@ export default {
                 p.checked = newVal;
             });
         },
-        onFileCheckedCange (index) {
+        onFileCheckedCange(index) {
             // to recompute 'someChecked'
             this.$set(this.files, index, Object.assign({}, this.files[index]));
         },
-        uploadNewFileButtonClick () {
+        uploadNewFileButtonClick() {
             this.showUploadFileDialog({
                 context: 'attachment',
                 allowContextEdit: false
@@ -85,7 +85,7 @@ export default {
                 })
                 .then(null, noop);
         },
-        onSearchSubmit (searchParameters) {
+        onSearchSubmit(searchParameters) {
             let newQuery = queryMerge({
                 newQuery: {
                     p: undefined,
@@ -99,23 +99,23 @@ export default {
                 query: newQuery
             });
         },
-        removeCheckedFilesButtonClick () {
+        removeCheckedFilesButtonClick() {
             let self = this;
             let checkedIds = this.files.filter(f => f.checked).map(f => f.id);
-            if(!checkedIds.length) {
+            if (!checkedIds.length) {
                 return;
             }
             this.showConfirm({
                 message: getText('Remove one or more selected file(s) from server forever?'),
                 title: getText('Remove files')
             })
-                .then(()=>{
+                .then(() => {
                     return resources.file.remove({id: checkedIds});
                 })
                 .then(res => {
                     self.fetchPageData();
                 })
-                .then(null,  err => {
+                .then(null, err => {
                     if (err === 'NO') {
                         return;
                     }
@@ -123,7 +123,7 @@ export default {
                 });
         }
     },
-    created () {
+    created() {
         this.fetchPageData();
     },
     watch: {
