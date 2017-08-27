@@ -95,20 +95,7 @@ module.exports = [
         cache: true,
         entry: {
             'adm': './src/admin-client-app.js',
-            'common': [
-                'core-js/es6/promise',
-                'core-js/es6/array',
-                'core-js/es6/object',
-                'core-js/es6/symbol',
-                'vue',
-                'vue-router',
-                'vuedals',
-                'vue-multiselect',
-                'vue-strap',
-                'showdown',
-                'brace',
-                'superagent'
-            ]
+            'pub': './src/pub-index-app'
         },
         output: {
             path: path.resolve(__dirname, 'build/pub'),

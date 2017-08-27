@@ -2,13 +2,13 @@ import {Post} from '../../models';
 import {applyCheckPermissions} from '../../utils-data';
 import isArray from 'lodash/isArray';
 
-function func(postOrPosts) {
+function func({posts = []}) {
 
     let mapped = [];
 
-    postOrPosts = isArray(postOrPosts) ? postOrPosts : [postOrPosts];
+    posts = isArray(posts) ? posts : [posts];
 
-    mapped = postOrPosts.map(p => {
+    mapped = posts.map(p => {
         return Object.assign(p, {
             author: this.req.user.userName
         });

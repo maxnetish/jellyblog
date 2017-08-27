@@ -1,8 +1,9 @@
 import {Post, File, FileData} from '../../models';
 import {applyCheckPermissions} from '../../utils-data';
+import isArray from 'lodash/isArray';
 
 function remove({id = null, ids = []} = {}) {
-    let postIds = ids;
+    let postIds = isArray(ids) ? ids : [ids];
 
     if (id) {
         postIds.push(id);

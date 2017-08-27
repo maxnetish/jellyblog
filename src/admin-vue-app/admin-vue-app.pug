@@ -8,6 +8,8 @@
                     router-link(:to="{ name: 'posts', params: { }}") {{'Posts' | get-text}}
                 li(v-bind:class="{active: $route.name==='files' }")
                     router-link(:to="{ name: 'files', params: {} }") {{'Files' | get-text}}
+                li(v-bind:class="{active: $route.name==='log' }")
+                    router-link(:to="{ name: 'log', params: {} }") {{'Log' | get-text}}
                 li
                     a(:href="logoutUrl") Logout
         .col-sm-9.col-lg-10

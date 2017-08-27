@@ -1,0 +1,27 @@
+.panel.panel-primary
+    .panel-heading {{'Log' | get-text}}
+    .panel-body
+        search-block(:initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", :initial-with-error="!!searchParameters.withError", @searchSubmit="onSearchSubmit")
+    .panel-body
+        jb-pagination(:page="page", :hasMore="hasMore")
+    table.table.table-hover
+        thead
+            tr
+                th {{'Date' | get-text}}
+                th {{'Request' | get-text}}
+                th {{'Status' | get-text}}
+                th {{'Time' | get-text}}
+                th {{'Remote address' | get-text}}
+                th {{'User name' | get-text}}
+                th {{'Error' | get-text}}
+        tbody
+            tr(v-for="(entry, entryIndex) in logEntries", :key="entry._id")
+                td {{entry.date}}
+                td {{entry.requestMethod}} {{entry.requestUrl}}
+                td {{entry.responseStatus}}
+                td {{entry.responseTime}}
+                td {{entry.remoteAddress}}
+                td {{entry.userName}}
+                td {{entry.error}}
+    .panel-body
+        jb-pagination(:page="page", :hasMore="hasMore")

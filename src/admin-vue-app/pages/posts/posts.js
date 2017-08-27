@@ -206,7 +206,7 @@ export default {
                     this.showAlert({message: `Failed to parse json from file: ${err}`});
                 }
 
-                resources.post.export(parsedFromFile)
+                resources.post.export({posts: parsedFromFile})
                     .then(response => {
                         self.fetchPageData();
                     }, err => this.showAlert({message: err}));
@@ -241,7 +241,7 @@ export default {
                     this.showAlert({message: `Failed to parse json from file: ${err}`});
                 }
 
-                resources.post.export(mappedFromFile)
+                resources.post.export({posts: mappedFromFile})
                     .then(response => {
                         self.fetchPageData();
                     }, err => this.showAlert({message: err}));

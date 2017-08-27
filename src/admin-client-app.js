@@ -15,6 +15,7 @@ import OptionsPage from './admin-vue-app/pages/options/options.vue';
 import PostsPage from './admin-vue-app/pages/posts/posts.vue';
 import PostPage from './admin-vue-app/pages/post/post.vue';
 import FilesPage from './admin-vue-app/pages/files/files.vue';
+import Log from './admin-vue-app/pages/log/log.vue';
 
 import toInteger from 'lodash/toInteger';
 
@@ -65,6 +66,19 @@ const router = new VueRouter({
                         searchParameters: {
                             context: route.query.c,
                             contentType: route.query.t,
+                            dateTo: route.query.to,
+                            dateFrom: route.query.from
+                        }
+                    })
+                },
+                {
+                    path: 'log',
+                    name: 'log',
+                    component: Log,
+                    props: route => ({
+                        page: toInteger(route.query.p) || 1,
+                        searchParameters: {
+                            withError: route.query.e,
                             dateTo: route.query.to,
                             dateFrom: route.query.from
                         }

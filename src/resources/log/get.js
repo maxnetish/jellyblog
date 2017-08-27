@@ -1,15 +1,45 @@
 import {applyCheckPermissions} from '../../utils-data';
 import {Log} from '../../models';
 import mongooseConfig from '../../../config/mongoose.json';
+import {isUndefined} from 'lodash';
 
-function fetch({page = 1} = {}) {
+function fetch({page = 1, err, dateTo, dateFrom} = {}) {
     let condition = {};
     let projection = null;
     let opts = {
         lean: true,
         limit: mongooseConfig.paginationDefaultLimit + 1,
-        sort: {date: 'desc'}
+        sort: '-_id'
     };
+    let sanitizedFrom = dateFrom ? new Date(dateFrom) : null;
+    let sanitizedTo = dateTo ? new Date(dateTo) : null;
+
+    // set criteria
+    if (err) {
+        Object.assign(condition, {
+            error: {
+                $exists: true
+            }
+        });
+    } else if(!isUndefined(err)) {
+        Object.assign(condition, {
+            error: {
+                $exists: false
+            }
+        });
+    }
+    if (sanitizedTo) {
+        condition.date = condition.date || {};
+        Object.assign(condition.date, {
+            $lte: sanitizedTo
+        });
+    }
+    if (sanitizedFrom) {
+        condition.date = condition.date || {};
+        Object.assign(condition.date, {
+            $gte: sanitizedFrom
+        });
+    }
 
     // set page
     page = parseInt(page, 10) || 1;

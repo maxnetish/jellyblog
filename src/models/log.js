@@ -50,7 +50,7 @@ let logSchema = new mongoose.Schema({
         }
     },
     {
-        capped: 262144
+        capped: 8388608
     });
 
 export default mongoose.model('Log', logSchema);
