@@ -1,0 +1,78 @@
+Here try to implement private web blog with stack:
+ * mongoose - mongo
+ * express
+ * vue
+ * vue-router
+
+Build with grunt - babel - webpack 2
+
+ES7, flex etc...
+
+### Config files
+In order not to forget...
+
+In _config_ dir we should place several json files. From these files,
+the application will read various parameters, including security settings.
+
+_auth.json_: list of users
+
+```json
+[
+  {
+    "userName": "derpy_hooves",
+    "password": "SecretPassword",
+    "role": "admin"
+  }
+]
+```
+
+_file-store.json_:
+
+```json
+{
+  "gridFsBaseUrl": "/file",
+  "fields": [
+    {
+      "name": "attachment",
+      "maxCount": 3
+    },
+    {
+      "name": "avatarImage",
+      "maxCount": 1
+    },
+    {
+      "name": "upload",
+      "maxCount": 3
+    }
+  ]
+}
+```
+
+_mongoose.json_: connection to mongodb
+
+```json
+{
+  "connectionUri": "mongodb://localhost/jellyblog",
+  "connectionOptions": {
+    "config": {
+      "autoIndex": true
+    }
+  },
+  "paginationDefaultLimit": 10
+}
+```
+
+_route-maps.json_:
+
+```json
+{
+  "upload": "/upload",
+  "api": "/api",
+  "admin": "/admin",
+  "login": "/admin/login",
+  "logout": "/admin/logout",
+  "preview": "/admin/preview",
+  "post": "/post",
+  "tag": "/tag"
+}
+```
