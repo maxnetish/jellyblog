@@ -20,6 +20,7 @@ import requestLanguage from 'express-request-language';
 import httpStatuses from 'statuses';
 import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
+import appConfig from '../config/app.json';
 import routesMap from '../config/routes-map.json';
 import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
 import createPaginationModel from './utils/create-pagination-model';
@@ -83,7 +84,7 @@ app.use(session({
     },
     name: 'jellyblog.id',
     proxy: true,
-    secret: 'À la fin de 1980, il rencontre à l’université',
+    secret: appConfig.cookieSecret,
     resave: true,
     saveUninitialized: true
 }));
@@ -354,7 +355,7 @@ app.use(function (err, req, res, next) {
 /**
  * begin listen port
  */
-let portToListen = process.env.PORT || 3000;
+let portToListen = process.env.PORT || appConfig.port || 3000;
 app.listen(portToListen, function () {
     console.info(`${app.name} started and listening on port ${portToListen}`);
 });

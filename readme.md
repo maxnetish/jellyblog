@@ -76,3 +76,11 @@ _route-maps.json_:
   "tag": "/tag"
 }
 ```
+
+_app.json_:
+```json
+{
+  "port": 3000,
+  "cookieSecret": "非常に秘密のフレーズ"
+}
+```

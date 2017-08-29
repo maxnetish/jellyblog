@@ -24,11 +24,13 @@ function fetch({statuses = ['PUB']} = {}) {
         },
         map: function () {
             if (this.tags) {
-                this.tags.forEach(t => emit(t, 1));
+                this.tags.forEach(function (t) {
+                    return emit(t, 1);
+                });
             }
         },
         reduce: function (key, values) {
-            return values.reduce((acc, val) => {
+            return values.reduce(function (acc, val) {
                 return acc + val;
             });
         }
