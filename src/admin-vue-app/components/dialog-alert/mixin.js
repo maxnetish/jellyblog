@@ -11,7 +11,7 @@ export default {
                     },
                     component: DialogAlert,
                     size: 'xs',
-                    dismisable: true,
+                    dismissable: true,
                     onClose: () => {
                         resolve('close');
                     },

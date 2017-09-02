@@ -11,7 +11,7 @@ export default {
                     },
                     component: DialogConfirm,
                     size: 'xs',
-                    dismisable: true,
+                    dismissable: true,
                     onClose: answer => {
                         switch (answer) {
                             case 'YES':

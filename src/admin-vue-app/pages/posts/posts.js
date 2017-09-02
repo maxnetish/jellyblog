@@ -113,7 +113,7 @@ export default {
                 },
                 component: DialogConfirm,
                 size: 'xs',
-                dismisable: false,
+                dismissable: false,
                 onClose: dialogResult => {
                     if (dialogResult !== 'YES') {
                         return;

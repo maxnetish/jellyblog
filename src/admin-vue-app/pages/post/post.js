@@ -108,7 +108,7 @@ export default {
                 },
                 component: DialogAddImage,
                 size: 'xs',
-                dismisable: true,
+                dismissable: true,
                 onClose: dialogResult => {
                     if (!dialogResult) {
                         return;
@@ -225,7 +225,7 @@ export default {
                 },
                 component: DialogUploadFile,
                 size: 'xs',
-                dismisable: false,
+                dismissable: false,
                 onClose: dialogResult => {
                     if (!dialogResult) {
                         return;

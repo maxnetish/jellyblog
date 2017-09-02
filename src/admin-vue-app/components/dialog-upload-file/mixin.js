@@ -13,7 +13,7 @@ export default {
                     },
                     component: DialogUpload,
                     size: 'xs',
-                    dismisable: true,
+                    dismissable: true,
                     onClose: attachmentInfo => {
                         if(attachmentInfo) {
                             resolve(attachmentInfo);
