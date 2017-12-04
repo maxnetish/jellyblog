@@ -73,7 +73,7 @@ let postSchema = new mongoose.Schema({
         type: String,
         required: false,
         index: true,
-        unique: true,
+        unique: false,
         maxlength: 64
     }
 });

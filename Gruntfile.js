@@ -184,6 +184,6 @@ module.exports = function (grunt) {
     grunt.renameTask('watch', 'delta');
 
     grunt.registerTask('dev', ['clean', 'copy', 'webpack:dev', 'less:dev']);
-    grunt.registerTask('dev-delta', ['clean', 'copy', 'babel:dev', 'webpack:dev', 'less:dev', 'delta']);
+    grunt.registerTask('dev-delta', ['clean', 'copy', 'webpack:dev', 'less:dev', 'delta']);
     grunt.registerTask('prod', ['clean', 'copy', 'webpack:prod', 'less:prod']);
 };
