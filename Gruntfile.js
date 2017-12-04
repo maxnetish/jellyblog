@@ -144,7 +144,7 @@ module.exports = function (grunt) {
              */
             'js-files': {
                 files: [srcDir + '/**/*.js'],
-                tasks: ['babel:dev', 'webpack:dev']
+                tasks: ['webpack:dev']
             },
             'vue-files': {
                 files: [srcDir + '/**/*.js', srcDir + '/**/*.vue', srcDir + '/admin-vue-app/**/*.pug', srcDir + '/admin-vue-app/**/*.less'],

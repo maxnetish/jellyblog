@@ -77,7 +77,8 @@ module.exports = [
                 }
             ]
         },
-        devtool: '#source-map',
+        // devtool: '#source-map',
+        devtool: 'cheap-module-source-map',
         plugins: [
 
         ],
@@ -139,7 +140,8 @@ module.exports = [
 
             ]
         },
-        devtool: '#source-map',
+        // devtool: '#source-map',
+        devtool: 'cheap-module-source-map',
         resolve: {
             alias: {
                 // in front use rpc calls
