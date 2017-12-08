@@ -1,3 +1,9 @@
 footer.clear.body-row.page-footer
-    div.body-row-content
-        div#footer-widget.footer-widget-ct
+    div.body-row-content.flex-ct
+        div.footer-section
+            - var loginUrl = url.parse(routesMap.login, true);
+            - loginUrl.query = loginUrl.query || {};
+            - loginUrl.query.next = reqUrl;
+            a.login-link(href=url.format(loginUrl))
+                i.fa.fa-sign-in._margin-5._right(aria-hidden="true")
+                span #{getText('Login')}

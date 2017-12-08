@@ -29,6 +29,7 @@ import flash from 'express-flash';
 import * as i18n from './i18n';
 import resources from 'jb-resources';
 import resourcesRouter from './resources/resources-router';
+import url from 'url';
 
 const app = express();
 
@@ -107,6 +108,10 @@ app.use((req, res, next) => {
     res.locals.language = req.language;
     res.locals.user = req.user;
     res.locals.routesMap = routesMap;
+    res.locals.query = req.query;
+    // we will use legacy api becouse WHAWG api cannot work with relative urls
+    res.locals.url = url;
+    res.locals.reqUrl = req.url;
     next();
 });
 
@@ -225,13 +230,31 @@ app.get(routesMap.login, (req, res) => {
         res.render('admin/login', {});
     }
 });
-app.post(routesMap.login,
-    passport.authenticate('local', {
-        successRedirect: '/admin',
-        failureRedirect: '/admin/login',
-        failureFlash: true
-    })
-);
+
+app.post(routesMap.login, function(req, res, next) {
+    passport.authenticate('local', function(err, user, info) {
+        if (err) {
+            return next(err); // will generate a 500 error
+        }
+        // Generate a JSON response reflecting authentication status
+        if (! user) {
+            return res.render('admin/login', {errMessage: 'Authentication failed'});
+        }
+        // ***********************************************************************
+        // "Note that when using a custom callback, it becomes the application's
+        // responsibility to establish a session (by calling req.login()) and send
+        // a response."
+        // Source: http://passportjs.org/docs
+        // ***********************************************************************
+        req.login(user, loginErr => {
+            if (loginErr) {
+                return next(loginErr);
+            }
+            return res.redirect(req.query.next || routesMap.admin);
+        });
+    })(req, res, next);
+});
+
 app.get(routesMap.logout, (req, res) => {
     if (req.user) {
         req.logout();

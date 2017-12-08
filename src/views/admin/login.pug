@@ -9,10 +9,10 @@ body
     .container
         .row
             .col-md-6.col-md-offset-3.col-xs-12
-                .panel.panel-default
+                .panel.panel-primary
                     .panel-heading #{getText("Login")}
                     .panel-body
-                        form.form-horizontal(action=routesMap.login, method="post", autocomplete="on")
+                        form#login-form.form-horizontal(method="post", autocomplete="on")
                             .form-group
                                 label.col-xs-3.control-label(for="login-username") #{getText("Username")}:
                                 .col-xs-9
@@ -21,12 +21,12 @@ body
                                 label.col-xs-3.control-label(for="login-password") #{getText("Password")}:
                                 .col-xs-9
                                     input#login-password.form-control(autocomplete="on", type="password", name="password", required, placeholder=getText("Enter password"))
-                            .form-group
-                                .col-xs-12.text-right
-                                    button.btn.btn-primary(type="submit", value="Log In") #{getText("Login")}
-                            if (messages && messages.error)
-                                each errMessage in messages.error
-                                    .row
-                                        .col-xs-offset-3.col-xs-9
-                                            .alert.alert-danger(role="alert") #{errMessage}
+                            if (errMessage)
+                                .row
+                                    .col-xs-offset-3.col-xs-9
+                                        .alert.alert-danger(role="alert") #{errMessage}
+                    .panel-footer
+                        .row
+                            .col-xs-12.text-right
+                                button.btn.btn-primary(type="submit", value="Log In", form="login-form") #{getText("Login")}
 
