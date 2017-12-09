@@ -1,9 +1,15 @@
 footer.clear.body-row.page-footer
     div.body-row-content.flex-ct
         div.footer-section
-            - var loginUrl = url.parse(routesMap.login, true);
-            - loginUrl.query = loginUrl.query || {};
-            - loginUrl.query.next = reqUrl;
-            a.login-link(href=url.format(loginUrl))
-                i.fa.fa-sign-in._margin-5._right(aria-hidden="true")
-                span #{getText('Login')}
+            - var targetUrl = url.parse(user ? routesMap.logout : routesMap.login, true);
+            - targetUrl.query = targetUrl.query || {};
+            - targetUrl.query.next = reqUrl;
+            if user
+                span #{getText('You are logged in as')} #{user.userName} (#{user.role})
+                    a.login-link(href=url.format(targetUrl))
+                        i.fa.fa-sign-out._margin-5._right(aria-hidden="true")
+                        span #{getText('Logout')}
+            else
+                a.login-link(href=url.format(targetUrl))
+                    i.fa.fa-sign-in._margin-5._right(aria-hidden="true")
+                    span #{getText('Login')}
