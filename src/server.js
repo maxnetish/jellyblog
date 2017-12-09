@@ -27,11 +27,13 @@ import createPaginationModel from './utils/create-pagination-model';
 import createTagsCloudModel from './utils/create-tags-cloude-model';
 import flash from 'express-flash';
 import * as i18n from './i18n';
-import resources from 'jb-resources';
+import BackendResources from 'jb-resources';
 import resourcesRouter from './resources/resources-router';
 import url from 'url';
 
 const app = express();
+
+const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 
 /**
  * Setup passport
@@ -112,6 +114,19 @@ app.use((req, res, next) => {
     // we will use legacy api becouse WHAWG api cannot work with relative urls
     res.locals.url = url;
     res.locals.reqUrl = req.url;
+    next();
+});
+
+/**
+ * add BackendResources to request context
+ * (actually required if request is GET, not api, not file, not static...)
+ */
+app.use((req, res, next) => {
+    if (req.method !== 'GET' || urlsNotNeededBackendResources.test(req.url)) {
+        next();
+        return;
+    }
+    req.backendResources = new BackendResources(req);
     next();
 });
 
@@ -231,13 +246,13 @@ app.get(routesMap.login, (req, res) => {
     }
 });
 
-app.post(routesMap.login, function(req, res, next) {
-    passport.authenticate('local', function(err, user, info) {
+app.post(routesMap.login, function (req, res, next) {
+    passport.authenticate('local', function (err, user, info) {
         if (err) {
             return next(err); // will generate a 500 error
         }
         // Generate a JSON response reflecting authentication status
-        if (! user) {
+        if (!user) {
             return res.render('admin/login', {errMessage: 'Authentication failed'});
         }
         // ***********************************************************************
@@ -275,8 +290,8 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
     }
 
     Promise.all([
-        resources.post.pubGet({id: req.params.id, allowDraft: true}),
-        resources.tag.list()
+        req.backendResources.post.pubGet({id: req.params.id, allowDraft: true}),
+        req.backendResources.tag.list()
     ])
         .then(responses => {
             let post = responses[0];
@@ -292,8 +307,8 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
  */
 app.get(routesMap.post + '/:id', (req, res, next) => {
     Promise.all([
-        resources.post.pubGet({id: req.params.id}),
-        resources.tag.list()
+        req.backendResources.post.pubGet({id: req.params.id}),
+        req.backendResources.tag.list()
     ])
         .then(responses => {
             let post = responses[0];
@@ -309,13 +324,13 @@ app.get(routesMap.post + '/:id', (req, res, next) => {
  */
 app.get(routesMap.tag + '/:tag', (req, res, next) => {
     Promise.all([
-        resources.post.pubList({
+        req.backendResources.post.pubList({
             page: req.query.page,
             postsPerPage: 5,
             q: req.query.q,
             tag: req.params.tag
         }),
-        resources.tag.list()
+        req.backendResources.tag.list()
     ])
         .then(responses => {
             let findPosts = responses[0];
@@ -337,12 +352,12 @@ app.get(routesMap.tag + '/:tag', (req, res, next) => {
  */
 app.get(['/'], (req, res, next) => {
     Promise.all([
-        resources.post.pubList({
+        req.backendResources.post.pubList({
             page: req.query.page,
             postsPerPage: 5,
             q: req.query.q
         }),
-        resources.tag.list()
+        req.backendResources.tag.list()
     ])
         .then(responses => {
             let findPosts = responses[0];
@@ -368,7 +383,7 @@ app.use(function (err, req, res, next) {
 
     let status = typeof err === 'number' ? err : 500;
 
-    if(err && err.message === 'FileNotFound') {
+    if (err && err.message === 'FileNotFound') {
         status = 404;
     }
 

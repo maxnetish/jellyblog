@@ -1,6 +1,6 @@
 import {Router} from 'express';
-import descriptors from './rest-descriptors';
-import resources from './resources-back';
+import descriptors from './resources-descriptors';
+import resources from './index';
 import {get} from 'lodash';
 
 const defaultVerb = 'GET';
@@ -35,6 +35,7 @@ function routeFunctionFactory(resourceFunc) {
             req: req
         };
 
+        // Inject context:
         return Promise.resolve(resourceFunc.call(resourceFuncContext, arg))
             .then(actualFuncResult => {
                 return res.send(actualFuncResult);
@@ -44,7 +45,9 @@ function routeFunctionFactory(resourceFunc) {
 }
 
 descriptors.forEach(restDescriptor => {
-    addRoute(router, restDescriptor);
+    if (restDescriptor.url) {
+        addRoute(router, restDescriptor);
+    }
 });
 
 export default router;

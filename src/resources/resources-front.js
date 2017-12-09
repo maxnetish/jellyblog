@@ -1,5 +1,5 @@
 import request from 'superagent';
-import descriptors from './rest-descriptors';
+import descriptors from './resources-descriptors';
 import set from 'lodash/set';
 import routesConfig from '../../config/routes-map.json';
 
@@ -32,7 +32,9 @@ function resourceFactory(descriptor) {
 }
 
 descriptors.forEach(descriptor => {
-    set(resources, descriptor.rpcPath, resourceFactory(descriptor));
+    if(descriptor.url) {
+        set(resources, descriptor.rpcPath, resourceFactory(descriptor));
+    }
 });
 
 export default resources;

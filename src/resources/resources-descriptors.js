@@ -39,21 +39,17 @@ export default [
         method: 'GET',
         rpcPath: 'post.list'
     },
-    // {
-    //     url: '/post/pubGet',
-    //     method: 'GET',
-    //     rpcPath: 'post.pubGet'
-    // },
+    {
+        rpcPath: 'post.pubGet'
+    },
     {
         url: '/post/publish',
         method: 'POST',
         rpcPath: 'post.publish'
     },
-    // {
-    //     url: '/post/pubList',
-    //     method: 'GET',
-    //     rpcPath: 'post.pubList'
-    // },
+    {
+        rpcPath: 'post.pubList'
+    },
     {
         url: '/post/remove',
         method: 'DELETE',

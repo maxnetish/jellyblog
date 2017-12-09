@@ -11,6 +11,13 @@ let postSchema = new mongoose.Schema({
         default: 'DRAFT',
         required: true
     },
+    // TODO добавить соответсвующую поддержку в ресурсы и в форму создания/редактирования
+    allowRead: {
+        type: String,
+        enum: ['FOR_ALL', 'FOR_REGISTERED', 'FOR_ME'],
+        default: 'FOR_ALL',
+        required: true
+    },
     createDate: {
         type: Date,
         required: true,
@@ -83,6 +90,7 @@ postSchema.static({
     createNewDefaultPost: function () {
         return {
             status: 'DRAFT',
+            allowRead: 'FOR_ALL',
             contentType: 'MD',
             title: `At ${(new Date()).toLocaleString()}`,
             titleImg: null,
@@ -114,7 +122,8 @@ postSchema.static({
             tags: post.tags || [],
             titleImg: post.titleImg || null,
             attachments: post.attachments || [],
-            hru: post.hru || null
+            hru: post.hru || null,
+            allowRead: post.allowRead || 'FOR_ALL'
         };
     }
 });

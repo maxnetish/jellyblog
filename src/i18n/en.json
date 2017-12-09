@@ -1,4 +1,7 @@
 {
   "DRAFT": "Draft",
-  "PUB": "Published"
+  "PUB": "Published",
+  "FOR_ALL": "All",
+  "FOR_REGISTERED": "Logged in users",
+  "FOR_ME": "Only I"
 }

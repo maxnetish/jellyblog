@@ -13,7 +13,8 @@ const request2PostModel = {
             tags: postFromRequest.tags,
             titleImg: postFromRequest.titleImg ? postFromRequest.titleImg._id : null,
             attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a._id) : [],
-            hru: postFromRequest.hru
+            hru: postFromRequest.hru,
+            allowRead: postFromRequest.allowRead
         };
     },
     UPDATE({postFromRequest = {}, user = {}} = {}) {
@@ -26,7 +27,8 @@ const request2PostModel = {
             tags: postFromRequest.tags,
             titleImg: postFromRequest.titleImg ? postFromRequest.titleImg._id : null,
             attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a._id) : [],
-            hru: postFromRequest.hru
+            hru: postFromRequest.hru,
+            allowRead: postFromRequest.allowRead
         };
     }
 };

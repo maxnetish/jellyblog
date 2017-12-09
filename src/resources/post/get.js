@@ -23,8 +23,8 @@ function fetch({id} = {}) {
                 return Promise.reject(401);
             }
 
-            if (res && res.status !== 'PUB' && self.req.user.userName !== res.author) {
-                // allow draft only for it owner
+            if (res && res.status !== 'PUB' && self.req.user.role !== 'admin') {
+                // allow draft only for user with admin role
                 return Promise.reject(401);
             }
 
