@@ -1,3 +1,7 @@
+/**
+ * Idea: in every resource method we will have request context (this.req)
+ */
+
 import descriptors from './resources-descriptors';
 import resources from './index';
 import {set, get} from 'lodash';

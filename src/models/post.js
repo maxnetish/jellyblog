@@ -125,6 +125,37 @@ postSchema.static({
             hru: post.hru || null,
             allowRead: post.allowRead || 'FOR_ALL'
         };
+    },
+    /**
+     * allowView: post can be view by user
+     * allowUpdate: user can update post
+     * @param post
+     * @param user
+     * @returns {{allowView: boolean, allowUpdate: boolean}}
+     */
+    mapPermissions: function ({post, user}) {
+        let result = {
+            allowView: false,
+            allowUpdate: false
+        };
+
+        switch (post.allowRead) {
+            case 'FOR_REGISTERED':
+                result.allowView = !!(user && user.userName);
+                break;
+            case 'FOR_ME':
+                result.allowView = user.userName === post.author;
+                break;
+            default:
+                // FOR_ALL
+                result.allowView = true;
+                break;
+        }
+
+        // Only author can update
+        result.allowUpdate = user && userName === post.author;
+
+        return result;
     }
 });
 

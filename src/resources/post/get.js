@@ -1,5 +1,4 @@
 import {Post} from '../../models';
-import mongooseConfig from '../../../config/mongoose.json';
 
 
 function fetch({id} = {}) {
@@ -17,20 +16,11 @@ function fetch({id} = {}) {
         .populate('titleImg')
         .exec()
         .then(res => {
-
-            if (res && res.status !== 'PUB' && !self.xhr) {
-                // allow draft only throw rpc call
+            let postPermissions = Post.mapPermissions({post: res, user: self.req && self.req.user});
+            if(!postPermissions.allowView) {
                 return Promise.reject(401);
             }
-
-            if (res && res.status !== 'PUB' && self.req.user.role !== 'admin') {
-                // allow draft only for user with admin role
-                return Promise.reject(401);
-            }
-
-            let normalized = Post.normalizeForBinding({post: res});
-
-            return normalized;
+            return Post.normalizeForBinding({post: res});
         });
 }
 

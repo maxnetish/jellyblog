@@ -1,7 +1,16 @@
 import {Post} from '../../models';
 import mongooseConfig from '../../../config/mongoose.json';
+import {applyCheckPermissions} from "../../utils-data";
 
-
+/**
+ * Returns list of posts for admin page
+ * @param from
+ * @param to
+ * @param q
+ * @param page
+ * @param statuses
+ * @returns {*|Promise<any>}
+ */
 function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
     let condition = {};
     let projection = '_id status createDate updateDate pubDate titleImg title brief';
@@ -15,16 +24,6 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
     let sanitizedTo = to ? new Date(to) : null;
     let sanitizedQ = q ? q.substring(0, 64) : null;
     let createDateCondition;
-
-    if (!this.xhr && allowDrafts) {
-        // allow only rpc call if qeury for drafts
-        return Promise.reject(500);
-    }
-
-    if (!this.req.user && allowDrafts) {
-        // allow only authirized user query for drafts
-        return Promise.reject(401);
-    }
 
     if (sanitizedQ) {
         // apply full text query
@@ -62,12 +61,10 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
         }
     });
 
-    if (allowDrafts) {
-        // allow drafts only for its owner
-        Object.assign(condition, {
-            author: this.req.user.userName
-        });
-    }
+    // list only posts of current user
+    Object.assign(condition, {
+        author: this.req.user.userName
+    });
 
     // set page
     page = parseInt(page, 10) || 1;
@@ -89,4 +86,8 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
         });
 }
 
-export default fetch;
+export default applyCheckPermissions({
+    rpcCall: true,
+    roles: ['admin'],
+    resourceFn: fetch
+});
