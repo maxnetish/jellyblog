@@ -1,13 +1,21 @@
-import {updatePostStatus, applyCheckPermissions} from '../../utils-data';
+import {updatePostStatus, applyCheckPermissions, canUpdatePost} from '../../utils-data';
+import {filter} from 'lodash';
 
 function publish({id = null, ids = []} = {}) {
     let postIds = ids;
+    let self = this;
 
     if (id) {
         postIds.push(id);
     }
 
-    return updatePostStatus({ids: postIds, status: 'PUB'});
+    let checkPromises = postIds.map(postId => canUpdatePost({postId, user: self.req.user}));
+
+    return Promise.all(checkPromises)
+        .then(checkResults => {
+            let postThatWillUpdate = filter(postIds, (postId, ind) => checkResults[ind]);
+            return updatePostStatus({ids: postIds, status: 'PUB'});
+        });
 }
 
 export default applyCheckPermissions({

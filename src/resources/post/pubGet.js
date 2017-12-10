@@ -29,6 +29,7 @@ function mapPost(p) {
 }
 
 function fetch({id, allowDraft = false} = {}) {
+    let self = this;
     let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru';
 
     let opts = {
@@ -50,10 +51,11 @@ function fetch({id, allowDraft = false} = {}) {
             if (!res) {
                 return null;
             }
-            if (res && res.status !== 'PUB' && !allowDraft) {
-                return null;
+            let postPermission = Post.mapPermissions({post: res, user: self.req.user});
+            if(!postPermission.allowView) {
+                // нет разрешения на чтение:
+                return Promise.reject(401);
             }
-
             return mapPost(res);
         });
 }

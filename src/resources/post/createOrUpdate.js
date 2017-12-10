@@ -1,5 +1,5 @@
 import {Post} from '../../models';
-import {applyCheckPermissions, updatePostAttachments} from '../../utils-data';
+import {applyCheckPermissions, updatePostAttachments, canUpdatePost} from '../../utils-data';
 
 const request2PostModel = {
     CREATE({postFromRequest = {}, user = {}} = {}) {
@@ -50,25 +50,12 @@ const dbOperation = {
     }
 };
 
-function canUpdate({post, user}) {
-    return Post.findById(post._id, null, {lean: true})
-        .exec()
-        .then(existentPost => {
-            if (!(existentPost && existentPost._id)) {
-                // post not found
-                return true;
-            }
-            let permissions = Post.mapPermissions({post: existentPost, user});
-            return permissions.allowUpdate;
-        });
-}
-
 function createOrUpdatePost(post) {
     let requestMode = post._id ? 'UPDATE' : 'CREATE';
 
     // check permission, can user update?
     // can create - checks in 'applyCheckPermissions', requires 'admin' role
-    return Promise.resolve(requestMode === 'CREATE' ? true : canUpdate({post, user: this.req.user}))
+    return Promise.resolve(requestMode === 'CREATE' ? true : canUpdatePost({post, user: this.req.user}))
         .then(canUpdateOrCreate => {
             if(!canUpdateOrCreate) {
                 // cannot update
