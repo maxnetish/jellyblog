@@ -14,7 +14,7 @@ function publish({id = null, ids = []} = {}) {
     return Promise.all(checkPromises)
         .then(checkResults => {
             let postThatWillUpdate = filter(postIds, (postId, ind) => checkResults[ind]);
-            return updatePostStatus({ids: postIds, status: 'PUB'});
+            return updatePostStatus({ids: postThatWillUpdate, status: 'PUB'});
         });
 }
 

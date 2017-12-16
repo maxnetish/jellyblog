@@ -8,6 +8,27 @@ div
                         .form-control-static
                             post-status-label(:value="post.status")
                 .form-group
+                    label.col-sm-2.control-label {{'Who can read' | get-text}}
+                    .col-sm-10
+                        label.radio(v-for="allowReadOption in allowReadOptions", :key="allowReadOption", :class="{'text-muted': post.allowRead!==allowReadOption}")
+                            input(type="radio", :value="allowReadOption", v-model="post.allowRead", name="postAllowRead")
+                            .
+                                {{allowReadOption | get-text}}
+                    //.col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
+                        //multiselect(
+                        //v-model="post.allowRead",
+                        //:options="allowReadOptions",
+                        //:searchable="false",
+                        //:close-on-select="true",
+                        //:custom-label="optionAllowRead2Label",
+                        //:allow-empty="false",
+                        //:multiple="false",
+                        //:taggable="false",
+                        //:deselect-label="'Selected' | get-text",
+                        //:selected-label="'Selected' | get-text",
+                        //:select-label="'Press enter to select' | get-text"
+                        //)
+                .form-group
                     label.col-sm-2.control-label {{'Create date' | get-text}}
                     .col-sm-10
                         .form-control-static

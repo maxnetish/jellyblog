@@ -4,6 +4,7 @@ import File from './file';
 import FileData from './file-data';
 import Log from './log';
 import MediaSrcset from './media-srcset';
+import Migration from './migration';
 
 export {
     Post,
@@ -11,5 +12,6 @@ export {
     File,
     FileData,
     Log,
+    Migration,
     MediaSrcset
 };

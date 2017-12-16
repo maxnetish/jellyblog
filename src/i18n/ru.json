@@ -58,6 +58,7 @@
   "Create new post": "Создать новую публикацию",
   "You are logged in as": "Вошли как",
   "FOR_ALL": "Все",
-  "FOR_REGISTERED": "Те кто залогинился",
-  "FOR_ME": "Только я"
+  "FOR_REGISTERED": "Те, кто залогинился",
+  "FOR_ME": "Только я",
+  "Who can read": "Кто может читать"
 }

@@ -109,7 +109,10 @@ function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, 
                 items: findResult.map(mapPost),
                 hasMore: findedLen > postsPerPage,
                 page: page,
-                tag: tag
+                tag: sanitizedTag,
+                from: sanitizedFrom,
+                to: sanitizedTo,
+                q: sanitizedQ
             };
         });
 }

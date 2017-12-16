@@ -14,7 +14,7 @@ function unpublish({id = null, ids = []} = {}) {
     return Promise.all(checkPromises)
         .then(checkResults => {
             let postThatWillUpdate = filter(postIds, (postId, ind) => checkResults[ind]);
-            return updatePostStatus({ids: postIds, status: 'DRAFT'});
+            return updatePostStatus({ids: postThatWillUpdate, status: 'DRAFT'});
         });
 }
 

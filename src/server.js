@@ -22,7 +22,7 @@ import mongooseConfig from '../config/mongoose.json';
 import fileStoreConfig from '../config/file-store.json';
 import appConfig from '../config/app.json';
 import routesMap from '../config/routes-map.json';
-import {addEntryFromMorgan, addEntryFromErrorResponse} from './utils-data';
+import {addEntryFromMorgan, addEntryFromErrorResponse, applyDataMigrations} from './utils-data';
 import createPaginationModel from './utils/create-pagination-model';
 import createTagsCloudModel from './utils/create-tags-cloude-model';
 import flash from 'express-flash';
@@ -49,11 +49,15 @@ mongoose.connect(mongooseConfig.connectionUri,
         promiseLibrary: global.Promise,
         useMongoClient: true
     }))
-    .then(function (response) {
+    .then(response => {
         console.info(`Connected to database ${mongooseConfig.connectionUri}`);
-        return response;
+        return applyDataMigrations();
     })
-    .catch(function (err) {
+    .then(migrationResult => {
+        console.info(migrationResult);
+        return migrationResult;
+    })
+    .then(null, err => {
         console.error(`Cannot connect to database ${mongooseConfig.connectionUri}, ${err}`);
     });
 
@@ -232,10 +236,20 @@ app.use(routesMap.api, resourcesRouter);
  */
 app.get(routesMap.admin, (req, res) => {
     // admin area, require auth
-    if (req.user && req.user.role === 'admin') {
-        res.render('admin/index', {});
+    if (req.user) {
+        if(req.user.role === 'admin') {
+            res.render('admin/index', {});
+        } else {
+            // logged in but not admin - reject with FORBIDDEN
+            res.sendStatus(403);
+        }
     } else {
-        res.render('admin/login', {});
+        // anonymous -> prompt to login
+        let redirectUrl = url.parse(routesMap.login, true);
+        redirectUrl.query = redirectUrl.query || {};
+        redirectUrl.query.next = req.url;
+        // 302 FOUND
+        res.redirect(302, url.format(redirectUrl));
     }
 });
 app.get(routesMap.login, (req, res) => {
@@ -275,7 +289,7 @@ app.get(routesMap.logout, (req, res) => {
         req.logout();
         res.redirect(req.query.next || '/');
     } else {
-        res.send(400);
+        res.sendStatus(400);
     }
 });
 

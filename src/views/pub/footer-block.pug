@@ -9,6 +9,10 @@ footer.clear.body-row.page-footer
                     a.login-link(href=url.format(targetUrl))
                         i.fa.fa-sign-out._margin-5._right(aria-hidden="true")
                         span #{getText('Logout')}
+                if user.role === 'admin'
+                    a.login-link(href=routesMap.admin)
+                        i.fa.fa-cogs._margin-5._right(aria-hidden="true")
+                        span #{getText('Admin app')}
             else
                 a.login-link(href=url.format(targetUrl))
                     i.fa.fa-sign-in._margin-5._right(aria-hidden="true")

@@ -12,6 +12,8 @@ import routesMap from '../../../../config/routes-map.json';
 import DialogAlertMixin from '../../components/dialog-alert/mixin';
 import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
 
+const allowReadOptions = ['FOR_ALL', 'FOR_REGISTERED', 'FOR_ME'];
+
 export default {
     name: 'post',
     mixins: [DialogAlertMixin, DialogConfirmMixin],
@@ -28,7 +30,8 @@ export default {
             titleImagesLoading: false,
             titleImageSelectOpen: false,
             statusUpdating: false,
-            routesMap: routesMap
+            routesMap: routesMap,
+            allowReadOptions: allowReadOptions
         }
     },
     props: {
@@ -265,6 +268,9 @@ export default {
                     self.statusUpdating = false;
                     console.warn(`Toggle status failed: ${err}`);
                 });
+        },
+        optionAllowRead2Label (optionAllowRead) {
+            return getText(optionAllowRead);
         }
     },
     created() {

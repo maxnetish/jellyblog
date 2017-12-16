@@ -30,7 +30,7 @@ function mapPost(p) {
 
 function fetch({id, allowDraft = false} = {}) {
     let self = this;
-    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru';
+    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead';
 
     let opts = {
         lean: false,

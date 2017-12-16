@@ -11,7 +11,6 @@ let postSchema = new mongoose.Schema({
         default: 'DRAFT',
         required: true
     },
-    // TODO добавить соответсвующую поддержку в ресурсы и в форму создания/редактирования
     allowRead: {
         type: String,
         enum: ['FOR_ALL', 'FOR_REGISTERED', 'FOR_ME'],
@@ -146,14 +145,13 @@ postSchema.static({
             case 'FOR_ME':
                 result.allowView = user.userName === post.author;
                 break;
-            default:
-                // FOR_ALL
+            case 'FOR_ALL':
                 result.allowView = true;
                 break;
         }
 
         // Only author can update
-        result.allowUpdate = user && userName === post.author;
+        result.allowUpdate = user && user.userName === post.author;
 
         return result;
     }

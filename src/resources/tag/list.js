@@ -4,7 +4,9 @@ import urljoin from 'url-join';
 
 function fetch({statuses = ['PUB']} = {}) {
 
+    let self = this;
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
+    let mapReduceQuery;
 
     if (allowDrafts && !this.xhr) {
         // allow only rpc call if qeury for drafts
@@ -16,12 +18,28 @@ function fetch({statuses = ['PUB']} = {}) {
         return Promise.reject(401);
     }
 
+    mapReduceQuery = {
+        status: {
+            $in: statuses
+        }
+    };
+
+    if(self.req && self.req.user) {
+        Object.assign(mapReduceQuery, {
+            $or: [
+                {allowRead: 'FOR_ALL'},
+                {allowRead: 'FOR_REGISTERED'},
+                {allowRead: 'FOR_ME', author: self.req.user.userName}
+            ]
+        })
+    } else {
+        Object.assign(mapReduceQuery, {
+            allowRead: 'FOR_ALL'
+        });
+    }
+
     let mapReduceOptions = {
-        query: {
-            status: {
-                $in: statuses
-            }
-        },
+        query: mapReduceQuery,
         map: function () {
             if (this.tags) {
                 this.tags.forEach(function (t) {
