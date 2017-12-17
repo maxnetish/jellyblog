@@ -2,14 +2,22 @@ import {Post} from '../../models';
 import routesMap from '../../../config/routes-map.json';
 import urljoin from 'url-join';
 
-function fetch({statuses = ['PUB']} = {}) {
+function enrichTags(tagList) {
+    let reducedResultWithUrl = tagList.map(item => {
+        return Object.assign(item, {
+            url: urljoin(routesMap.tag, encodeURIComponent(item.tag))
+        });
+    });
+    return reducedResultWithUrl;
+}
 
-    // TODO переделать на aggregation, работать должно быстрее по идее. Может быть и добавить кеширование
-    // и не сканировать коллекцию posts всякий раз, а сканировать только через некоторый промежуток времени
+function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
+
+    // TODO кешировать результат агрегации
 
     let self = this;
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
-    let mapReduceQuery;
+    let internMethod;
 
     if (allowDrafts && !this.xhr) {
         // allow only rpc call if qeury for drafts
@@ -21,80 +29,18 @@ function fetch({statuses = ['PUB']} = {}) {
         return Promise.reject(401);
     }
 
-    mapReduceQuery = {
-        status: {
-            $in: statuses
-        }
-    };
-
-    if(self.req && self.req.user) {
-        Object.assign(mapReduceQuery, {
-            $or: [
-                {allowRead: 'FOR_ALL'},
-                {allowRead: 'FOR_REGISTERED'},
-                {allowRead: 'FOR_ME', author: self.req.user.userName}
-            ]
-        })
-    } else {
-        Object.assign(mapReduceQuery, {
-            allowRead: 'FOR_ALL'
-        });
+    switch (method) {
+        case 'REDUCE':
+            internMethod = Post.getTagListWithMapReduce.bind(Post);
+            break;
+        case 'AGGREGATE':
+        default:
+            internMethod = Post.getTagListWithAggregate.bind(Post);
+            break;
     }
 
-    let mapReduceOptions = {
-        query: mapReduceQuery,
-        map: function () {
-            if (this.tags) {
-                this.tags.forEach(function (t) {
-                    return emit(t, 1);
-                });
-            }
-        },
-        reduce: function (key, values) {
-            return values.reduce(function (acc, val) {
-                return acc + val;
-            });
-        }
-    };
-
-    return Post.mapReduce(mapReduceOptions)
-        .then(reduceResult => {
-            let mappedResult = reduceResult.map(item => ({
-                tag: item._id,
-                count: item.value,
-                url: urljoin(routesMap.tag, encodeURIComponent(item._id))
-            }));
-            let sortedResult = mappedResult.sort((a, b) => b.count - a.count);
-            return sortedResult;
-        });
-
-    /*
-     let condition = {};
-     let projection = '_id value';
-     let opts = {
-     lean: true,
-     limit: max,
-     skip: skip,
-     sort: 'value'
-     };
-
-     if (token) {
-     Object.assign(condition, {
-     value: {
-     $regex: new RegExp(token, 'i')
-     }
-     });
-     }
-
-     return Tag.find(condition, projection, opts)
-     .exec()
-     .then(function (findResult) {
-     return {
-     items: findResult,
-     hasMore: findResult.length >= opts.limit
-     };
-     });
-     */
+    return internMethod({statuses, user: this.req && this.req.user})
+        .then(enrichTags);
 }
 
 export default fetch;

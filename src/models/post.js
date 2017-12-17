@@ -154,6 +154,89 @@ postSchema.static({
         result.allowUpdate = user && user.userName === post.author;
 
         return result;
+    },
+    getTagListWithAggregate: function ({statuses = ['PUB'], user} = {}) {
+        // aggregate is much more speedy than mapReduce
+
+        let matchOptions = {
+            status: {
+                $in: statuses
+            }
+        };
+
+        if (user) {
+            Object.assign(matchOptions, {
+                $or: [
+                    {allowRead: 'FOR_ALL'},
+                    {allowRead: 'FOR_REGISTERED'},
+                    {allowRead: 'FOR_ME', author: user.userName}
+                ]
+            })
+        } else {
+            Object.assign(matchOptions, {
+                allowRead: 'FOR_ALL'
+            });
+        }
+
+        return this.aggregate(
+            {$match: matchOptions},
+            {$project: {_id: 0, tags: 1}},
+            {$unwind: '$tags'},
+            {$project: {tag: '$tags'}},
+            {$group: {_id: '$tag', count: {$sum: 1}}},
+            {$project: {_id: 0, tag: '$_id', count: 1}},
+            {$sort: {tag: 1}}
+        )
+            .allowDiskUse(true)
+            .exec();
+    },
+    getTagListWithMapReduce: function ({statuses = ['PUB'], user} = {}) {
+        let mapReduceQuery = {
+            status: {
+                $in: statuses
+            }
+        };
+
+        if (user) {
+            Object.assign(mapReduceQuery, {
+                $or: [
+                    {allowRead: 'FOR_ALL'},
+                    {allowRead: 'FOR_REGISTERED'},
+                    {allowRead: 'FOR_ME', author: user.userName}
+                ]
+            })
+        } else {
+            Object.assign(mapReduceQuery, {
+                allowRead: 'FOR_ALL'
+            });
+        }
+
+        let mapReduceOptions = {
+            query: mapReduceQuery,
+            map: function () {
+                if (this.tags) {
+                    this.tags.forEach(function (t) {
+                        return emit(t, 1);
+                    });
+                }
+            },
+            reduce: function (key, values) {
+                return values.reduce(function (acc, val) {
+                    return acc + val;
+                });
+            }
+        };
+
+        return this.mapReduce(mapReduceOptions)
+            .then(reduceResult => {
+                let mappedResult = reduceResult.map(item => ({
+                    tag: item._id,
+                    count: item.value
+                    // url: urljoin(routesMap.tag, encodeURIComponent(item._id))
+                }));
+                let sortedResult = mappedResult.sort((a, b) => b.count - a.count);
+                return sortedResult;
+            });
     }
 });
 
