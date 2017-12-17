@@ -5,6 +5,7 @@ import FileData from './file-data';
 import Log from './log';
 import MediaSrcset from './media-srcset';
 import Migration from './migration';
+import AggregateCache from './aggregate-cache';
 
 export {
     Post,
@@ -13,5 +14,6 @@ export {
     FileData,
     Log,
     Migration,
+    AggregateCache,
     MediaSrcset
 };

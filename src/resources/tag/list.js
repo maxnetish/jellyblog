@@ -1,4 +1,4 @@
-import {Post} from '../../models';
+import {Post, AggregateCache} from '../../models';
 import routesMap from '../../../config/routes-map.json';
 import urljoin from 'url-join';
 
@@ -12,9 +12,6 @@ function enrichTags(tagList) {
 }
 
 function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
-
-    // TODO кешировать результат агрегации
-
     let self = this;
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
     let internMethod;
@@ -43,4 +40,5 @@ function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
         .then(enrichTags);
 }
 
-export default fetch;
+// ttl: 1h
+export default AggregateCache.applyCache({key: 'TAGS', ttl: 3600000, aggregateFn: fetch});
