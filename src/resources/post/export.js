@@ -14,7 +14,7 @@ function func({posts = []}) {
         });
     });
 
-    return Post.create(mapped);
+    return Post.insertMany(mapped);
 }
 
 export default applyCheckPermissions({

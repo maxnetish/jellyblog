@@ -4,6 +4,9 @@ import urljoin from 'url-join';
 
 function fetch({statuses = ['PUB']} = {}) {
 
+    // TODO переделать на aggregation, работать должно быстрее по идее. Может быть и добавить кеширование
+    // и не сканировать коллекцию posts всякий раз, а сканировать только через некоторый промежуток времени
+
     let self = this;
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
     let mapReduceQuery;

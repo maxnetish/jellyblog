@@ -43,7 +43,8 @@ const dbOperation = {
                     .findByIdAndUpdate(_id, postData, {
                         'new': true,
                         upsert: false,
-                        lean: false
+                        lean: false,
+                        runValidators: true
                     })
                     .exec();
             });
