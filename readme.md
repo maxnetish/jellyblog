@@ -22,6 +22,11 @@ _auth.json_: list of users
     "userName": "derpy_hooves",
     "password": "SecretPassword",
     "role": "admin"
+  },
+  {
+      "userName": "flutty",
+      "password": "Strong",
+      "role": "reader"
   }
 ]
 ```

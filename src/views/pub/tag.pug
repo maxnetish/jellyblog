@@ -5,6 +5,11 @@ block content
         h3
             span #{getText('Posts with tag ')}
             q #{tag}
-    each post in items
-        include post-preview
-    include pagination
+    if (items && items.length)
+        include pagination
+        each post in items
+            include post-preview
+        include pagination
+    if (!(items && items.length))
+        article.post
+            div.content Не найдены
