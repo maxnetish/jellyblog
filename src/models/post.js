@@ -49,8 +49,8 @@ let postSchema = new mongoose.Schema({
     },
     brief: {
         type: String,
-        required: true,
-        default: 'Short annotation of post content',
+        required: false,
+        default: null,
         maxlength: 1024
     },
     content: {
