@@ -89,3 +89,10 @@ _app.json_:
   "cookieSecret": "非常に秘密のフレーズ"
 }
 ```
+
+_pub-settings.json_:
+```json
+{
+  "GoogleAnalyticsApiKey": "UA-GOOGLE_KEY_HERE"
+}
+```

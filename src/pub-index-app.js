@@ -1,3 +1,5 @@
+import pubSettings from '../config/pub-settings.json';
+
 /**
  * public main script
  */
@@ -18,6 +20,6 @@
 })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
 (function sendPageViewToGoogleAnalytics() {
-    ga('create', 'UA-58058520-1', 'auto');
+    ga('create', pubSettings.GoogleAnalyticsApiKey, 'auto');
     ga('send', 'pageview');
 })();
