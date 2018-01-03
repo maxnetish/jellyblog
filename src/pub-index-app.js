@@ -7,6 +7,28 @@ import pubSettings from '../config/pub-settings.json';
 
 })();
 
+/**
+ * See https://cookieconsent.insites.com
+ */
+(function cookieConsentInitializator(){
+    if(!window) {
+        return;
+    }
+
+    window.addEventListener("load", function(){
+        window.cookieconsent.initialise({
+            "palette": {
+                "popup": {
+                    "background": "#aa0000",
+                    "text": "#ffdddd"
+                },
+                "button": {
+                    "background": "#ff0000"
+                }
+            }
+        })});
+})();
+
 (function initGoogleAnalytics(i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r;
     i[r] = i[r] || function () {

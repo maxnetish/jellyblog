@@ -81,11 +81,11 @@ div
                         @open="onTitleImageSelectOpen",
                         @close="onTitleImageSelectClose"
                         )
-                            template(slot="beforeList", scope="props")
+                            template(slot="beforeList", slot-scope="props")
                                 button.btn.btn-link.btn-in-select(type="button", @click="onAddTitleImageClick")
                                     i.fa.fa-plus.fa-fw(aria="hidden")
                                     span._margin-5._left {{'Add new one' | get-text}}
-                            template(slot="option", scope="props")
+                            template(slot="option", slot-scope="props")
                                 .option__avatar-ct
                                     img.option__avatar-image(:src="props.option.url", :alt="props.option.metadata.originalName")
                                     .option__avatar-desc.word-break-word
