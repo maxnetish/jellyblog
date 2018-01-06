@@ -19,6 +19,8 @@ import Log from './admin-vue-app/pages/log/log.vue';
 
 import toInteger from 'lodash/toInteger';
 
+import store from './admin-vue-app/store';
+
 
 const router = new VueRouter({
     routes: [
@@ -43,12 +45,11 @@ const router = new VueRouter({
                     name: 'posts',
                     component: PostsPage,
                     props: route => ({
-                        page: toInteger(route.query.p) || 1,
-                        searchParameters: {
-                            fullText: route.query.q,
-                            dateFrom: route.query.from,
-                            dateTo: route.query.to
-                        }
+                        // searchParameters: {
+                        //     fullText: route.query.q,
+                        //     dateFrom: route.query.from,
+                        //     dateTo: route.query.to
+                        // }
                     })
                 },
                 {
@@ -91,9 +92,43 @@ const router = new VueRouter({
 
 Vue.use(VueRouter);
 
+// hook for vuex store filling
+Vue.mixin({
+    beforeMount () {
+        // Hook calls only in client
+        const { asyncData } = this.$options;
+        if (asyncData) {
+            asyncData({
+                store: this.$store,
+                route: this.$route
+            });
+        }
+    }
+});
+
+// hook for vuex store filling
+Vue.mixin({
+    beforeRouteUpdate (to, from, next) {
+        // hook calls only in client
+        const { asyncData } = this.$options;
+        if (asyncData) {
+            asyncData({
+                store: this.$store,
+                route: to,
+                beforeRouteUpdateHook: true
+            })
+                .then(next)
+                .then(null, next);
+        } else {
+            next();
+        }
+    }
+});
+
 const app = new Vue({
     router,
     el: '#vue-app',
+    store,
     render (h) {
         return h('router-view');
     }

@@ -1,7 +1,7 @@
 .panel.panel-primary
     .panel-heading {{'Posts' | get-text}}
     .panel-body
-        search-block(:initialFullText="searchParameters.fullText", :initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", @searchSubmit="onSearchSubmit")
+        search-block(:initialFullText="routeSearchParameters.fullText", :initial-date-from="routeSearchParameters.dateFrom", :initial-date-to="routeSearchParameters.dateTo", @searchSubmit="onSearchSubmit")
     .panel-body
         jb-pagination(:page="page", :hasMore="hasMore")
         .row._margin-5._bottom
@@ -28,11 +28,11 @@
                         span._margin-5._left {{ 'With checked' | get-text }}
                     ul.dropdown-menu(slot="dropdown-menu")
                         li
-                            a(href="javascript:void 0;", @click="onPublishCheckedClick")
+                            a(href="javascript:void 0;", @click="publishCheckedPosts")
                                 i.fa.fa-fw.fa-eye(aria-hidden="true")
                                 span._margin-5._left {{'Publish' | get-text }}
                         li
-                            a(href="javascript:void 0;", @click="onMakeDraftCheckedClick")
+                            a(href="javascript:void 0;", @click="makeDraftCheckedPosts")
                                 i.fa.fa-fw.fa-eye-slash(aria-hidden="true")
                                 span._margin-5._left {{ 'Make draft' | get-text }}
                         li
@@ -52,7 +52,7 @@
         thead
             tr
                 th
-                    checkbox.without-label(v-model="checkAll", type="primary")
+                    checkbox.without-label(:value="checkAll", @input="onCheckAllChanged({checked: $event})", type="primary")
                 th {{'Title' | get-text}}
                 th {{'Date' | get-text}}
                 th {{'Status' | get-text}}
@@ -60,7 +60,7 @@
         tbody
             tr(v-for="(post, postIndex) in posts", :key="post._id")
                 td
-                    checkbox.without-label(v-model="post.checked", @input="onPostCheckedCange(postIndex)", type="primary")
+                    checkbox.without-label(:value="post.checked", @input="onPostCheckedChange({index: postIndex, checked: $event})", type="primary")
                 td
                     router-link(:to="{name: 'post', query: {id: post._id}}") {{post.title}}
                 td

@@ -40,6 +40,7 @@ module.exports = [
                                         ]
                                     ],
                                     plugins: [
+                                        'transform-object-rest-spread',
                                         'transform-decorators-legacy'
                                     ]
                                 }
@@ -70,6 +71,7 @@ module.exports = [
                                 ]
                             ],
                             plugins: [
+                                'transform-object-rest-spread',
                                 'transform-decorators-legacy'
                             ]
                         }
@@ -79,9 +81,7 @@ module.exports = [
         },
         devtool: '#source-map',
         // devtool: 'cheap-module-source-map',
-        plugins: [
-
-        ],
+        plugins: [],
         resolve: {
             alias: {
                 // in back use direct calls
@@ -118,7 +118,7 @@ module.exports = [
                     options: {
                         loaders: {
                             // vue-loader does not apply babel transpiling as default, so required:
-                            js: 'babel-loader?presets[]=es2015'
+                            // js: 'babel-loader?presets[]=es2015'
                         }
                         // other vue-loader options go here
                     }
@@ -133,7 +133,10 @@ module.exports = [
                     loader: 'babel-loader',
                     query: {
                         presets: ['es2015'],
-                        // plugins: ['transform-runtime'],
+                        plugins: [
+                            'transform-object-rest-spread',
+                            'transform-decorators-legacy'
+                        ],
                         cacheDirectory: '.babel-cache'
                     }
                 }

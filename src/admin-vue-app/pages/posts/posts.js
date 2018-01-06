@@ -8,123 +8,63 @@ import SearchBlock from './posts-search-block.vue';
 import routesMap from '../../../../config/routes-map.json';
 import JbPagination from '../../components/jb-pagination/jb-pagination.vue';
 import {merge as queryMerge} from '../../../utils/query';
+// import globalStore from '../../store';
+import {store as moduleStore, mutationTypes} from './store';
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
+import toInteger from "lodash/toInteger";
+
+const storeNamespace = 'posts';
+
+function mapStoreNamespace(n) {
+    return [storeNamespace, n].join('/');
+}
+
+// globalStore.registerModule(storeNamespace, store);
 
 export default {
     name: 'posts',
     mixins: [DialogAlertMixin],
-    data () {
+    data() {
         return {
-            msg: 'Posts page here',
-            posts: [],
-            hasMore: false,
-            checkAll: false,
             routesMap: routesMap
         }
     },
-    props: {
-        page: {
-            type: Number,
-            default: 1
+    props: {},
+    computed: {
+        ...mapState(storeNamespace, {
+            posts: state => state.items,
+            hasMore: 'hasMore',
+            checkAll: 'checkAll',
+            someChecked: 'someChecked'
+        }),
+        ...mapGetters(storeNamespace, [
+            'someChecked'
+        ]),
+        page: function () {
+            return toInteger(this.$route.query.p) || 1;
         },
-        searchParameters: {
-            type: Object,
-            default: function () {
-                return {
-                    fullText: '',
-                    dateFrom: '',
-                    dateTo: ''
-                };
+        routeSearchParameters: function () {
+            return {
+                fullText: this.$route.query.q,
+                dateFrom: this.$route.query.from,
+                dateTo: this.$route.query.to
             }
         }
     },
-    computed: {
-        someChecked: function () {
-            return this.posts.some(p => p.checked);
-        }
-    },
     methods: {
-        onCheckAllChanged(newVal, oldVal) {
-            this.posts.forEach(p => {
-                p.checked = newVal;
-            });
-        },
-        fetchPageData() {
-            resources.post
-                .list({
-                    page: this.page,
-                    statuses: ['PUB', 'DRAFT'],
-                    q: this.searchParameters.fullText,
-                    from: this.searchParameters.dateFrom,
-                    to: this.searchParameters.dateTo
-                })
-                .then(result => {
-                    this.posts = result.items || [];
-                    this.checkAll = false;
-                    this.hasMore = result.hasMore;
-                });
-        },
-        publishPosts(posts) {
-            let self = this;
-            posts.forEach(p => {
-                p.statusUpdating = true;
-            });
-            resources.post.publish({
-                ids: posts.map(p => p._id)
-            })
-                .then(response => {
-                    posts.forEach(post => {
-                        post.statusUpdating = false;
-                        post.status = 'PUB';
-                    });
-                }, err => {
-                    posts.forEach(post => {
-                        post.statusUpdating = false;
-                    });
-                    self.showAlert({message: `Set status failed: ${err}`});
-                });
-        },
-        makeDraftPosts(posts) {
-            let self = this;
-            posts.forEach(p => {
-                p.statusUpdating = true;
-            });
-            resources.post.unpublish({
-                ids: posts.map(p => p._id)
-            })
-                .then(response => {
-                    posts.forEach(post => {
-                        post.statusUpdating = false;
-                        post.status = 'DRAFT';
-                    });
-                }, err => {
-                    posts.forEach(post => {
-                        post.statusUpdating = false;
-                    });
-                    self.showAlert({message: `Set status failed: ${err}`});
-                });
-        },
-        removePosts(posts) {
-            let self = this;
-
-            this.$vuedals.open({
-                title: getText('Remove post'),
-                props: {
-                    message: posts.length > 1 ? getText(`Remove ${posts.length} selected posts from server forever? Also removes attached files.`) : getText('Remove post from server forever? Also removes attached files.')
-                },
-                component: DialogConfirm,
-                size: 'xs',
-                dismissable: false,
-                onClose: dialogResult => {
-                    if (dialogResult !== 'YES') {
-                        return;
-                    }
-                    resources.post.remove({ids: posts.map(p => p._id)})
-                        .then(response => {
-                            self.fetchPageData();
-                        }, err => self.showAlert({message: err}));
-                }
-            });
-        },
+        ...mapMutations(storeNamespace, {
+            onCheckAllChanged: mutationTypes.CHECK_ALL_CHANGED,
+            onPostCheckedChange: mutationTypes.CHECK_POST_CHANGED
+        }),
+        ...mapActions(storeNamespace, [
+            'fetchPageData',
+            'publishCheckedPosts',
+            'publishOnePost',
+            'makeDraftCheckedPosts',
+            'makeDraftOnePost',
+            'removeCheckedPosts',
+            'removeOnePost'
+        ]),
         importPosts(posts) {
             resources.post
                 .import({ids: posts.map(p => p._id)})
@@ -137,38 +77,59 @@ export default {
             let currentStatus = post.status;
             switch (currentStatus) {
                 case 'PUB':
-                    this.makeDraftPosts([post]);
+                    this.makeDraftOnePost(post);
                     break;
                 case 'DRAFT':
-                    this.publishPosts([post]);
+                    this.publishOnePost(post);
                     break;
                 default:
-                    this.makeDraftPosts([post]);
+                    this.makeDraftOnePost(post);
             }
         },
-        onRemovePostButtonClick (post) {
-            this.removePosts([post]);
+        onRemovePostButtonClick(post) {
+            let self = this;
+            this.$vuedals.open({
+                title: getText('Remove post'),
+                props: {
+                    message: getText('Remove post from server forever? Also removes attached files.')
+                },
+                component: DialogConfirm,
+                size: 'xs',
+                dismissable: false,
+                onClose: dialogResult => {
+                    if (dialogResult !== 'YES') {
+                        return;
+                    }
+                    return self.removeOnePost({route: self.$route, _id: post._id})
+                }
+            });
         },
-        onPublishCheckedClick (e) {
-            this.publishPosts(this.posts.filter(p => p.checked));
-        },
-        onMakeDraftCheckedClick (e) {
-            this.makeDraftPosts(this.posts.filter(p => p.checked));
-        },
-        onImportToJsonClick (post) {
+        onImportToJsonClick(post) {
             this.importPosts([post]);
         },
-        onImportCheckedToJsonClick (e) {
+        onImportCheckedToJsonClick(e) {
             this.importPosts(this.posts.filter(p => p.checked));
         },
-        onRemoveCheckedClick (e) {
-            this.removePosts(this.posts.filter(p => p.checked));
+        onRemoveCheckedClick(e) {
+            let self = this;
+            let posts = this.posts.filter(p => p.checked);
+            this.$vuedals.open({
+                title: getText('Remove post'),
+                props: {
+                    message: getText(`Remove ${posts.length} selected posts from server forever? Also removes attached files.`)
+                },
+                component: DialogConfirm,
+                size: 'xs',
+                dismissable: false,
+                onClose: dialogResult => {
+                    if (dialogResult !== 'YES') {
+                        return;
+                    }
+                    return self.removeCheckedPosts({route: self.$route});
+                }
+            });
         },
-        onPostCheckedCange (index) {
-            // to recompute 'someChecked'
-            this.$set(this.posts, index, Object.assign({}, this.posts[index]));
-        },
-        onSearchSubmit (searchParameters) {
+        onSearchSubmit(searchParameters) {
             let newQuery = queryMerge({
                 newQuery: {
                     p: undefined,
@@ -183,16 +144,16 @@ export default {
                 query: newQuery
             });
         },
-        onRouteChanged (newVal, oldVal) {
-            this.fetchPageData();
+        onRouteChanged(newVal, oldVal) {
+            this.fetchPageData({route: this.$route});
         },
         exportFromOldJsonClick(e) {
             this.$refs.exportFromOldJsonFileInput.click();
         },
-        exportFromCurrentJsonClick (e) {
+        exportFromCurrentJsonClick(e) {
             this.$refs.exportFromCurrentJsonFileInput.click();
         },
-        exportFromCurrentJsonFileInputChanged (e) {
+        exportFromCurrentJsonFileInputChanged(e) {
             let self = this;
             let f = e.target.files[0];
             let reader = new FileReader();
@@ -208,14 +169,14 @@ export default {
 
                 resources.post.export({posts: parsedFromFile})
                     .then(response => {
-                        self.fetchPageData();
+                        self.fetchPageData({route: self.$route});
                     }, err => this.showAlert({message: err}));
             };
 
             // Read file as text .
             reader.readAsText(f);
         },
-        exportFromOldJsonFileInputChanged(e){
+        exportFromOldJsonFileInputChanged(e) {
             let self = this;
             let f = e.target.files[0];
             let reader = new FileReader();
@@ -243,7 +204,7 @@ export default {
 
                 resources.post.export({posts: mappedFromFile})
                     .then(response => {
-                        self.fetchPageData();
+                        self.fetchPageData({route: self.$route});
                     }, err => this.showAlert({message: err}));
             };
 
@@ -251,17 +212,54 @@ export default {
             reader.readAsText(f);
         }
     },
-    created () {
-        this.fetchPageData();
+    created() {
+        // this.fetchPageData({route: this.$route});
     },
     watch: {
-        '$route': 'onRouteChanged',
-        'checkAll': 'onCheckAllChanged'
+        // '$route': 'onRouteChanged'
     },
     components: {
         'dropdown': dropdown,
         'checkbox': checkbox,
         'search-block': SearchBlock,
         'jb-pagination': JbPagination
+    },
+    destroyed () {
+        this.$store.unregisterModule(storeNamespace);
+    },
+    /**
+     * Static function to implement hydration and initial data fetch.
+     * See https://ssr.vuejs.org/ru/data.html.
+     *
+     * asyncData will call from places:
+     * 1. In server ssr to async prepare state before sync rendering:
+     *      register store module, fill state
+     * 2. In client beforeMount hook with preloaded state
+     *      register store module
+     * 3. In client beforeMount hook without preloaded state
+     *      register store module, fill state
+     * 4. In client beforeRouteUpdate hook
+     *      fill state
+     *
+     * So we going to register store module if beforeRouteUpdateHook falsy,
+     * fill state if there is no preloaded state
+     *
+     * @param store
+     * @param route
+     * @param beforeRouteUpdateHook
+     */
+    asyncData({store, route, beforeRouteUpdateHook = false}) {
+        let alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];
+
+        if(!beforeRouteUpdateHook) {
+            store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
+        }
+
+        if(alreadyFetchData) {
+            return Promise.resolve(true);
+        }
+
+        // fetch from server
+        return store.dispatch(mapStoreNamespace('fetchPageData'), {route});
     }
 }
