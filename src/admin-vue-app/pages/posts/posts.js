@@ -35,7 +35,8 @@ export default {
             posts: state => state.items,
             hasMore: 'hasMore',
             checkAll: 'checkAll',
-            someChecked: 'someChecked'
+            someChecked: 'someChecked',
+            errorState: 'errorState'
         }),
         ...mapGetters(storeNamespace, [
             'someChecked'
@@ -144,8 +145,14 @@ export default {
                 query: newQuery
             });
         },
-        onRouteChanged(newVal, oldVal) {
-            this.fetchPageData({route: this.$route});
+        onErrorStateChanged(newVal, oldVal) {
+            if (!newVal) {
+                return;
+            }
+
+            // clear error in state after dialog dismiss
+            this.showAlert(newVal)
+                .then(()=>this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), null));
         },
         exportFromOldJsonClick(e) {
             this.$refs.exportFromOldJsonFileInput.click();
@@ -216,7 +223,7 @@ export default {
         // this.fetchPageData({route: this.$route});
     },
     watch: {
-        // '$route': 'onRouteChanged'
+        'errorState': 'onErrorStateChanged'
     },
     components: {
         'dropdown': dropdown,

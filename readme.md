@@ -67,7 +67,7 @@ _mongoose.json_: connection to mongodb
 }
 ```
 
-_route-maps.json_:
+_routes-map.json_:
 
 ```json
 {

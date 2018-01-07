@@ -1,5 +1,3 @@
-// import * as types from '../mutation-types'
-
 import resources from 'jb-resources';
 import isArray from 'lodash/isArray';
 import toInteger from "lodash/toInteger";
