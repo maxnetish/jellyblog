@@ -11,23 +11,9 @@ div
                     label.col-sm-2.control-label {{'Who can read' | get-text}}
                     .col-sm-10
                         label.radio(v-for="allowReadOption in allowReadOptions", :key="allowReadOption", :class="{'text-muted': post.allowRead!==allowReadOption}")
-                            input(type="radio", :value="allowReadOption", v-model="post.allowRead", name="postAllowRead")
+                            input(type="radio", :value="allowReadOption", :checked="post.allowRead === allowReadOption", @change="onAllowReadChange($event.target)", name="postAllowRead")
                             .
                                 {{allowReadOption | get-text}}
-                    //.col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
-                        //multiselect(
-                        //v-model="post.allowRead",
-                        //:options="allowReadOptions",
-                        //:searchable="false",
-                        //:close-on-select="true",
-                        //:custom-label="optionAllowRead2Label",
-                        //:allow-empty="false",
-                        //:multiple="false",
-                        //:taggable="false",
-                        //:deselect-label="'Selected' | get-text",
-                        //:selected-label="'Selected' | get-text",
-                        //:select-label="'Press enter to select' | get-text"
-                        //)
                 .form-group
                     label.col-sm-2.control-label {{'Create date' | get-text}}
                     .col-sm-10
@@ -46,11 +32,11 @@ div
                 .form-group
                     label.col-sm-2.control-label {{'URL' | get-text}}
                     .col-sm-10
-                        input.form-control(type="text", :placeholder="post._id", v-model="post.hru")
+                        input.form-control(type="text", :placeholder="post._id", :value="post.hru", @input="onHruInput($event.target)")
                 .form-group
                     label.col-sm-2.control-label {{'Title' | get-text}}
                     .col-sm-10
-                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", v-model="post.title")
+                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", :value="post.title", @input="onTitleInput($event.target)")
                 .form-group
                     label.col-sm-2.control-label {{'Title image' | get-text}}
                     .col-sm-10(:class="{'util-zindex-100': titleImageSelectOpen}")
@@ -65,7 +51,7 @@ div
                                 button.btn.btn-xs.btn-default(type="button", @click="onClearTitleImageClick", :title="'Clear' | get-text")
                                     i.fa.fa-times.fa-fw(aria="hidden")
                         multiselect.multiselect-avatar(
-                        v-model="post.titleImg",
+                        :value="post.titleImg",
                         :placeholder="'Select title image' | get-text",
                         label="filename",
                         track-by="_id",
@@ -79,7 +65,8 @@ div
                         :allow-empty="true",
                         :loading="titleImagesLoading",
                         @open="onTitleImageSelectOpen",
-                        @close="onTitleImageSelectClose"
+                        @close="onTitleImageSelectClose",
+                        @input="onTitleImageInput"
                         )
                             template(slot="beforeList", slot-scope="props")
                                 button.btn.btn-link.btn-in-select(type="button", @click="onAddTitleImageClick")

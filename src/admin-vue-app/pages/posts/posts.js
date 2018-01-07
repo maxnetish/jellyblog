@@ -10,8 +10,9 @@ import JbPagination from '../../components/jb-pagination/jb-pagination.vue';
 import {merge as queryMerge} from '../../../utils/query';
 // import globalStore from '../../store';
 import {store as moduleStore, mutationTypes} from './store';
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import toInteger from "lodash/toInteger";
+import DialogConfirmMixin from "../../components/dialog-confirm/mixin";
 
 const storeNamespace = 'posts';
 
@@ -19,11 +20,9 @@ function mapStoreNamespace(n) {
     return [storeNamespace, n].join('/');
 }
 
-// globalStore.registerModule(storeNamespace, store);
-
 export default {
     name: 'posts',
-    mixins: [DialogAlertMixin],
+    mixins: [DialogAlertMixin, DialogConfirmMixin],
     data() {
         return {
             routesMap: routesMap
@@ -89,21 +88,12 @@ export default {
         },
         onRemovePostButtonClick(post) {
             let self = this;
-            this.$vuedals.open({
-                title: getText('Remove post'),
-                props: {
-                    message: getText('Remove post from server forever? Also removes attached files.')
-                },
-                component: DialogConfirm,
-                size: 'xs',
-                dismissable: false,
-                onClose: dialogResult => {
-                    if (dialogResult !== 'YES') {
-                        return;
-                    }
-                    return self.removeOnePost({route: self.$route, _id: post._id})
-                }
-            });
+
+            this.showConfirm({
+                message: getText('Remove post from server forever? Also removes attached files.'),
+                title: getText('Remove post')
+            })
+                .then(() => self.removeOnePost({route: self.$route, _id: post._id}));
         },
         onImportToJsonClick(post) {
             this.importPosts([post]);
@@ -114,21 +104,12 @@ export default {
         onRemoveCheckedClick(e) {
             let self = this;
             let posts = this.posts.filter(p => p.checked);
-            this.$vuedals.open({
-                title: getText('Remove post'),
-                props: {
-                    message: getText(`Remove ${posts.length} selected posts from server forever? Also removes attached files.`)
-                },
-                component: DialogConfirm,
-                size: 'xs',
-                dismissable: false,
-                onClose: dialogResult => {
-                    if (dialogResult !== 'YES') {
-                        return;
-                    }
-                    return self.removeCheckedPosts({route: self.$route});
-                }
-            });
+
+            this.showConfirm({
+                message: getText(`Remove ${posts.length} selected posts from server forever? Also removes attached files.`),
+                title: getText('Remove post')
+            })
+                .then(() => self.removeCheckedPosts({route: self.$route}));
         },
         onSearchSubmit(searchParameters) {
             let newQuery = queryMerge({
@@ -152,7 +133,7 @@ export default {
 
             // clear error in state after dialog dismiss
             this.showAlert(newVal)
-                .then(()=>this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), null));
+                .then(() => this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), null));
         },
         exportFromOldJsonClick(e) {
             this.$refs.exportFromOldJsonFileInput.click();
@@ -231,7 +212,7 @@ export default {
         'search-block': SearchBlock,
         'jb-pagination': JbPagination
     },
-    destroyed () {
+    destroyed() {
         this.$store.unregisterModule(storeNamespace);
     },
     /**
@@ -258,11 +239,11 @@ export default {
     asyncData({store, route, beforeRouteUpdateHook = false}) {
         let alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];
 
-        if(!beforeRouteUpdateHook) {
+        if (!beforeRouteUpdateHook) {
             store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
         }
 
-        if(alreadyFetchData) {
+        if (alreadyFetchData) {
             return Promise.resolve(true);
         }
 

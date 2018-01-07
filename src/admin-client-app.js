@@ -56,7 +56,9 @@ const router = new VueRouter({
                     path: 'post',
                     name: 'post',
                     component: PostPage,
-                    props: route => ({id: route.query.id})
+                    props: route => ({
+                        // id: route.query.id
+                    })
                 },
                 {
                     path: 'files',
@@ -94,8 +96,8 @@ Vue.use(VueRouter);
 
 // hook for vuex store filling
 Vue.mixin({
-    beforeMount () {
-        // Hook calls only in client
+    beforeCreate () {
+        // Hook calls in client and server
         const { asyncData } = this.$options;
         if (asyncData) {
             asyncData({
