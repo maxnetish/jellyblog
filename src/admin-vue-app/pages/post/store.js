@@ -84,9 +84,6 @@ const actions = {
             .get({id: route.query.id})
             .then(result => {
                 commit(mutationTypes.FETCHED_PAGE_DATA, result);
-
-                this.post = result || {};
-                this.postOriginal = cloneDeep(this.post);
             });
     },
     needTitleImages({commit, state}) {
