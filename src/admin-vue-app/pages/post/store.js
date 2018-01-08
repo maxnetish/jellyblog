@@ -1,29 +1,40 @@
 import resources from 'jb-resources';
 import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 
 const allowReadOptions = ['FOR_ALL', 'FOR_REGISTERED', 'FOR_ME'];
+const contentTypeOptions = ['MD', 'HTML'];
 
 // initial state
 function state() {
     return {
+        // Post model
         post: {},
         postOriginal: {},
 
+        // state of title images dropdaown
         titleImagesFetchBegin: false,
         titleImagesLoading: false,
         titleImagesFromServer: [],
         titleImagesJustAdded: [],
         titleImageSelectOpen: false,
 
-
-        contentMode: 'EDIT',
+        // state of tags multiselect dropdown
+        tagsFetchBegin: false,
+        tagSelectOpen: false,
         tagsFromServer: [],
         tagsJustAdded: [],
         tagsIsLoading: false,
-        tagSelectOpen: false,
+
+        // option sets for radio switches
+        allowReadOptions: allowReadOptions,
+        contentTypeOptions: contentTypeOptions,
+
+        // preview/edit of post content
+        contentMode: 'EDIT',
+
+        // when saving
         statusUpdating: false,
-        // routesMap: routesMap,
-        allowReadOptions: allowReadOptions
     };
 }
 
@@ -39,11 +50,30 @@ const mutationTypes = {
     'TITLE_IMAGES_ADDED': 'TITLE_IMAGES_ADDED',
     'TITLE_IMAGES_SELECT_OPEN_CHANGED': 'TITLE_IMAGES_SELECT_OPEN_CHANGED',
     'TITLE_IMAGE_REMOVED_FROM_SERVER': 'TITLE_IMAGE_REMOVED_FROM_SERVER',
+    'TAG_SELECT_OPEN_CHANGED': 'TAG_SELECT_OPEN_CHANGED',
+    'POST_TAGS_CHANGED': 'POST_TAGS_CHANGED',
+    'TAGS_BEGIN_FETCH': 'TAGS_BEGIN_FETCH',
+    'TAGS_FETCHED': 'TAGS_FETCHED',
+    'TAG_ADDED': 'TAG_ADDED',
+    'POST_ATTACHMENT_ADDED': 'POST_ATTACHMENT_ADDED',
+    'POST_ATTACHMENT_REMOVED': 'POST_ATTACHMENT_REMOVED',
+    'POST_CONTENT_TYPE_CHANGED': 'POST_CONTENT_TYPE_CHANGED',
+    'POST_BRIEF_CHANGED': 'POST_BRIEF_CHANGED',
+    'CONTENT_MODE_CHANGED': 'CONTENT_MODE_CHANGED',
+    'POST_CONTENT_CHANGED': 'POST_CONTENT_CHANGED',
+    'STATUS_UPDATING_CHANGED': 'STATUS_UPDATING_CHANGED',
+    'POST_STATUS_UPDATED': 'POST_STATUS_UPDATED'
 };
 
 const getters = {
     availableTitleImages(state) {
         return state.titleImagesJustAdded.concat(state.titleImagesFromServer);
+    },
+    availableTags(state) {
+        return state.tagsJustAdded.concat(state.tagsFromServer);
+    },
+    dirty(state) {
+        return !isEqual(state.post, state.postOriginal);
     }
 };
 
@@ -75,16 +105,6 @@ const actions = {
             .then(null, err => {
                 commit(mutationTypes.ERROR, err);
             });
-
-        /*
-        this.titleImagesLoading = true;
-        this.titleImageSelectOpen = true;
-        this.promiseForTitleImages
-            .then(response => {
-                self.titleImagesFromServer = response.items || [];
-                this.titleImagesLoading = false;
-            });
-        */
     },
     removeTitleImageFromServer({commit, state}, {fileInfo}) {
         return resources.file
@@ -103,6 +123,70 @@ const actions = {
                 return response;
             })
             .then(null, err => {
+                commit(mutationTypes.ERROR, err);
+            });
+    },
+    needTags({commit, state}) {
+        if (state.tagsFetchBegin) {
+            return Promise.resolve(true);
+        }
+
+        commit(mutationTypes.TAGS_BEGIN_FETCH);
+
+        return resources.tag
+            .list({statuses: ['PUB', 'DRAFT']})
+            .then(tagsWithCount => {
+                commit(mutationTypes.TAGS_FETCHED, {tags: tagsWithCount.map(o => o.tag)});
+                return tagsWithCount;
+            })
+            .then(null, err => {
+                commit(mutationTypes.ERROR, err);
+            });
+    },
+    togglePostStatus({commit, state}) {
+        let update;
+        let currentStatus = state.post.status;
+        switch (currentStatus) {
+            case 'PUB':
+                update = resources.post.unpublish;
+                break;
+            case 'DRAFT':
+                update = resources.post.publish;
+                break;
+            default:
+                update = resources.post.unpublish;
+        }
+        commit(mutationTypes.STATUS_UPDATING_CHANGED, {updating: true});
+        return update({id: state.post._id})
+            .then(response => {
+                let newStatus;
+                switch (currentStatus) {
+                    case 'PUB':
+                        newStatus = 'DRAFT';
+                        break;
+                    case 'DRAFT':
+                    default:
+                        newStatus = 'PUB';
+                        break;
+                }
+                commit(mutationTypes.STATUS_UPDATING_CHANGED, {updating: false});
+                commit(mutationTypes.POST_STATUS_UPDATED, {status: newStatus, alsoUpdateOriginalPost: true});
+            })
+            .then(null, err => {
+                commit(mutationTypes.STATUS_UPDATING_CHANGED, {updating: false});
+                commit(mutationTypes.ERROR, err);
+            });
+    },
+    submit({commit, state}) {
+        commit(mutationTypes.STATUS_UPDATING_CHANGED, {updating: true});
+        resources.post
+            .createOrUpdate(state.post)
+            .then(response => {
+                commit(mutationTypes.STATUS_UPDATING_CHANGED, {updating: false});
+                commit(mutationTypes.FETCHED_PAGE_DATA, response);
+            })
+            .then(null, err => {
+                commit(mutationTypes.STATUS_UPDATING_CHANGED, {updating: false});
                 commit(mutationTypes.ERROR, err);
             });
     }
@@ -147,6 +231,56 @@ const mutations = {
     },
     [mutationTypes.TITLE_IMAGE_REMOVED_FROM_SERVER](state, {key, indexToRemove}) {
         state[key].splice(indexToRemove, 1);
+    },
+    [mutationTypes.TAG_SELECT_OPEN_CHANGED](state, {open = false} = {}) {
+        state.tagSelectOpen = open;
+    },
+    [mutationTypes.POST_TAGS_CHANGED](state, {tags = []} = {}) {
+        state.post.tags = tags;
+    },
+    [mutationTypes.TAGS_BEGIN_FETCH](state) {
+        state.tagsFetchBegin = true;
+        state.tagsIsLoading = true;
+    },
+    [mutationTypes.TAGS_FETCHED](state, {tags = []} = {}) {
+        state.tagsFromServer = cloneDeep(tags);
+        state.tagsIsLoading = false;
+    },
+    [mutationTypes.TAG_ADDED](state, {tag}) {
+        state.tagsJustAdded.unshift(tag);
+        state.post.tags.push(tag);
+    },
+    [mutationTypes.POST_ATTACHMENT_ADDED](state, {attachmentInfo}) {
+        state.post.attachments = state.post.attachments || [];
+        state.post.attachments.unshift(attachmentInfo);
+    },
+    [mutationTypes.POST_ATTACHMENT_REMOVED](state, {attachmentIndex}) {
+        state.post.attachments.splice(attachmentIndex, 1);
+    },
+    [mutationTypes.POST_CONTENT_TYPE_CHANGED](state, {value, checked}) {
+        state.post.contentType = checked
+            ? value
+            : state.post.contentType;
+    },
+    [mutationTypes.POST_BRIEF_CHANGED](state, {value = ''} = {}) {
+        state.post.brief = value;
+    },
+    [mutationTypes.CONTENT_MODE_CHANGED](state, {value, checked}) {
+        state.contentMode = checked
+            ? value
+            : state.contentMode;
+    },
+    [mutationTypes.POST_CONTENT_CHANGED](state, {value = ''} = {}) {
+        state.post.content = value;
+    },
+    [mutationTypes.STATUS_UPDATING_CHANGED](state, {updating = false} = {}) {
+        state.statusUpdating = updating;
+    },
+    [mutationTypes.POST_STATUS_UPDATED](state, {status, alsoUpdateOriginalPost}) {
+        state.post.status = status;
+        if (alsoUpdateOriginalPost) {
+            state.postOriginal.status = status;
+        }
     }
 };
 

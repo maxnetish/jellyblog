@@ -1,22 +1,18 @@
-import resources from 'jb-resources';
 import AceEditor from '../../components/jb-vue-brace/jb-vue-brace.vue';
 import MarkdownPreview from '../../components/jb-markdown-preview/jb-markdown-preview.vue';
 import DialogAddImage from '../../components/dialog-add-image/dialog-add-image.vue';
-import DialogUploadFile from '../../components/dialog-upload-file/dialog-upload-file.vue';
+import DialogUploadFileMixin from '../../components/dialog-upload-file/mixin';
 import Multiselect from 'vue-multiselect';
 import uploadCanvas from '../../../utils/upload-image-from-canvas';
 import {getText} from '../../filters';
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
 import routesMap from '../../../../config/routes-map.json';
 import DialogAlertMixin from '../../components/dialog-alert/mixin';
 import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
 import {store as moduleStore, mutationTypes} from './store';
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 
-const allowReadOptions = ['FOR_ALL', 'FOR_REGISTERED', 'FOR_ME'];
-
 const storeNamespace = 'post';
+const contentModeOptions = ['EDIT', 'PREVIEW'];
 
 function mapStoreNamespace(n) {
     return [storeNamespace, n].join('/');
@@ -24,63 +20,46 @@ function mapStoreNamespace(n) {
 
 export default {
     name: 'post',
-    mixins: [DialogAlertMixin, DialogConfirmMixin],
+    mixins: [DialogAlertMixin, DialogConfirmMixin, DialogUploadFileMixin],
     data() {
         return {
-            // post: {},
-            contentMode: 'EDIT',
-            tagsFromServer: [],
-            tagsJustAdded: [],
-            tagsIsLoading: false,
-            tagSelectOpen: false,
-            // titleImagesFromServer: [],
-            // titleImagesJustAdded: [],
-            // titleImagesLoading: false,
-            // titleImageSelectOpen: false,
-            statusUpdating: false,
-            routesMap: routesMap,
-            allowReadOptions: allowReadOptions
+            contentModeOptions: contentModeOptions,
+            routesMap: routesMap
         }
     },
     props: {
-        // id: {
-        //     type: String,
-        //     'default': null
-        // }
+        // all get from $route
     },
     computed: {
-        ...mapState(storeNamespace, {
-            post: 'post',
-            errorState: 'errorState',
-            titleImagesFromServer: 'titleImagesFromServer',
-            titleImagesJustAdded: 'titleImagesJustAdded',
-            titleImagesLoading: 'titleImagesLoading',
-            titleImageSelectOpen: 'titleImageSelectOpen'
-        }),
-        ...mapGetters(storeNamespace, [
-            'availableTitleImages'
+        ...mapState(storeNamespace, [
+            'post',
+            'errorState',
+            'titleImagesFromServer',
+            'titleImagesJustAdded',
+            'titleImagesLoading',
+            'titleImageSelectOpen',
+            'tagSelectOpen',
+            'tagsFromServer',
+            'tagsJustAdded',
+            'tagsIsLoading',
+            'allowReadOptions',
+            'contentTypeOptions',
+            'contentMode',
+            'statusUpdating'
         ]),
-        availableTags() {
-            return this.tagsJustAdded.concat(this.tagsFromServer);
-        },
-        dirty() {
-            return !isEqual(this.post, this.postOriginal);
-        }
+        ...mapGetters(storeNamespace, [
+            'availableTitleImages',
+            'availableTags',
+            'dirty'
+        ])
     },
     methods: {
-        // fetchData() {
-        //     // if id not setted, server returns model for new post
-        //     resources.post
-        //         .get({id: this.id})
-        //         .then(result => {
-        //             this.post = result || {};
-        //             this.postOriginal = cloneDeep(this.post);
-        //         });
-        // },
         ...mapMutations(storeNamespace, {
             onAllowReadChange: mutationTypes.POST_ALLOW_READ_OPTION_CHANGED,
             onHruInput: mutationTypes.POST_HRU_CHANGED,
-            onTitleInput: mutationTypes.POST_TITLE_CHANGED
+            onTitleInput: mutationTypes.POST_TITLE_CHANGED,
+            onContentTypeChange: mutationTypes.POST_CONTENT_TYPE_CHANGED,
+            onContentModeChanged: mutationTypes.CONTENT_MODE_CHANGED
         }),
         onClearTitleImageClick(e) {
             this.$store.commit(mapStoreNamespace(mutationTypes.POST_TITLE_IMG_CHANGED));
@@ -146,61 +125,23 @@ export default {
                 });
 
         },
-        onSubmit(e) {
-            let self = this;
-            let isCreateNew = !this.post._id;
-            resources.post
-                .createOrUpdate(this.post)
-                .then(response => {
-                    if (isCreateNew) {
-                        self.$router.replace({name: 'post', query: {id: response._id}});
-                    }
-                    self.post = response;
-                    self.postOriginal = cloneDeep(this.post);
-                });
-        },
-        onTagSelectSearch(query) {
-            let self = this;
-
-            this.promiseForAvailableTags = this.promiseForAvailableTags ||
-                resources.tag.list({statuses: ['PUB', 'DRAFT']});
-
-            this.tagsIsLoading = true;
-
-            this.promiseForAvailableTags
-                .then(function (tagsWithCount) {
-                    self.tagsFromServer = tagsWithCount.map(o => o.tag);
-                    self.tagsIsLoading = false;
-                });
-        },
-        onTagSelectOpen(e) {
-            this.tagSelectOpen = true;
-        },
-        onTagSelectClose(e) {
-            this.tagSelectOpen = false;
-        },
-        addPostTag(newTag) {
-            this.tagsJustAdded.push(newTag);
-            this.post.tags.push(newTag);
-        },
         getFileInfoLabel(attachmentInfo) {
             return attachmentInfo.metadata.originalName;
         },
-        onRemoveAttachmentButtonClick(attachmentIndex) {
-            let self = this;
-
-            this.showConfirm({
-                title: getText('Remove file'),
-                message: getText('Remove attachment? File will be removed forever with post saving.')
-            })
-                .then(() => {
-                    self.post.attachments.splice(attachmentIndex, 1);
-                })
-                .then(null, err => {
-                    if (err !== 'NO') {
-                        self.showAlert({message: err});
-                    }
-                });
+        onTagSelectOpen(e) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.TAG_SELECT_OPEN_CHANGED), {open: true});
+        },
+        onTagSelectClose(e) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.TAG_SELECT_OPEN_CHANGED), {open: false});
+        },
+        onTagSelectInput(tags) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.POST_TAGS_CHANGED), {tags});
+        },
+        onTagSelectSearch(query) {
+            this.$store.dispatch(mapStoreNamespace('needTags'));
+        },
+        addPostTag(tag) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.TAG_ADDED), {tag});
         },
         onAddAttachmentButtonClick(e) {
             let self = this;
@@ -210,64 +151,71 @@ export default {
                 return;
             }
 
-            this.$vuedals.open({
-                title: getText('Upload attachment'),
-                props: {
-                    context: 'attachment',
-                    postId: this.post._id
-                },
-                component: DialogUploadFile,
-                size: 'xs',
-                dismissable: false,
-                onClose: dialogResult => {
-                    if (!dialogResult) {
+            this.showUploadFileDialog({
+                context: 'attachment',
+                postId: this.post._id,
+                title: getText('Upload attachment')
+            })
+                .then(attachmentInfo => {
+                    self.$store.commit(mapStoreNamespace(mutationTypes.POST_ATTACHMENT_ADDED), {attachmentInfo});
+                    return attachmentInfo;
+                })
+                .then(null, err => {
+                    if (err === 'cancel') {
                         return;
                     }
-                    self.post.attachments = self.post.attachments || [];
-                    self.post.attachments.unshift(Object.assign({}, dialogResult));
-                }
-            });
-        },
-        onToggleStatusButtonClick(e) {
-            let update;
-            let self = this;
-            let currentStatus = this.post.status;
-            switch (currentStatus) {
-                case 'PUB':
-                    update = resources.post.unpublish;
-                    break;
-                case 'DRAFT':
-                    update = resources.post.publish;
-                    break;
-                default:
-                    update = resources.post.unpublish;
-            }
-            this.statusUpdating = true;
-            update({id: this.post._id})
-                .then(response => {
-                    self.statusUpdating = false;
-                    switch (currentStatus) {
-                        case 'PUB':
-                            self.postOriginal.status = self.post.status = 'DRAFT';
-                            break;
-                        case 'DRAFT':
-                            self.postOriginal.status = self.post.status = 'PUB';
-                            break;
-                    }
-                }, err => {
-                    self.statusUpdating = false;
-                    console.warn(`Toggle status failed: ${err}`);
+                    self.$store.commit(mapStoreNamespace(mutationTypes.ERROR), err);
                 });
         },
-        optionAllowRead2Label(optionAllowRead) {
-            return getText(optionAllowRead);
+        onRemoveAttachmentButtonClick(attachmentIndex) {
+            let self = this;
+
+            this.showConfirm({
+                title: getText('Remove file'),
+                message: getText('Remove attachment? File will be removed forever with post saving.')
+            })
+                .then(() => {
+                    self.$store.commit(mapStoreNamespace(mutationTypes.POST_ATTACHMENT_REMOVED), {attachmentIndex});
+                    return true;
+                })
+                .then(null, err => {
+                    if (err === 'NO') {
+                        return;
+                    }
+                    self.$store.commit(mutationTypes.ERROR, err);
+                });
+        },
+        onPostBriefInput(value) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.POST_BRIEF_CHANGED), {value});
+        },
+        onPostContentInput(value) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.POST_CONTENT_CHANGED), {value});
+        },
+        onToggleStatusButtonClick(e) {
+            this.$store.dispatch(mapStoreNamespace('togglePostStatus'));
+        },
+        onSubmit(e) {
+            let self = this;
+            let isCreateNew = !this.post._id;
+            this.$store.dispatch(mapStoreNamespace('submit'))
+                .then(response => {
+                    if (response && isCreateNew) {
+                        self.$router.replace({name: self.$route.name, query: {id: response._id}});
+                    }
+                });
+        },
+        onErrorStateChanged(newVal, oldVal) {
+            if (!newVal) {
+                return;
+            }
+
+            // clear error in state after dialog dismiss
+            this.showAlert(newVal)
+                .then(() => this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), null));
         }
     },
-    // created() {
-    //     this.fetchData()
-    // },
     watch: {
-        // '$route': 'fetchData'
+        'errorState': 'onErrorStateChanged'
     },
     components: {
         'ace-editor': AceEditor,

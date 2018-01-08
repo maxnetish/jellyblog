@@ -49,6 +49,7 @@
   "bytes": "байт",
   "Post content type": "Тип содержимого публикации",
   "Markdown": "Markdown (MD)",
+  "MD": "Markdown (MD)",
   "Post brief": "Краткое содержание",
   "Post content": "Содержимое публикации",
   "Edit": "Изменить",
@@ -60,5 +61,7 @@
   "FOR_ALL": "Все",
   "FOR_REGISTERED": "Те, кто залогинился",
   "FOR_ME": "Только я",
-  "Who can read": "Кто может читать"
+  "Who can read": "Кто может читать",
+  "EDIT": "Изменить",
+  "PREVIEW": "Предварительный просмотр"
 }

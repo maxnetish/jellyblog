@@ -87,7 +87,7 @@ div
                     label.col-sm-2.control-label {{'Tags' | get-text}}
                     .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
                         multiselect(
-                        v-model="post.tags",
+                        :value="post.tags",
                         :tag-placeholder="'Add as new tag' | get-text",
                         :placeholder="'Select or add tags' | get-text",
                         :options="availableTags",
@@ -97,7 +97,8 @@ div
                         :loading="tagsIsLoading",
                         @search-change="onTagSelectSearch",
                         @open="onTagSelectOpen",
-                        @close="onTagSelectClose"
+                        @close="onTagSelectClose",
+                        @input="onTagSelectInput"
                         )
                 .form-group
                     label.col-sm-2.control-label {{'Attachments' | get-text}}
@@ -123,34 +124,26 @@ div
                 .form-group
                     label.col-sm-2.control-label {{'Post content type' | get-text}}
                     .col-sm-10
-                        label.radio-inline
-                            input(type="radio", value="MD", v-model="post.contentType")
+                        label.radio-inline(v-for="contentTypeOption in contentTypeOptions", :key="contentTypeOption", :class="{'text-muted': post.contentType!==contentTypeOption}")
+                            input(type="radio", :value="contentTypeOption", :checked="post.contentType===contentTypeOption", @change="onContentTypeChange($event.target)", name="postContentType")
                             .
-                                {{'Markdown' | get-text}}
-                        label.radio-inline
-                            input(type="radio", value="HTML", v-model="post.contentType")
-                            .
-                                {{'HTML' | get-text}}
+                                {{contentTypeOption | get-text}}
                 .form-group
                     label.col-sm-2.control-label {{'Post brief' | get-text}}
                     .col-sm-10
-                        ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value.sync="post.brief", :config="{mode: post.contentType, theme: 'Chrome'}")
+                        ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value="post.brief", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostBriefInput")
                 .form-group
                     label.col-sm-2.control-label {{'Post content' | get-text}}
                     .col-sm-10
                         div
-                            label.radio-inline
-                                input(type="radio", value="EDIT", v-model="contentMode")
+                            label.radio-inline(v-for="contentModeOption in contentModeOptions", :key="contentModeOption", :class="{'text-muted': contentMode!==contentModeOption}")
+                                input(type="radio", :value="contentModeOption", :checked="contentMode===contentModeOption", @change="onContentModeChanged($event.target)", name="contentMode")
                                 .
-                                    {{'Edit' | get-text}}
-                            label.radio-inline
-                                input(type="radio", value="PREVIEW", v-model="contentMode")
-                                .
-                                    {{'Preview' | get-text}}
+                                    {{contentModeOption | get-text}}
                         a(v-if="post.contentType==='MD'", href="https://docs.gitlab.com/ee/user/markdown.html#standard-markdown", target="_blank")
                             span Markdown docs
                             i.fa.fa-external-link._margin-5._left
-                        ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value.sync="post.content", :config="{mode: post.contentType, theme: 'Chrome'}")
+                        ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value="post.content", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostContentInput")
                         markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post.content")
                         .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
                 .form-group
@@ -163,6 +156,6 @@ div
                                 i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
                                 span._margin-5._left(v-if="post.status==='DRAFT'") {{'Publish' | get-text}}
                                 span._margin-5._left(v-if="post.status==='PUB'") {{'Make draft' | get-text}}
-                            button.btn(type="submit", :disabled="!dirty", :class="{'btn-primary': dirty, 'btn-default': !dirty}")
+                            button.btn(type="submit", :disabled="!dirty || statusUpdating", :class="{'btn-primary': dirty, 'btn-default': !dirty}")
                                 i.fa.fa-upload.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Save' | get-text}}

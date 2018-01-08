@@ -65,7 +65,7 @@ export default {
         this.editor.on("change", e => {
             let editorValue = this.editor.getValue();
             if (this.value !== editorValue) {
-                this.$emit('update:value', editorValue);
+                this.$emit('input', editorValue);
             }
         });
         this.editor.setValue(this.value, -1)
