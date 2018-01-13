@@ -9,6 +9,7 @@
     "brace": "^0.10.0",
     "bundle-loader": "^0.5.4",
     "classnames": "^2.2.5",
+    "connect-mongo": "^2.0.1",
     "cookie-parser": "^1.4.3",
     "core-decorators": "^0.15.0",
     "core-js": "^2.5.3",

@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import responseTime from 'response-time';
 import serveStatic from 'serve-static';
 import session from 'express-session';
+import ConnectMongo from 'connect-mongo';
 import passport from 'passport';
 import {setupPassport} from './passport/server';
 import multer from 'multer';
@@ -32,6 +33,7 @@ import resourcesRouter from './resources/resources-router';
 import url from 'url';
 
 const app = express();
+const MongoStore = ConnectMongo(session);
 
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 
@@ -87,13 +89,17 @@ app.use(requestLanguage({
 }));
 app.use(session({
     cookie: {
-        httpOnly: true,
+        httpOnly: true
     },
     name: 'jellyblog.id',
     proxy: true,
     secret: appConfig.cookieSecret,
-    resave: true,
-    saveUninitialized: true
+    resave: false,
+    rolling: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+    })
 }));
 app.use(flash());
 app.use(passport.initialize());
