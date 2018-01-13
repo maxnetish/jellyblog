@@ -26,7 +26,6 @@ import routesMap from '../config/routes-map.json';
 import {addEntryFromMorgan, addEntryFromErrorResponse, applyDataMigrations} from './utils-data';
 import createPaginationModel from './utils/create-pagination-model';
 import createTagsCloudModel from './utils/create-tags-cloude-model';
-import flash from 'express-flash';
 import * as i18n from './i18n';
 import BackendResources from 'jb-resources';
 import resourcesRouter from './resources/resources-router';
@@ -77,6 +76,15 @@ morgan.token('user-name', function (req, res) {
     return req.user && req.user.userName;
 });
 app.use(morgan(addEntryFromMorgan));
+
+/**
+ * serve static before sessions, passport etc...
+ * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
+ */
+app.use('/assets', serveStatic(path.resolve('pub'), {
+    index: false
+}));
+
 app.use(bodyParser.urlencoded({limit: '5mb', extended: false}));
 app.use(bodyParser.json({limit: '5mb'}));
 app.use(cookieParser());
@@ -89,7 +97,8 @@ app.use(requestLanguage({
 }));
 app.use(session({
     cookie: {
-        httpOnly: true
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 1
     },
     name: 'jellyblog.id',
     proxy: true,
@@ -101,7 +110,6 @@ app.use(session({
         mongooseConnection: mongoose.connection
     })
 }));
-app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -139,13 +147,6 @@ app.use((req, res, next) => {
     req.backendResources = new BackendResources(req);
     next();
 });
-
-/**
- * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
- */
-app.use('/assets', serveStatic(path.resolve('pub'), {
-    index: false
-}));
 
 /**
  * setup upload endpoint
@@ -205,7 +206,7 @@ app.post(routesMap.upload, uploadMiddlewareAttachment, (req, res) => {
  */
 const mongoConnectionForServeGridFs = MongoClient.connect(mongooseConfig.connectionUri);
 const contentTypeToShowInline = /^(image|video|text)\//;
-const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
+const serveGridFsByNameMiddleware = serveGridfs(mongoConnectionForServeGridFs, {
     // bucketName: 'fs'
     // serve-gridfs assumes that _id will be String (not ObjectId)
     // so serve files by names
@@ -230,7 +231,7 @@ const serveGridFsByNamemiddleware = serveGridfs(mongoConnectionForServeGridFs, {
         }
     }
 });
-app.use(fileStoreConfig.gridFsBaseUrl, serveGridFsByNamemiddleware);
+app.use(fileStoreConfig.gridFsBaseUrl, serveGridFsByNameMiddleware);
 
 /**
  * add api router
@@ -273,7 +274,9 @@ app.post(routesMap.login, function (req, res, next) {
         }
         // Generate a JSON response reflecting authentication status
         if (!user) {
-            return res.render('admin/login', {errMessage: 'Authentication failed'});
+            return res
+                .status(403)
+                .render('admin/login', {errMessage: 'Authentication failed'});
         }
         // ***********************************************************************
         // "Note that when using a custom callback, it becomes the application's
