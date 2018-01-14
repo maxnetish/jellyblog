@@ -10,6 +10,7 @@ import DialogAlertMixin from '../../components/dialog-alert/mixin';
 import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
 import {store as moduleStore, mutationTypes} from './store';
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+import {getDefaultFiller} from "../../../utils/async-store-filler";
 
 const storeNamespace = 'post';
 const contentModeOptions = ['EDIT', 'PREVIEW'];
@@ -226,17 +227,14 @@ export default {
         this.$store.unregisterModule(storeNamespace);
     },
     asyncData({store, route, beforeRouteUpdateHook = false}) {
-        let alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];
-
-        if (!beforeRouteUpdateHook) {
-            store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
-        }
-
-        if (alreadyFetchData) {
-            return Promise.resolve(true);
-        }
-
-        // fetch from server
-        return store.dispatch(mapStoreNamespace('fetchPageData'), {route});
+        return getDefaultFiller({
+            moduleStore,
+            storeNamespace,
+            storeActionName: 'fetchPageData'
+        })({
+            store,
+            route,
+            beforeRouteUpdateHook
+        });
     }
 };

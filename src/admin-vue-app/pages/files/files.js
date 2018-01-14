@@ -1,6 +1,5 @@
 import {dropdown, checkbox} from 'vue-strap';
 import routesMap from '../../../../config/routes-map.json';
-import resources from 'jb-resources';
 import JbPagination from '../../components/jb-pagination/jb-pagination.vue';
 import DialogUploadMixin from '../../components/dialog-upload-file/mixin';
 import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
@@ -9,68 +8,54 @@ import noop from '../../../utils/no-op';
 import SearchBlock from './files-search-block.vue';
 import {merge as queryMerge} from '../../../utils/query';
 import {getText} from '../../filters';
+import {mapState, mapGetters} from 'vuex';
+import {store as moduleStore, mutationTypes} from './store';
+import {getDefaultFiller} from "../../../utils/async-store-filler";
+import toInteger from "lodash/toInteger";
+
+const storeNamespace = 'files';
+
+function mapStoreNamespace(n) {
+    return [storeNamespace, n].join('/');
+}
 
 export default {
     name: 'files',
     mixins: [DialogUploadMixin, DialogConfirmMixin, DialogAlertMixin],
     data() {
         return {
-            files: [],
-            hasMore: false,
-            checkAll: false,
             routesMap: routesMap
         }
     },
-    props: {
-        page: {
-            type: Number,
-            default: 1
-        },
-        searchParameters: {
-            type: Object,
-            default: function () {
-                return {
-                    context: '',
-                    contentType: '',
-                    dateTo: '',
-                    dateFrom: ''
-                };
-            }
-        }
-    },
+    props: {},
     computed: {
-        someChecked: function () {
-            return this.files.some(p => p.checked);
+        ...mapState(storeNamespace, {
+            files: state => state.items,
+            hasMore: 'hasMore',
+            checkAll: 'checkAll'
+        }),
+        ...mapGetters(storeNamespace, [
+            'someChecked'
+        ]),
+        page: function () {
+            return toInteger(this.$route.query.p) || 1;
+        },
+        routeSearchParameters: function () {
+            return {
+                context: this.$route.query.c,
+                contentType: this.$route.query.t,
+                dateTo: this.$route.query.to,
+                dateFrom: this.$route.query.from
+            };
         }
     },
     methods: {
-        fetchPageData() {
-            resources.file
-                .find({
-                    page: this.page,
-                    context: this.searchParameters.context || undefined,
-                    contentType: this.searchParameters.contentType || undefined,
-                    dateTo: this.searchParameters.dateTo || undefined,
-                    dateFrom: this.searchParameters.dateFrom || undefined,
-                    withoutPostId: true
-                })
-                .then(result => {
-                    this.files = result.items || [];
-                    this.hasMore = result.hasMore;
-                    this.checkAll = false;
-                });
+        onCheckAllChanged({checked}) {
+            this.$store.commit(mapStoreNamespace(mutationTypes.CHECK_ALL_CHANGED), {checked});
         },
-        onRouteChanged(newVal, oldVal) {
-            this.fetchPageData();
-        },
-        onCheckAllChanged(newVal, oldVal) {
-            this.files.forEach(p => {
-                p.checked = newVal;
-            });
-        },
-        onFileCheckedCange(index) {
+        onFileCheckedChange({index, checked}) {
             // to recompute 'someChecked'
-            this.$set(this.files, index, Object.assign({}, this.files[index]));
+            this.$store.commit(mapStoreNamespace(mutationTypes.CHECK_FILE_CHANGED), {index, checked});
         },
         uploadNewFileButtonClick() {
             this.showUploadFileDialog({
@@ -81,9 +66,8 @@ export default {
                     if (!fileInfo) {
                         return;
                     }
-                    this.fetchPageData();
-                })
-                .then(null, noop);
+                    this.$store.dispatch(mapStoreNamespace('fetchPageData'), {route: this.$route});
+                });
         },
         onSearchSubmit(searchParameters) {
             let newQuery = queryMerge({
@@ -100,40 +84,56 @@ export default {
             });
         },
         removeCheckedFilesButtonClick() {
-            let self = this;
             let checkedIds = this.files.filter(f => f.checked).map(f => f.id);
             if (!checkedIds.length) {
                 return;
             }
+
             this.showConfirm({
                 message: getText('Remove one or more selected file(s) from server forever?'),
                 title: getText('Remove files')
             })
                 .then(() => {
-                    return resources.file.remove({id: checkedIds});
-                })
-                .then(res => {
-                    self.fetchPageData();
+                    return this.$store.dispatch(mapStoreNamespace('removeCheckedFiles'), {route: this.$route});
                 })
                 .then(null, err => {
                     if (err === 'NO') {
                         return;
                     }
-                    self.showAlert({message: err});
+                    this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), err);
                 });
+        },
+        onErrorStateChanged(newVal, oldVal) {
+            if (!newVal) {
+                return;
+            }
+
+            // clear error in state after dialog dismiss
+            this.showAlert(newVal)
+                .then(() => this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), null));
         }
     },
-    created() {
-        this.fetchPageData();
-    },
     watch: {
-        '$route': 'onRouteChanged',
-        'checkAll': 'onCheckAllChanged'
+        'errorState': 'onErrorStateChanged'
     },
     components: {
         'dropdown': dropdown,
         'checkbox': checkbox,
         'jb-pagination': JbPagination,
         'search-block': SearchBlock
+    },
+    destroyed() {
+        this.$store.unregisterModule(storeNamespace);
+    },
+    asyncData({store, route, beforeRouteUpdateHook = false}) {
+        return getDefaultFiller({
+            moduleStore,
+            storeNamespace,
+            storeActionName: 'fetchPageData'
+        })({
+            store,
+            route,
+            beforeRouteUpdateHook
+        });
     }
-}
+};

@@ -1,7 +1,7 @@
 .panel.panel-primary
     .panel-heading {{'Log' | get-text}}
     .panel-body
-        search-block(:initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", :initial-with-error="!!searchParameters.withError", @searchSubmit="onSearchSubmit")
+        search-block(:initial-date-from="routeSearchParameters.dateFrom", :initial-date-to="routeSearchParameters.dateTo", :initial-with-error="!!routeSearchParameters.withError", @searchSubmit="onSearchSubmit")
     .panel-body
         jb-pagination(:page="page", :hasMore="hasMore")
     table.table.table-hover

@@ -11,8 +11,9 @@ import {merge as queryMerge} from '../../../utils/query';
 // import globalStore from '../../store';
 import {store as moduleStore, mutationTypes} from './store';
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
-import toInteger from "lodash/toInteger";
-import DialogConfirmMixin from "../../components/dialog-confirm/mixin";
+import toInteger from 'lodash/toInteger';
+import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
+import {getDefaultFiller} from '../../../utils/async-store-filler';
 
 const storeNamespace = 'posts';
 
@@ -93,7 +94,13 @@ export default {
                 message: getText('Remove post from server forever? Also removes attached files.'),
                 title: getText('Remove post')
             })
-                .then(() => self.removeOnePost({route: self.$route, _id: post._id}));
+                .then(() => self.removeOnePost({route: self.$route, _id: post._id}))
+                .then(null, err => {
+                    if (err === 'NO') {
+                        return;
+                    }
+                    this.showAlert(err);
+                });
         },
         onImportToJsonClick(post) {
             this.importPosts([post]);
@@ -109,7 +116,13 @@ export default {
                 message: getText(`Remove ${posts.length} selected posts from server forever? Also removes attached files.`),
                 title: getText('Remove post')
             })
-                .then(() => self.removeCheckedPosts({route: self.$route}));
+                .then(() => self.removeCheckedPosts({route: self.$route}))
+                .then(null, err => {
+                    if (err === 'NO') {
+                        return;
+                    }
+                    this.showAlert(err);
+                });
         },
         onSearchSubmit(searchParameters) {
             let newQuery = queryMerge({
@@ -215,39 +228,15 @@ export default {
     destroyed() {
         this.$store.unregisterModule(storeNamespace);
     },
-    /**
-     * Static function to implement hydration and initial data fetch.
-     * See https://ssr.vuejs.org/ru/data.html.
-     *
-     * asyncData will call from places:
-     * 1. In server ssr to async prepare state before sync rendering:
-     *      register store module, fill state
-     * 2. In client beforeMount hook with preloaded state
-     *      register store module
-     * 3. In client beforeMount hook without preloaded state
-     *      register store module, fill state
-     * 4. In client beforeRouteUpdate hook
-     *      fill state
-     *
-     * So we going to register store module if beforeRouteUpdateHook falsy,
-     * fill state if there is no preloaded state
-     *
-     * @param store
-     * @param route
-     * @param beforeRouteUpdateHook
-     */
     asyncData({store, route, beforeRouteUpdateHook = false}) {
-        let alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];
-
-        if (!beforeRouteUpdateHook) {
-            store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
-        }
-
-        if (alreadyFetchData) {
-            return Promise.resolve(true);
-        }
-
-        // fetch from server
-        return store.dispatch(mapStoreNamespace('fetchPageData'), {route});
+        return getDefaultFiller({
+            moduleStore,
+            storeNamespace,
+            storeActionName: 'fetchPageData'
+        })({
+            store,
+            route,
+            beforeRouteUpdateHook
+        });
     }
 }

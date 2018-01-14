@@ -1,56 +1,48 @@
 import {dropdown, checkbox} from 'vue-strap';
 import routesMap from '../../../../config/routes-map.json';
-import resources from 'jb-resources';
 import JbPagination from '../../components/jb-pagination/jb-pagination.vue';
 import DialogAlertMixin from '../../components/dialog-alert/mixin';
-import noop from '../../../utils/no-op';
 import {merge as queryMerge} from '../../../utils/query';
-import {getText} from '../../filters';
 import SearchBlock from './log-search-block.vue';
+import {mapState} from 'vuex';
+import {store as moduleStore, mutationTypes} from './store';
+import {getDefaultFiller} from "../../../utils/async-store-filler";
+import toInteger from "lodash/toInteger";
+
+const storeNamespace = 'log';
+
+function mapStoreNamespace(n) {
+    return [storeNamespace, n].join('/');
+}
 
 export default {
     name: 'log',
     mixins: [DialogAlertMixin],
     data() {
         return {
-            logEntries: [],
-            hasMore: false,
             routesMap: routesMap
         }
     },
     props: {
-        page: {
-            type: Number,
-            default: 1
+
+    },
+    computed: {
+        ...mapState(storeNamespace, {
+            logEntries: state => state.items,
+            hasMore: 'hasMore'
+        }),
+        page: function () {
+            return toInteger(this.$route.query.p) || 1;
         },
-        searchParameters: {
-            type: Object,
-            default: function () {
-                return {
-                    withError: false,
-                    dateTo: '',
-                    dateFrom: ''
-                };
-            }
+        routeSearchParameters: function () {
+            return {
+                err: !!this.$route.query.e,
+                dateTo: this.$route.query.to,
+                dateFrom: this.$route.query.from
+            };
         }
     },
     methods: {
-        fetchPageData() {
-            resources.log
-                .get({
-                    page: this.page,
-                    err: this.searchParameters.withError ? 1 : undefined,
-                    dateTo: this.searchParameters.dateTo,
-                    dateFrom: this.searchParameters.dateFrom
-                })
-                .then(result => {
-                    this.logEntries = result.items || [];
-                    this.hasMore = result.hasMore;
-                });
-        },
-        onRouteChanged(newVal, oldVal) {
-            this.fetchPageData();
-        },
         onSearchSubmit(searchParameters) {
             let newQuery = queryMerge({
                 newQuery: {
@@ -65,18 +57,38 @@ export default {
                 name: 'log',
                 query: newQuery
             });
+        },
+        onErrorStateChanged(newVal, oldVal) {
+            if (!newVal) {
+                return;
+            }
+
+            // clear error in state after dialog dismiss
+            this.showAlert(newVal)
+                .then(() => this.$store.commit(mapStoreNamespace(mutationTypes.ERROR), null));
         }
     },
-    created() {
-        this.fetchPageData();
-    },
     watch: {
-        '$route': 'onRouteChanged'
+        'errorState': 'onErrorStateChanged'
     },
     components: {
         'dropdown': dropdown,
         'checkbox': checkbox,
         'jb-pagination': JbPagination,
         'search-block': SearchBlock
+    },
+    destroyed() {
+        this.$store.unregisterModule(storeNamespace);
+    },
+    asyncData({store, route, beforeRouteUpdateHook = false}) {
+        return getDefaultFiller({
+            moduleStore,
+            storeNamespace,
+            storeActionName: 'fetchPageData'
+        })({
+            store,
+            route,
+            beforeRouteUpdateHook
+        });
     }
 }

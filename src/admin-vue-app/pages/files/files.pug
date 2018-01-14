@@ -1,7 +1,7 @@
 .panel.panel-primary
     .panel-heading {{'Files' | get-text}}
     .panel-body
-        search-block(:initial-date-from="searchParameters.dateFrom", :initial-date-to="searchParameters.dateTo", @searchSubmit="onSearchSubmit")
+        search-block(:initial-date-from="routeSearchParameters.dateFrom", :initial-date-to="routeSearchParameters.dateTo", @searchSubmit="onSearchSubmit")
     .panel-body
         jb-pagination(:page="page", :hasMore="hasMore")
         .row
@@ -17,7 +17,7 @@
         thead
             tr
                 th
-                    checkbox.without-label(v-model="checkAll", type="primary")
+                    checkbox.without-label(:value="checkAll", @input="onCheckAllChanged({checked: $event})", type="primary")
                 th {{'Title' | get-text}}
                 th {{'Content type' | get-text}}
                 th {{'Length' | get-text}}
@@ -27,7 +27,7 @@
         tbody
             tr(v-for="(file, fileIndex) in files", :key="file._id")
                 td
-                    checkbox.without-label(v-model="file.checked", @input="onFileCheckedCange(fileIndex)", type="primary")
+                    checkbox.without-label(:value="file.checked", @input="onFileCheckedChange({index: fileIndex, checked: $event})", type="primary")
                 td
                     a(:href="file.url", target="_blank", :download="file.metadata.originalName")
                         span._margin-5._right {{file.metadata.originalName}}
