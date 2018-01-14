@@ -30,9 +30,12 @@ import * as i18n from './i18n';
 import BackendResources from 'jb-resources';
 import resourcesRouter from './resources/resources-router';
 import url from 'url';
+import {createRenderer as createVueServerRenderer} from 'vue-server-renderer';
+import {promiseApp as promisePublicVueAppInServer} from './pub-client-server-entry';
 
 const app = express();
 const MongoStore = ConnectMongo(session);
+const vueServerRenderer = createVueServerRenderer();
 
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 
@@ -244,7 +247,7 @@ app.use(routesMap.api, resourcesRouter);
 app.get(routesMap.admin, (req, res) => {
     // admin area, require auth
     if (req.user) {
-        if(req.user.role === 'admin') {
+        if (req.user.role === 'admin') {
             res.render('admin/index', {});
         } else {
             // logged in but not admin - reject with FORBIDDEN
@@ -323,6 +326,16 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
             res.render('pub/post', locals);
         })
         .then(null, err => next(err));
+});
+
+app.get('/ssr/*', (req, res) => {
+    const context = {url: req.url.substring(4)};
+    promisePublicVueAppInServer(context)
+        .then(app => vueServerRenderer.renderToString(app))
+        .then(html => res.end(html))
+        .then(null, err => {
+            res.status(err.code).send(httpStatuses[err.code] || 'Internal error');
+        });
 });
 
 /**
