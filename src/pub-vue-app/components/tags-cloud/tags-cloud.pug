@@ -1,0 +1,7 @@
+.jb-tags-cloud
+    span(v-for="tagInfo in tags", :key="tagInfo.tag", :class="getClassForTag(tagInfo)")
+        router-link(:to="tagInfo.url")
+            span {{tagInfo.tag}}
+//.jb-tags-cloud
+//    span(v-if="tags.length") {{tags[0].tag}}
+//    a(:href="tagInfo.url")

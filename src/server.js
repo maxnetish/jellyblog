@@ -31,11 +31,16 @@ import BackendResources from 'jb-resources';
 import resourcesRouter from './resources/resources-router';
 import url from 'url';
 import {createRenderer as createVueServerRenderer} from 'vue-server-renderer';
-import {promiseApp as promisePublicVueAppInServer} from './pub-client-server-entry';
+import {promiseApp as promisePublicVueAppInServer} from './pub-vue-app/pub-client-server-entry';
+import pubSsrTemplate from 'raw-loader!./pub-vue-app/pub-ssr-template.html';
+
 
 const app = express();
 const MongoStore = ConnectMongo(session);
-const vueServerRenderer = createVueServerRenderer();
+const vueServerRenderer = createVueServerRenderer({
+    template: pubSsrTemplate,
+    runInNewContext: 'once'
+});
 
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 
@@ -130,6 +135,7 @@ app.use((req, res, next) => {
     };
     res.locals.language = req.language;
     res.locals.user = req.user;
+    res.locals.serializedUser = JSON.stringify(req.user);
     res.locals.routesMap = routesMap;
     res.locals.query = req.query;
     // we will use legacy api becouse WHAWG api cannot work with relative urls
@@ -329,11 +335,15 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
 });
 
 app.get('/ssr/*', (req, res) => {
-    const context = {url: req.url.substring(4)};
+    // substring костыль, чтобы не расписывать отдельный роутер
+    // pass resources to use it in async store filling
+    const context = {url: req.url.substring(4), resources: req.backendResources};
+
     promisePublicVueAppInServer(context)
-        .then(app => vueServerRenderer.renderToString(app))
+        .then(({app, state}) => vueServerRenderer.renderToString(app, Object.assign(context, res.locals, {state})))
         .then(html => res.end(html))
         .then(null, err => {
+            err.code = err.code || 500;
             res.status(err.code).send(httpStatuses[err.code] || 'Internal error');
         });
 });

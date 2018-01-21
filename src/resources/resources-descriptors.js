@@ -64,5 +64,10 @@ export default [
         url: '/tag/list',
         method: 'GET',
         rpcPath: 'tag.list'
+    },
+    {
+        url: '/user/get',
+        method: 'GET',
+        rpcPath: 'user.get'
     }
 ]

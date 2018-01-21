@@ -1,5 +1,25 @@
 <template src="./admin-vue-app.pug" lang="pug"></template>
-<script src="./admin-vue-app.js"></script>
+<script>
+    import Vue from 'vue';
+    import {default as VuedalsPlugin, Component as VuedalComponent} from 'vuedals';
+    import 'vue-strap/dist/vue-strap-lang.js';
+    import routesMap from '../../config/routes-map.json';
+
+    Vue.use(VuedalsPlugin);
+
+    export default {
+        name: 'app',
+        data () {
+            return {
+                msg: 'Welcome to Your Vue.js App',
+                logoutUrl: routesMap.logout
+            }
+        },
+        components: {
+            'vuedals': VuedalComponent
+        }
+    };
+</script>
 <style lang="less">
     body {
         font-family: 'Fira Sans', sans-serif;

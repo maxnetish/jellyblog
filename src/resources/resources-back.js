@@ -20,7 +20,7 @@ function resourceFactory({descriptor, req}) {
             req: req
         };
         return actualFunc.call(context, args);
-    }
+    };
 }
 
 function ResourceBack (req) {

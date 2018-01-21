@@ -1,39 +1,71 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import createTagsCloudModel from '../../utils/create-tags-cloude-model';
+
 Vue.use(Vuex);
+
+const mutationTypes = {
+    'ERROR': 'ERROR',
+    'PAGE_DATA_FETCHED': 'PAGE_DATA_FETCHED',
+    'FETCHED_TAGS': 'FETCHED_TAGS',
+    'FETCHED_USER': 'FETCHED_USER'
+};
+
+function state() {
+    return {
+        pageDataFetched: false,
+        tags: [],
+        user: null,
+        errState: null
+    };
+}
+
+const actions = {
+    fetchPageData({commit}, {route, resources}) {
+        return Promise.all([
+            resources.tag.list(),
+            resources.user.get()
+        ])
+            .then(responses => {
+                const tagsModel = createTagsCloudModel(responses[0]);
+                const userModel = responses[1];
+                commit(mutationTypes.PAGE_DATA_FETCHED);
+                commit(mutationTypes.FETCHED_TAGS, tagsModel);
+                commit(mutationTypes.FETCHED_USER, userModel);
+            })
+            .then(null, err => {
+                commit(mutationTypes.PAGE_DATA_FETCHED);
+                commit(mutationTypes.ERROR, err);
+            });
+    }
+};
+
+const mutations = {
+    [mutationTypes.ERROR](state, err) {
+        state.errState = err;
+    },
+    [mutationTypes.PAGE_DATA_FETCHED](state) {
+        state.pageDataFetched = true;
+    },
+    [mutationTypes.FETCHED_TAGS](state, tags) {
+        state.tags = tags;
+    },
+    [mutationTypes.FETCHED_USER](state, user) {
+        state.user = user;
+    }
+};
 
 function createStore() {
     return new Vuex.Store({
-        state: function () {
-            return {
-                exampleAsyncText: ''
-            };
-        },
-        actions: {
-            fetchData({commit}) {
-                // возвращаем Promise через `store.dispatch()`
-                // чтобы мы могли понять когда данные будут загружены
-                const promise = new Promise((resolve, reject) => {
-                    setTimeout(function () {
-                        resolve('Async data');
-                    }, 1000);
-                });
-
-                return promise
-                    .then(response => {
-                        commit('setAsyncData', response);
-                    });
-            }
-        },
-        mutations: {
-            setAsyncData(state, asyncData) {
-                state.exampleAsyncText = asyncData;
-            }
-        }
+        state,
+        actions,
+        mutations,
+        strict: process.env.NODE_ENV !== 'production'
     })
 }
 
 export {
-    createStore
+    createStore,
+    mutationTypes
 };

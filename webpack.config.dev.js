@@ -4,6 +4,7 @@ const path = require('path');
 const jsFiles = /\.js$/;
 const vueComponents = /\.vue$/;
 const jsonFiles = /\.json$/;
+const pugFiles = /\.pug$/;
 const fileToExcludeFromBabel = /(node_modules|bower_components)/;
 
 module.exports = [
@@ -97,8 +98,9 @@ module.exports = [
         // front
         cache: true,
         entry: {
-            'adm': './src/admin-client-app.js',
-            'pub': './src/pub-index-app'
+            'adm': './src/admin-vue-app/admin-client-browser-entry.js',
+            'pub': './src/pub-index-app',
+            'pub-ssr': './src/pub-vue-app/pub-client-browser-entry.js'
         },
         output: {
             path: path.resolve(__dirname, 'build/pub'),
@@ -108,6 +110,9 @@ module.exports = [
         },
         target: 'web',
         plugins: [
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': '"development"',
+            }),
             new webpack.optimize.CommonsChunkPlugin({name: 'common', filename: 'common.js'})
         ],
         module: {

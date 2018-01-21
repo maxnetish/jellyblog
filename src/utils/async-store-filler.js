@@ -1,4 +1,3 @@
-
 /**
  * function to implement hydration and initial data fetch.
  * See https://ssr.vuejs.org/ru/data.html.
@@ -19,15 +18,16 @@
  * @param moduleStore - vuex store options object {namespaced:true,state,getters,actions,mutations}
  * @param {String} storeNamespace - store namespace for moduleStore
  * @param {String} storeActionName - action name in moduleStore that should takes {route} as parameter and resolves
- * @returns {Function} - function ({store, route, beforeRouteUpdateHook})
+ * @returns {Function} - function ({store, route, resources, beforeRouteUpdateHook}), resources will be passed to store action
+ * to use during server side store filling
  */
 function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetchPageData'}) {
 
-    return function defaultStoreFiller({store, route, beforeRouteUpdateHook = false}) {
+    return function defaultStoreFiller({store, route, resources, beforeRouteUpdateHook = false}) {
         const alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];
-        const mappedActionName = [storeNamespace, storeActionName].join('/');
+        const mappedActionName = storeNamespace ? [storeNamespace, storeActionName].join('/') : storeActionName;
 
-        if (!beforeRouteUpdateHook) {
+        if (!beforeRouteUpdateHook && storeNamespace && moduleStore) {
             store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
         }
 
@@ -36,7 +36,7 @@ function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetch
         }
 
         // fetch from server
-        return store.dispatch(mappedActionName, {route});
+        return store.dispatch(mappedActionName, {route, resources});
     };
 }
 

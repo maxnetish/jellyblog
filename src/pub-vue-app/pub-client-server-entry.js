@@ -1,11 +1,15 @@
-import {createApp} from './pub-vue-app/app';
+import {createRouter} from './router';
+import {createStore} from "./store";
+import {createApp} from "./app";
 
 function promiseApp(context) {
     // поскольку могут быть асинхронные хуки маршрута или компоненты,
     // мы будем возвращать Promise, чтобы сервер смог дожидаться
     // пока всё не будет готово к рендерингу.
     return new Promise((resolve, reject) => {
-        const {app, router, store} = createApp();
+        const router = createRouter();
+        const store = createStore();
+        const app = createApp({router, store});
 
         // устанавливаем маршрут для маршрутизатора серверной части
         router.push(context.url);
@@ -22,7 +26,8 @@ function promiseApp(context) {
                 if(Component.asyncData) {
                     return Component.asyncData({
                         store,
-                        route: router.currentRoute
+                        route: router.currentRoute,
+                        resources: context.resources
                     });
                 }
             }))
@@ -32,8 +37,8 @@ function promiseApp(context) {
                     // Когда мы присоединяем состояние к контексту, и есть опция `template`
                     // используемая для рендерера, состояние будет автоматически
                     // сериализовано и внедрено в HTML как `window.__INITIAL_STATE__`.
-                    context.state = store.state
-                    resolve(app)
+                    // context.state = store.state;
+                    resolve({app, state: store.state});
                 });
         }, reject);
     });
