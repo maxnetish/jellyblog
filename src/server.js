@@ -337,7 +337,7 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
 app.get('/ssr/*', (req, res) => {
     // substring костыль, чтобы не расписывать отдельный роутер
     // pass resources to use it in async store filling
-    const context = {url: req.url.substring(4), resources: req.backendResources};
+    const context = {url: req.url.substring(4), resources: req.backendResources, language: req.language};
 
     promisePublicVueAppInServer(context)
         .then(({app, state}) => vueServerRenderer.renderToString(app, Object.assign(context, res.locals, {state})))

@@ -1,5 +1,3 @@
-import {createRouter} from './router';
-import {createStore} from "./store";
 import {createApp} from "./app";
 
 function promiseApp(context) {
@@ -7,9 +5,7 @@ function promiseApp(context) {
     // мы будем возвращать Promise, чтобы сервер смог дожидаться
     // пока всё не будет готово к рендерингу.
     return new Promise((resolve, reject) => {
-        const router = createRouter();
-        const store = createStore();
-        const app = createApp({router, store});
+        const {app, router, store} = createApp({resources: context.resources, language: context.language});
 
         // устанавливаем маршрут для маршрутизатора серверной части
         router.push(context.url);

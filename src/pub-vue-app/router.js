@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import VueRouter from 'vue-router';
 import routesMap from '../../config/routes-map.json';
 import App from './pub-vue-app.vue';
@@ -6,9 +5,9 @@ import App from './pub-vue-app.vue';
 import ComponentEmpty from './component-empty.vue';
 import Page404 from './page-404.vue'
 
-Vue.use(VueRouter);
+function createRouter({Vue}) {
+    Vue.use(VueRouter);
 
-function createRouter() {
     return new VueRouter({
         fallback: false,
         base: '/ssr/',

@@ -1,6 +1,62 @@
 import Vue from 'vue';
+import {createRouter} from './router';
+import {createStore} from "./store";
+import {createGetTextFilter} from "./filters/get-text";
 
-function createApp({router, store}) {
+function registerGlobals({resources, language}){
+    // hook for vuex store filling
+    Vue.mixin({
+        beforeCreate() {
+            // Hook calls in client and server
+            const {asyncData, name} = this.$options;
+            if (asyncData) {
+                console.log('before create hook with ' + name);
+                const {asyncData, name} = this.$options;
+                asyncData({
+                    store: this.$store,
+                    route: this.$route,
+                    resources
+                });
+            }
+        }
+    });
+
+// hook for vuex store filling
+    Vue.mixin({
+        beforeRouteUpdate(to, from, next) {
+            // hook calls only in client
+            const {asyncData, name} = this.$options;
+            if (asyncData) {
+                console.log('before route update hook with ' + name);
+                asyncData({
+                    store: this.$store,
+                    route: to,
+                    beforeRouteUpdateHook: true,
+                    resources
+                })
+                    .then(next)
+                    .then(null, next);
+            } else {
+                next();
+            }
+        }
+    });
+
+    Vue.filter('get-text', createGetTextFilter(language))
+}
+
+function createApp({initialState, resources, language}) {
+
+    const router = createRouter({Vue});
+    const store = createStore({Vue});
+
+    // hydration (_before_ app instantiate!)
+    if (initialState) {
+        store.replaceState(initialState);
+    }
+
+    registerGlobals({resources, language});
+
     const app = new Vue({
         // внедряем маршрутизатор в корневой экземпляр Vue
         router,
@@ -12,7 +68,7 @@ function createApp({router, store}) {
     });
 
     // возвращаем и приложение и маршрутизатор и хранилище
-    return app;
+    return {app, router, store};
 }
 
 export {

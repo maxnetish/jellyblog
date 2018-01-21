@@ -1,9 +1,6 @@
-import Vue from 'vue';
 import Vuex from 'vuex';
 
 import createTagsCloudModel from '../../utils/create-tags-cloude-model';
-
-Vue.use(Vuex);
 
 const mutationTypes = {
     'ERROR': 'ERROR',
@@ -56,7 +53,9 @@ const mutations = {
     }
 };
 
-function createStore() {
+function createStore({Vue}) {
+    Vue.use(Vuex);
+
     return new Vuex.Store({
         state,
         actions,
