@@ -178,7 +178,7 @@ postSchema.static({
             });
         }
 
-        return this.aggregate(
+        return this.aggregate([
             {$match: matchOptions},
             {$project: {_id: 0, tags: 1}},
             {$unwind: '$tags'},
@@ -186,7 +186,7 @@ postSchema.static({
             {$group: {_id: '$tag', count: {$sum: 1}}},
             {$project: {_id: 0, tag: '$_id', count: 1}},
             {$sort: {tag: 1}}
-        )
+        ])
             .allowDiskUse(true)
             .exec();
     },

@@ -55,8 +55,7 @@ setupPassport(passport);
 mongoose.Promise = global.Promise;
 mongoose.connect(mongooseConfig.connectionUri,
     Object.assign(mongooseConfig.connectionOptions, {
-        promiseLibrary: global.Promise,
-        useMongoClient: true
+        promiseLibrary: global.Promise
     }))
     .then(response => {
         console.info(`Connected to database ${mongooseConfig.connectionUri}`);
