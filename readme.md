@@ -93,6 +93,7 @@ _app.json_:
 _pub-settings.json_:
 ```json
 {
-  "GoogleAnalyticsApiKey": "UA-GOOGLE_KEY_HERE"
+  "GoogleAnalyticsApiKey": "UA-GOOGLE_KEY_HERE",
+  "postsPerPage": 5
 }
 ```

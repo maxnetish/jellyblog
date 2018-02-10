@@ -4,6 +4,7 @@ import App from './pub-vue-app.vue';
 
 import ComponentEmpty from './component-empty.vue';
 import Page404 from './page-404.vue'
+import IndexComponent from './pages/page-index/page-index.vue';
 
 function createRouter({Vue}) {
     Vue.use(VueRouter);
@@ -21,31 +22,27 @@ function createRouter({Vue}) {
                         name: 'Index',
                         path: '',
                         components: {
-                            mainContent: ComponentEmpty,
-                            footer: ComponentEmpty
+                            mainContent: IndexComponent
                         }
                     },
                     {
                         name: 'Post',
                         path: routesMap.post + '/:postId',
                         components: {
-                            mainContent: ComponentEmpty,
-                            footer: ComponentEmpty
+                            mainContent: ComponentEmpty
                         }
                     },
                     {
                         name: 'Tag',
                         path: routesMap.tag + '/:tagId',
                         components: {
-                            mainContent: ComponentEmpty,
-                            footer: ComponentEmpty
+                            mainContent: ComponentEmpty
                         }
                     },
                     {
                         path: '*',
                         components: {
-                            mainContent: Page404,
-                            footer: ComponentEmpty
+                            mainContent: Page404
                         }
                     }
                 ]

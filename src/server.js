@@ -333,6 +333,9 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
         .then(null, err => next(err));
 });
 
+/**
+ * Experimental isomorphic entry point
+ */
 app.get('/ssr/*', (req, res) => {
     // substring костыль, чтобы не расписывать отдельный роутер
     // pass resources to use it in async store filling
