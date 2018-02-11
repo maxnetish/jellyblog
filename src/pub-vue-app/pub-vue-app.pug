@@ -2,7 +2,6 @@
     component-header
     .clear.body-row.page-content
         .body-row-content.flex-ct
-            section.main-content
-                router-view(name="mainContent", view-name="mainContent")
+            router-view(name="mainContent", view-name="mainContent")
             component-sidebar(:tags="tags")
     component-footer(:user="user")

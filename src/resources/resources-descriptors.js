@@ -40,6 +40,8 @@ export default [
         rpcPath: 'post.list'
     },
     {
+        url: '/post/pub-get',
+        method: 'GET',
         rpcPath: 'post.pubGet'
     },
     {
@@ -48,6 +50,8 @@ export default [
         rpcPath: 'post.publish'
     },
     {
+        url: '/post/pub-list',
+        method: 'GET',
         rpcPath: 'post.pubList'
     },
     {

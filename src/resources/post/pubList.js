@@ -28,6 +28,7 @@ function mapPost(p) {
 
 function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, tag, from, to, q} = {}) {
     page = parseInt(page, 10) || 1;
+    postsPerPage = parseInt(postsPerPage, 10) || mongooseConfig.paginationDefaultLimit;
 
     let self = this;
     let projection = '_id contentType createDate updateDate pubDate titleImg title brief content tags hru';

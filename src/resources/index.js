@@ -29,8 +29,8 @@ export default {
         import: postImport,
         list: postList,
         pubGet: postPubGet,
-        publish: postPublish,
         pubList: postPubList,
+        publish: postPublish,
         remove: postRemove,
         unpublish: postUnpublish
     },

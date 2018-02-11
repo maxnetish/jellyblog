@@ -1,1 +1,8 @@
-h1 Index page here
+section.main-content
+    component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
+    div(v-for="post in posts", :key="post._id")
+        h4 {{post.title}}
+    component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
+    article.post(v-if="!posts.length")
+        div.content Здесь пока ничего не опубликовано, но скоро будет.
+

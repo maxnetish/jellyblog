@@ -1,8 +1,10 @@
 import {mapState} from 'vuex';
 import {getDefaultFiller} from "../../../utils/async-store-filler";
 import {store as moduleStore, mutationTypes} from './store';
+import Pagination from '../../components/pagination/pagination.vue';
 
 const storeNamespace = 'page-index';
+
 
 export default {
     name: "page-index",
@@ -12,12 +14,14 @@ export default {
     computed: {
         ...mapState(storeNamespace, [
             'posts',
-            'pagination',
+            'page',
+            'hasMore',
             'errState'
         ])
     },
     components: {
         // 'component-header': ComponentPubHeader
+        'component-pagination': Pagination
     },
     destroyed() {
         this.$store.unregisterModule(storeNamespace);

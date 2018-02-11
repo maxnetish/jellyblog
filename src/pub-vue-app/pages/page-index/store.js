@@ -6,7 +6,8 @@ import createPaginationModel from "../../../utils/create-pagination-model";
 function state() {
     return {
         posts: [],
-        pagination: {},
+        page: 1,
+        hasMore: false,
         errState: null
     };
 }
@@ -26,14 +27,8 @@ const actions = {
             q: route.query.q
         })
             .then(findPosts => {
-                let pagination = createPaginationModel({
-                    currentUrl: route.url,
-                    currentPage: findPosts.page,
-                    hasMore: findPosts.hasMore
-                });
-                let posts = findPosts.items;
                 commit(mutationTypes.ERROR, null);
-                commit(mutationTypes.FETCHED_PAGE_DATA, {posts, pagination});
+                commit(mutationTypes.FETCHED_PAGE_DATA, findPosts);
             })
             .then(null, err => {
                 commit(mutationTypes.ERROR, err);
@@ -45,9 +40,10 @@ const mutations = {
     [mutationTypes.ERROR](state, err) {
         state.errState = err;
     },
-    [mutationTypes.FETCHED_PAGE_DATA](state, {posts = [], pagination = {}} = {}) {
-        state.posts = posts;
-        state.pagination = pagination;
+    [mutationTypes.FETCHED_PAGE_DATA](state, {items = [], page = 1, hasMore = false}) {
+        state.posts = items;
+        state.page = page;
+        state.hasMore = hasMore;
     }
 };
 
