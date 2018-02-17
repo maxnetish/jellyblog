@@ -124,6 +124,7 @@ app.use(passport.session());
  * fill locals to pass it to view
  */
 app.use((req, res, next) => {
+    // after move to SSR remove some of...
     res.locals.getText = key => i18n.getText(key, req.language);
     res.locals.dateTimeToLocaleString = function ({date, format = 'LL'} = {}) {
         if (!date) {

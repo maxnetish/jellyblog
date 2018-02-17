@@ -30,7 +30,7 @@ function mapPost(p) {
 
 function fetch({id, allowDraft = false} = {}) {
     let self = this;
-    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead';
+    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead author';
 
     let opts = {
         lean: false,
@@ -61,6 +61,5 @@ function fetch({id, allowDraft = false} = {}) {
 }
 
 export default applyCheckPermissions({
-    directCall: true,
     resourceFn: fetch
 });

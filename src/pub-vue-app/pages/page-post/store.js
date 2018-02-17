@@ -1,11 +1,8 @@
-import pubAppSettings from '../../../../config/pub-settings.json';
 
 /// initial state
 function state() {
     return {
-        posts: [],
-        page: 1,
-        hasMore: false,
+        post: null,
         errState: null
     };
 }
@@ -19,14 +16,12 @@ const getters = {};
 
 const actions = {
     fetchPageData({commit}, {route, resources}) {
-        return resources.post.pubList({
-            page: route.query.page,
-            postsPerPage: pubAppSettings.postsPerPage || 5,
-            q: route.query.q
+        return resources.post.pubGet({
+            id: route.params.postId
         })
-            .then(findPosts => {
+            .then(post => {
                 commit(mutationTypes.ERROR, null);
-                commit(mutationTypes.FETCHED_PAGE_DATA, findPosts);
+                commit(mutationTypes.FETCHED_PAGE_DATA, {post});
             })
             .then(null, err => {
                 commit(mutationTypes.ERROR, err);
@@ -38,10 +33,8 @@ const mutations = {
     [mutationTypes.ERROR](state, err) {
         state.errState = err;
     },
-    [mutationTypes.FETCHED_PAGE_DATA](state, {items = [], page = 1, hasMore = false}) {
-        state.posts = items;
-        state.page = page;
-        state.hasMore = hasMore;
+    [mutationTypes.FETCHED_PAGE_DATA](state, {post = null} = {}) {
+        state.post = post;
     }
 };
 

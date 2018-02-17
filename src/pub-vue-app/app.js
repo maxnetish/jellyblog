@@ -2,6 +2,8 @@ import Vue from 'vue';
 import {createRouter} from './router';
 import {createStore} from "./store";
 import {createGetTextFilter} from "./filters/get-text";
+import {createLocaleDatetimeFilter} from './filters/date-to-locale-string';
+import {createDatetimeToIsoFilter} from './filters/date-to-iso-string';
 
 function registerGlobals({resources, language}){
     // hook for vuex store filling
@@ -11,7 +13,6 @@ function registerGlobals({resources, language}){
             const {asyncData, name} = this.$options;
             if (asyncData) {
                 console.log('before create hook with ' + name);
-                const {asyncData, name} = this.$options;
                 asyncData({
                     store: this.$store,
                     route: this.$route,
@@ -21,7 +22,7 @@ function registerGlobals({resources, language}){
         }
     });
 
-// hook for vuex store filling
+    // hook for vuex store filling
     Vue.mixin({
         beforeRouteUpdate(to, from, next) {
             // hook calls only in client
@@ -42,7 +43,9 @@ function registerGlobals({resources, language}){
         }
     });
 
-    Vue.filter('get-text', createGetTextFilter(language))
+    Vue.filter('get-text', createGetTextFilter(language));
+    Vue.filter('locale-datetime', createLocaleDatetimeFilter(language));
+    Vue.filter('date-to-iso-string', createDatetimeToIsoFilter());
 }
 
 function createApp({initialState, resources, language}) {

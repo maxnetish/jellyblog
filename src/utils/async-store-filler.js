@@ -36,6 +36,7 @@ function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetch
         }
 
         // fetch from server
+        console.log('Really store dispatch ', mappedActionName);
         return store.dispatch(mappedActionName, {route, resources});
     };
 }

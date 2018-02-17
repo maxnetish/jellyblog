@@ -23,7 +23,7 @@ export default {
     },
     asyncData({store, route, beforeRouteUpdateHook = false, resources}) {
         if (!store.state.pageDataFetched) {
-            console.log('Really fill store...');
+            console.log('Really fill store root store...');
             return getDefaultFiller({
                 storeActionName: 'fetchPageData'
             })({
@@ -33,7 +33,7 @@ export default {
                 resources
             });
         }
-        console.log('Store already filled');
+        console.log('Root store already filled');
         return Promise.resolve(true);
     }
 }
