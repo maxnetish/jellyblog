@@ -5,37 +5,54 @@ import {createGetTextFilter} from "./filters/get-text";
 import {createLocaleDatetimeFilter} from './filters/date-to-locale-string';
 import {createDatetimeToIsoFilter} from './filters/date-to-iso-string';
 
-function registerGlobals({resources, language}){
+function registerGlobals({resources, language}) {
     // hook for vuex store filling
     Vue.mixin({
         beforeCreate() {
             // Hook calls in client and server
-            const {asyncData, name} = this.$options;
+            // We need this hook only in browser
+            if (this.$isServer) {
+                return;
+            }
+            const {asyncData, name, scrollToAfterFetchData} = this.$options;
+            const {$root} = this;
             if (asyncData) {
                 console.log('before create hook with ' + name);
-                asyncData({
+                Promise.resolve(asyncData({
                     store: this.$store,
                     route: this.$route,
                     resources
-                });
+                }))
+                    .then((res) => {
+                        if(res && scrollToAfterFetchData){
+                            $root.$emit('SCROLL_TO', scrollToAfterFetchData);
+                        }
+                        return res;
+                    });
             }
-        }
-    });
-
-    // hook for vuex store filling
-    Vue.mixin({
+        },
         beforeRouteUpdate(to, from, next) {
             // hook calls only in client
-            const {asyncData, name} = this.$options;
+            const {asyncData, name, scrollToAfterFetchData} = this.$options;
+            const {$root} = this;
             if (asyncData) {
                 console.log('before route update hook with ' + name);
-                asyncData({
+                Promise.resolve(asyncData({
                     store: this.$store,
                     route: to,
                     beforeRouteUpdateHook: true,
                     resources
-                })
-                    .then(next)
+                }))
+                    .then((res => {
+                        if(res && scrollToAfterFetchData){
+                            $root.$emit('SCROLL_TO', scrollToAfterFetchData);
+                        }
+                        return res;
+                    }))
+                    .then(res => {
+                        next();
+                        return res;
+                    })
                     .then(null, next);
             } else {
                 next();
@@ -46,6 +63,25 @@ function registerGlobals({resources, language}){
     Vue.filter('get-text', createGetTextFilter(language));
     Vue.filter('locale-datetime', createLocaleDatetimeFilter(language));
     Vue.filter('date-to-iso-string', createDatetimeToIsoFilter());
+}
+
+function registerRootEvents({app}) {
+    // to smoothly scroll to element after fetch page data
+    app.$on('SCROLL_TO', function (scrollToSelector) {
+        if(!scrollToSelector){
+            return;
+        }
+        let scrollToEl = document.querySelector(scrollToSelector);
+        if(!scrollToEl) {
+            return;
+        }
+        console.log('SCROLL_TO ', scrollToEl);
+        scrollToEl.scrollIntoView({
+            block: 'start',
+            inline: 'nearest',
+            behavior: 'smooth'
+        });
+    })
 }
 
 function createApp({initialState, resources, language}) {
@@ -65,10 +101,12 @@ function createApp({initialState, resources, language}) {
         router,
         store,
         el: '#vue-app',
-        render (h) {
+        render(h) {
             return h('router-view');
         }
     });
+
+    registerRootEvents({app});
 
     // возвращаем и приложение и маршрутизатор и хранилище
     return {app, router, store};

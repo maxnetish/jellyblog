@@ -32,7 +32,7 @@ function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetch
         }
 
         if (alreadyFetchData) {
-            return Promise.resolve(true);
+            return Promise.resolve(false);
         }
 
         // fetch from server

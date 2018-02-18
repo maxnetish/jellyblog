@@ -22,7 +22,8 @@ const actions = {
         return resources.post.pubList({
             page: route.query.page,
             postsPerPage: pubAppSettings.postsPerPage || 5,
-            q: route.query.q
+            q: route.query.q,
+            tag: route.params.tagId
         })
             .then(findPosts => {
                 commit(mutationTypes.ERROR, null);

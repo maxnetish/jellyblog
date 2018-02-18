@@ -11,7 +11,7 @@ const mutationTypes = {
 
 function state() {
     return {
-        pageDataFetched: false,
+        pageDataDirty: true,
         tags: [],
         user: null,
         errState: null
@@ -30,10 +30,12 @@ const actions = {
                 commit(mutationTypes.PAGE_DATA_FETCHED);
                 commit(mutationTypes.FETCHED_TAGS, tagsModel);
                 commit(mutationTypes.FETCHED_USER, userModel);
+                return responses;
             })
             .then(null, err => {
                 commit(mutationTypes.PAGE_DATA_FETCHED);
                 commit(mutationTypes.ERROR, err);
+                return false;
             });
     }
 };
@@ -43,7 +45,7 @@ const mutations = {
         state.errState = err;
     },
     [mutationTypes.PAGE_DATA_FETCHED](state) {
-        state.pageDataFetched = true;
+        state.pageDataDirty = false;
     },
     [mutationTypes.FETCHED_TAGS](state, tags) {
         state.tags = tags;

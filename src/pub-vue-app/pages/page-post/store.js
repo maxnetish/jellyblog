@@ -22,9 +22,11 @@ const actions = {
             .then(post => {
                 commit(mutationTypes.ERROR, null);
                 commit(mutationTypes.FETCHED_PAGE_DATA, {post});
+                return post;
             })
             .then(null, err => {
                 commit(mutationTypes.ERROR, err);
+                return false;
             });
     }
 };

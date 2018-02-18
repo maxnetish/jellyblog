@@ -6,6 +6,7 @@ import ComponentEmpty from './component-empty.vue';
 import Page404 from './page-404.vue'
 import IndexPageComponent from './pages/page-index/page-index.vue';
 import PostPageComponent from './pages/page-post/page-post.vue';
+import TagPageComponent from './pages/page-tag/page-tag.vue';
 
 function createRouter({Vue}) {
     Vue.use(VueRouter);
@@ -19,30 +20,7 @@ function createRouter({Vue}) {
                 return savedPosition;
             }
 
-            let scrollToAnchorRoute = to.matched.find(m => !!m.meta.scrollToAnchor);
-            let scrollToAnchor = scrollToAnchorRoute ? scrollToAnchorRoute.meta.scrollToAnchor : null;
-            // FIXME incorrect scroll because of async loading data
-            if (document.querySelector(scrollToAnchor)) {
-                return {
-                    selector: scrollToAnchor
-                };
-                // return new Promise(resolve => {
-                //     setTimeout(() => {
-                //         resolve({
-                //             selector: scrollToAnchor
-                //         });
-                //     }, 1000);
-                // })
-            }
-            // if (scrollToAnchor) {
-            // return {
-            //     selector: scrollToAnchor
-            // };
-            // return {
-            //     x: 0,
-            //     y: 220
-            // }
-            // }
+            // scroll in SCROLL_TO handler - after get data
 
             return false;
         },
@@ -63,16 +41,13 @@ function createRouter({Vue}) {
                         path: routesMap.post + '/:postId',
                         components: {
                             mainContent: PostPageComponent
-                        },
-                        meta: {
-                            scrollToAnchor: '#scroll-anchor'
                         }
                     },
                     {
                         name: 'Tag',
                         path: routesMap.tag + '/:tagId',
                         components: {
-                            mainContent: ComponentEmpty
+                            mainContent: TagPageComponent
                         }
                     },
                     {

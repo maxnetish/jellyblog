@@ -1,36 +1,40 @@
 <template lang="pug">
     section.main-content
-        span(id="scroll-anchor")
-        component-post(v-if="post", :post="post", mode="FULL")
+        h4.tag-page-title
+            span {{'Posts with tag ' | get-text}}
+            q {{$route.params.tagId}}
+        component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
+        component-post(v-for="post in posts", :key="post.id", :post="post", mode="PREVIEW")
+        component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
 </template>
 
 <script>
     import {mapState} from 'vuex';
     import {getDefaultFiller} from "../../../utils/async-store-filler";
     import {store as moduleStore, mutationTypes} from './store';
+    import Pagination from '../../components/pagination/pagination.vue';
     import PostComponent from '../../components/post/post.vue';
 
-    const storeNamespace = 'page-post';
-
+    const storeNamespace = 'page-tag';
 
     export default {
-        name: "pub-post",
+        name: "page-tag",
         data() {
             return {};
         },
         computed: {
             ...mapState(storeNamespace, [
-                'post',
+                'posts',
+                'page',
+                'hasMore',
                 'errState'
             ])
         },
         components: {
+            // 'component-header': ComponentPubHeader
+            'component-pagination': Pagination,
             'component-post': PostComponent
         },
-        destroyed() {
-            this.$store.unregisterModule(storeNamespace);
-        },
-        scrollToAfterFetchData: '#scroll-anchor',
         asyncData({store, route, beforeRouteUpdateHook = false, resources}) {
             return getDefaultFiller({
                 storeActionName: 'fetchPageData',
@@ -42,10 +46,15 @@
                 beforeRouteUpdateHook,
                 resources
             });
+            // console.log('Store already filled, ', storeNamespace);
+            // return Promise.resolve(true);
         }
     };
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+.tag-page-title {
+    padding: 10px;
+    margin: 0;
+}
 </style>

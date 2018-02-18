@@ -22,8 +22,7 @@ export default {
         'component-footer': ComponentFooter
     },
     asyncData({store, route, beforeRouteUpdateHook = false, resources}) {
-        if (!store.state.pageDataFetched) {
-            console.log('Really fill store root store...');
+        if (store.state.pageDataDirty) {
             return getDefaultFiller({
                 storeActionName: 'fetchPageData'
             })({
@@ -33,7 +32,6 @@ export default {
                 resources
             });
         }
-        console.log('Root store already filled');
-        return Promise.resolve(true);
+        return Promise.resolve(false);
     }
 }

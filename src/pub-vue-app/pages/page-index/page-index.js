@@ -24,7 +24,6 @@ export default {
         'component-pagination': Pagination,
         'component-post': PostComponent
     },
-    storeNamespace,
     asyncData({store, route, beforeRouteUpdateHook = false, resources}) {
         return getDefaultFiller({
             storeActionName: 'fetchPageData',
