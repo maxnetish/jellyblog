@@ -52,8 +52,6 @@ Vue.use(VueRouter);
 
 function createRouter() {
     const router = new VueRouter({routes});
-    // Use vue router
-    // Vue.use(VueRouter);
     return router;
 }
 

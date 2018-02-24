@@ -15,7 +15,10 @@ import resources from 'jb-resources';
 const langFromMarkup = document.getElementsByTagName('html')[0].lang || 'en';
 const initialState = window.__INITIAL_STATE__;
 
-const {app, router, store} = createApp({initialState, resources, language: langFromMarkup});
+// const {app, router, store} = createApp({initialState, resources, language: langFromMarkup});
+
+createApp({initialState, resources, language: langFromMarkup})
+    .then(null, err => console.error('Sorry, couldn\'t create app: ', err));
 
 // предполагается, что у корневого элемента в шаблоне App.vue есть элемент с `id="app"`
 // app.$mount('#vue-app');

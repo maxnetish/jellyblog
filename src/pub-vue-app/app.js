@@ -1,11 +1,10 @@
 import Vue from 'vue';
 import {createRouter} from './router';
 import {createStore} from "./store";
-import {createGetTextFilter} from "./filters/get-text";
-import {createLocaleDatetimeFilter} from './filters/date-to-locale-string';
-import {createDatetimeToIsoFilter} from './filters/date-to-iso-string';
+import {registerAsync as registerFilters} from './filters';
 
 function registerGlobals({resources, language}) {
+    // sync globals
     // hook for vuex store filling
     Vue.mixin({
         beforeCreate() {
@@ -24,7 +23,7 @@ function registerGlobals({resources, language}) {
                     resources
                 }))
                     .then((res) => {
-                        if(res && scrollToAfterFetchData){
+                        if (res && scrollToAfterFetchData) {
                             $root.$emit('SCROLL_TO', scrollToAfterFetchData);
                         }
                         return res;
@@ -44,7 +43,7 @@ function registerGlobals({resources, language}) {
                     resources
                 }))
                     .then((res => {
-                        if(res && scrollToAfterFetchData){
+                        if (res && scrollToAfterFetchData) {
                             $root.$emit('SCROLL_TO', scrollToAfterFetchData);
                         }
                         return res;
@@ -60,19 +59,17 @@ function registerGlobals({resources, language}) {
         }
     });
 
-    Vue.filter('get-text', createGetTextFilter(language));
-    Vue.filter('locale-datetime', createLocaleDatetimeFilter(language));
-    Vue.filter('date-to-iso-string', createDatetimeToIsoFilter());
+    return registerFilters(Vue, {language});
 }
 
 function registerRootEvents({app}) {
     // to smoothly scroll to element after fetch page data
     app.$on('SCROLL_TO', function (scrollToSelector) {
-        if(!scrollToSelector){
+        if (!scrollToSelector) {
             return;
         }
         let scrollToEl = document.querySelector(scrollToSelector);
-        if(!scrollToEl) {
+        if (!scrollToEl) {
             return;
         }
         console.log('SCROLL_TO ', scrollToEl);
@@ -94,22 +91,21 @@ function createApp({initialState, resources, language}) {
         store.replaceState(initialState);
     }
 
-    registerGlobals({resources, language});
-
-    const app = new Vue({
-        // внедряем маршрутизатор в корневой экземпляр Vue
-        router,
-        store,
-        el: '#vue-app',
-        render(h) {
-            return h('router-view');
-        }
-    });
-
-    registerRootEvents({app});
-
-    // возвращаем и приложение и маршрутизатор и хранилище
-    return {app, router, store};
+    return registerGlobals({resources, language})
+        .then(() => {
+            const app = new Vue({
+                // внедряем маршрутизатор в корневой экземпляр Vue
+                router,
+                store,
+                el: '#vue-app',
+                render(h) {
+                    return h('router-view');
+                }
+            });
+            registerRootEvents({app});
+            // возвращаем и приложение и маршрутизатор и хранилище
+            return {app, router, store};
+        });
 }
 
 export {

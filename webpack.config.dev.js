@@ -105,7 +105,7 @@ module.exports = [
         output: {
             path: path.resolve(__dirname, 'build/pub'),
             filename: '[name].js',
-            chunkFilename: '[id].chunk.js',
+            chunkFilename: '[name].chunk.js',
             publicPath: '/assets/'
         },
         target: 'web',

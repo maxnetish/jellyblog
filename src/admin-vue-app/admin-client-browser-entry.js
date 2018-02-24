@@ -29,3 +29,5 @@ const app = new Vue({
 });
 
 export default app;
+
+// Quazar http://quasar-framework.org/

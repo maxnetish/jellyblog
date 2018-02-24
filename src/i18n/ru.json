@@ -1,5 +1,6 @@
 {
   "MM/dd/yyyy": "dd MMMM yyyy",
+  "MMMM D YYYY": "D MMMM YYYY",
   "Edit post": "Измененить",
   "Created": "Создан",
   "Updated": "Обновлён",
