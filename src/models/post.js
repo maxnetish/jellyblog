@@ -132,21 +132,29 @@ postSchema.static({
      * @param user
      * @returns {{allowView: boolean, allowUpdate: boolean}}
      */
-    mapPermissions: function ({post, user}) {
+    mapPermissions: function ({post, user = {}}) {
         let result = {
             allowView: false,
             allowUpdate: false
         };
 
-        switch (post.allowRead) {
-            case 'FOR_REGISTERED':
-                result.allowView = !!(user && user.userName);
+        switch (post.status) {
+            case 'PUB':
+                switch (post.allowRead) {
+                    case 'FOR_REGISTERED':
+                        result.allowView = !!user.userName;
+                        break;
+                    case 'FOR_ME':
+                        result.allowView = user.userName === post.author;
+                        break;
+                    case 'FOR_ALL':
+                        result.allowView = true;
+                        break;
+                }
                 break;
-            case 'FOR_ME':
+            case 'DRAFT':
+                // only author can view drafts
                 result.allowView = user.userName === post.author;
-                break;
-            case 'FOR_ALL':
-                result.allowView = true;
                 break;
         }
 

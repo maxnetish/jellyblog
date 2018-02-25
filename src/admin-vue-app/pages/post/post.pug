@@ -149,7 +149,7 @@ div
                 .form-group
                     .col-sm-12.text-right
                         .btn-group(role="group")
-                            a.btn.btn-primary(:disabled="!post._id", :href="post._id ? routesMap.preview + '/' + post._id : 'javascript:void 0'", target="_blank")
+                            a.btn.btn-primary(:disabled="!post._id", :href="post._id ? routesMap.post + '/' + post._id : 'javascript:void 0'", target="_blank")
                                 i.fa.fa-plug.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Post preview' | get-text}}
                             button.btn(type="button", :disabled="!post._id || statusUpdating", :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}", @click="onToggleStatusButtonClick")

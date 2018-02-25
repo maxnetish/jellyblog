@@ -12,7 +12,6 @@
 
     const storeNamespace = 'page-post';
 
-
     export default {
         name: "pub-post",
         data() {
@@ -26,6 +25,14 @@
         },
         components: {
             'component-post': PostComponent
+        },
+        methods: {
+            onErrorStateChanged(newVal, oldVal) {
+                // console.warn(`pub-post error: ${newVal}`);
+            }
+        },
+        watch: {
+            // 'errState': 'onErrorStateChanged'
         },
         destroyed() {
             this.$store.unregisterModule(storeNamespace);

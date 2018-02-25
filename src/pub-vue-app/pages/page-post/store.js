@@ -26,13 +26,16 @@ const actions = {
             })
             .then(null, err => {
                 commit(mutationTypes.ERROR, err);
-                return false;
-            });
+                return err;
+            })
+            ;
     }
 };
 
 const mutations = {
     [mutationTypes.ERROR](state, err) {
+        // Here throws
+        // Unhandled promise rejection InternalError: too much recursion in es6-promise polifill Firefox
         state.errState = err;
     },
     [mutationTypes.FETCHED_PAGE_DATA](state, {post = null} = {}) {

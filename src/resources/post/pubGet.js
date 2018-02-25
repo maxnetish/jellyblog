@@ -28,7 +28,18 @@ function mapPost(p) {
     };
 }
 
-function fetch({id, allowDraft = false} = {}) {
+function fetch({id = 'NO_ID'} = {}) {
+
+    if (typeof id !== 'string') {
+        // id have to be String
+        return Promise.reject(400);
+    }
+
+    if (id.length === 0 || id.length > 64) {
+        // id have to has len 1 to 64
+        return Promise.reject(400);
+    }
+
     let self = this;
     let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead author';
 
@@ -52,7 +63,7 @@ function fetch({id, allowDraft = false} = {}) {
                 return null;
             }
             let postPermission = Post.mapPermissions({post: res, user: self.req.user});
-            if(!postPermission.allowView) {
+            if (!postPermission.allowView) {
                 // нет разрешения на чтение:
                 return Promise.reject(401);
             }
