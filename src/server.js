@@ -4,7 +4,7 @@ import urljoin from 'url-join';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
-import moment from 'moment';
+// import moment from 'moment';
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
 import serveStatic from 'serve-static';
@@ -24,7 +24,7 @@ import fileStoreConfig from '../config/file-store.json';
 import appConfig from '../config/app.json';
 import routesMap from '../config/routes-map.json';
 import {addEntryFromMorgan, addEntryFromErrorResponse, applyDataMigrations} from './utils-data';
-import createPaginationModel from './utils/create-pagination-model';
+// import createPaginationModel from './utils/create-pagination-model';
 import createTagsCloudModel from './utils/create-tags-cloude-model';
 import * as i18n from './i18n';
 import BackendResources from 'jb-resources';
@@ -126,21 +126,21 @@ app.use(passport.session());
 app.use((req, res, next) => {
     // after move to SSR remove some of...
     res.locals.getText = key => i18n.getText(key, req.language);
-    res.locals.dateTimeToLocaleString = function ({date, format = 'LL'} = {}) {
-        if (!date) {
-            return null;
-        }
-        moment.locale(req.language);
-        return moment(date).format(format);
-    };
+    // res.locals.dateTimeToLocaleString = function ({date, format = 'LL'} = {}) {
+    //     if (!date) {
+    //         return null;
+    //     }
+    //     moment.locale(req.language);
+    //     return moment(date).format(format);
+    // };
     res.locals.language = req.language;
     res.locals.user = req.user;
     res.locals.serializedUser = JSON.stringify(req.user);
     res.locals.routesMap = routesMap;
     res.locals.query = req.query;
     // we will use legacy api becouse WHAWG api cannot work with relative urls
-    res.locals.url = url;
-    res.locals.reqUrl = req.url;
+    // res.locals.url = url;
+    // res.locals.reqUrl = req.url;
     next();
 });
 
@@ -337,10 +337,12 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
 /**
  * Experimental isomorphic entry point
  */
-app.get('/ssr/*', (req, res) => {
+// app.get('/ssr/*', (req, res) => {
+app.get('/*', (req, res) => {
     // substring костыль, чтобы не расписывать отдельный роутер
     // pass resources to use it in async store filling
-    const context = {url: req.url.substring(4), resources: req.backendResources, language: req.language};
+    // const context = {url: req.url.substring(4), resources: req.backendResources, language: req.language};
+    const context = {url: req.url, resources: req.backendResources, language: req.language};
 
     promisePublicVueAppInServer(context)
         .then(({app, state}) => vueServerRenderer.renderToString(app, Object.assign(context, res.locals, {state})))
@@ -354,74 +356,74 @@ app.get('/ssr/*', (req, res) => {
 /**
  * Page /post/12344...
  */
-app.get(routesMap.post + '/:id', (req, res, next) => {
-    Promise.all([
-        req.backendResources.post.pubGet({id: req.params.id}),
-        req.backendResources.tag.list()
-    ])
-        .then(responses => {
-            let post = responses[0];
-            let tags = createTagsCloudModel(responses[1]);
-            let locals = Object.assign({}, {post}, {tags});
-            res.render('pub/post', locals);
-        })
-        .then(null, err => next(err));
-});
+// app.get(routesMap.post + '/:id', (req, res, next) => {
+//     Promise.all([
+//         req.backendResources.post.pubGet({id: req.params.id}),
+//         req.backendResources.tag.list()
+//     ])
+//         .then(responses => {
+//             let post = responses[0];
+//             let tags = createTagsCloudModel(responses[1]);
+//             let locals = Object.assign({}, {post}, {tags});
+//             res.render('pub/post', locals);
+//         })
+//         .then(null, err => next(err));
+// });
 
 /**
  * Page /tag/coolposts...
  */
-app.get(routesMap.tag + '/:tag', (req, res, next) => {
-    Promise.all([
-        req.backendResources.post.pubList({
-            page: req.query.page,
-            postsPerPage: 5,
-            q: req.query.q,
-            tag: req.params.tag
-        }),
-        req.backendResources.tag.list()
-    ])
-        .then(responses => {
-            let findPosts = responses[0];
-            let tags = createTagsCloudModel(responses[1]);
-            let pagination = createPaginationModel({
-                currentUrl: req.url,
-                currentPage: findPosts.page,
-                hasMore: findPosts.hasMore
-            });
-            let locals = Object.assign({}, findPosts, {tags}, {pagination});
-
-            res.render('pub/tag', locals);
-        })
-        .then(null, err => next(err));
-});
+// app.get(routesMap.tag + '/:tag', (req, res, next) => {
+//     Promise.all([
+//         req.backendResources.post.pubList({
+//             page: req.query.page,
+//             postsPerPage: 5,
+//             q: req.query.q,
+//             tag: req.params.tag
+//         }),
+//         req.backendResources.tag.list()
+//     ])
+//         .then(responses => {
+//             let findPosts = responses[0];
+//             let tags = createTagsCloudModel(responses[1]);
+//             let pagination = createPaginationModel({
+//                 currentUrl: req.url,
+//                 currentPage: findPosts.page,
+//                 hasMore: findPosts.hasMore
+//             });
+//             let locals = Object.assign({}, findPosts, {tags}, {pagination});
+//
+//             res.render('pub/tag', locals);
+//         })
+//         .then(null, err => next(err));
+// });
 
 /**
  * Main entry
  */
-app.get(['/'], (req, res, next) => {
-    Promise.all([
-        req.backendResources.post.pubList({
-            page: req.query.page,
-            postsPerPage: 5,
-            q: req.query.q
-        }),
-        req.backendResources.tag.list()
-    ])
-        .then(responses => {
-            let findPosts = responses[0];
-            let tags = createTagsCloudModel(responses[1]);
-            let pagination = createPaginationModel({
-                currentUrl: req.url,
-                currentPage: findPosts.page,
-                hasMore: findPosts.hasMore
-            });
-            let locals = Object.assign({}, findPosts, {tags}, {pagination});
-
-            res.render('pub/index', locals);
-        })
-        .then(null, err => next(err));
-});
+// app.get(['/'], (req, res, next) => {
+//     Promise.all([
+//         req.backendResources.post.pubList({
+//             page: req.query.page,
+//             postsPerPage: 5,
+//             q: req.query.q
+//         }),
+//         req.backendResources.tag.list()
+//     ])
+//         .then(responses => {
+//             let findPosts = responses[0];
+//             let tags = createTagsCloudModel(responses[1]);
+//             let pagination = createPaginationModel({
+//                 currentUrl: req.url,
+//                 currentPage: findPosts.page,
+//                 hasMore: findPosts.hasMore
+//             });
+//             let locals = Object.assign({}, findPosts, {tags}, {pagination});
+//
+//             res.render('pub/index', locals);
+//         })
+//         .then(null, err => next(err));
+// });
 
 /**
  * General error

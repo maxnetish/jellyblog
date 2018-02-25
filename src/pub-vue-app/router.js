@@ -13,7 +13,8 @@ function createRouter({Vue}) {
 
     return new VueRouter({
         fallback: false,
-        base: '/ssr/',
+        // base: '/ssr/',
+        base: '/',
         mode: 'history',
         scrollBehavior(to, from, savedPosition) {
             if (savedPosition) {

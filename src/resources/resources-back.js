@@ -7,14 +7,11 @@ import resources from './index';
 import {set, get} from 'lodash';
 
 function resourceFactory({descriptor, req}) {
-    if (!descriptor.rpcPath) {
-        throw new Error('Resource rpc path is not specified');
-    }
-    let actualFunc = get(resources, descriptor.rpcPath);
-    if (!actualFunc) {
-        throw new Error(`Function ${descriptor.rpcPath} is not found in resources`);
-    }
     return function (args) {
+        let actualFunc = get(resources, descriptor.rpcPath);
+        if (!actualFunc) {
+            throw new Error(`Function ${descriptor.rpcPath} is not found in resources`);
+        }
         let context = {
             xhr: false,
             req: req
@@ -27,6 +24,9 @@ function ResourceBack (req) {
     let self = this;
 
     descriptors.forEach(descriptor => {
+        if (!descriptor.rpcPath) {
+            throw new Error('Resource rpc path is not specified');
+        }
         // with or without url:
         set(self, descriptor.rpcPath, resourceFactory({descriptor, req}));
     });
