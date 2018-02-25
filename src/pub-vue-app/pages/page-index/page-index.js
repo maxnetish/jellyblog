@@ -35,7 +35,5 @@ export default {
             beforeRouteUpdateHook,
             resources
         });
-        // console.log('Store already filled, ', storeNamespace);
-        // return Promise.resolve(true);
     }
 };
