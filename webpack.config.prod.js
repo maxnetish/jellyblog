@@ -98,7 +98,7 @@ module.exports = [
         cache: true,
         entry: {
             'adm': './src/admin-vue-app/admin-client-browser-entry.js',
-            'pub': './src/pub-index-app',
+            // 'pub': './src/pub-index-app',
             'pub-ssr': './src/pub-vue-app/pub-client-browser-entry.js'
         },
         output: {
