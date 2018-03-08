@@ -1,6 +1,6 @@
 section.main-content
     component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
-    component-post(v-for="post in posts", :key="post.id", :post="post", mode="PREVIEW")
+    component-post(v-for="post in posts", :key="post.id", :post="post", mode="PREVIEW", :user="user")
     component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
     article.post(v-if="!posts.length")
         div.content One moment...

@@ -1,4 +1,4 @@
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import {getDefaultFiller} from "../../../utils/async-store-filler";
 import {store as moduleStore, mutationTypes} from './store';
 import Pagination from '../../components/pagination/pagination.vue';
@@ -17,6 +17,9 @@ export default {
             'page',
             'hasMore',
             'errState'
+        ]),
+        ...mapGetters(storeNamespace, [
+            'user'
         ])
     },
     components: {

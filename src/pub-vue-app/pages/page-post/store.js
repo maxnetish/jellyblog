@@ -12,7 +12,11 @@ const mutationTypes = {
     'FETCHED_PAGE_DATA': 'FETCHED_PAGE_DATA'
 };
 
-const getters = {};
+const getters = {
+    user(state, getters, rootState) {
+        return rootState.user;
+    }
+};
 
 const actions = {
     fetchPageData({commit}, {route, resources}) {

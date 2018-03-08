@@ -1,11 +1,11 @@
 <template lang="pug">
     section.main-content
         span(id="scroll-anchor")
-        component-post(v-if="post", :post="post", mode="FULL")
+        component-post(v-if="post", :post="post", mode="FULL", :user="user")
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapState, mapGetters} from 'vuex';
     import {getDefaultFiller} from "../../../utils/async-store-filler";
     import {store as moduleStore, mutationTypes} from './store';
     import PostComponent from '../../components/post/post.vue';
@@ -21,6 +21,9 @@
             ...mapState(storeNamespace, [
                 'post',
                 'errState'
+            ]),
+            ...mapGetters(storeNamespace, [
+                'user'
             ])
         },
         components: {

@@ -4,12 +4,12 @@
             span {{'Posts with tag ' | get-text}}
             q {{$route.params.tagId}}
         component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
-        component-post(v-for="post in posts", :key="post.id", :post="post", mode="PREVIEW")
+        component-post(v-for="post in posts", :key="post.id", :post="post", mode="PREVIEW", :user="user")
         component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapState, mapGetters} from 'vuex';
     import {getDefaultFiller} from "../../../utils/async-store-filler";
     import {store as moduleStore, mutationTypes} from './store';
     import Pagination from '../../components/pagination/pagination.vue';
@@ -28,6 +28,9 @@
                 'page',
                 'hasMore',
                 'errState'
+            ]),
+            ...mapGetters(storeNamespace, [
+                'user'
             ])
         },
         components: {
