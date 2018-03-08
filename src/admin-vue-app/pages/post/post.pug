@@ -140,7 +140,7 @@ div
                                 input(type="radio", :value="contentModeOption", :checked="contentMode===contentModeOption", @change="onContentModeChanged($event.target)", name="contentMode")
                                 .
                                     {{contentModeOption | get-text}}
-                        a(v-if="post.contentType==='MD'", href="https://docs.gitlab.com/ee/user/markdown.html#standard-markdown", target="_blank")
+                        a(v-if="post.contentType==='MD'", href="https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax", target="_blank")
                             span Markdown docs
                             i.fa.fa-external-link._margin-5._left
                         ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value="post.content", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostContentInput")
