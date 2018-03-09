@@ -4,13 +4,13 @@ footer.clear.body-row.page-footer
             div(v-if="user")
                 span {{'You are logged in as' | get-text}} {{user.userName}} {{user.role}}
                     a.login-link(:href="linkUrl")
-                        i.fa.fa-sign-out._margin-5._right(aria-hidden="true")
+                        font-awesome-icon._margin-5._right(:icon="iconLogout", fixed-width)
                         span {{'Logout' | get-text}}
                 span(v-if="user.role === 'admin'")
                     a.login-link(:href="adminUrl")
-                        i.fa.fa-cogs._margin-5._right(aria-hidden="true")
+                        font-awesome-icon._margin-5._right(:icon="iconCogs", fixed-width)
                         span {{'Admin app' | get-text}}
             div(v-else)
                 a.login-link(:href="linkUrl")
-                    i.fa.fa-sign-in._margin-5._right(aria-hidden="true")
+                    font-awesome-icon._margin-5._right(:icon="iconLogin", fixed-width)
                     span {{'Login' | get-text}}

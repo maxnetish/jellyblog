@@ -6,17 +6,17 @@
             div.poet-read-more.tags(v-if="post.useCut || user")
                 span.post-tag-ct
                     router-link(v-if="post.useCut", :to="post.url", :title="'Read more of ' + post.title")
-                        i.fa.fa-fw.fa-caret-square-o-down(aria-hidden="true")
+                        font-awesome-icon(:icon="iconCaretSquareDown", fixed-width)
                         span {{'Read more' | get-text}}
                     a(v-if="user", :href="editUrl")
-                        i.fa.fa-pencil.fa-fw(aria-hidden="true")
+                        font-awesome-icon(:icon="iconEdit", fixed-width)
                         span {{'Edit post' | get-text}}
         div.content(v-if="mode==='FULL'")
             div(v-html="post.content")
             div.poet-read-more.tags(v-if="user")
                 span.post-tag-ct
                     a(:href="editUrl")
-                        i.fa.fa-pencil.fa-fw(aria-hidden="true")
+                        font-awesome-icon(:icon="iconCaretSquareDown", fixed-width)
                         span {{'Edit post' | get-text}}
 
 </template>
@@ -24,6 +24,9 @@
 <script>
     import routesMap from '../../../../config/routes-map.json';
     import PostHeaderComponent from '../post-header/post-header.vue';
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+    import faCaretSquareDown from '@fortawesome/fontawesome-free-solid/faCaretSquareDown';
+    import faEdit from '@fortawesome/fontawesome-free-solid/faEdit';
 
     export default {
         name: "pub-post",
@@ -49,10 +52,17 @@
         computed: {
             editUrl: function () {
                 return `${routesMap.admin}#${routesMap.post}?id=${this.post._id}`;
+            },
+            iconCaretSquareDown(){
+                return faCaretSquareDown;
+            },
+            iconEdit(){
+                return faEdit;
             }
         },
         components: {
-            'post-header': PostHeaderComponent
+            'post-header': PostHeaderComponent,
+            FontAwesomeIcon
         }
     }
 </script>

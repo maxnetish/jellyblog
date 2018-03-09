@@ -1,9 +1,9 @@
 nav.pagination-block(v-if="!(page === 1 && !hasMore)", role="navigation")
     div.pagination-block__previous(:style="{visibility: page === 1 ? 'hidden' : 'visible'}")
         router-link(:to="prevPageLocation", :title="'Here' | get-text")
-            i.fa.fa-arrow-left.fa-fw
+            font-awesome-icon(:icon="iconArrowLeft", fixed-width)
             span {{'Previous page' | get-text}}
     div.pagination-block__next(:style="{visibility: hasMore ? 'visible' : 'hidden'}")
         router-link(:to="nextPageLocation", :title="'There' | get-text")
             span {{'Next page' | get-text }}
-            i.fa.fa-arrow-right.fa-fw
+            font-awesome-icon(:icon="iconArrowRight", fixed-width)

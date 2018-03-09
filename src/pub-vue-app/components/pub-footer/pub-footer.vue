@@ -3,6 +3,10 @@
 <script>
     import routesMap from '../../../../config/routes-map.json';
     import url from 'url';
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+    import faSignoutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt';
+    import faCogs from '@fortawesome/fontawesome-free-solid/faCogs';
+    import faSigninAlt from'@fortawesome/fontawesome-free-solid/faSignInAlt';
 
     export default {
         name: "pub-footer",
@@ -21,7 +25,19 @@
             },
             adminUrl() {
                 return routesMap.admin;
+            },
+            iconLogout(){
+                return faSignoutAlt;
+            },
+            iconCogs(){
+                return faCogs;
+            },
+            iconLogin(){
+                return faSigninAlt;
             }
+        },
+        components: {
+            FontAwesomeIcon
         }
     }
 </script>

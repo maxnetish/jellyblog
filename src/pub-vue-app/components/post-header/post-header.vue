@@ -6,17 +6,21 @@
             h1
                 router-link(:to="post.url") {{post.title}}
             span.post-date-ct
-                i.fa.fa-calendar.fa-fw(aria-hidden="true")
+                font-awesome-icon(:icon="iconCalendar", fixed-width)
                 time.date(:datetime="post.createDate | date-to-iso-string") {{post.createDate | locale-datetime}}
             div.tags(v-if="post.tags && post.tags.length")
                 span.post-tag-ct(v-for="tagInfo in post.tags")
                     router-link(:to="tagInfo.url")
-                        i.fa.fa-tag.fa-fw(aria-hidden="true")
+                        font-awesome-icon(:icon="iconTag", fixed-width)
                         span.post-tag-label {{tagInfo.tag}}
 
 </template>
 
 <script>
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+    import faCalendarAlt from '@fortawesome/fontawesome-free-solid/faCalendarAlt';
+    import faTag from '@fortawesome/fontawesome-free-solid/faTag';
+
     export default {
         name: "pub-post-header",
         props: {
@@ -25,8 +29,19 @@
                 default: null
             }
         },
-        date(){
+        computed: {
+            iconCalendar() {
+                return faCalendarAlt;
+            },
+            iconTag() {
+                return faTag;
+            }
+        },
+        date() {
             return {};
+        },
+        components: {
+            FontAwesomeIcon
         }
     }
 </script>

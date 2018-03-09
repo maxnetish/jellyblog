@@ -4,6 +4,10 @@
   "description": "0.0.3",
   "main": "build/server.js",
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.4",
+    "@fortawesome/fontawesome-free-brands": "^5.0.8",
+    "@fortawesome/fontawesome-free-solid": "^5.0.8",
+    "@fortawesome/vue-fontawesome": "0.0.22",
     "babel-runtime": "^6.25.0",
     "body-parser": "^1.18.2",
     "brace": "^0.10.0",

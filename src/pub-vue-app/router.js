@@ -50,7 +50,6 @@ function setupHooks(router) {
         // Google analytics
         if (isBrowser && ga) {
             setTimeout(function () {
-                console.log('send to ga ', to.fullPath);
                 ga('send', 'pageview', to.fullPath);
             }, 250);
         }

@@ -16,7 +16,6 @@ function registerGlobals({resources, language}) {
             const {asyncData, name, scrollToAfterFetchData} = this.$options;
             const {$root} = this;
             if (asyncData) {
-                console.log('before create hook with ' + name);
                 Promise.resolve(asyncData({
                     store: this.$store,
                     route: this.$route,
@@ -35,7 +34,6 @@ function registerGlobals({resources, language}) {
             const {asyncData, name, scrollToAfterFetchData} = this.$options;
             const {$root} = this;
             if (asyncData) {
-                console.log('before route update hook with ' + name);
                 Promise.resolve(asyncData({
                     store: this.$store,
                     route: to,
@@ -72,7 +70,6 @@ function registerRootEvents({app}) {
         if (!scrollToEl) {
             return;
         }
-        console.log('SCROLL_TO ', scrollToEl);
         scrollToEl.scrollIntoView({
             block: 'start',
             inline: 'nearest',

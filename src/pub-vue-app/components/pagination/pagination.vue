@@ -2,6 +2,9 @@
 
 <script>
     import {merge as queryMerge} from '../../../utils/query';
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+    import faArrowLeft from '@fortawesome/fontawesome-free-solid/faArrowLeft';
+    import faArrowRight from '@fortawesome/fontawesome-free-solid/faArrowRight';
 
     export default {
         name: 'pub-pagination',
@@ -19,10 +22,8 @@
                 default: 'p'
             }
         },
-        data () {
-            return {
-
-            };
+        data() {
+            return {};
         },
         computed: {
             prevPageLocation: function () {
@@ -50,7 +51,16 @@
                     query: newQuery,
                     params: this.$route.params
                 };
+            },
+            iconArrowLeft() {
+                return faArrowLeft;
+            },
+            iconArrowRight() {
+                return faArrowRight;
             }
+        },
+        components: {
+            FontAwesomeIcon
         }
     }
 </script>
