@@ -2,11 +2,9 @@ import {Post} from '../../models';
 import mongooseConfig from '../../../config/mongoose.json';
 import routesMap from '../../../config/routes-map.json';
 import urljoin from 'url-join';
-import showdown from 'showdown';
+import showdownConverter from '../../utils/showdown-singleton-converter';
 import validObjectId from '../../utils/valid-object-id';
 import {applyCheckPermissions} from '../../utils-data';
-
-const showdownConverter = new showdown.Converter();
 
 const contentConverter = {
     'MD': content => showdownConverter.makeHtml(content),

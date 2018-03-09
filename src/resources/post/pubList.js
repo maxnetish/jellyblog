@@ -2,9 +2,7 @@ import {Post} from '../../models';
 import mongooseConfig from '../../../config/mongoose.json';
 import routesMap from '../../../config/routes-map.json';
 import urljoin from 'url-join';
-import showdown from 'showdown';
-
-const showdownConverter = new showdown.Converter();
+import showdownConverter from '../../utils/showdown-singleton-converter';
 
 const contentConverter = {
     'MD': content => showdownConverter.makeHtml(content),
@@ -20,7 +18,7 @@ function mapPost(p) {
         pubDate: p.pubDate,
         titleImg: p.titleImg,
         title: p.title,
-        preview: p.brief ? p.brief : contentConverter[p.contentType](p.content),
+        preview: contentConverter[p.contentType](p.brief || p.content),
         useCut: !!p.brief,
         tags: p.tags.map(t => ({tag: t, url: urljoin(routesMap.tag, encodeURIComponent(t))}))
     };

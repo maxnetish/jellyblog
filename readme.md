@@ -94,6 +94,13 @@ _pub-settings.json_:
 ```json
 {
   "GoogleAnalyticsApiKey": "UA-GOOGLE_KEY_HERE",
-  "postsPerPage": 5
+  "postsPerPage": 5,
+  "showdownOptions": {
+      "strikethrough": true,
+      "encodeEmails": true,
+      "openLinksInNewWindow": true,
+      "backslashEscapesHTMLTags": false,
+      "emoji": true
+    }
 }
 ```

@@ -38,6 +38,9 @@
             'component-pagination': Pagination,
             'component-post': PostComponent
         },
+        destroyed() {
+            this.$store.unregisterModule(storeNamespace);
+        },
         asyncData({store, route, beforeRouteUpdateHook = false, resources}) {
             return getDefaultFiller({
                 storeActionName: 'fetchPageData',

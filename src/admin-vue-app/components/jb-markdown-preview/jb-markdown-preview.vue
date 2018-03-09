@@ -2,8 +2,7 @@
     .jb-content-preview(v-html="html")
 </template>
 <script>
-    import showdown from 'showdown';
-    const converter = new showdown.Converter();
+    import showdownConverter from '../../../utils/showdown-singleton-converter';
 
     export default {
         name: 'jb-markdown-editor',
@@ -20,12 +19,12 @@
         },
         watch: {
             markdown (newMarkdown) {
-                this.html = converter.makeHtml(newMarkdown || '');
+                this.html = showdownConverter.makeHtml(newMarkdown || '');
             }
         },
         mounted () {
             // didn't call during SSR
-            this.html = converter.makeHtml(this.markdown);
+            this.html = showdownConverter.makeHtml(this.markdown);
         }
     };
 </script>

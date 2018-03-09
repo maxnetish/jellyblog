@@ -7,11 +7,61 @@ import Page404 from './page-404.vue'
 import IndexPageComponent from './pages/page-index/page-index.vue';
 import PostPageComponent from './pages/page-post/page-post.vue';
 import TagPageComponent from './pages/page-tag/page-tag.vue';
+import isBrowser from 'is-in-browser';
+
+const routes = [
+    {
+        path: '/',
+        component: App,
+        children: [
+            {
+                name: 'Index',
+                path: '',
+                components: {
+                    mainContent: IndexPageComponent
+                }
+            },
+            {
+                name: 'Post',
+                path: routesMap.post + '/:postId',
+                components: {
+                    mainContent: PostPageComponent
+                }
+            },
+            {
+                name: 'Tag',
+                path: routesMap.tag + '/:tagId',
+                components: {
+                    mainContent: TagPageComponent
+                }
+            },
+            {
+                path: '*',
+                components: {
+                    mainContent: Page404
+                }
+            }
+        ]
+    }
+];
+
+function setupHooks(router) {
+    router.afterEach((to, from) => {
+        // Google analytics
+        if (isBrowser && ga) {
+            setTimeout(function () {
+                console.log('send to ga ', to.fullPath);
+                ga('send', 'pageview', to.fullPath);
+            }, 250);
+        }
+    });
+    return router;
+}
 
 function createRouter({Vue}) {
     Vue.use(VueRouter);
 
-    return new VueRouter({
+    const routerInstance = new VueRouter({
         fallback: false,
         // base: '/ssr/',
         base: '/',
@@ -25,42 +75,12 @@ function createRouter({Vue}) {
 
             return false;
         },
-        routes: [
-            {
-                path: '/',
-                component: App,
-                children: [
-                    {
-                        name: 'Index',
-                        path: '',
-                        components: {
-                            mainContent: IndexPageComponent
-                        }
-                    },
-                    {
-                        name: 'Post',
-                        path: routesMap.post + '/:postId',
-                        components: {
-                            mainContent: PostPageComponent
-                        }
-                    },
-                    {
-                        name: 'Tag',
-                        path: routesMap.tag + '/:tagId',
-                        components: {
-                            mainContent: TagPageComponent
-                        }
-                    },
-                    {
-                        path: '*',
-                        components: {
-                            mainContent: Page404
-                        }
-                    }
-                ]
-            }
-        ]
+        routes
     });
+
+    setupHooks(routerInstance);
+
+    return routerInstance;
 }
 
 export {

@@ -10,12 +10,12 @@ import pubSettings from '../config/pub-settings.json';
 /**
  * See https://cookieconsent.insites.com
  */
-(function cookieConsentInitializator(){
-    if(!window) {
+(function cookieConsentInitializator() {
+    if (!window) {
         return;
     }
 
-    window.addEventListener("load", function(){
+    window.addEventListener("load", function () {
         window.cookieconsent.initialise({
             "palette": {
                 "popup": {
@@ -26,7 +26,8 @@ import pubSettings from '../config/pub-settings.json';
                     "background": "#ff0000"
                 }
             }
-        })});
+        })
+    });
 })();
 
 (function initGoogleAnalytics(i, s, o, g, r, a, m) {
