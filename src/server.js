@@ -33,6 +33,7 @@ import url from 'url';
 import {createRenderer as createVueServerRenderer} from 'vue-server-renderer';
 import {promiseApp as promisePublicVueAppInServer} from './pub-vue-app/pub-client-server-entry';
 import pubSsrTemplate from 'raw-loader!./pub-vue-app/pub-ssr-template.html';
+import {dump, restore} from './utils/db-maintenance';
 
 
 const app = express();
@@ -250,6 +251,13 @@ app.use(routesMap.api, resourcesRouter);
 /**
  * admin area
  */
+app.get(routesMap.dbDump, (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        dump(req, res, next);
+    } else {
+        res.status(403).end();
+    }
+});
 app.get(routesMap.admin, (req, res) => {
     // admin area, require auth
     if (req.user) {
