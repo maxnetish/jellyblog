@@ -63,7 +63,10 @@ _mongoose.json_: connection to mongodb
       "autoIndex": true
     }
   },
-  "paginationDefaultLimit": 10
+  "paginationDefaultLimit": 10,
+  "commandDump": "mongodump -d jellyblog --quiet --gzip --archive",
+  "dumpFilename": "blog.archive.gz",
+  "commandRestore": "mongorestore --nsFrom jellyblog.* --nsTo jellyblog-check-restore.* --gzip"
 }
 ```
 
@@ -78,7 +81,9 @@ _routes-map.json_:
   "logout": "/admin/logout",
   "preview": "/admin/preview",
   "post": "/post",
-  "tag": "/tag"
+  "tag": "/tag",
+  "dbDump": "/maintenance/dump",
+  "dbRestore": "/maintenance/restore"
 }
 ```
 

@@ -4,6 +4,7 @@ import urljoin from 'url-join';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import {unlinkSync} from 'fs';
 // import moment from 'moment';
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
@@ -33,7 +34,7 @@ import url from 'url';
 import {createRenderer as createVueServerRenderer} from 'vue-server-renderer';
 import {promiseApp as promisePublicVueAppInServer} from './pub-vue-app/pub-client-server-entry';
 import pubSsrTemplate from 'raw-loader!./pub-vue-app/pub-ssr-template.html';
-import {dump, restore} from './utils/db-maintenance';
+import {dump, restore, uploadDumpMiddleware} from './utils/db-maintenance';
 
 
 const app = express();
@@ -257,6 +258,19 @@ app.get(routesMap.dbDump, (req, res, next) => {
     } else {
         res.status(403).end();
     }
+});
+app.post(routesMap.dbRestore, uploadDumpMiddleware.single('dump'), (req, res) => {
+    // console.log(req.file);
+
+    restore(req.file)
+        .then(result => {
+            unlinkSync(req.file.path);
+            res.json(result);
+        })
+        .then(null, err => {
+            unlinkSync(req.file.path);
+            res.json(err);
+        });
 });
 app.get(routesMap.admin, (req, res) => {
     // admin area, require auth

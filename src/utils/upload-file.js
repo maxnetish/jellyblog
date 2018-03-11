@@ -17,7 +17,11 @@ function uploadFile({file, url, context, metadata}) {
         .post(url)
         .send(formData)
         .then(res => {
-            return Object.assign({}, res.body.files[context][0].grid);
+            if (res.body.files) {
+                return Object.assign({}, res.body.files[context][0].grid);
+            } else {
+                return Object.assign({}, res.body);
+            }
         });
 }
 
