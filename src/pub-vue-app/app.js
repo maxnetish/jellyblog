@@ -2,6 +2,13 @@ import Vue from 'vue';
 import {createRouter} from './router';
 import {createStore} from "./store";
 import {registerAsync as registerFilters} from './filters';
+import fontawesome from "@fortawesome/fontawesome";
+
+// to not inject fontawesome support styles into html header
+// See src/less-pub/utils.less
+fontawesome.config = {
+    autoAddCss: false
+};
 
 function registerGlobals({resources, language}) {
     // sync globals
@@ -78,7 +85,8 @@ function registerRootEvents({app}) {
     })
 }
 
-function createApp({initialState, resources, language}) {
+// renderSide: ['BROWSER' | 'SERVER']
+function createApp({initialState, resources, language, renderSide = 'BROWSER'} = {}) {
 
     const router = createRouter({Vue});
     const store = createStore({Vue});
@@ -88,7 +96,7 @@ function createApp({initialState, resources, language}) {
         store.replaceState(initialState);
     }
 
-    return registerGlobals({resources, language})
+    return registerGlobals({resources, language, renderSide})
         .then(() => {
             const app = new Vue({
                 // внедряем маршрутизатор в корневой экземпляр Vue

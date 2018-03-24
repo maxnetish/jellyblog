@@ -5,7 +5,7 @@ function promiseApp(context) {
     // мы будем возвращать Promise, чтобы сервер смог дожидаться
     // пока всё не будет готово к рендерингу.
 
-    return createApp({resources: context.resources, language: context.language})
+    return createApp({resources: context.resources, language: context.language, renderSide: 'SERVER'})
         .then(({app, router, store}) => {
             // устанавливаем маршрут для маршрутизатора серверной части
             router.push(context.url);

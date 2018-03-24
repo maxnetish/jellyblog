@@ -15,7 +15,7 @@ import pubSettings from '../../config/pub-settings.json';
 const langFromMarkup = document.getElementsByTagName('html')[0].lang || 'en';
 const initialState = window.__INITIAL_STATE__;
 
-createApp({initialState, resources, language: langFromMarkup})
+createApp({initialState, resources, language: langFromMarkup, renderSide: 'BROWSER'})
     .then(null, err => console.error('Sorry, couldn\'t create app: ', err));
 
 /**
