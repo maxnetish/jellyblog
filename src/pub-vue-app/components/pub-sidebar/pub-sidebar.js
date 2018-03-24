@@ -7,11 +7,15 @@ import faFacebook from '@fortawesome/fontawesome-free-brands/faFacebook';
 import faGoogleplus from '@fortawesome/fontawesome-free-brands/faGooglePlus';
 import faVk from '@fortawesome/fontawesome-free-brands/faVk';
 
+import GithubDetailsComponent from '../socials/github.vue';
+
 const socials = [
     {
         icon: faGithub,
         url: 'https://github.com/maxnetish',
-        label: 'Гитхаб с полезным и безполезным кодом'
+        label: 'Гитхаб с полезным и безполезным кодом',
+        component: GithubDetailsComponent,
+        accountId: 'maxnetish'
     },
     {
         icon: faLinkedin,
