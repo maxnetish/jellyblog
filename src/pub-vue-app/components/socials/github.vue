@@ -1,34 +1,38 @@
 <template lang="pug">
     div
         div._margin-5._bottom
-            a(@click="onLinkClick", v-html="title", href="javascript:void 0")
-        div.github-card-ct(v-if="user")
-            div.github-card-row
-                div.github-card-item.github-card-avatar.avatar
-                    a(:href="user.html_url")
-                        img(:src="user.avatar_url")
-                div.github-card-item.github-card-name-bio
-                    div.github-card-name
+            a._margin-5._right(@click="onLinkClick", v-html="title", href="javascript:void 0")
+            font-awesome-icon(:icon="iconSpinner", spin, v-if="loadState==='LOADING'")
+        transition(name="github-details-transition")
+            div.github-card-ct(v-if="loadState==='LOADED' && showDetails")
+                div.github-card-row
+                    div.github-card-item.github-card-avatar.avatar
                         a(:href="user.html_url")
-                            span.github-card-user-name {{user.name}}
-                    div.github-card-bio
-                        span.github-card-user-bio {{user.bio}}
-            strong {{'Recently updated repos' | get-text}}
-            div.github-card-row.github-card-row-repos
-                div.github-card-item.github-card-repo(v-for="repo in repos")
-                    div.github-card-repo-name
-                        a(:href="repo.html_url")
-                            span {{repo.name}}
-                    div.github-card-repo-description
-                        span {{repo.description}}
-                    div.github-card-repo-lang
-                        span {{repo.language}}
-                    div.github-card-repo-pushed
-                        time(:datetime="repo.pushed_at") {{repo.pushed_at | locale-datetime}}
+                            img(:src="user.avatar_url")
+                    div.github-card-item.github-card-name-bio
+                        div.github-card-name
+                            a(:href="user.html_url")
+                                span.github-card-user-name {{user.name}}
+                        div.github-card-bio
+                            span.github-card-user-bio {{user.bio}}
+                strong {{'Recently updated repos' | get-text}}
+                div.github-card-row.github-card-row-repos
+                    div.github-card-item.github-card-repo(v-for="repo in repos")
+                        div.github-card-repo-name
+                            a(:href="repo.html_url")
+                                span {{repo.name}}
+                        div.github-card-repo-description
+                            span {{repo.description}}
+                        div.github-card-repo-lang
+                            span {{repo.language}}
+                        div.github-card-repo-pushed
+                            time(:datetime="repo.pushed_at") {{repo.pushed_at | locale-datetime}}
 </template>
 
 <script>
-    import UrlParse from 'url-parse';
+    import resources from 'jb-resources';
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+    import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner';
 
     export default {
         name: "github",
@@ -45,60 +49,60 @@
         data() {
             return {
                 user: null,
-                repos: []
+                repos: [],
+                showDetails: false,
+                loadState: 'BEFORE'
             };
+        },
+        computed: {
+            iconSpinner() {
+                return faSpinner;
+            }
         },
         methods: {
             updateDataFromGithub() {
                 let self = this;
-                console.log(`Update data from github...`);
 
-                fetch(`https://api.github.com/users/${this.accountId}`, {
-                    method: 'GET',
-                    body: null,
-                    headers: {},
-                    credentials: 'omit' // or 'same-origin' or 'include'
-                })
-                    .then(userResponse => userResponse.json())
+                this.loadState = 'LOADING';
+                return resources.github.user({accountId: this.accountId})
                     .then(userParsedResponse => {
                         self.user = userParsedResponse;
-
-                        let urlObj = UrlParse(userParsedResponse.repos_url, true);
-                        let currentQuery = urlObj.query || {};
-                        let newQuery;
-                        let nextUri;
-
-                        newQuery = Object.assign(currentQuery, {
+                        let url = userParsedResponse.repos_url;
+                        let query = {
                             page: 1,
                             per_page: 5,
                             type: 'all',
                             sort: 'pushed'
-                        });
-                        nextUri = urlObj.set('query', newQuery).href;
-
-                        return fetch(nextUri, {
-                            method: 'GET',
-                            body: null,
-                            headers: {},
-                            credentials: 'omit' // or same-origin or include
-                        });
+                        };
+                        return resources.github.misc({url, query})
                     })
-                    .then(reposResponse => reposResponse.json())
                     .then(reposParsedResonse => {
+                        this.loadState = 'LOADED';
                         self.repos = reposParsedResonse;
                         return reposParsedResonse;
                     })
                     .then(null, err => {
+                        this.loadState = 'LOADED';
                         console.warn(err);
                     });
-
             },
             onLinkClick() {
-                this.updateDataFromGithub();
+                if (this.loadState === 'LOADING') {
+                    return;
+                }
+
+                this.showDetails = !this.showDetails;
+
+                if (this.loadState === 'BEFORE') {
+                    this.updateDataFromGithub();
+                }
             }
         },
         mounted() {
             // this.updateDataFromGithub();
+        },
+        components: {
+            FontAwesomeIcon
         }
     }
 </script>
@@ -107,6 +111,9 @@
     @import "../../../less-pub/main-variables.less";
 
     .github-card-ct {
+
+        overflow-y: hidden;
+        max-height: 800px;
 
         .github-card-row {
             display: flex;
@@ -121,8 +128,6 @@
                 justify-content: flex-start;
 
                 .github-card-item {
-                    /*<!--border: @mssp_anchor_text_color solid 1px;-->*/
-                    /*<!--padding: @mssp_base_margin / 2;-->*/
                     border: @m_nospa_anchor_text_color solid 1px;
                     padding: 5px;
 
@@ -164,5 +169,16 @@
 
         }
 
+    }
+
+    .github-details-transition-enter-active,
+    .github-details-transition-leave-active {
+        transition: opacity 0.5s ease, max-height 0.5s ease;
+    }
+
+    .github-details-transition-enter,
+    .github-details-transition-leave-to {
+        opacity: 0;
+        max-height: 0;
     }
 </style>

@@ -73,5 +73,15 @@ export default [
         url: '/user/get',
         method: 'GET',
         rpcPath: 'user.get'
+    },
+    {
+        url: '/github/user',
+        method: 'GET',
+        rpcPath: 'github.user'
+    },
+    {
+        url: '/github/misc',
+        method: 'GET',
+        rpcPath: 'github.misc'
     }
 ]

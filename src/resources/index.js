@@ -13,6 +13,8 @@ import postRemove           from './post/remove';
 import postUnpublish        from './post/unpublish';
 import tagList              from './tag/list';
 import userGet              from './user/get';
+import githubUser           from './github/user';
+import githubMisc           from './github/misc';
 
 export default {
     file: {
@@ -39,5 +41,9 @@ export default {
     },
     user: {
         get: userGet
+    },
+    github: {
+        user: githubUser,
+        misc: githubMisc
     }
 };

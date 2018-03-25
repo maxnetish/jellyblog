@@ -8,6 +8,7 @@ import faGoogleplus from '@fortawesome/fontawesome-free-brands/faGooglePlus';
 import faVk from '@fortawesome/fontawesome-free-brands/faVk';
 
 import GithubDetailsComponent from '../socials/github.vue';
+import TwitterDetailsComponent from '../socials/twitter.vue';
 
 const socials = [
     {
@@ -25,7 +26,9 @@ const socials = [
     {
         icon: faTwitter,
         url: 'https://twitter.com/maxnetish',
-        label: 'Твиттер, когда не&#769;кому писа&#769;ть'
+        label: 'Твиттер, когда не&#769;кому писа&#769;ть',
+        component: TwitterDetailsComponent,
+        accountId: 'maxnetish'
     },
     {
         icon: faFacebook,

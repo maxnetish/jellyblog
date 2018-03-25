@@ -10,7 +10,7 @@ fontawesome.config = {
     autoAddCss: false
 };
 
-function registerGlobals({resources, language}) {
+function registerGlobals({resources, language, renderSide}) {
     // sync globals
     // hook for vuex store filling
     Vue.mixin({
@@ -61,6 +61,11 @@ function registerGlobals({resources, language}) {
             } else {
                 next();
             }
+        },
+        data() {
+            return {
+                renderSide: renderSide
+            };
         }
     });
 
