@@ -35,6 +35,6 @@ div
                             span See here
                             a._margin-5._left._right(href="https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html", target="_blank") about robots.txt
                         .col-sm-6.text-right
-                            button.btn.btn-primary(type="submit", :disabled="robotsTxtLoading")
+                            button.btn.btn-primary(type="submit", :disabled="!robotsTxtDirty || robotsTxtLoading")
                                 i.fa.fa-upload.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Save' | get-text}}

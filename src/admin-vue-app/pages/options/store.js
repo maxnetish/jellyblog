@@ -7,8 +7,12 @@ import routesMap from '../../../../config/routes-map.json';
 // initial state
 function state() {
     return {
-        robotsTxt: {},
-        robotsTxtOriginal: {},
+        robotsTxt: {
+            content: null
+        },
+        robotsTxtOriginal: {
+            content: null
+        },
         robotsTxtLoading: false,
 
         uploading: false,
