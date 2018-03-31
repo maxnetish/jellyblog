@@ -6,6 +6,7 @@ import Log from './log';
 import MediaSrcset from './media-srcset';
 import Migration from './migration';
 import AggregateCache from './aggregate-cache';
+import Option from './option';
 
 export {
     Post,
@@ -15,5 +16,6 @@ export {
     Log,
     Migration,
     AggregateCache,
-    MediaSrcset
+    MediaSrcset,
+    Option
 };

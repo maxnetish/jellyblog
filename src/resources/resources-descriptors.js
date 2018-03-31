@@ -83,5 +83,15 @@ export default [
         url: '/github/misc',
         method: 'GET',
         rpcPath: 'github.misc'
+    },
+    {
+        url: '/option/robots',
+        method: 'GET',
+        rpcPath: 'option.robotsGet'
+    },
+    {
+        url: '/option/robots',
+        method: 'PUT',
+        rpcPath: 'option.robotsSet'
     }
 ]

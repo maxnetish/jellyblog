@@ -5,6 +5,7 @@ import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import {unlinkSync} from 'fs';
+import {Buffer} from 'buffer';
 // import moment from 'moment';
 import bodyParser from 'body-parser';
 import responseTime from 'response-time';
@@ -356,14 +357,25 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
         .then(null, err => next(err));
 });
 
+app.get('/robots.txt', (req, res) => {
+     req.backendResources.option.robotsGet()
+         .then(robotsTxt => {
+             if(robotsTxt && robotsTxt.content) {
+                 res.type('text/plain');
+                 res.send(Buffer.from(robotsTxt.content));
+             } else {
+                 res.status(404).end();
+             }
+         })
+         .then(null, err => {
+             res.status(404).end();
+         });
+});
+
 /**
- * Experimental isomorphic entry point
+ * Isomorphic entry point
  */
-// app.get('/ssr/*', (req, res) => {
 app.get('/*', (req, res) => {
-    // substring костыль, чтобы не расписывать отдельный роутер
-    // pass resources to use it in async store filling
-    // const context = {url: req.url.substring(4), resources: req.backendResources, language: req.language};
     const context = {url: req.url, resources: req.backendResources, language: req.language};
 
     promisePublicVueAppInServer(context)

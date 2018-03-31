@@ -1,0 +1,40 @@
+div
+    .panel.panel-warning
+        .panel-heading {{'Maintenance' | get-text}}
+        .panel-body
+            .row
+                .col-xs-12
+                    a.btn.btn-warning(type="button", :href="downloadDumpUrl")
+                        i.fa.fa-download.fa-fw(aria="hidden")
+                        span._margin-5._left {{'Download database dump' | get-text}}
+            .row._margin-5._top
+                .col-xs-4
+                    button.btn.btn-warning(type="button", @click="restoreDbuploadClick", :disabled="uploading")
+                        i.fa.fa-fw.fa-upload(aria-hidden="true", v-if="!uploading")
+                        i.fa.fa-wf.fa-cog.fa-spin(aria-hidden="true", v-if="uploading")
+                        span._margin-5._left {{'Restore database from dump' | get-text}}
+                    input(type="file", style="display:none", ref="restoreDbuploadFileInput", @change="restoreDbuploadFileInputChanged")
+            .row._margin-5._top(v-for="result in restoreResults")
+                .col-xs-12
+                    pre code: {{result.code}}; signal: {{result.signal}}
+                        .alert.alert-success(v-if="result.stdout")
+                            pre(v-html="result.stdout")
+                        .alert.alert-danger(v-if="result.stderr")
+                            pre(v-html="result.stderr")
+    .panel.panel-info
+        .panel-heading Robots
+        .panel-body
+            form(name="jb-robots-form", @submit.prevent="onSubmitRobotsTxt")
+                .form-horizontal
+                    .form-group
+                        label.col-sm-2.control-label robots.txt
+                        .col-sm-10
+                            textarea.form-control.textarea-robots(:value="robotsTxt.content", @input="onRobotsTxtContentInput($event.target)", name="robotsTxtContent")
+                    .row
+                        .col-sm-6
+                            span See here
+                            a._margin-5._left._right(href="https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html", target="_blank") about robots.txt
+                        .col-sm-6.text-right
+                            button.btn.btn-primary(type="submit", :disabled="robotsTxtLoading")
+                                i.fa.fa-upload.fa-fw(aria="hidden")
+                                span._margin-5._left {{'Save' | get-text}}

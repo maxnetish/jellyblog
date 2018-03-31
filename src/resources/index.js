@@ -15,6 +15,8 @@ import tagList              from './tag/list';
 import userGet              from './user/get';
 import githubUser           from './github/user';
 import githubMisc           from './github/misc';
+import getRobotsTxt         from './option/getRobotsTxt';
+import createOrUpdateRobotsTxt from './option/createOrUpdateRobotsTxt';
 
 export default {
     file: {
@@ -45,5 +47,9 @@ export default {
     github: {
         user: githubUser,
         misc: githubMisc
+    },
+    option: {
+        robotsGet: getRobotsTxt,
+        robotsSet: createOrUpdateRobotsTxt
     }
 };
