@@ -93,5 +93,10 @@ export default [
         url: '/option/robots',
         method: 'PUT',
         rpcPath: 'option.robotsSet'
+    },
+    {
+        url: '/sitemap/generate',
+        method: 'GET',
+        rpcPath: 'sitemap.generate'
     }
 ]

@@ -17,6 +17,7 @@ import githubUser           from './github/user';
 import githubMisc           from './github/misc';
 import getRobotsTxt         from './option/getRobotsTxt';
 import createOrUpdateRobotsTxt from './option/createOrUpdateRobotsTxt';
+import sitemapGenerate      from './sitemap/generate';
 
 export default {
     file: {
@@ -51,5 +52,8 @@ export default {
     option: {
         robotsGet: getRobotsTxt,
         robotsSet: createOrUpdateRobotsTxt
+    },
+    sitemap: {
+        generate: sitemapGenerate
     }
 };

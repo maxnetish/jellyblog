@@ -29,6 +29,7 @@ div
                     .form-group
                         label.col-sm-2.control-label robots.txt
                         .col-sm-10
+                            checkbox.without-label(:value="robotsTxt.allowRobots", @input="onAllowRobotsChange({checked: $event})", type="primary") {{'Use robots.txt' | get-text}} (Server will serve /robots.txt and /sitemap.xml)
                             textarea.form-control.textarea-robots(:value="robotsTxt.content", @input="onRobotsTxtContentInput($event.target)", name="robotsTxtContent")
                     .row
                         .col-sm-6
@@ -38,3 +39,16 @@ div
                             button.btn.btn-primary(type="submit", :disabled="!robotsTxtDirty || robotsTxtLoading")
                                 i.fa.fa-upload.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Save' | get-text}}
+    .panel.panel-info
+        .panel-heading Sitemap
+        .panel-body
+            .form-horizontal
+                .form-group
+                    .col-sm-6
+                        button.btn.btn-primary(type="button", :disabled="sitemapLoading", @click="onGenerateSitemapClick")
+                            i.fa.fa-sitemap.fa-fw(aria="hidden")
+                            span._margin-5._left {{'Generate sitemap.xml' | get-text}}
+                .form-group(v-if="sitemapXml.content")
+                    label.col-sm-2.control-label sitemap.xml
+                    .col-sm-10
+                        pre.form-control-static {{sitemapXml.content}}

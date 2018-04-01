@@ -358,18 +358,41 @@ app.get(routesMap.preview + '/:id', (req, res, next) => {
 });
 
 app.get('/robots.txt', (req, res) => {
-     req.backendResources.option.robotsGet()
-         .then(robotsTxt => {
-             if(robotsTxt && robotsTxt.content) {
-                 res.type('text/plain');
-                 res.send(Buffer.from(robotsTxt.content));
-             } else {
-                 res.status(404).end();
-             }
-         })
-         .then(null, err => {
-             res.status(404).end();
-         });
+    req.backendResources.option.robotsGet()
+        .then(robotsTxt => {
+            if (robotsTxt && robotsTxt.content && robotsTxt.allowRobots) {
+                res.type('text/plain');
+                res.send(Buffer.from(robotsTxt.content));
+            } else {
+                res.status(404).end();
+            }
+        })
+        .then(null, err => {
+            res.status(404).end();
+        });
+});
+
+app.get(routesMap.sitemap, (req, res) => {
+    req.backendResources.option.robotsGet()
+        .then(robotsTxt => {
+            if (robotsTxt && robotsTxt.allowRobots) {
+                return req.backendResources.sitemap.generate();
+            } else {
+                return null;
+            }
+        })
+        .then(({content} = {}) => {
+            if (content) {
+                res.header('Content-Type', 'application/xml');
+                res.send(content);
+            } else {
+                res.status(404).end();
+            }
+            return content;
+        })
+        .then(null, err => {
+            res.status(404).end();
+        });
 });
 
 /**

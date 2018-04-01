@@ -5,6 +5,7 @@ import {getText} from '../../filters';
 import {mapState, mapGetters, mapMutations} from 'vuex';
 import {store as moduleStore, mutationTypes} from './store';
 import {getDefaultFiller} from "../../../utils/async-store-filler";
+import {checkbox, dropdown} from 'vue-strap';
 
 const storeNamespace = 'options';
 
@@ -24,7 +25,9 @@ export default {
             'robotsTxtLoading',
             'uploading',
             'restoreResults',
-            'errorState'
+            'errorState',
+            'sitemapXml',
+            'sitemapLoading'
         ]),
         ...mapGetters(storeNamespace, [
             'robotsTxtDirty'
@@ -35,7 +38,8 @@ export default {
     },
     methods: {
         ...mapMutations(storeNamespace, {
-            onRobotsTxtContentInput: mutationTypes.ROBOTS_CONTENT_CHANGED
+            onRobotsTxtContentInput: mutationTypes.ROBOTS_CONTENT_CHANGED,
+            onAllowRobotsChange: mutationTypes.ROBOTS_ALLOW_CHANGED
         }),
         restoreDbuploadClick(e) {
             this.$refs.restoreDbuploadFileInput.click();
@@ -61,6 +65,9 @@ export default {
         onSubmitRobotsTxt(e) {
             return this.$store.dispatch(mapStoreNamespace('robotsTxtSubmit'));
         },
+        onGenerateSitemapClick(e) {
+            return this.$store.dispatch(mapStoreNamespace('fetchSitemap'));
+        },
         onErrorStateChanged(newVal, oldVal) {
             if (!newVal) {
                 return;
@@ -76,6 +83,9 @@ export default {
     },
     destroyed() {
         this.$store.unregisterModule(storeNamespace);
+    },
+    components: {
+        'checkbox': checkbox,
     },
     asyncData({store, route, beforeRouteUpdateHook = false}) {
         return getDefaultFiller({

@@ -1,13 +1,13 @@
 import {Option} from '../../models';
 import {applyCheckPermissions} from '../../utils-data';
 
-function createOrUpdateRobots({content}) {
+function createOrUpdateRobots({content, allowRobots}) {
 
     let conditions = {
         key: 'ROBOTS.TXT'
     };
     let doc = {
-        value: {content}
+        value: {content, allowRobots}
     };
     let opts = {
         upsert: true,
