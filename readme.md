@@ -83,7 +83,8 @@ _routes-map.json_:
   "post": "/post",
   "tag": "/tag",
   "dbDump": "/maintenance/dump",
-  "dbRestore": "/maintenance/restore"
+  "dbRestore": "/maintenance/restore",
+  "sitemap": "/sitemap.xml"
 }
 ```
 
@@ -106,6 +107,7 @@ _pub-settings.json_:
       "openLinksInNewWindow": true,
       "backslashEscapesHTMLTags": false,
       "emoji": true
-    }
+    },
+  "hostname": "https://my.app"
 }
 ```
