@@ -10,7 +10,7 @@ aside.sidebar
                             div.soc-icon
                                 font-awesome-icon(:icon="soc.icon", fixed-width)
                             div.soc-ct(v-if="!soc.component")
-                                a(:href="soc.url", v-html="soc.label")
+                                a(:href="soc.url", v-html="soc.label", rel="external noopener", target="_blank")
                             div.soc-ct(v-else)
                                 component(:is="soc.component", v-bind="{title:soc.label,accountId:soc.accountId}")
 

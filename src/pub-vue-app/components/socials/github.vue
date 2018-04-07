@@ -7,11 +7,11 @@
             div.github-card-ct(v-if="loadState==='LOADED' && showDetails")
                 div.github-card-row
                     div.github-card-item.github-card-avatar.avatar
-                        a(:href="user.html_url")
+                        a(:href="user.html_url", rel="external noopener", target="_blank")
                             img(:src="user.avatar_url")
                     div.github-card-item.github-card-name-bio
                         div.github-card-name
-                            a(:href="user.html_url")
+                            a(:href="user.html_url", rel="external noopener", target="_blank")
                                 span.github-card-user-name {{user.name}}
                         div.github-card-bio
                             span.github-card-user-bio {{user.bio}}
@@ -19,7 +19,7 @@
                 div.github-card-row.github-card-row-repos
                     div.github-card-item.github-card-repo(v-for="repo in repos")
                         div.github-card-repo-name
-                            a(:href="repo.html_url")
+                            a(:href="repo.html_url", rel="external noopener", target="_blank")
                                 span {{repo.name}}
                         div.github-card-repo-description
                             span {{repo.description}}

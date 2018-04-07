@@ -3,7 +3,7 @@ header.body-row.page-header
         div.pane.left
             div.header-titles-ct
                 h1.header-title
-                    span#greeting Здравствуйте.
+                    router-link.index-link(:to="{path: '/'}", exact, active-class="index-link-active", rel="first") Здравствуйте.
                     span &nbsp;Меня зовут Максим Гордеев
                 p.header-subtitle
                     span.

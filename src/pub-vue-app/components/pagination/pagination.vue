@@ -39,6 +39,13 @@
                     params: this.$route.params
                 };
             },
+            prevRel() {
+                let relValues = ['prev'];
+                if (this.page === 2) {
+                    relValues.push('first');
+                }
+                return relValues.join(' ');
+            },
             nextPageLocation: function () {
                 let newQuery = queryMerge({
                     newQuery: {
@@ -51,6 +58,10 @@
                     query: newQuery,
                     params: this.$route.params
                 };
+            },
+            nextRel() {
+                let relValues = ['next'];
+                return relValues.join(' ');
             },
             iconArrowLeft() {
                 return faArrowLeft;
