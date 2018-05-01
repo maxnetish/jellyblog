@@ -15,7 +15,7 @@
                                 span.github-card-user-name {{user.name}}
                         div.github-card-bio
                             span.github-card-user-bio {{user.bio}}
-                strong {{'Recently updated repos' | get-text}}
+                strong {{getText('Recently updated repos')}}
                 div.github-card-row.github-card-row-repos
                     div.github-card-item.github-card-repo(v-for="repo in repos")
                         div.github-card-repo-name
@@ -26,7 +26,7 @@
                         div.github-card-repo-lang
                             span {{repo.language}}
                         div.github-card-repo-pushed
-                            time(:datetime="repo.pushed_at") {{repo.pushed_at | locale-datetime}}
+                            time(:datetime="repo.pushed_at") {{localeDatetime(repo.pushed_at)}}
 </template>
 
 <script>

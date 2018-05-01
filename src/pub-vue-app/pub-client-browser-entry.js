@@ -10,11 +10,13 @@ import {createApp} from './app';
 import resources from 'jb-resources';
 import pubSettings from '../../config/pub-settings.json';
 import delegate from 'delegate';
+import {atob} from 'b2a';
 
 // Специфичная для клиента логика загрузки...
 
 const langFromMarkup = document.getElementsByTagName('html')[0].lang || 'en';
-const initialState = window.__INITIAL_STATE__;
+const initialState = deserializeJs(window.__INITIAL_STATE__);
+// const initialState = window.__INITIAL_STATE__;
 
 createApp({initialState, resources, language: langFromMarkup, renderSide: 'BROWSER'})
     .then(({app, router, store}) => {
@@ -23,9 +25,33 @@ createApp({initialState, resources, language: langFromMarkup, renderSide: 'BROWS
             e.preventDefault();
             router.push(e.delegateTarget.attributes.href.value);
         });
+        registerRootEventsInBrowser({app});
         return {app, router, store};
     })
     .then(null, err => console.error('Sorry, couldn\'t create app: ', err));
+
+function deserializeJs(serialized){
+    const decoded = atob(serialized);
+    return eval(`(${decoded})`);
+}
+
+function registerRootEventsInBrowser({app}) {
+    // to smoothly scroll to element after fetch page data
+    app.$on('SCROLL_TO', function (scrollToSelector) {
+        if (!scrollToSelector) {
+            return;
+        }
+        let scrollToEl = document.querySelector(scrollToSelector);
+        if (!scrollToEl) {
+            return;
+        }
+        scrollToEl.scrollIntoView({
+            block: 'start',
+            inline: 'nearest',
+            behavior: 'smooth'
+        });
+    })
+}
 
 /**
  * See https://cookieconsent.insites.com

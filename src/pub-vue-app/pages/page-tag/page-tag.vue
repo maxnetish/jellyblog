@@ -1,7 +1,7 @@
 <template lang="pug">
     section.main-content
         h4.tag-page-title
-            span {{'Posts with tag ' | get-text}}
+            span {{getText('Posts with tag ')}}
             q {{$route.params.tagId}}
         component-pagination(v-if="posts.length", :page="page", :hasMore="hasMore", routePageParam="page")
         component-post(v-for="post in posts", :key="post.id", :post="post", mode="PREVIEW", :user="user")

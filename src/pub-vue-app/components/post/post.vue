@@ -7,17 +7,17 @@
                 span.post-tag-ct
                     router-link(v-if="post.useCut", :to="post.url", :title="'Read more of ' + post.title")
                         font-awesome-icon(:icon="iconCaretSquareDown", fixed-width)
-                        span {{'Read more' | get-text}}
+                        span {{getText('Read more')}}
                     a(v-if="user", :href="editUrl")
                         font-awesome-icon(:icon="iconEdit", fixed-width)
-                        span {{'Edit post' | get-text}}
+                        span {{getText('Edit post')}}
         div.content(v-if="mode==='FULL'")
             div(v-html="post.content")
             div.poet-read-more.tags(v-if="user")
                 span.post-tag-ct
                     a(:href="editUrl")
                         font-awesome-icon(:icon="iconCaretSquareDown", fixed-width)
-                        span {{'Edit post' | get-text}}
+                        span {{getText('Edit post')}}
 
 </template>
 

@@ -1,61 +1,30 @@
-// import moment from "moment";
-// import 'moment/locale/ru';
-
 import dateFnsFormat from 'date-fns/format';
+import enLocale from 'date-fns/locale/en';
+import ruLocale from 'date-fns/locale/ru';
 
-function createFilter(language = 'en') {
+// There is no elegant way pass fns locale throw state
+// like we do with {locale}.json
+// because fns locale is functions
 
-    return Promise.all([
-        import (
-            /* webpackChunkName: "lang-date-",
-            webpackMode: "lazy" */
-            `date-fns/locale/${language}`
-            ),
-        import(
-            /* webpackChunkName: "lang-",
-            webpackMode: "lazy" */
-            `../../i18n/${language}.json`
-            )
-    ])
-        .then(imported => {
-            let dateFnsLocale = imported[0];
-            let appLocale = imported[1];
-
-            return function getLocaleDatetimeString(date = new Date(), format = 'MMMM D YYYY') {
-                let actualFormat = appLocale[format] || format;
-                return dateFnsFormat(date, actualFormat, {locale: dateFnsLocale});
-            };
-        })
-        .then(null, err => {
-            return function getFallbackLocaleDatetimeString(date = new Date(), format = 'MMMM D YYYY') {
-                return date.toLocaleString();
-            };
-        });
-
-
-    // return import(
-    //     /* webpackChunkName: "lang-date-",
-    //     webpackMode: "lazy" */
-    //     `date-fns/locale/${language}`
-    //     )
-    //     .then(locale => {
-    //         return function getLocaleDatetimeString(date = new Date(), format = '') {
-    //             dateFnsFormat()
-    //         };
-    //     });
-
-    // return function getLocaleDatetimeString(date = new Date(), format = 'LL') {
-    //
-    //
-    //
-    //     if (!date) {
-    //         return null;
-    //     }
-    //     moment.locale(language);
-    //     return moment(date).format(format);
-    // };
+function getLocaleDatetime(date = new Date(), format = 'MMMM D YYYY') {
+    const appLocale = this.$store.state.langApp;
+    const language = this.$store.state.language;
+    const dateFnsLocale = language === 'ru' ? ruLocale : enLocale;
+    // const dateFnsLocale = this.$store.state.langDateFns;
+    // var dateFnsLocale;
+    const actualFormat = appLocale[format] || format;
+    const result = dateFnsFormat(date, actualFormat, {locale: dateFnsLocale});
+    return result;
 }
 
-export {
-    createFilter as createLocaleDatetimeFilter
+function install(Vue) {
+    Vue.mixin({
+        methods: {
+            localeDatetime: getLocaleDatetime
+        }
+    })
+}
+
+export default {
+    install
 };

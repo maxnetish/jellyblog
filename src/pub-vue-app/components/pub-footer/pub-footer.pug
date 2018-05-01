@@ -2,15 +2,15 @@ footer.clear.body-row.page-footer
     div.body-row-content.flex-ct
         div.footer-section
             div(v-if="user")
-                span {{'You are logged in as' | get-text}} {{user.userName}} {{user.role}}
+                span {{getText('You are logged in as')}} {{user.userName}} {{user.role}}
                     a.login-link(:href="linkUrl")
                         font-awesome-icon._margin-5._right(:icon="iconLogout", fixed-width)
-                        span {{'Logout' | get-text}}
+                        span {{getText('Logout')}}
                 span(v-if="user.role === 'admin'")
                     a.login-link(:href="adminUrl")
                         font-awesome-icon._margin-5._right(:icon="iconCogs", fixed-width)
-                        span {{'Admin app' | get-text}}
+                        span {{getText('Admin app')}}
             div(v-else)
                 a.login-link(:href="linkUrl")
                     font-awesome-icon._margin-5._right(:icon="iconLogin", fixed-width)
-                    span {{'Login' | get-text}}
+                    span {{getText('Login')}}

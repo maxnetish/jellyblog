@@ -7,7 +7,7 @@
                 router-link(:to="post.url") {{post.title}}
             span.post-date-ct
                 font-awesome-icon(:icon="iconCalendar", fixed-width)
-                time.date(:datetime="post.createDate | date-to-iso-string") {{post.createDate | locale-datetime}}
+                time.date(:datetime="post.createDate | date-to-iso-string") {{localeDatetime(post.createDate)}}
             div.tags(v-if="post.tags && post.tags.length")
                 span.post-tag-ct(v-for="tagInfo in post.tags")
                     router-link(:to="tagInfo.url")

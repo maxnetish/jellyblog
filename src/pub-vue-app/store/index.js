@@ -9,6 +9,41 @@ const mutationTypes = {
     'FETCHED_USER': 'FETCHED_USER'
 };
 
+// 1. We put in state json with locale strings
+// 2. And stub - required, else syntax-dynamic-import won't import json
+// We should really import only when server rendering.
+// Browser receive these resoutces throw __INITIAL_STATE__
+function promiseState({language, importStatics}) {
+    const promise = importStatics ? Promise.all([
+        import (
+            /* webpackChunkName: "[request]-stub" */
+            /* webpackMode: "lazy" */
+            `./stub/${language}`
+            ),
+        import(
+            /* webpackChunkName: "[request]-gettext" */
+            /* webpackMode: "lazy" */
+            `../../i18n/${language}.json`
+            )
+    ]) : Promise.resolve({noData: true});
+
+    return promise
+        .then(imported => {
+            return function state() {
+                return {
+                    pageDataDirty: true,
+                    tags: [],
+                    user: null,
+                    errState: null,
+                    langApp: imported.noData ? null : imported[1],
+                    // langDateFns: imported.noData ? null : imported[0],
+                    language: language
+                };
+            };
+        });
+}
+
+/*
 function state() {
     return {
         pageDataDirty: true,
@@ -17,6 +52,9 @@ function state() {
         errState: null
     };
 }
+
+
+*/
 
 const actions = {
     fetchPageData({commit}, {route, resources}) {
@@ -55,15 +93,26 @@ const mutations = {
     }
 };
 
-function createStore({Vue}) {
+// TODO передадим {language, importStatics} чтобы не дергать бэк за данными, которые уже будут на клиенте
+function createStore({Vue, language, importStatics = false}) {
     Vue.use(Vuex);
 
-    return new Vuex.Store({
-        state,
-        actions,
-        mutations,
-        strict: process.env.NODE_ENV !== 'production'
-    })
+    return promiseState({language, importStatics})
+        .then(state => {
+            return new Vuex.Store({
+                state,
+                actions,
+                mutations,
+                strict: process.env.NODE_ENV !== 'production'
+            })
+        })
+
+    // return new Vuex.Store({
+    //     state,
+    //     actions,
+    //     mutations,
+    //     strict: process.env.NODE_ENV !== 'production'
+    // })
 }
 
 export {

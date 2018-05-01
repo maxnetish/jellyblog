@@ -36,13 +36,16 @@ import {createRenderer as createVueServerRenderer} from 'vue-server-renderer';
 import {promiseApp as promisePublicVueAppInServer} from './pub-vue-app/pub-client-server-entry';
 import pubSsrTemplate from 'raw-loader!./pub-vue-app/pub-ssr-template.html';
 import {dump, restore, uploadDumpMiddleware} from './utils/db-maintenance';
+import serializeJs from 'serialize-javascript';
+import {btoa} from 'b2a';
 
 
 const app = express();
 const MongoStore = ConnectMongo(session);
 const vueServerRenderer = createVueServerRenderer({
     template: pubSsrTemplate,
-    runInNewContext: 'once'
+    runInNewContext: 'once',
+    inject: false
 });
 
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
@@ -402,8 +405,18 @@ app.get('/*', (req, res) => {
     const context = {url: req.url, resources: req.backendResources, language: req.language};
 
     promisePublicVueAppInServer(context)
-        .then(({app, state}) => vueServerRenderer.renderToString(app, Object.assign(context, res.locals, {state})))
-        .then(html => res.end(html))
+        .then(({app, state}) => {
+            const autoRemove = process.env.NODE_ENV === 'production'
+                ? ';(function(){var s;(s=document.currentScript||document.scripts[document.scripts.length-1]).parentNode.removeChild(s);}());'
+                : '';
+            const serialized = serializeJs(state, {isJSON: false});
+            const encoded = btoa(serialized);
+            const customState = `<script>window.__INITIAL_STATE__ = '${encoded}'${autoRemove}</script>`;
+            return vueServerRenderer.renderToString(app, Object.assign(context, res.locals, {customState}));
+        })
+        .then(html => {
+            return res.end(html);
+        })
         .then(null, err => {
             err.code = err.code || 500;
             res.status(err.code).send(httpStatuses[err.code] || 'Internal error');
