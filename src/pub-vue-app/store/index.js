@@ -14,11 +14,12 @@ const mutationTypes = {
 // We should really import only when server rendering.
 // Browser receive these resoutces throw __INITIAL_STATE__
 function promiseState({language, importStatics}) {
+    const stubLanguage = 'ru';
     const promise = importStatics ? Promise.all([
         import (
             /* webpackChunkName: "[request]-stub" */
             /* webpackMode: "lazy" */
-            `./stub/${language}`
+            `./stub/${stubLanguage}`
             ),
         import(
             /* webpackChunkName: "[request]-gettext" */
