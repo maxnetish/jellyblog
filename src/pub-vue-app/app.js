@@ -6,6 +6,7 @@ import routeUpdateHooksPlugin from './plugins/route-update-hooks';
 import dateToIsoFilterPlugin from './filters/date-to-iso-string';
 import dateToLocaleStringFilterPlugin from './filters/date-to-locale-string';
 import getTextFilterPlugin from './filters/get-text';
+// import clientManifest from '/vue-ssr-client-manifest.json';
 
 
 // to not inject fontawesome support styles into html header

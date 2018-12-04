@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const path = require('path');
 const jsFiles = /\.js$/;
 const vueComponents = /\.vue$/;
@@ -22,7 +23,7 @@ module.exports = [
             rules: [
                 {
                     test: vueComponents,
-                    loader: 'vue-loader',
+                    loader: 'vue-loader'/*,
                     options: {
                         loaders: {
                             // vue-loader does not apply babel transpiling as default, so required:
@@ -47,12 +48,12 @@ module.exports = [
                             }
                         }
                         // other vue-loader options go here
-                    }
+                    }*/
                 },
-                {
-                    test: jsonFiles,
-                    loader: 'json-loader'
-                },
+                // {
+                //     test: jsonFiles,
+                //     loader: 'json-loader'
+                // },
                 {
                     test: jsFiles,
                     include: path.resolve(__dirname, 'src'),
@@ -76,11 +77,40 @@ module.exports = [
                             ]
                         }
                     }
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        'vue-style-loader',
+                        'css-loader'
+                    ]
+                },
+                {
+                    test: /\.pug$/,
+                    oneOf: [
+                        // это применяется к `<template lang="pug">` в компонентах Vue
+                        {
+                            resourceQuery: /^\?vue/,
+                            use: ['pug-plain-loader']
+                        },
+                        // это применяется к импортам pug внутри JavaScript
+                        {
+                            use: ['raw-loader', 'pug-plain-loader']
+                        }
+                    ]
+                },
+                {
+                    test: /\.less$/,
+                    use: [
+                        'vue-style-loader',
+                        'css-loader',
+                        'less-loader'
+                    ]
                 }
             ]
         },
         plugins: [
-
+            new VueLoaderPlugin()
         ],
         resolve: {
             alias: {
@@ -91,7 +121,8 @@ module.exports = [
                 path.resolve(__dirname, 'src/resources'),
                 'node_modules'
             ]
-        }
+        },
+        mode: 'production'
     },
     {
         // front
@@ -109,28 +140,30 @@ module.exports = [
         },
         target: 'web',
         plugins: [
-            new webpack.DefinePlugin({
-                'process.env.NODE_ENV': '"production"'
-            }),
-            new webpack.optimize.CommonsChunkPlugin({
-                name: 'common',
-                filename: 'common.js'
-            }),
+            // new webpack.DefinePlugin({
+            //     'process.env.NODE_ENV': '"production"'
+            // }),
+            // new webpack.optimize.CommonsChunkPlugin({
+            //     name: 'common',
+            //     filename: 'common.js'
+            // }),
             // new webpack.optimize.DedupePlugin(),
-            new webpack.optimize.UglifyJsPlugin({
-                sourceMap: false,
-                compress: {
-                    warnings: false
-                }
-            }),
+            // new webpack.optimize.UglifyJsPlugin({
+            //     sourceMap: false,
+            //     compress: {
+            //         warnings: false
+            //     }
+            // }),
             new webpack.LoaderOptionsPlugin({
                 minimize: true
             }),
+            new VueLoaderPlugin()
+            /*,
             new webpack.DefinePlugin({
                 'process.env': {
                     NODE_ENV: '"production"'
                 }
-            })
+            })*/
         ],
         module: {
             rules: [
@@ -161,8 +194,36 @@ module.exports = [
                         ],
                         cacheDirectory: '.babel-cache'
                     }
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        'vue-style-loader',
+                        'css-loader'
+                    ]
+                },
+                {
+                    test: /\.pug$/,
+                    oneOf: [
+                        // это применяется к `<template lang="pug">` в компонентах Vue
+                        {
+                            resourceQuery: /^\?vue/,
+                            use: ['pug-plain-loader']
+                        },
+                        // это применяется к импортам pug внутри JavaScript
+                        {
+                            use: ['raw-loader', 'pug-plain-loader']
+                        }
+                    ]
+                },
+                {
+                    test: /\.less$/,
+                    use: [
+                        'vue-style-loader',
+                        'css-loader',
+                        'less-loader'
+                    ]
                 }
-
             ]
         },
         resolve: {
@@ -174,6 +235,35 @@ module.exports = [
                 path.resolve(__dirname, 'src/resources'),
                 'node_modules'
             ]
+        },
+        mode: 'production',
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
+                minSize: 30000,
+                maxSize: 0,
+                minChunks: 1,
+                maxAsyncRequests: 5,
+                maxInitialRequests: 3,
+                automaticNameDelimiter: '~',
+                name: true,
+                cacheGroups: {
+                    vendors: {
+                        test: /[\\/]node_modules[\\/]/,
+                        priority: -10
+                    },
+                    common: {
+                        name: 'common',
+                        chunks: 'initial',
+                        minChunks: 2
+                    },
+                    default: {
+                        minChunks: 2,
+                        priority: -20,
+                        reuseExistingChunk: true
+                    }
+                }
+            }
         }
     }
 ];
