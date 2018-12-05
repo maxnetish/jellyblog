@@ -39,6 +39,8 @@ import {dump, restore, uploadDumpMiddleware} from './utils/db-maintenance';
 import serializeJs from 'serialize-javascript';
 import {btoa} from 'b2a';
 
+import webpackConstants from '../webpack-config/constants';
+
 
 const app = express();
 const MongoStore = ConnectMongo(session);
@@ -94,7 +96,7 @@ app.use(morgan(addEntryFromMorgan));
  * serve static before sessions, passport etc...
  * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
  */
-app.use('/assets', serveStatic(path.resolve('pub'), {
+app.use('/assets', serveStatic(path.resolve(webpackConstants.dirWWW), {
     index: false
 }));
 

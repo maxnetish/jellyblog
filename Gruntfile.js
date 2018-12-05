@@ -6,8 +6,8 @@ module.exports = function (grunt) {
     var mainAppFile = 'server.js';
     var webpack = require('webpack');
     // var webpackCommonOptions = require('./webpack.config.js');
-    var webpackDevOptions = require('./webpack.config.dev.js');
-    var webpackProdOptions = require('./webpack.config.prod');
+    var webpackDevOptions = require('./webpack-config/webpack.config.dev');
+    var webpackProdOptions = require('./webpack-config/webpack.config.prod');
     var path = require('path');
 
     require('load-grunt-tasks')(grunt);

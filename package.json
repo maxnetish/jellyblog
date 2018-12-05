@@ -69,7 +69,9 @@
     "babel-preset-stage-2": "^6.24.1",
     "bootstrap": "^3.3.7",
     "bundle-loader": "^0.5.6",
+    "clean-webpack-plugin": "^1.0.0",
     "console-loader": "^1.0.0",
+    "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^0.28.11",
     "file-loader": "^0.11.2",
     "grunt": "^1.0.3",
@@ -99,7 +101,9 @@
     "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-dev": "webpack --progress --config webpack-config/webpack.config.dev.js",
+    "build-prod": "webpack --config webpack-config/webpack.config.prod.js"
   },
   "repository": {
     "type": "git",
