@@ -2,6 +2,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require('path');
 
 const constants = require('./constants');
@@ -22,6 +23,7 @@ module.exports = {
     target: 'web',
     plugins: [
         new CleanWebpackPlugin([
+            // clear dist/www
             path.join(constants.dirDist, constants.dirWWW)
         ], {
             verbose:  true,
@@ -29,12 +31,17 @@ module.exports = {
         }),
         new CopyWebpackPlugin([
             {
+                // copy icons to www
                 from: path.join(constants.dirSource, '/*.ico'),
                 flatten: true
             }
         ]),
+        // to load none-js depenencies in .vue modules
         new VueLoaderPlugin(),
-        new VueSSRClientPlugin()
+        // to inject resources in template
+        new VueSSRClientPlugin(),
+        // to place css files as separate resource rather than inject in js
+        new MiniCssExtractPlugin()
     ],
     module: {
         rules: [
@@ -58,7 +65,10 @@ module.exports = {
             {
                 test: constants.filesCss,
                 use: [
-                    'vue-style-loader',
+                    // 'vue-style-loader',
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
                     'css-loader'
                 ]
             },
@@ -84,11 +94,28 @@ module.exports = {
             {
                 test: constants.filesLess,
                 use: [
-                    'vue-style-loader',
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    // 'vue-style-loader',
                     'css-loader',
                     'less-loader'
                 ]
+            },
+            {
+                // fonts dependencies
+                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'fonts/'
+                        }
+                    }
+                ]
             }
+            // TODO loader for images(file-loader)
         ]
     },
     resolve: {
@@ -130,6 +157,12 @@ module.exports = {
                     priority: -20,
                     reuseExistingChunk: true
                 }
+                // styles: {
+                //     name: 'styles',
+                //     test: /\.css$/,
+                //     chunks: 'all',
+                //     enforce: true
+                // }
             }
         }
     }

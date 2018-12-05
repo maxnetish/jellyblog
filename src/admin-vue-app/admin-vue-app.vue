@@ -21,6 +21,10 @@
     };
 </script>
 <style lang="less">
+    @import (less) "../../node_modules/bootstrap/dist/css/bootstrap.css";
+    @import "../less-common/overrides.less";
+    @import "../less-common/utils.less";
+
     body {
         font-family: 'Fira Sans', sans-serif;
     }

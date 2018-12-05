@@ -45,10 +45,12 @@ module.exports = {
                 }
             },
             {
+                // TODO may be ignore styles in server build
                 test: constants.filesCss,
                 use: [
-                    'vue-style-loader',
-                    'css-loader'
+                    'null-loader'
+                    // 'vue-style-loader',
+                    // 'css-loader'
                 ]
             },
             {
@@ -73,9 +75,10 @@ module.exports = {
             {
                 test: constants.filesLess,
                 use: [
-                    'vue-style-loader',
-                    'css-loader',
-                    'less-loader'
+                    'null-loader'
+                    // 'vue-style-loader',
+                    // 'css-loader',
+                    // 'less-loader'
                 ]
             }
         ]
