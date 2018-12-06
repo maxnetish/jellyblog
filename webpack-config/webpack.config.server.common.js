@@ -1,6 +1,7 @@
 const nodeExternals = require('webpack-node-externals');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+
 const path = require('path');
 
 const constants = require('./constants');
@@ -45,7 +46,7 @@ module.exports = {
                 }
             },
             {
-                // TODO may be ignore styles in server build
+                // ignore styles in server build
                 test: constants.filesCss,
                 use: [
                     'null-loader'
@@ -73,12 +74,27 @@ module.exports = {
                 ]
             },
             {
+                // ignore styles in server build
                 test: constants.filesLess,
                 use: [
                     'null-loader'
                     // 'vue-style-loader',
                     // 'css-loader',
                     // 'less-loader'
+                ]
+            },
+            {
+                // inject images as url
+                test: /\.(jpg|png|gif)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name]-[hash].[ext]',
+                            outputPath: path.join(constants.dirWWW, 'images/'),
+                            publicPath: 'assets/images/'
+                        }
+                    }
                 ]
             }
         ]

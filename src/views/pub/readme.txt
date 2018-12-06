@@ -1,1 +1,0 @@
-Deprecated views. We move to SSR vue components.

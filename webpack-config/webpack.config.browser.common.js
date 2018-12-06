@@ -1,8 +1,9 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 const constants = require('./constants');
@@ -11,8 +12,12 @@ module.exports = {
     // front
     cache: true,
     entry: {
+        // admin web app
         'adm': constants.entryAppAdmin,
-        'pub-ssr': constants.entryAppPub
+        // public web app
+        'pub-ssr': constants.entryAppPub,
+        // login page
+        'login': constants.entryLogin
     },
     output: {
         path: path.resolve(constants.dirDist, constants.dirWWW),
@@ -31,25 +36,72 @@ module.exports = {
         }),
         new CopyWebpackPlugin([
             {
-                // copy icons to www
+                // copy icon(s) to www
                 from: path.join(constants.dirSource, '/*.ico'),
                 flatten: true
             }
         ]),
         // to load none-js depenencies in .vue modules
         new VueLoaderPlugin(),
-        // to inject resources in template
-        new VueSSRClientPlugin(),
         // to place css files as separate resource rather than inject in js
-        new MiniCssExtractPlugin()
+        new MiniCssExtractPlugin(),
+        // to inject assets in admin app
+        new HtmlWebpackPlugin({
+            filename: '../views/admin/index.pug',
+            template: 'src/views/admin/index.pug',
+            inject: true,
+            minify: false,
+            cache: true,
+            showErrors: true,
+            chunks: [
+                'vendors~adm',
+                'common',
+                'adm'
+            ],
+            filetype: 'pug'
+        }),
+        // to inject assets in login page
+        new HtmlWebpackPlugin({
+            filename: '../views/admin/login.pug',
+            template: 'src/views/admin/login.pug',
+            inject: true,
+            minify: false,
+            cache: true,
+            showErrors: true,
+            chunks: [
+                'vendors~login',
+               'login'
+            ],
+            filetype: 'pug'
+        }),
+        // to inject assets in public app
+        // use plain html
+        // later plain html will pass throw vue server renderer
+        new HtmlWebpackPlugin({
+            filename: '../views/pub/pub-ssr-template.html',
+            template: 'src/views/pub/pub-ssr-template.html',
+            inject: true,
+            minify: false,
+            cache: true,
+            showErrors: true,
+            chunks: [
+                'vendors~pub-ssr',
+                'common',
+                'pub-ssr'
+            ],
+        }),
+        // to learn HtmlWebpackPlugin process pug template
+        new HtmlWebpackPugPlugin()
     ],
     module: {
         rules: [
             {
+                // vue modules
                 test: constants.filesVue,
                 loader: 'vue-loader'
             },
             {
+                // transpile js files (include also vue modules)
                 test: constants.filesJs,
                 include: path.resolve(constants.dirSource),
                 loader: 'babel-loader',
@@ -65,8 +117,10 @@ module.exports = {
             {
                 test: constants.filesCss,
                 use: [
+                    // to place css in js bundle
                     // 'vue-style-loader',
                     {
+                        // to place css in css files
                         loader: MiniCssExtractPlugin.loader
                     },
                     'css-loader'
@@ -82,11 +136,11 @@ module.exports = {
                             'pug-plain-loader'
                         ]
                     },
-                    // это применяется к импортам pug внутри JavaScript
+                    // to process pug in HtmlWebpackPugPlugin
                     {
+                        resourceQuery: /\.js$/,
                         use: [
-                            'raw-loader',
-                            'pug-plain-loader'
+                            'pug-loader'
                         ]
                     }
                 ]
@@ -114,8 +168,20 @@ module.exports = {
                         }
                     }
                 ]
+            },
+            {
+                // inject images as url
+                test: /\.(jpg|png|gif)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name]-[hash].[ext]',
+                            outputPath: 'images/'
+                        }
+                    }
+                ]
             }
-            // TODO loader for images(file-loader)
         ]
     },
     resolve: {
@@ -149,6 +215,7 @@ module.exports = {
                     minChunks: 2
                 },
                 manifest: {
+                    // TODO may be unessesary
                     name: 'manifest',
                     minChunks: Infinity
                 },

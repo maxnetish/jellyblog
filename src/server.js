@@ -32,9 +32,8 @@ import * as i18n from './i18n';
 import BackendResources from 'jb-resources';
 import resourcesRouter from './resources/resources-router';
 import url from 'url';
-import {createRenderer as createVueServerRenderer} from 'vue-server-renderer';
-import {promiseApp as promisePublicVueAppInServer} from './pub-vue-app/pub-client-server-entry';
-import pubSsrTemplate from 'raw-loader!./pub-vue-app/pub-ssr-template.html';
+import {promiseApp as promisePublicVueAppInServer} from './vue-apps/pub/pub-client-server-entry';
+import resolveVueServerRenderer from './utils/resolve-vue-server-renderer';
 import {dump, restore, uploadDumpMiddleware} from './utils/db-maintenance';
 import serializeJs from 'serialize-javascript';
 import {btoa} from 'b2a';
@@ -44,11 +43,6 @@ import webpackConstants from '../webpack-config/constants';
 
 const app = express();
 const MongoStore = ConnectMongo(session);
-const vueServerRenderer = createVueServerRenderer({
-    template: pubSsrTemplate,
-    runInNewContext: 'once',
-    inject: false
-});
 
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 
@@ -84,7 +78,7 @@ mongoose.connect(mongooseConfig.connectionUri,
 app.set("trust proxy", true);
 app.set('view engine', 'pug');
 app.set('views', './views');
-app.use(favicon(path.resolve('pub/favicon.ico')));
+app.use(favicon(path.resolve('www/favicon.ico')));
 app.use(responseTime());
 // setup logger
 morgan.token('user-name', function (req, res) {
@@ -96,7 +90,7 @@ app.use(morgan(addEntryFromMorgan));
  * serve static before sessions, passport etc...
  * assets will be in build/pub, virtual path will be '/assets/bla-bla.js'
  */
-app.use('/assets', serveStatic(path.resolve(webpackConstants.dirWWW), {
+app.use(webpackConstants.dirWWWAlias, serveStatic(path.resolve(webpackConstants.dirWWW), {
     index: false
 }));
 
@@ -405,8 +399,21 @@ app.get(routesMap.sitemap, (req, res) => {
  */
 app.get('/*', (req, res) => {
     const context = {url: req.url, resources: req.backendResources, language: req.language};
+    let renderer;
 
-    promisePublicVueAppInServer(context)
+    const templateFileName =  path.join('views', 'pub', 'pub-ssr-template.html');
+
+    resolveVueServerRenderer({
+        templateFileName,
+        rendererOptions: {
+            runInNewContext: 'once',
+            inject: false
+        }
+    })
+        .then(resolvedRenderer => {
+            renderer = resolvedRenderer;
+            return promisePublicVueAppInServer(context);
+        })
         .then(({app, state}) => {
             const autoRemove = process.env.NODE_ENV === 'production'
                 ? ';(function(){var s;(s=document.currentScript||document.scripts[document.scripts.length-1]).parentNode.removeChild(s);}());'
@@ -414,7 +421,8 @@ app.get('/*', (req, res) => {
             const serialized = serializeJs(state, {isJSON: false});
             const encoded = btoa(serialized);
             const customState = `<script>window.__INITIAL_STATE__ = '${encoded}'${autoRemove}</script>`;
-            return vueServerRenderer.renderToString(app, Object.assign(context, res.locals, {customState}));
+
+            return renderer.renderToString(app, Object.assign(context, res.locals, {customState}));
         })
         .then(html => {
             return res.end(html);

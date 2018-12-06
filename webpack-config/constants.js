@@ -13,6 +13,7 @@ module.exports = {
     dirWWW: 'www',
     dirWWWAlias: '/assets/',
 
-    entryAppAdmin: './src/admin-vue-app/admin-client-browser-entry.js',
-    entryAppPub: './src/pub-vue-app/pub-client-browser-entry.js'
+    entryAppAdmin: './src/vue-apps/admin/admin-client-browser-entry.js',
+    entryAppPub: './src/vue-apps/pub/pub-client-browser-entry.js',
+    entryLogin: './src/vue-apps/login/login-entry.js'
 };
