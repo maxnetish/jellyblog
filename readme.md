@@ -4,7 +4,14 @@ Here try to implement private web blog with stack:
  * vue
  * vue-router
 
-Build with grunt - babel - webpack 2
+Build with webpack 4
+
+```
+npm install
+npm run build-dev
+// or
+npm run build-prod
+```
 
 ES7, flex etc...
 
