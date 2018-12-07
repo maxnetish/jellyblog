@@ -30,17 +30,20 @@ module.exports = {
                     options: {
                         presets: [
                             [
-                                'env',
+                                '@babel/env',
                                 {
-                                    'targets': {
+                                    targets: {
                                         'node': 'current'
                                     }
                                 }
                             ]
                         ],
                         plugins: [
-                            'transform-object-rest-spread',
-                            'transform-decorators-legacy'
+                            ['@babel/plugin-proposal-object-rest-spread', {loose: true, useBuiltIns: true }],
+                            ['@babel/plugin-proposal-decorators', { legacy: true }],
+                            ['@babel/plugin-proposal-class-properties', { loose : false }],
+                            '@babel/plugin-syntax-dynamic-import',
+                            ['@babel/plugin-transform-runtime', {corejs: false, helpers: true, regenerator: true, useESModules: true}]
                         ]
                     }
                 }

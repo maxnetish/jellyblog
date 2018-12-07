@@ -101,32 +101,6 @@ module.exports = {
                 loader: 'vue-loader'
             },
             {
-                // transpile js files (include also vue modules)
-                test: constants.filesJs,
-                include: path.resolve(constants.dirSource),
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015'],
-                    plugins: [
-                        'transform-object-rest-spread',
-                        'transform-decorators-legacy'
-                    ],
-                    cacheDirectory: '.babel-cache'
-                }
-            },
-            {
-                test: constants.filesCss,
-                use: [
-                    // to place css in js bundle
-                    // 'vue-style-loader',
-                    {
-                        // to place css in css files
-                        loader: MiniCssExtractPlugin.loader
-                    },
-                    'css-loader'
-                ]
-            },
-            {
                 test: constants.filesPug,
                 oneOf: [
                     // это применяется к `<template lang="pug">` в компонентах Vue
@@ -143,17 +117,6 @@ module.exports = {
                             'pug-loader'
                         ]
                     }
-                ]
-            },
-            {
-                test: constants.filesLess,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader
-                    },
-                    // 'vue-style-loader',
-                    'css-loader',
-                    'less-loader'
                 ]
             },
             {

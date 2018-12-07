@@ -1,10 +1,11 @@
 /**
  * Init polyfills
  */
-require('core-js/es6/array');
-require('core-js/es6/promise');
-require('core-js/es6/object');
-require('core-js/es6/symbol');
+// Need for dynamic imports
+import 'core-js/modules/es6.promise';
+import 'core-js/es6/array';
+import 'core-js/es6/object';
+import 'core-js/es6/symbol';
 
 import {createApp} from './app';
 import resources from 'jb-resources';
