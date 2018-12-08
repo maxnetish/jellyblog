@@ -11,7 +11,7 @@ module.exports = {
     dirSource: 'src',
     dirIsomorphicResources: 'src/resources',
     dirWWW: 'www',
-    dirWWWAlias: '/assets/',
+    dirWWWAlias: '/assets',
 
     entryAppAdmin: './src/vue-apps/admin/admin-client-browser-entry.js',
     entryAppPub: './src/vue-apps/pub/pub-client-browser-entry.js',

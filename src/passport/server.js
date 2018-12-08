@@ -1,6 +1,5 @@
 import {Strategy} from 'passport-local';
 import authConfig from '../../config/auth.json';
-import {Router} from 'express';
 
 
 const localStrategy = new Strategy((username, password, done) => {
