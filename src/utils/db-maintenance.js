@@ -36,6 +36,7 @@ function streamToString(stream) {
     return buf.toString();
 }
 
+// TODO избавить ся от зависимости на express req,res,next
 function dump(req, res, next) {
     let commandWithArgs = mongooseConfig.commandDump;
 

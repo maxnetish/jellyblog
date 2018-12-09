@@ -28,11 +28,11 @@ function addRoute(localRouter, descriptor) {
 }
 
 function routeFunctionFactory(resourceFunc) {
-    return function routeFunction(req, res, next) {
-        let arg = argsFromRequest(req);
+    return function routeFunction(reqOrContextState, res, next) {
+        let arg = argsFromRequest(reqOrContextState);
         let resourceFuncContext = {
             xhr: true,
-            req: req
+            user: reqOrContextState.user
         };
 
         // Inject context:

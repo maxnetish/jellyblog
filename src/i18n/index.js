@@ -1,5 +1,6 @@
 import localeEn from './en.json';
 import localeRu from './ru.json';
+import {memoize} from 'lodash';
 
 const texts = {
     en: localeEn,
@@ -32,7 +33,10 @@ function getText(key = '', locale = defaultLocale) {
     return texts[locale][key];
 }
 
+const getTextByLanguage = memoize((key, language) => key => getText(key, language), (key, language) => language);
+
 export {
     getOrSetLocale as locale,
-    getText
+    getText,
+    getTextByLanguage
 };

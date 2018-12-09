@@ -10,14 +10,21 @@ import favicon from 'koa-favicon';
 import path from 'path';
 import webpackConstants from '../webpack-config/constants';
 import staticRouter from './koa-routes/static-assets';
+import resourceApiRouter from './koa-routes/resources';
 import morgan from 'koa-morgan';
 import passport from 'koa-passport';
 import session from 'koa-session';
 import bodyParser from 'koa-bodyparser';
+import requestLanguage from 'koa-request-language';
 import {setupPassport} from "./passport/server";
+import sessionConfig from './utils/session-config';
+import * as i18n from "./i18n";
+import routesMap from './../config/routes-map.json';
+import BackendResources from 'jb-resources';
 
 const app = new Koa();
 const portToListen = process.env.PORT || appConfig.port || 3000;
+const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 
 // Setup mongoose
 (async function setupMongo() {
@@ -82,13 +89,66 @@ app.use(staticRouter.routes());
 app.use(staticRouter.allowedMethods());
 
 // setup session and body parser
-app.use(session(app));
-app.use(bodyParser());
+app.use(session(sessionConfig, app));
+// See https://github.com/koajs/bodyparser
+// body will be in ctx.request.body
+app.use(bodyParser({
+    enableTypes: ['json', 'form'], // 'text'
+    encoding: 'utf-8',
+    formLimit: '56kb',
+    jsonLimit: '1mb',
+    textLimit: '1mb',
+    strict: true,
+    detectJSON: null,
+    extendTypes: undefined,
+    onerror: undefined,
+    disableBodyParser: undefined
+}));
+
+// adds ctx.language
+app.use(requestLanguage({
+    // supported langs
+    languages: ['en', 'ru'],
+    // url query param
+    queryName: 'locale'
+}));
 
 setupPassport(passport);
 
+// passport adds:
+// ctx.isAuthenticated()
+// ctx.isUnauthenticated()
+// ctx.state.user
 app.use(passport.initialize());
 app.use(passport.session());
+
+// setup ctx state ("locals" in express response)
+app.use(ctx => {
+    // localization: state.getText(key) => localized key
+    ctx.state.getText = i18n.getTextByLanguage(key, ctx.language);
+    ctx.state.language = ctx.language;
+    ctx.state.serializedUser = JSON.stringify(ctx.state.user);
+    ctx.state.routesMap = routesMap;
+    ctx.state.query = ctx.query;
+});
+
+// inject backend resources in ctx
+// (actually required if request is GET, not api, not file, not static...)
+app.use(ctx => {
+    if(ctx.method === 'GET') {
+        return;
+    }
+    if(urlsNotNeededBackendResources.test(ctx.url)) {
+        return;
+    }
+    ctx.backendResources = new BackendResources(ctx.state);
+});
+
+// to serve api requests
+app.use(resourceApiRouter.routes());
+app.use(resourceApiRouter.allowedMethods());
+
+// serve admin routes
 
 // General error handler
 app.on('error', (err, ctx) => {

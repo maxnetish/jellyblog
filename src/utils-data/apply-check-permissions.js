@@ -1,4 +1,4 @@
-/**
+e/**
  * check permission for resource methods
  * @param rpcCall - permit only call throw rpc interface
  * @param directCall - permit only direct call (not from webapi, also roles will be ignore)
@@ -23,7 +23,7 @@ function applyCheckPermissions({rpcCall = false, directCall = false, roles = [],
         }
 
         if (roles.length) {
-            if (!(this.req && this.req.user && this.req.user.role && roles.indexOf(this.req.user.role) > -1)) {
+            if (!(this.user && this.user.role && roles.indexOf(this.user.role) > -1)) {
                 return Promise.reject(401);
             }
         }

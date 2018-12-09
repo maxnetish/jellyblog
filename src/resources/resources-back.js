@@ -6,7 +6,7 @@ import descriptors from './resources-descriptors';
 import resources from './index';
 import {set, get} from 'lodash';
 
-function resourceFactory({descriptor, req}) {
+function resourceFactory({descriptor, req: reqOrContextState}) {
     return function (args) {
         let actualFunc = get(resources, descriptor.rpcPath);
         if (!actualFunc) {
@@ -14,13 +14,13 @@ function resourceFactory({descriptor, req}) {
         }
         let context = {
             xhr: false,
-            req: req
+            user: reqOrContextState.user
         };
         return actualFunc.call(context, args);
     };
 }
 
-function ResourceBack (req) {
+function ResourceBack (reqOrContextState) {
     let self = this;
 
     descriptors.forEach(descriptor => {
@@ -28,7 +28,7 @@ function ResourceBack (req) {
             throw new Error('Resource rpc path is not specified');
         }
         // with or without url:
-        set(self, descriptor.rpcPath, resourceFactory({descriptor, req}));
+        set(self, descriptor.rpcPath, resourceFactory({descriptor, req: reqOrContextState}));
     });
 }
 
