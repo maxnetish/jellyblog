@@ -7,7 +7,7 @@ const router = new Router({
     prefix: webpackConstants.dirWWWAlias
 });
 
-router.get('/:localPath*', async ctx => {
+router.get('staticAssets', '/:localPath*', async ctx => {
     return koaSend(ctx, ctx.params.localPath, {
         maxage: 1000 * 60 * 60,
         immutable: true,

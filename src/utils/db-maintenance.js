@@ -1,6 +1,6 @@
 import {spawn} from 'child_process';
 import mongooseConfig from '../../config/mongoose.json';
-import multer from "multer";
+import koaMulter from "koa-multer";
 
 function onDumpError({err = null, res, readStream} = {}) {
     console.error('Dump child process error: ', err);
@@ -26,18 +26,18 @@ function clearHeaders(res) {
 }
 
 function streamToString(stream) {
-    if(!stream) {
+    if (!stream) {
         return null;
     }
     let buf = stream.read();
-    if(!buf) {
+    if (!buf) {
         return null;
     }
     return buf.toString();
 }
 
-// TODO избавить ся от зависимости на express req,res,next
-function dump(req, res, next) {
+// TODO remove
+function dumpOld(req, res, next) {
     let commandWithArgs = mongooseConfig.commandDump;
 
     if (!commandWithArgs) {
@@ -65,6 +65,37 @@ function dump(req, res, next) {
     }
     catch (err) {
         onDumpError({res, readStream, err})
+    }
+}
+
+function dump() {
+    const commandWithArgs = mongooseConfig.commandDump;
+
+    if (!commandWithArgs) {
+        throw new Error('Dump command not set. See "commandDump" in mongoose.json.');
+    }
+
+    const commandParts = commandWithArgs.split(' ');
+    const command = commandParts.shift();
+    const args = commandParts;
+    let readStream;
+
+    try {
+        const dumpProcess = spawn(command, args);
+        readStream = dumpProcess.stdout;
+        dumpProcess.once('error', procErr => {
+            console.error('Dump child process error: ', err);
+            throw procErr;
+        });
+        return readStream;
+    }
+    catch (err) {
+        console.error('Dump child process error: ', err);
+        if (readStream) {
+            // unbind streams
+            readStream.unpipe(res);
+        }
+        throw err;
     }
 }
 
@@ -109,15 +140,8 @@ function restore({path}) {
 
 }
 
-const uploadDumpMiddleware = multer({
-    storage: multer.diskStorage({}),
-    fileFilter: (req, file, cb) => {
-        if (!(req.user && req.user.role === 'admin')) {
-            cb(null, false);
-            return;
-        }
-        cb(null, true);
-    },
+const uploadDumpMiddleware = koaMulter({
+    storage: koaMulter.diskStorage({}),
     limits: {
         fields: 8,
         fileSize: 2147483648,
@@ -126,6 +150,9 @@ const uploadDumpMiddleware = multer({
 });
 
 export {
+    /**
+     * return read stream to pipe to response
+     */
     dump,
     uploadDumpMiddleware,
     restore

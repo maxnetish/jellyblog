@@ -1,4 +1,4 @@
-e/**
+/**
  * check permission for resource methods
  * @param rpcCall - permit only call throw rpc interface
  * @param directCall - permit only direct call (not from webapi, also roles will be ignore)

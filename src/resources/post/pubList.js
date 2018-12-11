@@ -81,12 +81,12 @@ function fetch({page = 1, postsPerPage = mongooseConfig.paginationDefaultLimit, 
         });
     }
 
-    if(self.req.user) {
+    if(self.user) {
         Object.assign(condition, {
             $or: [
                 {allowRead: 'FOR_ALL'},
                 {allowRead: 'FOR_REGISTERED'},
-                {allowRead: 'FOR_ME', author: self.req.user.userName}
+                {allowRead: 'FOR_ME', author: self.user.userName}
             ]
         })
     } else {

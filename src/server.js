@@ -11,20 +11,42 @@ import path from 'path';
 import webpackConstants from '../webpack-config/constants';
 import staticRouter from './koa-routes/static-assets';
 import resourceApiRouter from './koa-routes/resources';
+import adminRouter from './koa-routes/admin';
+import pubRouter from './koa-routes/pub';
+import filestoreRouter from './koa-routes/file-store';
 import morgan from 'koa-morgan';
 import passport from 'koa-passport';
 import session from 'koa-session';
 import bodyParser from 'koa-bodyparser';
+// We use lib from git
+// See https://github.com/choujimmy/koa-request-language/issues/2
 import requestLanguage from 'koa-request-language';
 import {setupPassport} from "./passport/server";
 import sessionConfig from './utils/session-config';
 import * as i18n from "./i18n";
 import routesMap from './../config/routes-map.json';
 import BackendResources from 'jb-resources';
+import Pug from 'koa-pug';
 
 const app = new Koa();
 const portToListen = process.env.PORT || appConfig.port || 3000;
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
+
+// setup pug renderer
+const pugInstance = new Pug({
+    viewPath: './views',
+    debug: app.env === 'development',
+    // pretty: true,
+    // compileDebug: false,
+    locals: {}
+    // basedir: 'path/for/pug/extends',
+    // helperPath: [
+    //     'path/to/pug/helpers',
+    //     { random: 'path/to/lib/random.js' },
+    //     { _: require('lodash') }
+    // ],
+});
+pugInstance.use(app);
 
 // Setup mongoose
 (async function setupMongo() {
@@ -54,7 +76,7 @@ const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
 // to properly work behind nginx
 app.proxy = true;
 
-app.key = [appConfig.cookieSecret];
+app.keys = [appConfig.cookieSecret];
 
 // error response - override default response
 app.use(async (ctx, next) => {
@@ -64,7 +86,7 @@ app.use(async (ctx, next) => {
         const {req, res, response} = ctx || {};
         let status = typeof err === 'number' ? err : (err.status || err.statusCode || 500);
         addEntryFromErrorResponse(req, res, err);
-        if (app.env !== 'development') {
+        if (app.env === 'development') {
             console.error(err.stack);
         }
         if (err && err.message === 'FileNotFound') {
@@ -105,7 +127,7 @@ app.use(bodyParser({
     disableBodyParser: undefined
 }));
 
-// adds ctx.language
+// adds ctx.state.language
 app.use(requestLanguage({
     // supported langs
     languages: ['en', 'ru'],
@@ -123,32 +145,39 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // setup ctx state ("locals" in express response)
-app.use(ctx => {
+app.use(async (ctx, next) => {
     // localization: state.getText(key) => localized key
-    ctx.state.getText = i18n.getTextByLanguage(key, ctx.language);
-    ctx.state.language = ctx.language;
+    ctx.state.getText = i18n.getTextByLanguage(ctx.state.language);
     ctx.state.serializedUser = JSON.stringify(ctx.state.user);
     ctx.state.routesMap = routesMap;
     ctx.state.query = ctx.query;
+    await next();
 });
 
 // inject backend resources in ctx
 // (actually required if request is GET, not api, not file, not static...)
-app.use(ctx => {
-    if(ctx.method === 'GET') {
-        return;
+app.use(async (ctx, next) => {
+    if (ctx.method === 'GET' && !urlsNotNeededBackendResources.test(ctx.url)) {
+        ctx.backendResources = new BackendResources(ctx.state);
     }
-    if(urlsNotNeededBackendResources.test(ctx.url)) {
-        return;
-    }
-    ctx.backendResources = new BackendResources(ctx.state);
+    await next();
 });
+
+// file store
+app.use(filestoreRouter.routes());
+app.use(filestoreRouter.allowedMethods());
 
 // to serve api requests
 app.use(resourceApiRouter.routes());
 app.use(resourceApiRouter.allowedMethods());
 
 // serve admin routes
+app.use(adminRouter.routes());
+app.use(adminRouter.allowedMethods());
+
+// serve public routes
+app.use(pubRouter.routes());
+app.use(pubRouter.allowedMethods());
 
 // General error handler
 app.on('error', (err, ctx) => {

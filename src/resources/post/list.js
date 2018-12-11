@@ -63,7 +63,7 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
 
     // list only posts of current user
     Object.assign(condition, {
-        author: this.req.user.userName
+        author: this.user.userName
     });
 
     // set page

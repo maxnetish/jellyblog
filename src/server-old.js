@@ -335,6 +335,8 @@ app.get(routesMap.logout, (req, res) => {
 
 /**
  * Preview of post (include DRAFT)
+ * DEPRECATED
+ *
  */
 app.get(routesMap.preview + '/:id', (req, res, next) => {
     // admin area, require auth

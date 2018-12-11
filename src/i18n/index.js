@@ -33,7 +33,7 @@ function getText(key = '', locale = defaultLocale) {
     return texts[locale][key];
 }
 
-const getTextByLanguage = memoize((key, language) => key => getText(key, language), (key, language) => language);
+const getTextByLanguage = memoize(language => key => getText(key, language), (key, language) => language);
 
 export {
     getOrSetLocale as locale,
