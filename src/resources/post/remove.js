@@ -16,7 +16,7 @@ function remove({id = null, ids = []} = {}) {
         throw new Error(400);
     }
 
-    let checkPromises = postIds.map(postId => canUpdatePost({postId, user: self.req.user}));
+    const checkPromises = postIds.map(postId => canUpdatePost({postId, user: self.user}));
 
     return Promise.all(checkPromises)
         .then(checkResults => {

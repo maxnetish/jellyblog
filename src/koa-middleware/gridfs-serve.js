@@ -1,8 +1,8 @@
 // stolen from https://github.com/aunz/serve-gridfs
 
-import {GridFSBucket} from 'mongodb'
-import fresh from 'fresh'
-import parseRange from 'range-parser'
+import {GridFSBucket} from 'mongodb';
+import fresh from 'fresh';
+import parseRange from 'range-parser';
 
 /**
  *
@@ -20,7 +20,8 @@ import parseRange from 'range-parser'
  *     setHeader: {fn}, // default none, signature: function setHeader(ctx, path, stat) {
  *       path is the req.url file
  *       stat is the info from mongodb fs.files if the file is present
- *     }
+ *     },
+ *     routeParamsName: {string} // name of parameter in ctx.params with file id or name, default is 'id'
  *   }
  */
 
@@ -43,8 +44,9 @@ export default function serveGridfs(mongoConnection, options = {}) {
             return;
         }
 
-        const db = await mongoConnection;
-        const _id = ctx.url.substr(1); // removing the first forward slash
+        const client = await mongoConnection;
+        const db = client.db();
+        const _id = ctx.params[options.routeParamsName || 'id'];
         const cursor = db.collection(bucketName + '.files');
         const findOne = options.byId !== false ? cursor.findOne({_id}) : cursor.findOne({filename: _id});
 
@@ -92,25 +94,25 @@ export default function serveGridfs(mongoConnection, options = {}) {
 }
 
 function makeHeaders(doc, options) {
-    const headers = {} // keys have to be in lowercase for the fresh function to work
+    const headers = {}; // keys have to be in lowercase for the fresh function to work
     const {
         cacheControl,
         maxAge = 0,
         etag,
         lastModified,
         acceptRanges,
-    } = options
+    } = options;
 
-    if (cacheControl !== false) headers['cache-control'] = cacheControl || 'public, max-age=' + maxAge
-    if (etag !== false) headers['etag'] = doc.md5
-    if (lastModified !== false) headers['last-modified'] = new Date(doc.uploadDate.toString()) // has to use toString() to get rid of the milliseconds which can cause freshness problem
-    if (acceptRanges !== false) headers['accept-ranges'] = 'bytes'
+    if (cacheControl !== false) headers['cache-control'] = cacheControl || 'public, max-age=' + maxAge;
+    if (etag !== false) headers['etag'] = doc.md5;
+    if (lastModified !== false) headers['last-modified'] = new Date(doc.uploadDate.toString()); // has to use toString() to get rid of the milliseconds which can cause freshness problem
+    if (acceptRanges !== false) headers['accept-ranges'] = 'bytes';
     if (doc.contentType) {
-        headers['content-type'] = doc.contentType
-        headers['X-Content-Type-Options'] = 'nosniff'
+        headers['content-type'] = doc.contentType;
+        headers['X-Content-Type-Options'] = 'nosniff';
     }
 
-    return headers
+    return headers;
 }
 
 function makeRanges(ctx, headers, len, options) {

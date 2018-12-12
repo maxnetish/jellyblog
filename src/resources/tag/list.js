@@ -12,8 +12,7 @@ function enrichTags(tagList) {
 }
 
 function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
-    let self = this;
-    let allowDrafts = statuses.indexOf('DRAFT') > -1;
+    const allowDrafts = statuses.indexOf('DRAFT') > -1;
     let internMethod;
 
     if (allowDrafts && !this.xhr) {
@@ -21,7 +20,7 @@ function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
         return Promise.reject(500);
     }
 
-    if (allowDrafts && !this.req.user) {
+    if (allowDrafts && !this.user) {
         // allow only authirized user query for drafts
         return Promise.reject(401);
     }
@@ -36,7 +35,7 @@ function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
             break;
     }
 
-    return internMethod({statuses, user: this.req && this.req.user})
+    return internMethod({statuses, user: this.user})
         .then(enrichTags);
 }
 

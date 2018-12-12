@@ -29,8 +29,8 @@
                 td
                     checkbox.without-label(:value="file.checked", @input="onFileCheckedChange({index: fileIndex, checked: $event})", type="primary")
                 td
-                    a(:href="file.url", target="_blank", :download="file.metadata.originalName")
-                        span._margin-5._right {{file.metadata.originalName}}
+                    a(:href="file.url", target="_blank", :download="file.metadata && file.metadata.originalName")
+                        span._margin-5._right {{file.metadata && file.metadata.originalName}}
                         i.fa.fa-fw.fa-download(aria-hidden="true")
                 td
                     i.fa.fa-fw._margin-5._right(aria-hidden="true", :class="file.contentType | content-type-to-icon")
@@ -38,7 +38,7 @@
                 td {{file.length | number-to-locale-string}} {{'bytes' | get-text}}
                 td
                     display-date(:value="new Date(file.uploadDate)")
-                td {{file.metadata.description}}
+                td {{file.metadata && file.metadata.description}}
                 td
                     .attachment-preview
                         img(v-if="file.contentType.indexOf('image') === 0", :src="file.url")

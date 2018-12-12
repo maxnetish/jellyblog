@@ -18,17 +18,19 @@ const router = new Router();
 const checkAdminPermissions = checkPermissions({roles: ['admin']});
 const gridFsStorage = MulterGridfsStorage({
     url: mongooseConfig.connectionUri,
-    metadata: (req, file, cb) => {
-        let meta = {
-            context: req.body && req.body.context,
-            postId: (req.body && req.body.postId) ? new mongoose.mongo.ObjectId(req.body.postId) : undefined,
-            originalName: file.originalname,
-            width: (req.body && req.body.width) ? req.body.width : undefined,
-            height: (req.body && req.body.height) ? req.body.height : undefined,
-            description: (req.body && req.body.description) ? req.body.description : undefined,
-            srcsetTag: (req.body && req.body.srcsetTag) ? req.body.srcsetTag : undefined
+    options: {useNewUrlParser: true},
+    file: (req, file) => {
+        return {
+            metadata: {
+                context: req.body && req.body.context,
+                postId: (req.body && req.body.postId) ? new mongoose.mongo.ObjectId(req.body.postId) : undefined,
+                originalName: file.originalname,
+                width: (req.body && req.body.width) ? req.body.width : undefined,
+                height: (req.body && req.body.height) ? req.body.height : undefined,
+                description: (req.body && req.body.description) ? req.body.description : undefined,
+                srcsetTag: (req.body && req.body.srcsetTag) ? req.body.srcsetTag : undefined
+            }
         };
-        cb(null, meta);
     },
     log: true,
     logLevel: 'file'
@@ -48,11 +50,11 @@ router
         checkAdminPermissions,
         uploadMiddlewareAttachment,
         ctx => {
-            const filesByFieldname = Object.assign({}, ctx.files || {});
+            const filesByFieldname = Object.assign({}, ctx.req.files || {});
             for (let fieldName in filesByFieldname) {
                 if (filesByFieldname.hasOwnProperty(fieldName)) {
                     filesByFieldname[fieldName] = filesByFieldname[fieldName].map(f => {
-                        f.grid.url = urljoin(fileStoreConfig.gridFsBaseUrl, f.filename);
+                        f.url = urljoin(fileStoreConfig.gridFsBaseUrl, f.filename);
                         return f;
                     });
                 }
@@ -68,7 +70,7 @@ router
  * setup static serve from gridfs
  *
  */
-const mongoConnectionForServeGridFs = MongoClient.connect(mongooseConfig.connectionUri);
+const mongoConnectionForServeGridFs = MongoClient.connect(mongooseConfig.connectionUri, {useNewUrlParser: true});
 const contentTypeToShowInline = /^(image|video|text)\//;
 const serveGridFsByNameMiddleware = serveGridfs(mongoConnectionForServeGridFs, {
     // bucketName: 'fs'
@@ -96,7 +98,7 @@ const serveGridFsByNameMiddleware = serveGridfs(mongoConnectionForServeGridFs, {
     }
 });
 
-router.all(fileStoreConfig.gridFsBaseUrl, serveGridFsByNameMiddleware);
+router.all('fileDownload', fileStoreConfig.gridFsBaseUrl + '/:id', serveGridFsByNameMiddleware);
 /****************************************************************/
 
 export default router;

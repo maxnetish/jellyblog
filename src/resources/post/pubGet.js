@@ -38,14 +38,14 @@ function fetch({id = 'NO_ID'} = {}) {
         return Promise.reject(400);
     }
 
-    let self = this;
-    let projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead author';
+    const self = this;
+    const projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead author';
 
-    let opts = {
+    const opts = {
         lean: false,
     };
 
-    let criteria = {
+    const criteria = {
         $or: [{hru: id}]
     };
 
@@ -60,7 +60,7 @@ function fetch({id = 'NO_ID'} = {}) {
             if (!res) {
                 return null;
             }
-            let postPermission = Post.mapPermissions({post: res, user: self.req.user});
+            const postPermission = Post.mapPermissions({post: res, user: self.user});
             if (!postPermission.allowView) {
                 // нет разрешения на чтение:
                 return Promise.reject(401);

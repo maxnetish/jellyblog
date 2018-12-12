@@ -1,3 +1,7 @@
+/**
+ * DEPRECATED
+ */
+
 import {Router} from 'express';
 import descriptors from './resources-descriptors';
 import resources from './index';

@@ -6,29 +6,34 @@ import descriptors from './resources-descriptors';
 import resources from './index';
 import {set, get} from 'lodash';
 
-function resourceFactory({descriptor, state}) {
+function resourceFactory({descriptor, context}) {
     return function (args) {
-        let actualFunc = get(resources, descriptor.rpcPath);
+        const actualFunc = get(resources, descriptor.rpcPath);
         if (!actualFunc) {
             throw new Error(`Function ${descriptor.rpcPath} is not found in resources`);
         }
-        let context = {
+        const actualContext = Object.assign({}, context, {
+            // force property because ResourceBack have not to serve xhr requests throw web api
             xhr: false,
-            user: state.user
-        };
-        return actualFunc.call(context, args);
+        });
+        return actualFunc.call(actualContext, args);
     };
 }
 
-function ResourceBack (reqOrContextState) {
-    let self = this;
+/**
+ * context is structure that describe state when requesting: like {user, ...} - req in express, or ctx.state in koa
+ * @param context
+ * @constructor
+ */
+function ResourceBack(context) {
+    const self = this;
 
     descriptors.forEach(descriptor => {
         if (!descriptor.rpcPath) {
             throw new Error('Resource rpc path is not specified');
         }
         // with or without url:
-        set(self, descriptor.rpcPath, resourceFactory({descriptor, state: reqOrContextState}));
+        set(self, descriptor.rpcPath, resourceFactory({descriptor, context}));
     });
 }
 

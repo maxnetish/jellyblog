@@ -10,7 +10,7 @@ function func({posts = []}) {
 
     mapped = posts.map(p => {
         return Object.assign(p, {
-            author: this.req.user.userName
+            author: this.user.userName
         });
     });
 

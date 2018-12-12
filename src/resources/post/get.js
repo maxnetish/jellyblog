@@ -2,8 +2,8 @@ import {Post} from '../../models';
 
 
 function fetch({id} = {}) {
-    let self = this;
-    let opts = {
+    const self = this;
+    const opts = {
         lean: false
     };
 
@@ -16,7 +16,7 @@ function fetch({id} = {}) {
         .populate('titleImg')
         .exec()
         .then(res => {
-            let postPermissions = Post.mapPermissions({post: res, user: self.req && self.req.user});
+            const postPermissions = Post.mapPermissions({post: res, user: self.user});
             if(!postPermissions.allowView) {
                 return Promise.reject(401);
             }

@@ -56,13 +56,13 @@ function createOrUpdatePost(post) {
 
     // check permission, can user update?
     // can create - checks in 'applyCheckPermissions', requires 'admin' role
-    return Promise.resolve(requestMode === 'CREATE' ? true : canUpdatePost({post, user: this.req.user}))
+    return Promise.resolve(requestMode === 'CREATE' ? true : canUpdatePost({post, user: this.user}))
         .then(canUpdateOrCreate => {
             if(!canUpdateOrCreate) {
                 // cannot update
                 return Promise.reject(401);
             }
-            let postData = request2PostModel[requestMode]({postFromRequest: post, user: this.req.user});
+            let postData = request2PostModel[requestMode]({postFromRequest: post, user: this.user});
             return dbOperation[requestMode]({postData, _id: post._id})
         })
         .then(createdOrUpdatedPost => {

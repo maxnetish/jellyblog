@@ -5,6 +5,7 @@ import path from "path";
 import resolveVueServerRenderer from "../utils/resolve-vue-server-renderer";
 import {promiseApp as promisePublicVueAppInServer} from "../vue-apps/pub/pub-client-server-entry";
 import serializeJs from "serialize-javascript";
+import {btoa} from 'b2a';
 
 const router = new Router();
 const autoRemove = process.env.NODE_ENV === 'production'
@@ -36,7 +37,11 @@ router
 
     // isomorph app entry point
     .get('pubApp', '/*', async ctx => {
-        const context = {url: ctx.url, resources: ctx.backendResources, language: ctx.state.language};
+        const locals = {
+            url: ctx.url,
+            resources: ctx.backendResources,
+            language: ctx.state.language
+        };
         const templateFileName =  path.join('views', 'pub', 'pub-ssr-template.html');
         const forRenderer = resolveVueServerRenderer({
             templateFileName,
@@ -45,14 +50,15 @@ router
                 inject: false
             }
         });
-        const forPromisePublicVueAppInServer = promisePublicVueAppInServer(context);
+        const forPromisePublicVueAppInServer = promisePublicVueAppInServer(locals);
+
         const renderer = await forRenderer;
         const {app, state} = await forPromisePublicVueAppInServer;
         const serialized = serializeJs(state, {isJSON: false});
         const encoded = btoa(serialized);
         const customState = `<script>window.__INITIAL_STATE__ = '${encoded}'${autoRemove}</script>`;
-        const html = renderer.renderToString(app, Object.assign(context, res.locals, {customState}));
-        ctx.body = html;
+
+        ctx.body = await renderer.renderToString(app, Object.assign({}, locals, ctx.state, {customState}));
     });
 ;
 

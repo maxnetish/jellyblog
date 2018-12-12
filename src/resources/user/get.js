@@ -1,7 +1,5 @@
 function fetch() {
-    let self = this;
-    let result = this.req && this.req.user;
-
+    const result = this.user;
     return Promise.resolve(result);
 }
 

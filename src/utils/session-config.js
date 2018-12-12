@@ -7,14 +7,14 @@
 // };
 
 const config = {
-    key: 'sid',
+    // key: 'sid',
     maxAge: 1000 * 60 * 60 * 24 * 1,
     autoCommit: true,
     overwrite: true,
     httpOnly: true,
     signed: true,
-    rolling: false,
-    renew: false
+    rolling: true,
+    renew: true
 };
 
 
