@@ -2,18 +2,18 @@ import {File, FileData} from '../../models';
 import {applyCheckPermissions} from '../../utils-data';
 import isArray from 'lodash/isArray';
 
-function remove({id} = {}) {
+async function remove({id} = {}) {
     if (!id) {
-        return Promise.reject(400);
+        throw 400;
     }
 
     id = isArray(id) ? id : [id];
 
-    if(id.length === 0) {
-        return Promise.reject(400);
+    if (id.length === 0) {
+        throw 400;
     }
 
-    return Promise.all([
+    return await Promise.all([
         File.remove({
             _id: {$in: id}
         }).exec(),

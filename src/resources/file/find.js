@@ -17,19 +17,19 @@ import convertToBoolean from '../../utils/convert-to-boolean';
  * @param skip ignore if page setted
  * @param page
  */
-function find({context, withoutPostId = false, postId, contentType, dateTo, dateFrom, max = mongooseConfig.paginationDefaultLimit, skip = 0, page} = {}) {
-    let projection = '_id filename url contentType length uploadDate metadata';
+async function find({context, withoutPostId = false, postId, contentType, dateTo, dateFrom, max = mongooseConfig.paginationDefaultLimit, skip = 0, page} = {}) {
+    const projection = '_id filename url contentType length uploadDate metadata';
     max = toInteger(max);
-    let opts = {
+    const opts = {
         // We souldn't use lean because of virtual property 'url'
         lean: false,
         limit: max + 1,
         skip: toInteger(skip),
         sort: '-uploadDate'
     };
-    let condition = {};
-    let sanitizedFrom = dateFrom ? new Date(dateFrom) : null;
-    let sanitizedTo = dateTo ? new Date(dateTo) : null;
+    const condition = {};
+    const sanitizedFrom = dateFrom ? new Date(dateFrom) : null;
+    const sanitizedTo = dateTo ? new Date(dateTo) : null;
 
     withoutPostId = convertToBoolean(withoutPostId);
 
@@ -75,19 +75,16 @@ function find({context, withoutPostId = false, postId, contentType, dateTo, date
         opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
     }
 
-    return File.find(condition, projection, opts)
-        .exec()
-        .then(findResult => {
-            findResult = findResult || [];
-            let findedLen = findResult.length;
-            if (findedLen > max) {
-                findResult.splice(max, findedLen - max);
-            }
-            return {
-                items: findResult,
-                hasMore: findedLen > max
-            };
-        });
+    let findResult = await File.find(condition, projection, opts).exec();
+    findResult = findResult || [];
+    let foundLen = findResult.length;
+    if (foundLen > max) {
+        findResult.splice(max, foundLen - max);
+    }
+    return {
+        items: findResult,
+        hasMore: foundLen > max
+    };
 }
 
 export default applyCheckPermissions({
