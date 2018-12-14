@@ -48,7 +48,7 @@ const routes = [
 function setupHooks(router) {
     router.afterEach((to, from) => {
         // Google analytics
-        if (isBrowser && ga) {
+        if (isBrowser  && ga) {
             setTimeout(function () {
                 ga('send', 'pageview', to.fullPath);
             }, 250);

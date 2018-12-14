@@ -10,6 +10,8 @@
     /**
      * See https://dev.twitter.com/web/embedded-tweets
      */
+    import isBrowser from 'is-in-browser';
+
     export default {
         name: "twitter",
         props: {
@@ -46,7 +48,7 @@
             },
             initTwiiterLib() {
 
-                if (this.renderSide !== 'BROWSER') {
+                if (!isBrowser) {
                     return;
                 }
 

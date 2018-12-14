@@ -18,6 +18,7 @@ import morgan from 'koa-morgan';
 import passport from 'koa-passport';
 import session from 'koa-session';
 import bodyParser from 'koa-bodyparser';
+import queryParseMiddlewarFactory from './koa-middleware/query-parse';
 // We use lib from git
 // See https://github.com/choujimmy/koa-request-language/issues/2
 import requestLanguage from 'koa-request-language';
@@ -127,6 +128,13 @@ app.use(bodyParser({
     disableBodyParser: undefined
 }));
 
+// extended query parsing (koa itself does not support nested query strings)
+// will be ctx.state.query
+app.use(queryParseMiddlewarFactory({
+    depth: 2,
+    parameterLimit: 16,
+}));
+
 // adds ctx.state.language
 app.use(requestLanguage({
     // supported langs
@@ -150,7 +158,6 @@ app.use(async (ctx, next) => {
     ctx.state.getText = i18n.getTextByLanguage(ctx.state.language);
     ctx.state.serializedUser = JSON.stringify(ctx.state.user);
     ctx.state.routesMap = routesMap;
-    ctx.state.query = ctx.query;
     await next();
 });
 
