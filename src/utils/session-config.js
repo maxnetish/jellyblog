@@ -6,6 +6,10 @@
 // destroy(key): destroy session for key
 // };
 
+import uid from 'uid-safe';
+import {Session} from '../models';
+import mongoose from 'mongoose';
+
 const config = {
     // key: 'sid',
     maxAge: 1000 * 60 * 60 * 24 * 1,
@@ -13,10 +17,10 @@ const config = {
     overwrite: true,
     httpOnly: true,
     signed: true,
-    rolling: true,
-    renew: true
+    rolling: false,
+    renew: false,
+    store: Session,
+    genid: () => (new mongoose.Types.ObjectId()).toString()
 };
-
-
 
 export default config;

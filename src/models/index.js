@@ -7,6 +7,7 @@ import MediaSrcset from './media-srcset';
 import Migration from './migration';
 import AggregateCache from './aggregate-cache';
 import Option from './option';
+import Session from './session';
 
 export {
     Post,
@@ -17,5 +18,6 @@ export {
     Migration,
     AggregateCache,
     MediaSrcset,
-    Option
+    Option,
+    Session
 };
