@@ -22,21 +22,36 @@ const getters = {
 };
 
 const actions = {
-    fetchPageData({commit}, {route, resources}) {
-        return resources.post.pubList({
-            page: route.query.page,
-            postsPerPage: pubAppSettings.postsPerPage || 5,
-            q: route.query.q
-        })
-            .then(findPosts => {
-                commit(mutationTypes.ERROR, null);
-                commit(mutationTypes.FETCHED_PAGE_DATA, findPosts);
-                return findPosts;
-            })
-            .then(null, err => {
-                commit(mutationTypes.ERROR, err);
-                return false;
+    async fetchPageData({commit}, {route, resources}) {
+        try {
+            const foundPosts = await resources.post.pubList({
+                page: route.query.page,
+                postsPerPage: pubAppSettings.postsPerPage || 5,
+                q: route.query.q
             });
+            commit(mutationTypes.ERROR, null);
+            commit(mutationTypes.FETCHED_PAGE_DATA, foundPosts);
+            return foundPosts;
+        }
+        catch (err) {
+            commit(mutationTypes.ERROR, err);
+            return false;
+        }
+
+        // return resources.post.pubList({
+        //     page: route.query.page,
+        //     postsPerPage: pubAppSettings.postsPerPage || 5,
+        //     q: route.query.q
+        // })
+        //     .then(findPosts => {
+        //         commit(mutationTypes.ERROR, null);
+        //         commit(mutationTypes.FETCHED_PAGE_DATA, findPosts);
+        //         return findPosts;
+        //     })
+        //     .then(null, err => {
+        //         commit(mutationTypes.ERROR, err);
+        //         return false;
+        //     });
     }
 };
 

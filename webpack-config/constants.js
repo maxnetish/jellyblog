@@ -5,6 +5,7 @@ module.exports = {
     containsVue: /^\?vue/,
     filesVue: /\.vue$/,
     filesLess: /\.less$/,
+    // fileToExcludeFromBabel: /bower_components/,
     fileToExcludeFromBabel: /(node_modules|bower_components)/,
 
     dirDist: 'dist',

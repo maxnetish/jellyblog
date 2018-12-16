@@ -10,7 +10,7 @@ const constants = require('./constants');
 
 module.exports = {
     // front
-    cache: true,
+    name: 'browser',
     entry: {
         // admin web app
         'adm': constants.entryAppAdmin,

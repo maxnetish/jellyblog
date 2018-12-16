@@ -20,30 +20,37 @@ module.exports = {
                 // transpile js files (include also vue modules)
                 test: constants.filesJs,
                 include: path.resolve(constants.dirSource),
-                loader: 'babel-loader',
-                query: {
-                    presets: [
-                        [
-                            '@babel/env',
-                            {
-                                targets: {
-                                    browsers: targetBrowsers
-                                },
-                                loose: false
-                            }
-                        ]
-                    ],
-                    plugins: [
-                        ['@babel/plugin-proposal-object-rest-spread', {loose: true, useBuiltIns: true }],
-                        // transpile decorators
-                        ['@babel/plugin-proposal-decorators', { legacy: true }],
-                        // transpile static prop in class declaration (using Object.defineProperty)
-                        ['@babel/plugin-proposal-class-properties', { loose : false }],
-                        '@babel/plugin-syntax-dynamic-import',
-                        // inject babel utils as dependency
-                        ['@babel/plugin-transform-runtime', {corejs: false, helpers: true, regenerator: true, useESModules: true}]
-                    ],
-                    cacheDirectory: '.babel-cache'
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            [
+                                '@babel/preset-env',
+                                {
+                                    targets: {
+                                        browsers: targetBrowsers
+                                    },
+                                    loose: false,
+                                    spec: false,
+                                    modules: 'auto',
+                                    debug: true,
+                                    useBuiltIns: false,
+                                    forceAllTransforms: false
+                                }
+                            ]
+                        ],
+                        plugins: [
+                            ['@babel/plugin-proposal-object-rest-spread', {loose: true, useBuiltIns: true }],
+                            // transpile decorators
+                            ['@babel/plugin-proposal-decorators', { legacy: true }],
+                            // transpile static prop in class declaration (using Object.defineProperty)
+                            ['@babel/plugin-proposal-class-properties', { loose : false }],
+                            '@babel/plugin-syntax-dynamic-import',
+                            // inject babel utils as dependency
+                            ['@babel/plugin-transform-runtime', {corejs: false, helpers: true, regenerator: true, useESModules: true}]
+                        ],
+                        cacheDirectory: '.babel-cache-browser-prod'
+                    }
                 }
             },
             {
@@ -97,7 +104,8 @@ module.exports = {
                 sourceMap: false // set to true if you want JS source maps
             }),
             new OptimizeCSSAssetsPlugin({})
-        ]
+        ],
+        minimize: true
     },
     mode: 'production'
 };

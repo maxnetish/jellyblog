@@ -7,7 +7,7 @@ const path = require('path');
 const constants = require('./constants');
 
 module.exports = {
-    cache: true,
+    name: 'server',
     entry: './src/server.js',
     output: {
         path: path.resolve(constants.dirDist),
@@ -23,28 +23,35 @@ module.exports = {
             },
             {
                 test: constants.filesJs,
-                include: path.resolve(constants.dirSource),
-                exclude: constants.fileToExcludeFromBabel,
+                // include: path.resolve(constants.dirSource),
+                // exclude: constants.fileToExcludeFromBabel,
                 use: {
                     loader: 'babel-loader',
                     options: {
                         presets: [
                             [
-                                '@babel/env',
+                                '@babel/preset-env',
                                 {
                                     targets: {
                                         'node': 'current'
-                                    }
+                                    },
+                                    spec: false,
+                                    loose: false,
+                                    modules: 'auto',
+                                    debug: true,
+                                    useBuiltIns: false,
+                                    forceAllTransforms: false
                                 }
                             ]
                         ],
                         plugins: [
-                            ['@babel/plugin-proposal-object-rest-spread', {loose: true, useBuiltIns: true }],
-                            ['@babel/plugin-proposal-decorators', { legacy: true }],
-                            ['@babel/plugin-proposal-class-properties', { loose : false }],
-                            '@babel/plugin-syntax-dynamic-import',
-                            ['@babel/plugin-transform-runtime', {corejs: false, helpers: true, regenerator: true, useESModules: true}]
-                        ]
+                            ['@babel/plugin-proposal-object-rest-spread', {loose: true, useBuiltIns: true}],
+                            ['@babel/plugin-proposal-decorators', {legacy: true}],
+                            ['@babel/plugin-proposal-class-properties', {loose: false}],
+                            '@babel/plugin-syntax-dynamic-import'/*,
+                            ['@babel/plugin-transform-runtime', {corejs: false, helpers: true, regenerator: true, useESModules: true}]*/
+                        ],
+                        cacheDirectory: '.babel-cache-server'
                     }
                 }
             },
@@ -106,7 +113,7 @@ module.exports = {
         new CleanWebpackPlugin([
             constants.dirDist
         ], {
-            verbose:  true,
+            verbose: true,
             root: path.resolve(),
             exclude: [
                 constants.dirWWW

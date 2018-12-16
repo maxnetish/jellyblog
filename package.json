@@ -119,7 +119,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-dev": "webpack --progress --config webpack-config/webpack.config.dev.js",
-    "build-prod": "webpack --config webpack-config/webpack.config.prod.js",
+    "build-dev-server": "webpack --progress --config webpack-config/webpack.config.dev.js --config-name server",
+    "build-dev-browser": "webpack --progress --config webpack-config/webpack.config.dev.js --confgi-name browser",
+    "build-prod": "webpack --progress --config webpack-config/webpack.config.prod.js",
+    "build-prod-server": "webpack --progress --config webpack-config/webpack.config.prod.js --config-name server",
+    "build-prod-browser": "webpack --progress --config webpack-config/webpack.config.prod.js --config-name browser",
     "debug": "cd dist && node --inspect-brk server.js"
   },
   "repository": {
