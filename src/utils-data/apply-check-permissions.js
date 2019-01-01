@@ -3,7 +3,7 @@
  * @param rpcCall - permit only call throw rpc interface
  * @param directCall - permit only direct call (not from webapi, also roles will be ignore)
  * @param roles - permit user with one of specified roles
- * @param resourceFn - decorated isomorphine resource function
+ * @param resourceFn - decorated resource function
  */
 function applyCheckPermissions({rpcCall = false, directCall = false, roles = [], resourceFn} = {}) {
     if (typeof resourceFn !== 'function') {

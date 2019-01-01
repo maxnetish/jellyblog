@@ -1,0 +1,5 @@
+ --webpack-config webpack-config/webpack.config.server.test.js
+ --reporter spec
+ --ui bdd
+ --recursive
+ ./src/*.spec.js ./src/**/*.spec.js

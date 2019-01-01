@@ -9,4 +9,6 @@
 /upload
 .project
 .babel-cache
+.babel-cache-*
 /dist
+stats.json
