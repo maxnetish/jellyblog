@@ -109,7 +109,8 @@
     "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "test": "mocha-webpack --webpack-config webpack-config/webpack.config.server.test.js",
+    "test": "mocha-webpack",
+    "test-debug": "node --inspect-brk ./node_modules/mocha-webpack/lib/cli",
     "build-dev": "webpack --progress --config webpack-config/webpack.config.dev.js",
     "build-dev-server": "webpack --progress --config webpack-config/webpack.config.dev.js --config-name server",
     "build-dev-browser": "webpack --progress --config webpack-config/webpack.config.dev.js --confgi-name browser",

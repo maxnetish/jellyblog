@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import mongooseConfig from "../config/mongoose";
 import applyDataMigrations from "./utils-data/apply-data-mirgations";
 import appConfig from "../config/app";
+import migrations from './mirgations';
 
 async function setupMongo() {
     try {
@@ -13,7 +14,7 @@ async function setupMongo() {
             promiseLibrary: global.Promise
         }));
         console.info(`Connected to database ${mongooseConfig.connectionUri}`);
-        const migrationResult = await applyDataMigrations();
+        const migrationResult = await applyDataMigrations({migrations});
         console.info(migrationResult);
         return connectionResult;
     }

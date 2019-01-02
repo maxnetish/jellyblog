@@ -1,56 +1,53 @@
-import {Migration, Post} from '../models';
-import migrDescriptors from '../mirgations';
-import {sortBy, some} from 'lodash';
-
+import {Migration} from '../models';
+import {sortBy, some, isArray} from 'lodash';
 
 
 function migrationPromiseFactory(migrationDescriptor) {
     return Promise.resolve(migrationDescriptor.promiseMigration())
         .then(successResult => {
-            let status = 'SUCCESS';
-            Migration.create({
+            return {
                 key: migrationDescriptor.key,
-                tryResult: status,
+                tryResult: 'SUCCESS',
                 tryDate: new Date(),
                 tryDetails: successResult
-            });
-            return status;
+            };
         })
         .then(null, errResult => {
-            let status = 'FAILS';
-            Migration.create({
+            return {
                 key: migrationDescriptor.key,
-                tryResult: status,
+                tryResult: 'FAILS',
                 tryDate: new Date(),
                 tryDetails: errResult
-            });
-            return status;
+            };
+        })
+        .then(modelToStore => {
+            return Migration.create(modelToStore);
         });
 }
 
-function apply() {
+function apply({migrations}) {
     let migrationPromises = [];
-    let sortedMigrDescriptors = sortBy(migrDescriptors, 'key');
+    let sortedMigrationDescriptors = sortBy(isArray(migrations) ? migrations : [migrations], 'key');
 
     return Migration.find({
         tryResult: 'SUCCESS'
     })
         .then(alreadyDoneMigrations => {
-            sortedMigrDescriptors.forEach(descr => {
-                 if(some(alreadyDoneMigrations, {key: descr.key})) {
-                     // MIgration already successfully done, skip it
-                     return;
-                 }
-                 // add to promises...
+            sortedMigrationDescriptors.forEach(descr => {
+                if (some(alreadyDoneMigrations, {key: descr.key})) {
+                    // MIgration already successfully done, skip it
+                    return;
+                }
+                // add to promises...
                 migrationPromises.push(migrationPromiseFactory(descr));
             });
             return Promise.all(migrationPromises);
         })
         .then(migrationsAllResult => {
-            if(migrationsAllResult.indexOf('FAILS') > -1) {
+            if (migrationsAllResult.findIndex(m => m.tryResult === 'FAILS') > -1) {
                 throw 'One or more migration jobs failed. See Migration collection for details.';
             }
-            if(migrationsAllResult.length) {
+            if (migrationsAllResult.length) {
                 return `Successfully done ${migrationsAllResult.length} migration job(s).`;
             }
             return 'There is no planned mirgation jobs';
