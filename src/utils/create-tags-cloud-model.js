@@ -3,15 +3,13 @@ import minBy from 'lodash/minBy';
 import round from 'lodash/round';
 import sortBy from 'lodash/sortBy';
 
-const steps = 5;
-
-function createTagsCloudModel(tags = []) {
-    let tagMin = minBy(tags, 'count');
-    let tagMax = maxBy(tags, 'count');
-    let countMin = (tagMin && tagMin.count) || 1;
-    let countMax = (tagMax && tagMax.count) || 1;
-    let dispenceWidth = countMax - countMin;
-    let dispenceUnit = dispenceWidth / steps;
+function createTagsCloudModel(tags = [], steps = 5) {
+    const tagMin = minBy(tags, 'count');
+    const tagMax = maxBy(tags, 'count');
+    const countMin = (tagMin && tagMin.count) || 1;
+    const countMax = (tagMax && tagMax.count) || 1;
+    const dispenceWidth = countMax - countMin;
+    const dispenceUnit = dispenceWidth / steps;
 
     if (dispenceUnit === 0) {
         return tags;

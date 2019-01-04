@@ -1,5 +1,5 @@
 import {spawn} from 'child_process';
-import mongooseConfig from '../../config/mongoose.json';
+// import mongooseConfig from '../../config/mongoose.json';
 import koaMulter from "koa-multer";
 
 function onDumpError({err = null, res, readStream} = {}) {
@@ -37,6 +37,7 @@ function streamToString(stream) {
 }
 
 // TODO remove
+/*
 function dumpOld(req, res, next) {
     let commandWithArgs = mongooseConfig.commandDump;
 
@@ -62,14 +63,14 @@ function dumpOld(req, res, next) {
             'Content-Disposition': `attachment; filename="${filename}"`
         });
         readStream.pipe(res);
-    }
-    catch (err) {
+    } catch (err) {
         onDumpError({res, readStream, err})
     }
 }
+*/
 
-function dump() {
-    const commandWithArgs = mongooseConfig.commandDump;
+function dump({commandDump} = {}) {
+    const commandWithArgs = commandDump;
 
     if (!commandWithArgs) {
         throw new Error('Dump command not set. See "commandDump" in mongoose.json.');
@@ -88,8 +89,7 @@ function dump() {
             throw procErr;
         });
         return readStream;
-    }
-    catch (err) {
+    } catch (err) {
         console.error('Dump child process error: ', err);
         if (readStream) {
             // unbind streams
@@ -99,8 +99,8 @@ function dump() {
     }
 }
 
-function restore({path}) {
-    let commandWithArgs = mongooseConfig.commandRestore;
+function restore({path} = {}, {commandRestore} = {}) {
+    let commandWithArgs = commandRestore;
 
     return new Promise((resolve, reject) => {
         if (!commandWithArgs) {
@@ -131,8 +131,7 @@ function restore({path}) {
                 });
             });
 
-        }
-        catch (err) {
+        } catch (err) {
             reject(err);
         }
     });
@@ -153,7 +152,7 @@ export {
     /**
      * return read stream to pipe to response
      */
-    dump,
+        dump,
     uploadDumpMiddleware,
     restore
 };

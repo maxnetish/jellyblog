@@ -1,3 +1,8 @@
+/**
+ * DEPRECATED
+ * Not used
+ */
+
 import URL from 'url-parse';
 
 function createPaginationModel({currentUrl = '/', currentPage = 1, hasMore = false} = {}) {

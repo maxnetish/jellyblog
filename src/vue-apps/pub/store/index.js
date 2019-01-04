@@ -1,6 +1,6 @@
 import Vuex from 'vuex';
 
-import createTagsCloudModel from '../../../utils/create-tags-cloude-model';
+import createTagsCloudModel from '../../../utils/create-tags-cloud-model';
 
 const mutationTypes = {
     'ERROR': 'ERROR',

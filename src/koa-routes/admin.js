@@ -16,7 +16,7 @@ router
     .get('dbDump', routesMap.dbDump,
         checkAdminPermissions,
         ctx => {
-            const dumpStream = dump();
+            const dumpStream = dump(mongooseConfig);
             const filename = mongooseConfig.dumpFilename || 'db.dump';
             ctx.set({
                 'Content-type': 'application/octet-stream',
@@ -30,7 +30,7 @@ router
         async ctx => {
             let restoreResult;
             try {
-                restoreResult = await restore(ctx.req.file);
+                restoreResult = await restore(ctx.req.file, mongooseConfig);
                 unlinkSync(ctx.req.file.path);
                 ctx.body = restoreResult;
             }
