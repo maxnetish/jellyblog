@@ -21,7 +21,7 @@
  * @returns {Function} - function ({store, route, resources, beforeRouteUpdateHook}), resources will be passed to store action
  * to use during server side store filling
  */
-function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetchPageData'}) {
+function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetchPageData'} = {}) {
 
     return function defaultStoreFiller({store, route, resources, beforeRouteUpdateHook = false}) {
         const alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];

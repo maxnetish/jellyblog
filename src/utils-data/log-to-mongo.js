@@ -1,7 +1,14 @@
 import {Log} from '../models';
 
+
+/**
+ * tokens is morgan
+ * @param tokens
+ * @param req
+ * @param res
+ */
 function addEntryFromMorgan (tokens, req, res) {
-    let row = {
+    const row = {
         requestUrl: tokens.url(req),
         requestMethod: tokens.method(req),
         responseTime: tokens['response-time'](req, res),
@@ -17,13 +24,13 @@ function addEntryFromMorgan (tokens, req, res) {
 }
 
 function addEntryFromErrorResponse (req, res, err) {
-    let row = {
+    const row = {
         requestUrl: req.originalUrl || req.url,
         requestMethod: req.method,
         error: 'Message: ' + err.message + '; Stack: ' + err.stack,
         date: new Date()
     };
-    Log.create(row);
+    return Log.create(row);
 }
 
 export {

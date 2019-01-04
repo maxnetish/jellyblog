@@ -34,7 +34,7 @@ function updateStatus({ids = [], status = 'DRAFT'} = {}) {
         setDefaultsOnInsert: false
     };
 
-    return Post.update(condition, updateData, queryOptions)
+    return Post.updateMany(condition, updateData, queryOptions)
         .exec();
 }
 

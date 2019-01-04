@@ -1,3 +1,10 @@
+/**
+ * DEPRECATED
+ * not used now
+ *
+ * @type {boolean}
+ */
+
 const supportFileReader = typeof FileReader === 'function';
 
 function convert(fileOrBlob) {
