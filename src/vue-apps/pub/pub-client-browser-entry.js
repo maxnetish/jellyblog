@@ -27,11 +27,16 @@ createApp({initialState, resources, language: langFromMarkup, renderSide: 'BROWS
             router.push(e.delegateTarget.attributes.href.value);
         });
         registerRootEventsInBrowser({app});
+
+        router.onReady(() => {
+            app.$mount('#vue-app');
+        });
+
         return {app, router, store};
     })
     .then(null, err => console.error('Sorry, couldn\'t create app: ', err));
 
-function deserializeJs(serialized){
+function deserializeJs(serialized) {
     const decoded = atob(serialized);
     return eval(`(${decoded})`);
 }

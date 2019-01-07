@@ -140,7 +140,8 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             name: '[name]-[hash].[ext]',
-                            outputPath: 'images/'
+                            outputPath: path.join(constants.dirWWW, 'images/'),
+                            publicPath: '/assets/images/'
                         }
                     }
                 ]

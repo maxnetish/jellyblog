@@ -21,10 +21,6 @@ function createApp({initialState, resources, language, renderSide = 'BROWSER'} =
     const router = createRouter({Vue});
 
     // // install plugins
-    // if(renderSide === 'BROWSER') {
-    //     // very severity: didn't use global hooks on server rendering
-    //     Vue.use(routeUpdateHooksPlugin, {resources});
-    // }
     Vue.use(dateToIsoFilterPlugin);
     Vue.use(dateToLocaleStringFilterPlugin);
     Vue.use(getTextFilterPlugin);
@@ -37,17 +33,21 @@ function createApp({initialState, resources, language, renderSide = 'BROWSER'} =
             }
             if(renderSide === 'BROWSER') {
                 // very severity: didn't use global hooks on server rendering
-                Vue.use(routeUpdateHooksPlugin, {resources});
+                // and install routeUpdateHooksPlugin before mount
+                // иначе модули store не заргегистрируются
+                Vue.use(routeUpdateHooksPlugin, {resources, router, store});
             }
             const app = new Vue({
                 // внедряем маршрутизатор в корневой экземпляр Vue
                 router,
                 store,
-                el: '#vue-app',
+                // откладываем $mount (на сервере не надо, а на клиенте - до готовности роутера)
+                // el: '#vue-app',
                 render(h) {
                     return h('router-view');
                 }
             });
+
             // возвращаем и приложение и маршрутизатор и хранилище
             return {app, router, store};
         });

@@ -102,7 +102,7 @@ module.exports = {
                         options: {
                             name: '[name]-[hash].[ext]',
                             outputPath: path.join(constants.dirWWW, 'images/'),
-                            publicPath: 'assets/images/'
+                            publicPath: '/assets/images/'
                         }
                     }
                 ]
