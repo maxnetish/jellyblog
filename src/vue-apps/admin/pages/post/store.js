@@ -1,7 +1,8 @@
-import resources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 
+const resources = resourcesFactory();
 const allowReadOptions = ['FOR_ALL', 'FOR_REGISTERED', 'FOR_ME'];
 const contentTypeOptions = ['MD', 'HTML'];
 

@@ -2,13 +2,14 @@
  * Idea: in every resource method we will have request context (this.req)
  */
 
-import descriptors from './resources-descriptors';
+import resourcesDescriptors from './resources-descriptors';
 import resources from './index';
-import {set, get} from 'lodash';
+import {setWith, get} from 'lodash';
 
-function resourceFactory({descriptor, context}) {
-    return function (args) {
+function resourceFnFactory({descriptor}) {
+    return function resourceFn(...args) {
         const actualFunc = get(resources, descriptor.rpcPath);
+        const context = this.context;
         if (!actualFunc) {
             throw new Error(`Function ${descriptor.rpcPath} is not found in resources`);
         }
@@ -16,25 +17,30 @@ function resourceFactory({descriptor, context}) {
             // force property because ResourceBack have not to serve xhr requests throw web api
             xhr: false,
         });
-        return actualFunc.call(actualContext, args);
+        return actualFunc.call(actualContext, ...args);
     };
 }
 
-/**
- * context is structure that describe state when requesting: like {user, ...} - req in express, or ctx.state in koa
- * @param context
- * @constructor
- */
-function ResourceBack(context) {
-    const self = this;
-
-    descriptors.forEach(descriptor => {
-        if (!descriptor.rpcPath) {
-            throw new Error('Resource rpc path is not specified');
-        }
-        // with or without url:
-        set(self, descriptor.rpcPath, resourceFactory({descriptor, context}));
-    });
+function setWithCustomizer(nsValue, key, nsObject) {
+    if (!nsValue) {
+        return {
+            context: nsObject.context
+        };
+    }
 }
 
-export default ResourceBack;
+class ResourcesBack {
+    constructor({descriptors, context}) {
+        this.context = context;
+        descriptors.forEach(descriptor => setWith(this, descriptor.rpcPath, resourceFnFactory({descriptor}), setWithCustomizer));
+    }
+}
+
+function createResources(context) {
+    return new ResourcesBack({descriptors: resourcesDescriptors, context})
+}
+
+export {
+    createResources as resourcesFactory
+};
+

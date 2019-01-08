@@ -5,8 +5,9 @@
  */
 
 function getBeforeRouteUpdate({resources}) {
-    return function (to, from, next) {
+    return function updateStoreOnComponentBeforeRouteUpdate (to, from, next) {
         // hook calls only in client
+        // 'this' here is component instance
         const {asyncData, name, scrollToAfterFetchData} = this.$options;
         const {$root} = this;
         if (asyncData) {
@@ -34,7 +35,9 @@ function getBeforeRouteUpdate({resources}) {
 }
 
 function getBeforeResolve({resources, router, store}) {
-    return function (to, from, next) {
+    return function updateStoreOnRouterBeforeResolve (to, from, next) {
+        // We didn't have component instance here because instance is not created yet
+        // so we get matched component descriptors
         const [matched, prevMatched] = [to, from].map(l => router.getMatchedComponents(l));
         const reallyActivatedComponents = (function () {
             let diffed = false;
@@ -68,9 +71,11 @@ function install(Vue, options) {
     // const {resources, router, store} = options;
 
     const {router} = options;
+    // fires when route changed and new instance of component created
     router.beforeResolve(getBeforeResolve(options));
 
     Vue.mixin({
+        // hook will fire when route changed but component reuses from previous state
         beforeRouteUpdate: getBeforeRouteUpdate(options)
     });
 }

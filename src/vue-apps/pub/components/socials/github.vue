@@ -30,9 +30,11 @@
 </template>
 
 <script>
-    import resources from 'jb-resources';
+    import {resourcesFactory} from 'jb-resources';
     import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
     import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner';
+
+    const resources = resourcesFactory();
 
     export default {
         name: "github",

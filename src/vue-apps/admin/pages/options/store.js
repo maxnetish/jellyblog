@@ -1,8 +1,10 @@
-import resources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 import uploadFile from '../../../../utils/upload-file';
 import routesMap from '../../../../../config/routes-map.json';
+
+const resources = resourcesFactory();
 
 // initial state
 function state() {

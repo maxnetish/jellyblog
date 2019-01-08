@@ -8,13 +8,14 @@ import 'core-js/es6/object';
 import 'core-js/es6/symbol';
 
 import {createApp} from './app';
-import resources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
 import pubSettings from '../../../config/pub-settings.json';
 import delegate from 'delegate';
 import {atob} from 'b2a';
 
 // Специфичная для клиента логика загрузки...
 
+const resources = resourcesFactory();
 const langFromMarkup = document.getElementsByTagName('html')[0].lang || 'en';
 const initialState = deserializeJs(window.__INITIAL_STATE__);
 // const initialState = window.__INITIAL_STATE__;

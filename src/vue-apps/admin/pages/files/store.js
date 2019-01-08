@@ -1,6 +1,8 @@
-import resources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
 import toInteger from "lodash/toInteger";
 import isArray from "lodash/isArray";
+
+const resources = resourcesFactory();
 
 /// initial state
 function state() {

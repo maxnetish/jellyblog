@@ -27,8 +27,6 @@ function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetch
         const alreadyFetchData = !beforeRouteUpdateHook && !!store.state[storeNamespace];
         const mappedActionName = storeNamespace ? [storeNamespace, storeActionName].join('/') : storeActionName;
 
-        console.info('store filler...');
-
         if (!beforeRouteUpdateHook && storeNamespace && moduleStore) {
             console.info(`register store module ${storeNamespace}, preserve: ${!!store.state[storeNamespace]}`);
             store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
@@ -39,7 +37,6 @@ function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetch
         }
 
         // fetch from server
-        console.info('Really fetch data...');
         return store.dispatch(mappedActionName, {route, resources});
     };
 }

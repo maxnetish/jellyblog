@@ -23,7 +23,7 @@ import {setupPassport} from "./passport/server";
 import sessionConfig from './utils/session-config';
 import * as i18n from "./i18n";
 import routesMap from './../config/routes-map.json';
-import BackendResources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
 import Pug from 'koa-pug';
 
 const app = new Koa();
@@ -143,7 +143,7 @@ app.use(async (ctx, next) => {
 // (actually required if request is GET, not api, not file, not static...)
 app.use(async (ctx, next) => {
     if (ctx.method === 'GET' && !urlsNotNeededBackendResources.test(ctx.url)) {
-        ctx.backendResources = new BackendResources(ctx.state);
+        ctx.backendResources = resourcesFactory(ctx.state);
     }
     await next();
 });

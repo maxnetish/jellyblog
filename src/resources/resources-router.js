@@ -1,5 +1,6 @@
 /**
  * DEPRECATED
+ * see koa-routes
  */
 
 import {Router} from 'express';

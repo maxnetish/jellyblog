@@ -37,10 +37,4 @@ descriptors.forEach(descriptor => {
     }
 });
 
-function createResources() {
-    return resources;
-}
-
-export {
-    createResources as resourcesFactory
-};
+export default resources;

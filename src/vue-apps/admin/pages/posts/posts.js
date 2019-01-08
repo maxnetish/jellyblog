@@ -1,6 +1,6 @@
 import {dropdown, checkbox} from 'vue-strap';
 import DialogAlertMixin from '../../components/dialog-alert/mixin';
-import resources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
 import {getText} from '../../filters';
 import saveAsJson from '../../../../utils/save-obj-as-json-file';
 import SearchBlock from './posts-search-block.vue';
@@ -13,6 +13,7 @@ import toInteger from 'lodash/toInteger';
 import DialogConfirmMixin from '../../components/dialog-confirm/mixin';
 import {getDefaultFiller} from '../../../../utils/async-store-filler';
 
+const resources = resourcesFactory();
 const storeNamespace = 'posts';
 
 function mapStoreNamespace(n) {

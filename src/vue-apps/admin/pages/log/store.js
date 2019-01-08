@@ -1,4 +1,6 @@
-import resources from 'jb-resources';
+import {resourcesFactory} from 'jb-resources';
+
+const resources = resourcesFactory();
 
 /// initial state
 function state() {
