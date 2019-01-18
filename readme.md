@@ -1,10 +1,7 @@
 Here try to implement private web blog with stack:
- * mongoose - mongo
- * express
- * vue
- * vue-router
-
-Build with webpack 4
+ * [mongoose](https://mongoosejs.com/) - [mongo](https://www.mongodb.com/)
+ * [koa](https://koajs.com/)
+ * [vue](https://vuejs.org/)
 
 ```
 npm install
@@ -91,7 +88,8 @@ _routes-map.json_:
   "tag": "/tag",
   "dbDump": "/maintenance/dump",
   "dbRestore": "/maintenance/restore",
-  "sitemap": "/sitemap.xml"
+  "sitemap": "/sitemap.xml",
+  "userContext": "/current/user"
 }
 ```
 
@@ -99,7 +97,13 @@ _app.json_:
 ```json
 {
   "port": 3000,
-  "cookieSecret": "非常に秘密のフレーズ"
+  "cookieSecret": "非常に秘密のフレーズ",
+  // to allow cors requests
+  "cors": {
+    "maxAge": 3600,
+    "credentials": true,
+    "origin": "https://allow-origin-domain"
+  }
 }
 ```
 

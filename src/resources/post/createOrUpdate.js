@@ -60,7 +60,7 @@ function createOrUpdatePost(post) {
         .then(canUpdateOrCreate => {
             if(!canUpdateOrCreate) {
                 // cannot update
-                return Promise.reject(401);
+                return Promise.reject({status: 401});
             }
             let postData = request2PostModel[requestMode]({postFromRequest: post, user: this.user});
             return dbOperation[requestMode]({postData, _id: post._id})

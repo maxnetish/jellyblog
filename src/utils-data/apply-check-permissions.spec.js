@@ -58,7 +58,7 @@ describe('apply-check-permissions.js', function () {
                 })
                 .then(null, function (err) {
                     sinon.assert.notCalled(resourceFn);
-                    expect(err).to.equal(405);
+                    expect(err.status).to.equal(405);
                 });
         });
         it('should return promise rejected with \'403\' if pass {directCall:true} and this.xhr setted (resourceFn must calls only "locally")', function () {
@@ -75,7 +75,7 @@ describe('apply-check-permissions.js', function () {
                 })
                 .then(null, function (err) {
                     sinon.assert.notCalled(resourceFn);
-                    expect(err).to.equal(403);
+                    expect(err.status).to.equal(403);
                 });
         });
         it('should return promise rejected with \'401\' if pass non-empty {roles: []} and this.user not set', function () {
@@ -90,7 +90,7 @@ describe('apply-check-permissions.js', function () {
                 })
                 .then(null, function (err) {
                     sinon.assert.notCalled(resourceFn);
-                    expect(err).to.equal(401);
+                    expect(err.status).to.equal(401);
                 });
         });
         it('should return promise rejected with \'401\' if pass non-empty {roles: []} and this.user.role is not set', function () {
@@ -107,7 +107,7 @@ describe('apply-check-permissions.js', function () {
                 })
                 .then(null, function (err) {
                     sinon.assert.notCalled(resourceFn);
-                    expect(err).to.equal(401);
+                    expect(err.status).to.equal(401);
                 });
         });
         it('should return promise rejected with \'401\' if pass non-empty {roles: []} and this.user.role is not one of permitted {roles: []}', function () {
@@ -126,7 +126,7 @@ describe('apply-check-permissions.js', function () {
                 })
                 .then(null, function (err) {
                     sinon.assert.notCalled(resourceFn);
-                    expect(err).to.equal(401);
+                    expect(err.status).to.equal(401);
                 });
         });
         it('should return value from decorated function if if pass {rpcCall:true} and this.xhr is set (resourceFn must calls only "remotely")', function () {

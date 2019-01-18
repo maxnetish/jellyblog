@@ -17,12 +17,12 @@ function fetch({statuses = ['PUB'], method = 'AGGREGATE'} = {}) {
 
     if (allowDrafts && !this.xhr) {
         // allow only rpc call if qeury for drafts
-        return Promise.reject(500);
+        return Promise.reject({status: 500});
     }
 
     if (allowDrafts && !this.user) {
         // allow only authirized user query for drafts
-        return Promise.reject(401);
+        return Promise.reject({status: 401});
     }
 
     switch (method) {

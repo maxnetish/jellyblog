@@ -54,6 +54,10 @@ router
     })
 
     .post('loginFormPost', routesMap.login, (ctx, next) => {
+
+        // to login with xhr request
+        const expectedJsonResponse =  ctx.headers.accept && ctx.headers.accept.indexOf('application/json') > -1;
+
         return passport.authenticate('local', {}, (err, user, info, status) => {
             if (err) {
                 // exception
@@ -62,9 +66,16 @@ router
             }
             if (!user) {
                 // failed login
-                ctx.status = 403;
-                ctx.state.errMessage = 'Authentication failed';
-                ctx.render('admin/login');
+                ctx.status = status || 403;
+                ctx.state.errMessage = info.message || 'Authentication failed';
+                if(expectedJsonResponse) {
+                    ctx.body = {
+                        message: ctx.state.errMessage,
+                        user: null
+                    };
+                } else {
+                    ctx.render('admin/login');
+                }
                 return;
             }
             // ***********************************************************************
@@ -74,17 +85,42 @@ router
             // Source: http://passportjs.org/docs
             // ***********************************************************************
             ctx.login(user);
-            ctx.redirect(ctx.query.next || routesMap.admin)
+            if(expectedJsonResponse) {
+                ctx.body = {
+                    message: 'Auth granted',
+                    user: user
+                };
+            } else {
+                ctx.redirect(ctx.query.next || routesMap.admin);
+            }
         })(ctx, next);
     })
 
     .get('logout', routesMap.logout, ctx => {
+        // to logout with xhr request
+        const expectedJsonResponse =  ctx.headers.accept && ctx.headers.accept.indexOf('application/json') > -1;
+
         if (ctx.isAuthenticated()) {
             ctx.logout();
-            ctx.redirect(ctx.query.next || '/');
+            if(expectedJsonResponse) {
+                ctx.body = {
+                    message: 'Exited',
+                    user: null
+                };
+            } else {
+                ctx.redirect(ctx.query.next || '/');
+            }
         } else {
-            ctx.throw(400);
+            ctx.throw({status: 400});
         }
+    })
+
+    .get('userContext', routesMap.userContext, ctx => {
+        if(ctx.isAuthenticated()) {
+            ctx.body = ctx.state.user;
+            return;
+        }
+        ctx.status = 401;
     })
 
 ;

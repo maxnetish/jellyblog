@@ -9,6 +9,7 @@
     "@fortawesome/fontawesome-free-brands": "^5.0.10",
     "@fortawesome/fontawesome-free-solid": "^5.0.10",
     "@fortawesome/vue-fontawesome": "0.0.22",
+    "@koa/cors": "^2.2.3",
     "b2a": "^1.0.10",
     "brace": "^0.10.0",
     "classnames": "^2.2.5",

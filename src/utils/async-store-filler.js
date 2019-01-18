@@ -28,7 +28,6 @@ function getDefaultFiller({moduleStore, storeNamespace, storeActionName = 'fetch
         const mappedActionName = storeNamespace ? [storeNamespace, storeActionName].join('/') : storeActionName;
 
         if (!beforeRouteUpdateHook && storeNamespace && moduleStore) {
-            console.info(`register store module ${storeNamespace}, preserve: ${!!store.state[storeNamespace]}`);
             store.registerModule(storeNamespace, moduleStore, {preserveState: !!store.state[storeNamespace]});
         }
 

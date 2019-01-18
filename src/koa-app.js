@@ -25,6 +25,7 @@ import * as i18n from "./i18n";
 import routesMap from './../config/routes-map.json';
 import {resourcesFactory} from 'jb-resources';
 import Pug from 'koa-pug';
+import cors from '@koa/cors';
 
 const app = new Koa();
 const urlsNotNeededBackendResources = /(\/api\/|\/file\/|\/assets\/)/;
@@ -88,6 +89,11 @@ app.use(favicon(path.resolve(webpackConstants.dirWWW, 'favicon.ico')));
 // to serve static files
 app.use(staticRouter.routes());
 app.use(staticRouter.allowedMethods());
+
+// to allow CORS (or not)
+if (appConfig.cors) {
+    app.use(cors(appConfig.cors));
+}
 
 // setup session and body parser
 app.use(session(sessionConfig, app));

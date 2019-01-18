@@ -18,7 +18,7 @@ function fetch({id} = {}) {
         .then(res => {
             const postPermissions = Post.mapPermissions({post: res, user: self.user});
             if(!postPermissions.allowView) {
-                return Promise.reject(401);
+                return Promise.reject({status: 401});
             }
             return Post.normalizeForBinding({post: res});
         });

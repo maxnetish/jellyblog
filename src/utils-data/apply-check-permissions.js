@@ -14,17 +14,17 @@ function applyCheckPermissions({rpcCall = false, directCall = false, roles = [],
 
         if (rpcCall && !this.xhr) {
             // allow only rpc call
-            return Promise.reject(405); // Not allowed
+            return Promise.reject({status: 405}); // Not allowed
         }
 
         if(directCall && this.xhr) {
             // allow only direct call
-            return Promise.reject(403); // Forbidden
+            return Promise.reject({status: 403}); // Forbidden
         }
 
         if (roles.length) {
             if (!(this.user && this.user.role && roles.indexOf(this.user.role) > -1)) {
-                return Promise.reject(401);
+                return Promise.reject({status: 401});
             }
         }
 

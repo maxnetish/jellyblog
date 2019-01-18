@@ -63,7 +63,7 @@ function fetch({id = 'NO_ID'} = {}) {
             const postPermission = Post.mapPermissions({post: res, user: self.user});
             if (!postPermission.allowView) {
                 // нет разрешения на чтение:
-                return Promise.reject(401);
+                return Promise.reject({status: 401});
             }
             return mapPost(res);
         });
