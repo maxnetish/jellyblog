@@ -94,11 +94,11 @@ _routes-map.json_:
 ```
 
 _app.json_:
+allow cors requests here
 ```json
 {
   "port": 3000,
   "cookieSecret": "非常に秘密のフレーズ",
-  // to allow cors requests
   "cors": {
     "maxAge": 3600,
     "credentials": true,
