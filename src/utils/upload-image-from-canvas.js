@@ -42,7 +42,7 @@ function uploadBlob({blob, url, context, originalFilename, metadata}) {
         .post(url)
         .send(formData)
         .then(res => {
-            return Object.assign({}, res.body.files[context][0].grid);
+            return Object.assign({}, res.body.files[context][0]);
         });
 }
 

@@ -18,7 +18,7 @@ function uploadFile({file, url, context, metadata}) {
         .send(formData)
         .then(res => {
             if (res.body.files) {
-                return Object.assign({}, res.body.files[context][0].grid);
+                return Object.assign({}, res.body.files[context][0]);
             } else {
                 return Object.assign({}, res.body);
             }

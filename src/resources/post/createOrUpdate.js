@@ -10,8 +10,8 @@ const request2PostModel = {
             brief: postFromRequest.brief,
             content: postFromRequest.content,
             tags: postFromRequest.tags,
-            titleImg: postFromRequest.titleImg ? postFromRequest.titleImg._id : null,
-            attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a._id) : [],
+            titleImg: postFromRequest.titleImg ? postFromRequest.titleImg.id : null,
+            attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a.id) : [],
             hru: postFromRequest.hru,
             allowRead: postFromRequest.allowRead
         };
@@ -24,8 +24,8 @@ const request2PostModel = {
             brief: postFromRequest.brief,
             content: postFromRequest.content,
             tags: postFromRequest.tags,
-            titleImg: postFromRequest.titleImg ? postFromRequest.titleImg._id : null,
-            attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a._id) : [],
+            titleImg: postFromRequest.titleImg ? postFromRequest.titleImg.id : null,
+            attachments: postFromRequest.attachments ? postFromRequest.attachments.map(a => a.id) : [],
             hru: postFromRequest.hru,
             allowRead: postFromRequest.allowRead
         };

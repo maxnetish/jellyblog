@@ -95,7 +95,7 @@ postSchema.static({
             titleImg: null,
             tags: [],
             attachments: [],
-            postBrief: '',
+            brief: '',
             content: '',
             hru: null
         }
@@ -116,8 +116,8 @@ postSchema.static({
             author: post.author || null,
             contentType: post.contentType || 'HTML',
             title: post.title || null,
-            brief: post.brief || null,
-            content: post.content || null,
+            brief: post.brief || '',
+            content: post.content || '',
             tags: post.tags || [],
             titleImg: post.titleImg || null,
             attachments: post.attachments || [],
