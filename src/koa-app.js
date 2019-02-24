@@ -51,6 +51,9 @@ pugInstance.use(app);
     morgan.token('user-name', function (req, res) {
         return req.user && req.user.userName;
     });
+    morgan.token('realRemoteAddress', function(req, res){
+        return req.headers['x-real-ip'] || (req.connection && req.connection.remoteAddress);
+    })
 })();
 
 // to properly work behind nginx

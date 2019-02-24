@@ -14,7 +14,7 @@ function addEntryFromMorgan (tokens, req, res) {
         responseTime: tokens['response-time'](req, res),
         responseStatus: tokens.status(req, res),
         referrer: tokens.referrer(req),
-        remoteAddress: tokens['remote-addr'](req),
+        remoteAddress: tokens['realRemoteAddress'](req),
         httpVersion: tokens['http-version'](req),
         userAgent: tokens['user-agent'](req),
         userName: tokens['user-name'](req, res),
