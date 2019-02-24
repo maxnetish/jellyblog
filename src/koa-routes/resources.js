@@ -10,7 +10,7 @@ const router = Router({
 });
 
 function argsFromContext(ctx) {
-    return Object.assign({}, ctx.body, ctx.state.query);
+    return Object.assign({}, ctx.request.body, ctx.body, ctx.state.query);
 }
 
 function addRoute(localRouter, descriptor) {
