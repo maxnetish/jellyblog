@@ -120,6 +120,12 @@ app.use(bodyParser({
 app.use(queryParseMiddlewarFactory({
     depth: 2,
     parameterLimit: 16,
+    // To parse comma-separated arrays in query.
+    // Some client libs (ye, it is angular) serialize arrays like "statuses=ONE,TWO",
+    // other (superagent) convert arrays to "statuses=ONE&statuses=TWO"
+    // But this feature will be in the next release of qs
+    // so we use specific commit git://github.com/ljharb/qs.git#c9720fe
+    comma: true
 }));
 
 // adds ctx.state.language

@@ -41,7 +41,7 @@
     "object-hash": "^1.3.0",
     "passport-local": "^1.0.0",
     "pug": "^2.0.3",
-    "qs": "^6.6.0",
+    "qs": "git://github.com/ljharb/qs.git#c9720fe",
     "range-parser": "^1.2.0",
     "serialize-javascript": "^1.5.0",
     "showdown": "^1.8.6",
@@ -121,7 +121,8 @@
     "build-prod": "webpack --progress --config webpack-config/webpack.config.prod.js",
     "build-prod-server": "webpack --progress --config webpack-config/webpack.config.prod.js --config-name server",
     "build-prod-browser": "webpack --progress --config webpack-config/webpack.config.prod.js --config-name browser",
-    "debug": "cd dist && node --inspect-brk server.js"
+    "debug": "cd dist && node --inspect-brk server.js",
+    "serve": "cd dist && node server.js"
   },
   "repository": {
     "type": "git",
