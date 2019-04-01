@@ -72,7 +72,7 @@ async function find({context, withoutPostId = false, postId, contentType, dateTo
     // set page
     // ignore skip if page setted
     if (page) {
-        opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
+        opts.skip = (page - 1) * max;
     }
 
     let findResult = await File.find(condition, projection, opts).exec();
