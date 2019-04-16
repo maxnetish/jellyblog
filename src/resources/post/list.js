@@ -9,14 +9,14 @@ import {applyCheckPermissions} from "../../utils-data";
  * @param q
  * @param page
  * @param statuses
+ * @param {string[]} ids
  * @returns {*|Promise<any>}
  */
-function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
+function fetch({from, to, q, page = 1, statuses = ['PUB'], ids} = {}) {
     let condition = {};
     let projection = '_id status createDate updateDate pubDate titleImg title brief';
     let opts = {
         lean: true,
-        limit: mongooseConfig.paginationDefaultLimit + 1,
         sort: {createDate: 'desc'}
     };
     let allowDrafts = statuses.indexOf('DRAFT') > -1;
@@ -24,6 +24,13 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
     let sanitizedTo = to ? new Date(to) : null;
     let sanitizedQ = q ? q.substring(0, 64) : null;
     let createDateCondition;
+
+    // not set page and limit if request for specific docs
+    if(!(ids && ids.length)) {
+        page = parseInt(page, 10) || 1;
+        opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
+        opts.limit = mongooseConfig.paginationDefaultLimit + 1;
+    }
 
     if (sanitizedQ) {
         // apply full text query
@@ -54,6 +61,14 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
         });
     }
 
+    if (ids && ids.length) {
+        Object.assign(condition, {
+            _id: {
+                $in: ids
+            }
+        });
+    }
+
     // apply statuses
     Object.assign(condition, {
         status: {
@@ -66,17 +81,14 @@ function fetch({from, to, q, page = 1, statuses = ['PUB']} = {}) {
         author: this.user.userName
     });
 
-    // set page
-    page = parseInt(page, 10) || 1;
-    opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
-
     return Post.find(condition, projection, opts)
         .populate('titleImg')
         .exec()
         .then(function (findResult) {
             findResult = findResult || [];
             let findedLen = findResult.length;
-            if (findedLen > mongooseConfig.paginationDefaultLimit) {
+            if (findedLen > mongooseConfig.paginationDefaultLimit && opts.limit) {
+                // not cut docs if request for specific ids
                 findResult.splice(mongooseConfig.paginationDefaultLimit, findedLen - mongooseConfig.paginationDefaultLimit);
             }
             return {
