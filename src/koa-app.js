@@ -15,6 +15,8 @@ import morgan from 'koa-morgan';
 import passport from 'koa-passport';
 import session from 'koa-session';
 import bodyParser from 'koa-bodyparser';
+import compress from 'koa-compress';
+import zlib from 'zlib';
 import queryParseMiddlewarFactory from './koa-middleware/query-parse';
 // We use lib from git
 // See https://github.com/choujimmy/koa-request-language/issues/2
@@ -162,6 +164,11 @@ app.use(async (ctx, next) => {
     }
     await next();
 });
+
+// setup compression
+app.use(compress({
+    flush: zlib.constants.Z_SYNC_FLUSH
+}));
 
 // file store
 app.use(filestoreRouter.routes());

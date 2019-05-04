@@ -1,4 +1,4 @@
-import avatarImage from '../../../../images/avatar.jpg';
+import avatarImage from '../../../../images/ava-18.png';
 
 export default {
     name: "pub-header",
