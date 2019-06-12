@@ -14,7 +14,7 @@
     @import "../../less-pub/post.less";
     @import "../../less-pub/sidebar.less";
     @import "../../less-pub/utils.less";
-    @import (less) "../../../node_modules/@fortawesome/fontawesome/styles.css";
+    @import (less) "../../../node_modules/@fortawesome/fontawesome-svg-core/styles.css";
 
     .route-enter-active,
     .route-leave-active {

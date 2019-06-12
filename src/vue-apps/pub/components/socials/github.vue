@@ -31,8 +31,8 @@
 
 <script>
     import {resourcesFactory} from 'jb-resources';
-    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-    import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner';
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+    import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner';
 
     const resources = resourcesFactory();
 

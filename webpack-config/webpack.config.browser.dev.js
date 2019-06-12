@@ -4,7 +4,7 @@ const path = require('path');
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const targetBrowsers = ['last 1 Chrome versions', 'last 1 Firefox versions'];
+// const targetBrowsers = ['last 1 Chrome versions', 'last 1 Firefox versions'];
 // const targetBrowsers = ['last 2 versions'];
 
 module.exports = {
@@ -27,9 +27,9 @@ module.exports = {
                             [
                                 '@babel/preset-env',
                                 {
-                                    targets: {
-                                        browsers: targetBrowsers
-                                    },
+                                    // targets: {
+                                    //     browsers: targetBrowsers
+                                    // },
                                     loose: false,
                                     // useBuiltIns: 'entry'
                                     spec: false,
@@ -70,7 +70,9 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             plugins: [
-                                autoprefixer({browsers: targetBrowsers})
+                                autoprefixer({
+                                    // browsers: targetBrowsers
+                                })
                             ],
                             sourceMap: true
                         }
@@ -89,7 +91,9 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             plugins: [
-                                autoprefixer({browsers: targetBrowsers})
+                                autoprefixer({
+                                    // browsers: targetBrowsers
+                                })
                             ],
                             sourceMap: true
                         }

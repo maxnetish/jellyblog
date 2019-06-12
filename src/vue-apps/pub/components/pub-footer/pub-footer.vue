@@ -3,10 +3,10 @@
 <script>
     import routesMap from '../../../../../config/routes-map.json';
     import url from 'url';
-    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-    import faSignoutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt';
-    import faCogs from '@fortawesome/fontawesome-free-solid/faCogs';
-    import faSigninAlt from'@fortawesome/fontawesome-free-solid/faSignInAlt';
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+    import {faSignoutAlt} from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
+    import {faCogs} from '@fortawesome/free-solid-svg-icons/faCogs';
+    import {faSigninAlt} from'@fortawesome/free-solid-svg-icons/faSignInAlt';
 
     export default {
         name: "pub-footer",

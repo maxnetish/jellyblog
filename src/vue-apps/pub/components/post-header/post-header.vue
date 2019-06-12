@@ -17,9 +17,9 @@
 </template>
 
 <script>
-    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-    import faCalendarAlt from '@fortawesome/fontawesome-free-solid/faCalendarAlt';
-    import faTag from '@fortawesome/fontawesome-free-solid/faTag';
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+    import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
+    import {faTag} from '@fortawesome/free-solid-svg-icons/faTag';
 
     export default {
         name: "pub-post-header",

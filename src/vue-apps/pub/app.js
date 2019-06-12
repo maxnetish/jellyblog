@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {createRouter} from './router';
 import {createStore} from "./store";
-import fontawesome from '@fortawesome/fontawesome';
+import {config as fontawesomeConfig} from '@fortawesome/fontawesome-svg-core';
 import routeUpdateHooksPlugin from './plugins/route-update-hooks';
 import dateToIsoFilterPlugin from './filters/date-to-iso-string';
 import dateToLocaleStringFilterPlugin from './filters/date-to-locale-string';
@@ -11,9 +11,7 @@ import getTextFilterPlugin from './filters/get-text';
 
 // to not inject fontawesome support styles into html header
 // See src/less-pub/utils.less
-fontawesome.config = {
-    autoAddCss: false
-};
+fontawesomeConfig.autoAddCss = false;
 
 // renderSide: ['BROWSER' | 'SERVER']
 function createApp({initialState, resources, language, renderSide = 'BROWSER'} = {}) {

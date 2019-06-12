@@ -122,3 +122,5 @@ _pub-settings.json_:
   "hostname": "https://my.app"
 }
 ```
+
+Also see <https://github.com/webpack/webpack/issues/8656#issuecomment-456010969> to walkaround with acorn dependency.

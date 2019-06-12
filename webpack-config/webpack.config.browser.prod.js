@@ -1,12 +1,13 @@
 const webpack = require('webpack');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const constants = require('./constants');
 const path = require('path');
 const autoprefixer = require('autoprefixer');
 
-const targetBrowsers = ['last 2 versions'];
+// const targetBrowsers = ['last 2 versions'];
 
 module.exports = {
     plugins: [
@@ -27,9 +28,9 @@ module.exports = {
                             [
                                 '@babel/preset-env',
                                 {
-                                    targets: {
-                                        browsers: targetBrowsers
-                                    },
+                                    // targets: {
+                                    //     browsers: targetBrowsers
+                                    // },
                                     loose: false,
                                     spec: false,
                                     modules: 'auto',
@@ -67,7 +68,9 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             plugins: [
-                                autoprefixer({browsers: targetBrowsers})
+                                autoprefixer({
+                                    // browsers: targetBrowsers
+                                })
                             ],
                             sourceMap: true
                         }
@@ -86,7 +89,9 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             plugins: [
-                                autoprefixer({browsers: targetBrowsers})
+                                autoprefixer({
+                                    // browsers: targetBrowsers
+                                })
                             ],
                             sourceMap: true
                         }
@@ -98,7 +103,7 @@ module.exports = {
     },
     optimization: {
         minimizer: [
-            new UglifyJsPlugin({
+            new TerserPlugin({
                 cache: true,
                 parallel: true,
                 sourceMap: false // set to true if you want JS source maps

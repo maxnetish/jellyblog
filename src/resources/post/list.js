@@ -7,12 +7,13 @@ import {applyCheckPermissions} from "../../utils-data";
  * @param from
  * @param to
  * @param q
- * @param page
+ * @param page - request specified page
+ * @param pages - request pages from 1 to pages
  * @param statuses
  * @param {string[]} ids
  * @returns {*|Promise<any>}
  */
-function fetch({from, to, q, page = 1, statuses = ['PUB'], ids} = {}) {
+function fetch({from, to, q, page = 1, pages, statuses = ['PUB'], ids} = {}) {
     let condition = {};
     let projection = '_id status createDate updateDate pubDate titleImg title brief';
     let opts = {
@@ -26,10 +27,22 @@ function fetch({from, to, q, page = 1, statuses = ['PUB'], ids} = {}) {
     let createDateCondition;
 
     // not set page and limit if request for specific docs
+    let numberOfDocsAtuallyNeeded;
     if(!(ids && ids.length)) {
-        page = parseInt(page, 10) || 1;
-        opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
-        opts.limit = mongooseConfig.paginationDefaultLimit + 1;
+        // we try to find 1 more doc to see if we have some more docs after requested
+        if (pages) {
+            // if set pages - returns all pages from 1 to pages
+            pages = parseInt(pages, 10) || 1;
+            numberOfDocsAtuallyNeeded = mongooseConfig.paginationDefaultLimit * pages;
+            opts.skip = 0;
+            opts.limit = numberOfDocsAtuallyNeeded + 1;
+        } else {
+            // else return page, specified by paramater page
+            page = parseInt(page, 10) || 1;
+            numberOfDocsAtuallyNeeded = mongooseConfig.paginationDefaultLimit;
+            opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
+            opts.limit = numberOfDocsAtuallyNeeded + 1;
+        }
     }
 
     if (sanitizedQ) {
@@ -86,14 +99,15 @@ function fetch({from, to, q, page = 1, statuses = ['PUB'], ids} = {}) {
         .exec()
         .then(function (findResult) {
             findResult = findResult || [];
-            let findedLen = findResult.length;
-            if (findedLen > mongooseConfig.paginationDefaultLimit && opts.limit) {
+            const foundLen = findResult.length;
+            if (numberOfDocsAtuallyNeeded && foundLen > numberOfDocsAtuallyNeeded) {
+                // cut 'one more' doc
                 // not cut docs if request for specific ids
-                findResult.splice(mongooseConfig.paginationDefaultLimit, findedLen - mongooseConfig.paginationDefaultLimit);
+                findResult.splice(numberOfDocsAtuallyNeeded, foundLen - numberOfDocsAtuallyNeeded);
             }
             return {
                 items: findResult,
-                hasMore: findedLen > mongooseConfig.paginationDefaultLimit
+                hasMore: foundLen > numberOfDocsAtuallyNeeded
             };
         });
 }

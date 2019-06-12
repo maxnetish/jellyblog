@@ -1,11 +1,11 @@
 import TagsCloudComponent from '../tags-cloud/tags-cloud.vue';
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-import faGithub from '@fortawesome/fontawesome-free-brands/faGithub';
-import faLinkedin from '@fortawesome/fontawesome-free-brands/faLinkedin';
-import faTwitter from '@fortawesome/fontawesome-free-brands/faTwitter';
-import faFacebook from '@fortawesome/fontawesome-free-brands/faFacebook';
-import faGoogleplus from '@fortawesome/fontawesome-free-brands/faGooglePlus';
-import faVk from '@fortawesome/fontawesome-free-brands/faVk';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+import {faGithub} from '@fortawesome/free-brands-svg-icons/faGithub';
+import {faLinkedin} from '@fortawesome/free-brands-svg-icons/faLinkedin';
+import {faTwitter} from '@fortawesome/free-brands-svg-icons/faTwitter';
+import {faFacebook} from '@fortawesome/free-brands-svg-icons/faFacebook';
+import {faGooglePlus} from '@fortawesome/free-brands-svg-icons/faGooglePlus';
+import {faVk} from '@fortawesome/free-brands-svg-icons/faVk';
 
 import GithubDetailsComponent from '../socials/github.vue';
 import TwitterDetailsComponent from '../socials/twitter.vue';
@@ -36,7 +36,7 @@ const socials = [
         label: 'В фейсбук заглядываю иногда'
     },
     {
-        icon: faGoogleplus,
+        icon: faGooglePlus,
         url: 'https://plus.google.com/+MaksimGordeev',
         label: 'Гуглоплюс на любителя'
     },

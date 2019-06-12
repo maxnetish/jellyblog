@@ -2,9 +2,9 @@
 
 <script>
     import {merge as queryMerge} from '../../../../utils/query';
-    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-    import faArrowLeft from '@fortawesome/fontawesome-free-solid/faArrowLeft';
-    import faArrowRight from '@fortawesome/fontawesome-free-solid/faArrowRight';
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+    import {faArrowLeft} from '@fortawesome/free-solid-svg-icons/faArrowLeft';
+    import {faArrowRight} from '@fortawesome/free-solid-svg-icons/faArrowRight';
 
     export default {
         name: 'pub-pagination',

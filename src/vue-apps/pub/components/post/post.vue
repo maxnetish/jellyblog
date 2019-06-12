@@ -24,9 +24,9 @@
 <script>
     import routesMap from '../../../../../config/routes-map.json';
     import PostHeaderComponent from '../post-header/post-header.vue';
-    import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-    import faCaretSquareDown from '@fortawesome/fontawesome-free-solid/faCaretSquareDown';
-    import faEdit from '@fortawesome/fontawesome-free-solid/faEdit';
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+    import {faCaretSquareDown} from '@fortawesome/free-solid-svg-icons/faCaretSquareDown';
+    import {faEdit} from '@fortawesome/free-solid-svg-icons/faEdit';
 
     export default {
         name: "pub-post",
@@ -44,19 +44,17 @@
                 default: null
             }
         },
-        data () {
-            return {
-
-            };
+        data() {
+            return {};
         },
         computed: {
             editUrl: function () {
                 return `${routesMap.admin}#${routesMap.post}?id=${this.post._id}`;
             },
-            iconCaretSquareDown(){
+            iconCaretSquareDown() {
                 return faCaretSquareDown;
             },
-            iconEdit(){
+            iconEdit() {
                 return faEdit;
             }
         },
