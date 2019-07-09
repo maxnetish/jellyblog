@@ -1,0 +1,12 @@
+{
+  "GoogleAnalyticsApiKey": "UA-GOOGLE_KEY_HERE",
+  "postsPerPage": 5,
+  "showdownOptions": {
+    "strikethrough": true,
+    "encodeEmails": true,
+    "openLinksInNewWindow": true,
+    "backslashEscapesHTMLTags": false,
+    "emoji": true
+  },
+  "hostname": "http://localhost:3000"
+}

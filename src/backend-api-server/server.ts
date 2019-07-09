@@ -1,15 +1,16 @@
 // @ts-ignore
-import appConfig from '../../config/app.json';
-// @ts-ignore
-import mongooseConfig from '../../config/mongoose.json';
+import mongooseConfig from '../config/mongoose.json';
 import mongoose = require('mongoose');
 import {app} from "./koa-app";
+import dotenv from 'dotenv';
 
 // @ts-ignore
 import Koa from 'koa';
 
+// read .env file
+const dotenvResult = dotenv.config();
 
-const portToListen = process.env.PORT || appConfig.port || 3000;
+const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
 
 async function setupMongo() {
     try {

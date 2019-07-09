@@ -1,0 +1,17 @@
+{
+  "gridFsBaseUrl": "/file",
+  "fields": [
+    {
+      "name": "attachment",
+      "maxCount": 3
+    },
+    {
+      "name": "avatarImage",
+      "maxCount": 1
+    },
+    {
+      "name": "upload",
+      "maxCount": 3
+    }
+  ]
+}

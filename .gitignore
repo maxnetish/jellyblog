@@ -12,3 +12,4 @@
 .babel-cache-*
 /dist
 stats.json
+.env

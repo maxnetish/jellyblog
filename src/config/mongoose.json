@@ -1,0 +1,12 @@
+{
+  "connectionUri": "mongodb://localhost/jellyblog",
+  "connectionOptions": {
+    "config": {
+      "autoIndex": true
+    }
+  },
+  "paginationDefaultLimit": 10,
+  "commandDump": "mongodump -d jellyblog --quiet --gzip --archive",
+  "dumpFilename": "blog.archive.gz",
+  "commandRestore": "mongorestore --nsFrom jellyblog.* --nsTo jellyblog-check-restore.* --gzip"
+}
