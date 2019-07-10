@@ -1,45 +1,42 @@
-// @ts-ignore
-import mongooseConfig from '../config/mongoose.json';
 import mongoose = require('mongoose');
-import {app} from "./koa-app";
+import {createApp} from "./koa-app";
 import dotenv from 'dotenv';
-
-// @ts-ignore
-import Koa from 'koa';
+import {getDbConfig} from "./db-config";
+import Application = require("koa");
 
 // read .env file
 const dotenvResult = dotenv.config();
 
-const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
-
 async function setupMongo() {
+    const dbConfig = getDbConfig();
     try {
         // use new createIndex instead of ensureIndex
         mongoose.set('useCreateIndex', true);
-        const connectionResult = await mongoose.connect(mongooseConfig.connectionUri, Object.assign(mongooseConfig.connectionOptions, {
-            promiseLibrary: global.Promise,
-            useNewUrlParser: true,
-        }));
-        console.info(`Connected to database ${mongooseConfig.connectionUri}`);
+        const connectionResult = await mongoose.connect(dbConfig.connectionUri, dbConfig.connectionOptions);
+        console.info(`Connected to database ${dbConfig.connectionUri}`);
+        // TODO rewrite migrations
         // const migrationResult = await applyDataMigrations({migrations});
         // console.info(migrationResult);
         return connectionResult;
     } catch (err) {
-        console.error(`Cannot connect to database ${mongooseConfig.connectionUri}, ${err}`);
+        console.error(`Cannot connect to database ${dbConfig.connectionUri}, ${err}`);
         throw err;
     }
 }
+
+const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
 
 // Wait for mongoose connection ready...
 const promiseForAppRun = setupMongo()
     .then(mongoConnectionResult => {
         return new Promise((resolve, reject) => {
+            const app = createApp();
             app.listen(portToListen, () => {
                 resolve(app);
             });
         });
     })
-    .then((result: Koa) => {
+    .then((result: Application) => {
         console.info(`Started and listening on port ${portToListen}. app.env: ${result.env}`);
         return result;
     })
@@ -49,3 +46,22 @@ const promiseForAppRun = setupMongo()
     });
 
 export default promiseForAppRun;
+
+/**
+ * config parameters moved from json to environment
+ * Example of .env file (place near server.js)
+ *
+ PORT=3000
+ CORS_ORIGIN=http://localhost:4200
+ DB_DEFAULT_PAGINATION=10
+ DB_CONNECTION_URI=mongodb://localhost/jellyblog
+ DB_CMD_DUMP=mongodump -d jellyblog --quiet --gzip --archive
+ DB_DUMP_FILENAME=blog.archive.gze
+ DB_CMD_RESTORE=mongorestore --nsFrom jellyblog.* --nsTo jellyblog-check-restore.* --gzip
+ JWT_SECRET=Top secret
+ JWT_EXPIRES_IN=2h
+ JWT_AUDIENCE=MYBLOG
+ JWT_ISSUER=localhost
+ JWT_REFRESH_TOKEN_EXPIRES_IN_DAYS=30
+ JWT_REFRESH_TOKEN_COOKIE=jb-refresh-token
+ */

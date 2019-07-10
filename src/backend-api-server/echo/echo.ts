@@ -1,7 +1,5 @@
-// @ts-ignore
-import Router from 'koa-router';
-// @ts-ignore
-import {routesMap} from "../../config/routes-map";
+import {koaRoutesMap as routesMap} from "../koa-routes-map";
+import Router = require("koa-router");
 
 const router = new Router();
 

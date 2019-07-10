@@ -152,7 +152,7 @@ app.use(async (ctx, next) => {
     // localization: state.getText(key) => localized key
     ctx.state.getText = i18n.getTextByLanguage(ctx.state.language);
     ctx.state.serializedUser = JSON.stringify(ctx.state.user);
-    ctx.state.routesMap = routesMap;
+    ctx.state.koaRoutesMap = routesMap;
     await next();
 });
 

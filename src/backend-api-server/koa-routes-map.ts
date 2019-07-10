@@ -17,12 +17,12 @@
 }
 */
 
-const routesMap = new Map<string, string>([
+const koaRoutesMap = new Map<string, string>([
     ['api', '/api'],
     ['echo', '/echo'],
     ['token', '/token']
 ]);
 
 export {
-    routesMap
+    koaRoutesMap
 }

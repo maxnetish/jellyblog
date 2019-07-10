@@ -1,0 +1,12 @@
+{
+  "watch": [
+    "src/backend-api-server"
+  ],
+  "exec": "npm run serve-debug-backend-api-server",
+  "ext": "ts",
+  "env": {
+    "NODE_ENV": "development",
+    "TS_NODE_PROJECT": "src/backend-api-server/tsconfig.json",
+    "PORT": 3000
+  }
+}

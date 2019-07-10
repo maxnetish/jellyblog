@@ -2,7 +2,7 @@ import {UserModel, IUser, IUserInfo} from "./user-model";
 import {ICredentials} from "./credentials";
 import crypto from 'crypto';
 
-async function findUserInfo(credentials: ICredentials): Promise<IUserInfo | null> {
+async function findUserInfoByCredentials(credentials: ICredentials): Promise<IUserInfo | null> {
     const condition: Partial<IUser> = {
         username: credentials.username
     };
@@ -23,6 +23,24 @@ async function findUserInfo(credentials: ICredentials): Promise<IUserInfo | null
     };
 }
 
+async function findUserInfoByUsername(name: string): Promise<IUserInfo | null> {
+    const condition: Partial<IUser> = {
+        username: name
+    };
+
+    const foundUser = await UserModel.findOne(condition).exec();
+
+    if(!foundUser) {
+        return null;
+    }
+
+    const {username, role} = foundUser;
+    return {
+        username,
+        role
+    };
+}
+
 function textToHash(inp: string): string {
     const hash = crypto.createHash('sha256');
     hash.update(inp);
@@ -30,7 +48,8 @@ function textToHash(inp: string): string {
 }
 
 export {
-    findUserInfo
+    findUserInfoByCredentials,
+    findUserInfoByUsername,
 }
 
 

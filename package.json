@@ -113,6 +113,7 @@
     "mocha-webpack": "^2.0.0-beta.0",
     "mock-spawn": "^0.2.6",
     "node-sass": "^4.12.0",
+    "nodemon": "^1.19.1",
     "null-loader": "^0.1.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
@@ -123,6 +124,7 @@
     "sinon": "^7.3.2",
     "supertest": "^3.4.2",
     "terser-webpack-plugin": "^1.3.0",
+    "ts-node": "^8.3.0",
     "uglify-js": "^3.6.0",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "vue-loader": "^15.7.0",
@@ -146,7 +148,8 @@
     "debug": "cd dist && node --inspect-brk server.js",
     "serve": "cd dist && node server.js",
     "build-api-server": "tsc -p src/backend-api-server --pretty",
-    "debug-api-server": "cd dist/backend-api-server/backend-api-server && node --inspect-brk server.js"
+    "serve-debug-backend-api-server": "node --inspect -r ts-node/register src/backend-api-server/server.ts",
+    "watch-backend-api-server": "nodemon --config nodemon.backend-api-server.json"
   },
   "repository": {
     "type": "git",
