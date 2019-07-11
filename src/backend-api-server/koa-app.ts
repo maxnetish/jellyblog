@@ -2,7 +2,6 @@ import {router as echoRouter} from './echo/echo';
 import {router as tokenRouter} from './token/token-routes';
 import httpStatuses from 'statuses';
 import Router = require('koa-router');
-import {koaRoutesMap as routesMap} from './koa-routes-map';
 import morgan from 'koa-morgan';
 import {IncomingMessage, ServerResponse} from "http";
 import {addEntryFromMorgan} from "./log/log-service";
@@ -83,9 +82,10 @@ export function createApp(): Application {
     // disableBodyParser: undefined
 
     // setup routes /api/...
-    const routesMapApi = routesMap.get('api') || '';
-    apiRouter.use(routesMapApi, echoRouter.routes(), echoRouter.allowedMethods());
-    apiRouter.use(routesMapApi, tokenRouter.routes(), tokenRouter.allowedMethods());
+
+    const routesMapPath = process.env.ROUTE_API_PATH || 'api';
+    apiRouter.use(routesMapPath, echoRouter.routes(), echoRouter.allowedMethods());
+    apiRouter.use(routesMapPath, tokenRouter.routes(), tokenRouter.allowedMethods());
 
     app.use(apiRouter.routes());
 

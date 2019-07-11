@@ -2,7 +2,7 @@ import mongoose = require('mongoose');
 import {createApp} from "./koa-app";
 import dotenv from 'dotenv';
 import {getDbConfig} from "./db-config";
-import Application = require("koa");
+import {Server} from "http";
 
 // read .env file
 const dotenvResult = dotenv.config();
@@ -27,18 +27,15 @@ async function setupMongo() {
 const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
 
 // Wait for mongoose connection ready...
-const promiseForAppRun = setupMongo()
+const promiseForAppRun: Promise<Server> = setupMongo()
     .then(mongoConnectionResult => {
+        const app = createApp();
         return new Promise((resolve, reject) => {
-            const app = createApp();
-            app.listen(portToListen, () => {
-                resolve(app);
+            const httpServer = app.listen(portToListen, () => {
+                console.info(`Started and listening on port ${portToListen}. app.env: ${app.env}`);
+                resolve(httpServer);
             });
         });
-    })
-    .then((result: Application) => {
-        console.info(`Started and listening on port ${portToListen}. app.env: ${result.env}`);
-        return result;
     })
     .then(null, err => {
         console.error('Failed start server.', err);
@@ -64,4 +61,5 @@ export default promiseForAppRun;
  JWT_ISSUER=localhost
  JWT_REFRESH_TOKEN_EXPIRES_IN_DAYS=30
  JWT_REFRESH_TOKEN_COOKIE=jb-refresh-token
+ ROUTE_API_PATH=api
  */

@@ -1,15 +1,15 @@
 import Router = require('koa-router');
-import {koaRoutesMap as routesMap} from '../koa-routes-map';
 import {ICredentials} from "../auth/credentials";
 import {findUserInfoByCredentials, findUserInfoByUsername} from "../auth/user-service";
 import jsonwebtoken from 'jsonwebtoken';
 import {getRefreshTokenCookieKey, getRefreshTokenExpiresInDays, getSecret, getTokenSignOptions} from "./token-options";
 import {Context} from "koa";
-import {ITokenResponse} from "./token-info";
+import {ITokenResponse} from './token-response';
 import {createAndRegisterRefreshToken, findByToken as tokenInfoFindByToken} from "./token-service";
+import {routesMap} from "./token-routes-map";
 
 const router = new Router({
-    prefix: routesMap.get('token')
+    prefix: routesMap.prefix,
 });
 
 function writeBadRefreshTokenResponse(context: Context) {
@@ -21,7 +21,7 @@ function writeBadRefreshTokenResponse(context: Context) {
     } as ITokenResponse;
 }
 
-router.post('token-refresh', '/refresh', async (context: Context) => {
+router.post(routesMap['token-refresh'] as string, async (context: Context) => {
     const refreshToken = context.cookies.get(getRefreshTokenCookieKey());
 
     if(!refreshToken) {
@@ -58,8 +58,20 @@ router.post('token-refresh', '/refresh', async (context: Context) => {
     } as ITokenResponse;
 });
 
-router.post('token-get', '/', async (context: Context) => {
+router.post(routesMap['token-get'], async (context: Context) => {
+
     const credentials: ICredentials = context.request.body;
+
+    if(!(credentials.password && credentials.username)) {
+        // bad request
+        context.status = 400;
+        context.state.errMessage = 'Bad request';
+        context.body = {
+            message: context.state.errMessage,
+            token: null,
+        } as ITokenResponse;
+        return;
+    }
 
     const foundUserInfo = await findUserInfoByCredentials(credentials);
 
@@ -82,7 +94,7 @@ router.post('token-get', '/', async (context: Context) => {
     context.cookies.set(getRefreshTokenCookieKey(), refreshToken, {
         maxAge: getRefreshTokenExpiresInDays() * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        secure: context.app.env != 'development',
+        secure: context.app.env != 'development' && context.app.env != 'test',
     });
 
     context.body = {
@@ -93,5 +105,5 @@ router.post('token-get', '/', async (context: Context) => {
 
 
 export {
-    router
+    router,
 };

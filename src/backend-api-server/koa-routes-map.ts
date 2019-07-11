@@ -16,13 +16,14 @@
   "token": "/token"
 }
 */
+//
+// const koaRoutesMap = new Map<string, string>([
+//     ['api', '/api'],
+//     ['echo', '/echo'],
+//     ['token', '/token'],
+//     ['token-reffresh', '/refresh'],
+// ]);
 
-const koaRoutesMap = new Map<string, string>([
-    ['api', '/api'],
-    ['echo', '/echo'],
-    ['token', '/token']
-]);
-
-export {
-    koaRoutesMap
-}
+// export {
+//     koaRoutesMap
+// }

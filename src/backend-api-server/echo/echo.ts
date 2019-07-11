@@ -1,9 +1,9 @@
-import {koaRoutesMap as routesMap} from "../koa-routes-map";
+import {routesMap} from './echo-routes-map';
 import Router = require("koa-router");
 
 const router = new Router();
 
-router.get('echo-service', routesMap.get('echo') || '', context => {
+router.get(routesMap.echo, context => {
     context.body = 'Service up';
 });
 

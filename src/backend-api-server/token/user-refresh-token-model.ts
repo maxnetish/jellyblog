@@ -1,4 +1,5 @@
 import {Schema, model, Document} from 'mongoose';
+import {IUserRefreshTokenInfo} from "./user-refresh-token-info";
 
 const userRefreshTokenSchema = new Schema({
     username: {
@@ -20,12 +21,6 @@ const userRefreshTokenSchema = new Schema({
         required: true,
     },
 });
-
-interface IUserRefreshTokenInfo {
-    username: string;
-    token: string;
-    validBefore: Date;
-}
 
 type IUserRefreshTokenModel = Document & IUserRefreshTokenInfo;
 
