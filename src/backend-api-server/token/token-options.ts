@@ -10,7 +10,7 @@ function getTokenSignOptions(): SignOptions{
     };
 }
 
-function getSecret(): Secret {
+function getSecret(): string | Buffer {
     return process.env.JWT_SECRET || 'Secret key';
 }
 

@@ -61,5 +61,6 @@ export default promiseForAppRun;
  JWT_ISSUER=localhost
  JWT_REFRESH_TOKEN_EXPIRES_IN_DAYS=30
  JWT_REFRESH_TOKEN_COOKIE=jb-refresh-token
+ DEFAULT_ADMIN_PASSWORD=changeimmediately
  ROUTE_API_PATH=api
  */

@@ -7,36 +7,34 @@ import {Context} from "koa";
 import {ITokenResponse} from './token-response';
 import {createAndRegisterRefreshToken, findByToken as tokenInfoFindByToken} from "./token-service";
 import {routesMap} from "./token-routes-map";
+import {writeFailResultTo} from "../utils/write-fail-result-to";
+import {writeWWWauthenticateHeaderTo} from "../utils/write-www-authenticate-header-to";
 
 const router = new Router({
     prefix: routesMap.prefix,
 });
 
-function writeBadRefreshTokenResponse(context: Context) {
-    context.status = 401;
-    context.state.errMessage = 'Invalid refresh token';
-    context.body = {
-        message: context.state.errMessage,
-        token: null,
-    } as ITokenResponse;
+function writeBadRefreshTokenResponse(context: Context): Context {
+    writeWWWauthenticateHeaderTo(context);
+    return writeFailResultTo(context, 401, 'Invalid refresh token');
 }
 
-router.post(routesMap['token-refresh'] as string, async (context: Context) => {
+router.post(routesMap['token-refresh'], async (context: Context) => {
     const refreshToken = context.cookies.get(getRefreshTokenCookieKey());
 
-    if(!refreshToken) {
+    if (!refreshToken) {
         // no refresh token
         writeBadRefreshTokenResponse(context);
         return;
     }
 
     const tokenInfo = await tokenInfoFindByToken(refreshToken);
-    if(!tokenInfo) {
+    if (!tokenInfo) {
         // token not found
         writeBadRefreshTokenResponse(context);
         return;
     }
-    if(tokenInfo.validBefore < new Date()) {
+    if (tokenInfo.validBefore < new Date()) {
         // refresh token expired
         writeBadRefreshTokenResponse(context);
         return;
@@ -44,7 +42,7 @@ router.post(routesMap['token-refresh'] as string, async (context: Context) => {
 
     // refresh token valid
     const foundUserInfo = await findUserInfoByUsername(tokenInfo.username);
-    if(!foundUserInfo) {
+    if (!foundUserInfo) {
         // user not found - invalid
         writeBadRefreshTokenResponse(context);
         return;
@@ -62,14 +60,9 @@ router.post(routesMap['token-get'], async (context: Context) => {
 
     const credentials: ICredentials = context.request.body;
 
-    if(!(credentials.password && credentials.username)) {
+    if (!(credentials.password && credentials.username)) {
         // bad request
-        context.status = 400;
-        context.state.errMessage = 'Bad request';
-        context.body = {
-            message: context.state.errMessage,
-            token: null,
-        } as ITokenResponse;
+        writeFailResultTo(context, 400);
         return;
     }
 
@@ -77,12 +70,8 @@ router.post(routesMap['token-get'], async (context: Context) => {
 
     if (!foundUserInfo) {
         // auth failed
-        context.status = 401;
-        context.state.errMessage = 'Authentication failed';
-        context.body = {
-            message: context.state.errMessage,
-            token: null,
-        } as ITokenResponse;
+        writeFailResultTo(context, 401);
+        writeWWWauthenticateHeaderTo(context);
         return;
     }
 

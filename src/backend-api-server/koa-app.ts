@@ -8,6 +8,8 @@ import {addEntryFromMorgan} from "./log/log-service";
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import Application = require("koa");
+import {queryParseMiddlewareFactory} from "./utils/query-parse-middleware";
+import {authJwtMiddleware} from "./auth/auth-middleware";
 
 export function createApp(): Application {
     const app = new Application();
@@ -78,6 +80,22 @@ export function createApp(): Application {
         extendTypes: undefined,
         onerror: undefined
     }));
+
+    // extended query parsing (koa itself does not support nested query strings)
+    // will be ctx.state.query
+    app.use(queryParseMiddlewareFactory({
+        depth: 2,
+        parameterLimit: 16,
+        // To parse comma-separated arrays in query.
+        // Some client libs (ye, it is angular) serialize arrays like "statuses=ONE,TWO",
+        // other (superagent) convert arrays to "statuses=ONE&statuses=TWO"
+        // But this feature will be in the next release of qs
+        // so we use specific commit git://github.com/ljharb/qs.git#c9720fe
+        comma: true
+    }));
+
+    // add ctx.state.user
+    app.use(authJwtMiddleware);
 
     // disableBodyParser: undefined
 

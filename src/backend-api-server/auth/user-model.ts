@@ -1,4 +1,5 @@
 import {Schema, model, Document} from 'mongoose';
+import {IUserInfo} from "./user-info";
 
 const userSchema = new Schema({
         username: {
@@ -21,11 +22,6 @@ const userSchema = new Schema({
         },
     });
 
-interface IUserInfo {
-    username: string;
-    role: 'admin' | 'reader'
-}
-
 interface IUser extends IUserInfo, Document {
     password: string;
 }
@@ -35,5 +31,4 @@ const UserModel = model<IUser>('User', userSchema);
 export {
     UserModel,
     IUser,
-    IUserInfo,
 }
