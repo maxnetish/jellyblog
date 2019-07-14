@@ -1,4 +1,6 @@
+import {USER_ROLES} from "./user-roles";
+
 export interface IUserInfo {
     username: string;
-    role: 'admin' | 'reader'
+    role: USER_ROLES;
 }

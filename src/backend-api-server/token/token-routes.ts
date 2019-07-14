@@ -41,7 +41,7 @@ router.post(routesMap['token-refresh'], async (context: Context) => {
     }
 
     // refresh token valid
-    const foundUserInfo = await findUserInfoByUsername(tokenInfo.username);
+    const foundUserInfo = await findUserInfoByUsername(tokenInfo.username, {user: context.state.user});
     if (!foundUserInfo) {
         // user not found - invalid
         writeBadRefreshTokenResponse(context);

@@ -1,7 +1,8 @@
-import {Context, default as Koa, Middleware} from "koa";
+import {Context, Middleware} from "koa";
 import {verify} from "jsonwebtoken";
 import {getSecret, getTokenSignOptions} from "../token/token-options";
-import {IUserInfo} from "./user-info";
+import {UserContext} from "./user-context";
+import {USER_ROLES} from "./user-roles";
 
 /**
  * See https://tools.ietf.org/html/rfc6750
@@ -74,23 +75,12 @@ function extractJwt(ctx: Context): string | null {
     return extracted[0];
 }
 
-function isAuthenticated(this: Context) {
-    return !!this.state.user;
-}
-
-function isUnauthenticated(this: Context) {
-    return !this.state.user;
-}
-
 /**
- * Add ctx.isAuthenticated(), ctx.isUnauthenticated(), ctx.state.user (if jwt payload valid)
+ * Add ctx.state.user: UserContext (if jwt payload valid)
  * @param ctx
  * @param next
  */
 export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ctx, next) {
-    ctx.isAuthenticated = isAuthenticated;
-    ctx.isUnauthenticated = isUnauthenticated;
-
     const jwt = extractJwt(ctx);
 
     if (!jwt) {
@@ -120,14 +110,15 @@ export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ct
         });
     });
 
-    const verifyedPayload = await promiseVerify as { [key: string]: string };
+    const verifiedPayload = await promiseVerify as { [key: string]: string };
 
-    if (verifyedPayload && verifyedPayload.username && verifyedPayload.role) {
-        const userInfo: IUserInfo = {
-            username: verifyedPayload.username,
-            role: verifyedPayload.role as 'admin' | 'reader',
-        };
-        ctx.state.user = userInfo;
+    if (verifiedPayload && verifiedPayload.username && verifiedPayload.role) {
+        ctx.state.user = new UserContext({
+            username: verifiedPayload.username,
+            role: verifiedPayload.role as USER_ROLES,
+        });
+    } else {
+        ctx.state.user = new UserContext();
     }
 
     await next();

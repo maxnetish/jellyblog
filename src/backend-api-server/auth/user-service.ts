@@ -3,6 +3,7 @@ import {ICredentials} from "./credentials";
 import crypto from 'crypto';
 import {IUserInfo} from "./user-info";
 import {IUserNewPassword} from "./user-new-password";
+import {IWithUserContext} from "./with-user-context";
 
 const defaultAdmin: IUserInfo = {
     // default admin account
@@ -39,7 +40,12 @@ async function findUserInfoByCredentials(credentials: ICredentials): Promise<IUs
     };
 }
 
-async function findUserInfoByUsername(name: string): Promise<IUserInfo | null> {
+async function findUserInfoByUsername(name: string, options: IWithUserContext): Promise<IUserInfo | null> {
+    options.user.assertAuth([
+        {username: [name]},
+        {role: ['admin']}
+    ]);
+
     const condition: Partial<IUser> = {
         username: name
     };
@@ -57,7 +63,10 @@ async function findUserInfoByUsername(name: string): Promise<IUserInfo | null> {
     };
 }
 
-async function changePassword(userNewPassword: IUserNewPassword): Promise<boolean> {
+async function changePassword(userNewPassword: IUserNewPassword, options: IWithUserContext): Promise<boolean> {
+    // require any authenticated user
+    options.user.assertAuth('ANY');
+
     const userInfo = await findUserInfoByCredentials(userNewPassword);
 
     if (!userInfo) {
@@ -82,11 +91,6 @@ function textToHash(inp: string): string {
     const hash = crypto.createHash('sha256');
     hash.update(inp);
     return hash.digest('hex').toUpperCase();
-}
-
-function applyAuthorize<TResult>(roles: string[], fn: (...params: any[]) => TResult): (user: string, ...params: any[]) => TResult {
-    Array.prototype.push.call()
-    return fn;
 }
 
 export {
