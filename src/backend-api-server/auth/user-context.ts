@@ -41,7 +41,7 @@ export class UserContext implements Readonly<IUserInfo> {
     }
 
     private throwError(toThrow?: number | string | { message?: string, status?: string, statusCode?: number }) {
-        throw (toThrow || this.authenticated ? 401 : 403);
+        throw (toThrow || (this.authenticated ? 401 : 403));
     }
 
     public assertAuth(required: IAuthorizeParams[] | 'ANY', toThrow?: number | string | { message?: string, status?: string, statusCode?: number }) {

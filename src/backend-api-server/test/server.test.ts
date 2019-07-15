@@ -105,10 +105,12 @@ describe('api/token/refresh', () => {
         const validTokenHeader = tokenResponse.header['set-cookie'][0] || '';
         const parsed = cookie.parse(validTokenHeader);
         const validToken = parsed['jb-rt'];
+        const accessToken = tokenResponse.body.token;
 
         const response = await request(server)
             .post('/api/token/refresh')
-            .set('Cookie', [`jb-rt=${validToken}`]);
+            .set('Cookie', [`jb-rt=${validToken}`])
+            .set('Authorization', `Bearer ${accessToken}`);
         expect(response.status).toEqual(200);
         expect(response.body).toHaveProperty('token');
     })
