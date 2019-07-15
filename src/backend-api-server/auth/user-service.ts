@@ -1,9 +1,12 @@
-import {UserModel, IUser} from "./user-model";
+import {UserModel, IUserModel} from "./user-model";
 import {ICredentials} from "./credentials";
 import crypto from 'crypto';
 import {IUserInfo} from "./user-info";
 import {IUserNewPassword} from "./user-new-password";
 import {IWithUserContext} from "./with-user-context";
+import {IUserCreateNew} from "./user-create-new";
+import {IFindUsersCriteria} from "./find-users-criteria";
+import {IResponseWithPagination} from "../utils/response-with-pagination";
 
 const defaultAdmin: IUserInfo = {
     // default admin account
@@ -16,7 +19,7 @@ function getDefaultAdminPassword() {
 }
 
 async function findUserInfoByCredentials(credentials: ICredentials): Promise<IUserInfo | null> {
-    const condition: Partial<IUser> = {
+    const condition: Partial<IUserModel> = {
         username: credentials.username
     };
 
@@ -46,7 +49,7 @@ async function findUserInfoByUsername(name: string, options: IWithUserContext): 
         {role: ['admin']}
     ]);
 
-    const condition: Partial<IUser> = {
+    const condition: Partial<IUserModel> = {
         username: name
     };
 
@@ -87,6 +90,66 @@ async function changePassword(userNewPassword: IUserNewPassword, options: IWithU
     return true;
 }
 
+async function addUser(userCreateNew: IUserCreateNew, options: IWithUserContext): Promise<IUserInfo> {
+    options.user.assertAuth([{role: ['admin']}]);
+
+    const userModel = await UserModel.create({
+        username: userCreateNew.username,
+        role: userCreateNew.role,
+        passowrd: userCreateNew.password,
+    });
+
+    return {
+        username: userModel.username,
+        role: userModel.role,
+    };
+}
+
+async function removeUser(username: string, options: IWithUserContext): Promise<boolean> {
+    options.user.assertAuth([
+        {role: ['admin']},     // one of admins
+        {username: [username]} // or user someself
+    ]);
+
+    await UserModel.deleteOne({
+        username
+    })
+        .exec();
+
+    return true;
+}
+
+async function findUsers(findUsersCriteria: IFindUsersCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IUserInfo>> {
+    options.user.assertAuth([{role: ['admin']}]);
+
+    const clearedCriteria: IFindUsersCriteria = {};
+    if (findUsersCriteria.username) {
+        clearedCriteria.username = typeof findUsersCriteria.username === 'string' ? new RegExp(findUsersCriteria.username, 'i') : findUsersCriteria.username;
+    }
+    if (findUsersCriteria.role && findUsersCriteria.role.length) {
+        clearedCriteria.role = findUsersCriteria.role;
+    }
+
+    const itemsPerPage = parseInt(process.env.DB_DEFAULT_PAGINATION || '10', 10) || 10;
+    let {page} = findUsersCriteria;
+    page = page || 1;
+    const skip = itemsPerPage * (page - 1);
+    const limit = itemsPerPage + 1;
+
+    const found = await UserModel
+        .find(clearedCriteria, 'username role')
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+    return {
+        hasMore: found.length > itemsPerPage,
+        items: found.slice(0, itemsPerPage),
+        itemsPerPage,
+        page,
+    };
+}
+
 function textToHash(inp: string): string {
     const hash = crypto.createHash('sha256');
     hash.update(inp);
@@ -97,6 +160,9 @@ export {
     findUserInfoByCredentials,
     findUserInfoByUsername,
     changePassword,
+    addUser,
+    removeUser,
+    findUsers,
 }
 
 

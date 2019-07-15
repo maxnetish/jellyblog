@@ -84,6 +84,8 @@ export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ct
     const jwt = extractJwt(ctx);
 
     if (!jwt) {
+        // add anonymous context
+        ctx.state.user = new UserContext();
         await next();
         return;
     }

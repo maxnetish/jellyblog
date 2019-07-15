@@ -22,13 +22,13 @@ const userSchema = new Schema({
         },
     });
 
-interface IUser extends IUserInfo, Document {
+interface IUserModel extends IUserInfo, Document {
     password: string;
 }
 
-const UserModel = model<IUser>('User', userSchema);
+const UserModel = model<IUserModel>('User', userSchema);
 
 export {
     UserModel,
-    IUser,
+    IUserModel,
 }

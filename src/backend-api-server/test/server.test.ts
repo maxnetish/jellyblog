@@ -152,4 +152,102 @@ describe('api/echo', () => {
     })
 });
 
+describe('api/user/changepassword', () => {
+    it('GET should produce status 404', async () => {
+        const response = await request(server)
+            .get('/api/user/changepassword');
+
+        expect(response.status).toEqual(404);
+    });
+
+    it('POST with invalid paramater should produce status 400', async () => {
+        const response = await request(server)
+            .post('/api/user/changepassword')
+            .send({
+                invalidOptions: 'foo'
+            });
+        expect(response.status).toEqual(400);
+    });
+
+    it('POST without authentication should produce status 403', async () => {
+        const response = await request(server)
+            .post('/api/user/changepassword')
+            .send({
+                newPassword: 'foo',
+                password: 'bar',
+                username: 'bla'
+            });
+        expect(response.status).toEqual(403);
+    });
+
+    it('POST with authentication and wrong params should produce status 403', async () => {
+        const responseToken = await request(server)
+            .post('/api/token')
+            .send({username: 'foo', password: 'bar'});
+        const accessToken = responseToken.body.token;
+
+        const response = await request(server)
+            .post('/api/user/changepassword')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                newPassword: 'bar',
+                password: 'this is wrong pass',
+                username: 'foo'
+            });
+        expect(response.status).toEqual(403);
+    });
+
+    it('POST with authentication and valid params should produce status 201', async () => {
+        const responseToken = await request(server)
+            .post('/api/token')
+            .send({username: 'foo', password: 'bar'});
+        const accessToken = responseToken.body.token;
+
+        const response = await request(server)
+            .post('/api/user/changepassword')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                newPassword: 'bar',
+                password: 'bar',
+                username: 'foo'
+            });
+        expect(response.status).toEqual(201);
+    });
+
+    it('POST with authentication and valid params should change password', async () => {
+        let responseToken = await request(server)
+            .post('/api/token')
+            .send({username: 'foo', password: 'bar'});
+        let accessToken = responseToken.body.token;
+
+        let response = await request(server)
+            .post('/api/user/changepassword')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                newPassword: 'newpass',
+                password: 'bar',
+                username: 'foo'
+            });
+        expect(response.status).toEqual(201);
+
+        // try get token with new credentials
+        responseToken = await request(server)
+            .post('/api/token')
+            .send({username: 'foo', password: 'newpass'});
+        expect(responseToken.status).toEqual(200);
+        accessToken = responseToken.body.token;
+
+        // change password back
+        response = await request(server)
+            .post('/api/user/changepassword')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                newPassword: 'bar',
+                password: 'newpass',
+                username: 'foo'
+            });
+        expect(response.status).toEqual(201);
+    });
+});
+
 

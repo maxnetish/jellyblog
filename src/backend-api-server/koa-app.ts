@@ -1,5 +1,6 @@
 import {router as echoRouter} from './echo/echo';
 import {router as tokenRouter} from './token/token-routes';
+import {router as userRouter} from './auth/user-routes';
 import httpStatuses from 'statuses';
 import Router = require('koa-router');
 import morgan from 'koa-morgan';
@@ -104,6 +105,7 @@ export function createApp(): Application {
     const routesMapPath = process.env.ROUTE_API_PATH || 'api';
     apiRouter.use(routesMapPath, echoRouter.routes(), echoRouter.allowedMethods());
     apiRouter.use(routesMapPath, tokenRouter.routes(), tokenRouter.allowedMethods());
+    apiRouter.use(routesMapPath, userRouter.routes(), userRouter.allowedMethods());
 
     app.use(apiRouter.routes());
 
