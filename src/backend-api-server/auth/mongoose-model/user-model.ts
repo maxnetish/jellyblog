@@ -1,5 +1,5 @@
 import {Schema, model, Document} from 'mongoose';
-import {IUserInfo} from "./user-info";
+import {IUserInfo} from "../dto/user-info";
 
 const userSchema = new Schema({
         username: {
@@ -22,13 +22,13 @@ const userSchema = new Schema({
         },
     });
 
-interface IUserModel extends IUserInfo, Document {
+interface IUserDocument extends IUserInfo, Document {
     password: string;
 }
 
-const UserModel = model<IUserModel>('User', userSchema);
+const UserModel = model<IUserDocument>('User', userSchema);
 
 export {
     UserModel,
-    IUserModel,
+    IUserDocument,
 }

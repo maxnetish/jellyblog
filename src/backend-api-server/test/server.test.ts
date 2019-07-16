@@ -3,7 +3,6 @@ import promiseForAppRun from "../server";
 import {tearDownHttpAndMongoose} from "./utils";
 import request from 'supertest';
 import cookie from 'cookie';
-import {getRefreshTokenCookieKey} from "../token/token-options";
 
 let server: Server;
 

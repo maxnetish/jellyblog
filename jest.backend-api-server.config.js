@@ -11,6 +11,11 @@ module.exports = {
         '!**/build/**',
         '!**/coverage/**'
     ],
+    globals: {
+        'ts-jest': {
+            tsConfig: 'src/backend-api-server/tsconfig.json'
+        }
+    },
     transform: {
         '\\.ts$': 'ts-jest'
     },

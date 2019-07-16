@@ -1,18 +1,18 @@
 import Router = require('koa-router');
-import {changePassword} from "./user-service";
+import {changePassword} from "../user-service";
 import {Context} from "koa";
 import {routesMap} from './user-routes-map'
-import {assertValidation, IUserNewPassword} from "./user-new-password";
-import {UserContext} from "./user-context";
+import {userNewPasswordAssertValidation, IUserNewPassword, userNewPasswordFromRequest} from "../dto/user-new-password";
+import {UserContext} from "../user-context";
 
 const router = new Router({
     prefix: routesMap.prefix,
 });
 
 router.post(routesMap['user-change-password'], async (context: Context) => {
-    const userNewPassword: IUserNewPassword = context.request.body;
+    const userNewPassword: IUserNewPassword = userNewPasswordFromRequest(context.request.body);
 
-    assertValidation(userNewPassword);
+    userNewPasswordAssertValidation(userNewPassword);
     (context.state.user as UserContext).assertAuth([
         {role: ['admin']},
         {username: [userNewPassword.username]}
@@ -23,7 +23,6 @@ router.post(routesMap['user-change-password'], async (context: Context) => {
     });
     context.status = result ? 201 : 403;
 });
-
 
 
 export {

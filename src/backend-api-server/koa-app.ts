@@ -1,16 +1,18 @@
 import {router as echoRouter} from './echo/echo';
-import {router as tokenRouter} from './token/token-routes';
-import {router as userRouter} from './auth/user-routes';
+import {router as tokenRouter} from './token/koa-routes/token-routes';
+import {router as userRouter} from './auth/koa-routes/user-routes';
 import httpStatuses from 'statuses';
 import Router = require('koa-router');
 import morgan from 'koa-morgan';
-import {IncomingMessage, ServerResponse} from "http";
-import {addEntryFromMorgan} from "./log/log-service";
+import {IncomingMessage} from "http";
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import Application = require("koa");
 import {queryParseMiddlewareFactory} from "./utils/query-parse-middleware";
 import {authJwtMiddleware} from "./auth/auth-middleware";
+import {ILogService} from "./log/api/log-service";
+import {container} from "./ioc/container";
+import {TYPES} from "./ioc/types";
 
 export function createApp(): Application {
     const app = new Application();
@@ -32,6 +34,7 @@ export function createApp(): Application {
             res = res || '';
             return res;
         });
+    const logService = container.get<ILogService>(TYPES.LogService);
 
     // to properly work behind nginx
     app.proxy = true;
@@ -42,8 +45,15 @@ export function createApp(): Application {
             await next();
         } catch (err) {
             const {req, res, response} = ctx;
-            let status = typeof err === 'number' ? err : (err.status || err.statusCode || 500);
+            let status = typeof err === 'number' ?
+                err :
+                (err.isJoi ?
+                    400 :
+                    (err.status || err.statusCode || 500));
             // addEntryFromErrorResponse(req, res, err);
+            // if (status === 500) {
+            //     debugger;
+            // }
             if (app.env === 'development') {
                 console.error(err.stack);
             }
@@ -57,7 +67,7 @@ export function createApp(): Application {
 
     // to log requests in std and mongo
     app.use(koaMorgan('combined'));
-    app.use(koaMorgan(addEntryFromMorgan));
+    app.use(koaMorgan(logService.addEntryFromMorgan));
 
     // to allow CORS (or not)
     if (process.env.CORS_ORIGIN) {

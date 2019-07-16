@@ -1,11 +1,11 @@
-import {UserModel, IUserModel} from "./user-model";
-import {ICredentials} from "./credentials";
+import {UserModel, IUserDocument} from "./mongoose-model/user-model";
+import {ICredentials} from "./dto/credentials";
 import crypto from 'crypto';
-import {IUserInfo} from "./user-info";
-import {IUserNewPassword} from "./user-new-password";
-import {IWithUserContext} from "./with-user-context";
-import {IUserCreateNew} from "./user-create-new";
-import {IFindUsersCriteria} from "./find-users-criteria";
+import {IUserInfo} from "./dto/user-info";
+import {IUserNewPassword} from "./dto/user-new-password";
+import {IWithUserContext} from "./dto/with-user-context";
+import {IUserCreateNew} from "./dto/user-create-new";
+import {IFindUsersCriteria} from "./dto/find-users-criteria";
 import {IResponseWithPagination} from "../utils/response-with-pagination";
 
 const defaultAdmin: IUserInfo = {
@@ -19,7 +19,7 @@ function getDefaultAdminPassword() {
 }
 
 async function findUserInfoByCredentials(credentials: ICredentials): Promise<IUserInfo | null> {
-    const condition: Partial<IUserModel> = {
+    const condition: Partial<IUserDocument> = {
         username: credentials.username
     };
 
@@ -49,7 +49,7 @@ async function findUserInfoByUsername(name: string, options: IWithUserContext): 
         {role: ['admin']}
     ]);
 
-    const condition: Partial<IUserModel> = {
+    const condition: Partial<IUserDocument> = {
         username: name
     };
 

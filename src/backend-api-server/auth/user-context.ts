@@ -1,6 +1,6 @@
-import {IUserInfo} from "./user-info";
-import {USER_ROLES} from "./user-roles";
-import {IAuthorizeParams} from "./authorize-params";
+import {IUserInfo} from "./dto/user-info";
+import {USER_ROLES} from "./dto/user-roles";
+import {IAuthorizeParams} from "./dto/authorize-params";
 
 export class UserContext implements Readonly<IUserInfo> {
     public readonly role: USER_ROLES;

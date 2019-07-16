@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import mongoose = require('mongoose');
 import {createApp} from "./koa-app";
 import dotenv from 'dotenv';

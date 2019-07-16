@@ -1,13 +1,12 @@
 import {USER_ROLES} from "./user-roles";
-import {find} from "tslint/lib/utils";
-import {IRequestWithPagination} from "../utils/request-with-pagination";
+import {IRequestWithPagination} from "../../utils/request-with-pagination";
 
 export interface IFindUsersCriteria extends IRequestWithPagination {
     username?: string | RegExp,
     role?: USER_ROLES[],
 }
 
-export function assertValidate(findUsersCriteria: any, toThrow: number = 400) {
+export function findUserCriteriaAssertValidate(findUsersCriteria: any, toThrow: number = 400) {
     if (!(findUsersCriteria &&
         (!findUsersCriteria.username || findUsersCriteria.username.length < 32) &&
         (!findUsersCriteria.role || findUsersCriteria.role.length < 8))) {
@@ -15,7 +14,7 @@ export function assertValidate(findUsersCriteria: any, toThrow: number = 400) {
     }
 }
 
-export function fromAny(findUserCriteria: any): IFindUsersCriteria {
+export function findUserCriteriaFromRequest(findUserCriteria: any): IFindUsersCriteria {
     findUserCriteria = findUserCriteria || {};
     const {role, username, page} = findUserCriteria;
 

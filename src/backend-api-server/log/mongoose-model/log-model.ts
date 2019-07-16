@@ -1,4 +1,5 @@
 import {Schema, model, Document} from 'mongoose';
+import {ILogEntry} from "../dto/log-entry";
 
 const logSchema = new Schema({
         requestUrl: {
@@ -53,21 +54,9 @@ const logSchema = new Schema({
         capped: 8388608
     });
 
-interface ILogEntry extends Document {
-    requestUrl?: string;
-    requestMethod?: string;
-    responseTime: number;
-    responseStatus?: string;
-    referrer?: string;
-    remoteAddress?: string;
-    httpVersion?: string;
-    userAgent?: string;
-    userName?: string;
-    date: Date;
-    error?: string;
-}
+interface ILogEntryDocument extends Document, ILogEntry {}
 
-const LogModel = model<ILogEntry>('Log', logSchema);
+const LogModel = model<ILogEntryDocument>('Log', logSchema);
 
 export {
     LogModel

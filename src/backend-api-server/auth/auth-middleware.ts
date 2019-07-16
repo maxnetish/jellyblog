@@ -1,8 +1,10 @@
 import {Context, Middleware} from "koa";
 import {verify} from "jsonwebtoken";
-import {getSecret, getTokenSignOptions} from "../token/token-options";
 import {UserContext} from "./user-context";
-import {USER_ROLES} from "./user-roles";
+import {USER_ROLES} from "./dto/user-roles";
+import {container} from "../ioc/container";
+import {TYPES} from "../ioc/types";
+import {ITokenOptions} from "../token/api/token-options";
 
 /**
  * See https://tools.ietf.org/html/rfc6750
@@ -11,6 +13,7 @@ import {USER_ROLES} from "./user-roles";
 
 const oneOrMoreSpace = /\s+/;
 const formParameterNameOfToken = 'access_token';
+const tokenOptions = container.get<ITokenOptions>(TYPES.JwtTokenOptions);
 
 function extractJwtFromHeader(ctx: Context): string | null {
     // Use scheme Bearer
@@ -90,10 +93,10 @@ export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ct
         return;
     }
 
-    const signOptions = getTokenSignOptions();
+    const signOptions = tokenOptions.getTokenSignOptions();
 
     const promiseVerify = new Promise<object | string>((resolve, reject) => {
-        verify(jwt, getSecret(), {
+        verify(jwt, tokenOptions.getSecret(), {
             algorithms: [signOptions.algorithm || 'HS256'],
             audience: signOptions.audience,
             issuer: signOptions.issuer,

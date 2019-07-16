@@ -5,7 +5,7 @@ export interface IUserCreateNew extends ICredentials {
     role: USER_ROLES
 }
 
-export function assertValidate(userCreateNew: any, toThrow: number = 400) {
+export function userCreateNewAssertValidate(userCreateNew: any, toThrow: number = 400) {
     if (!(userCreateNew &&
         typeof userCreateNew.username === 'string' && userCreateNew.username.length > 0 && userCreateNew.username.length < 64 &&
         typeof userCreateNew.role === 'string' && userCreateNew.role.length > 0 && userCreateNew.role.length < 64 &&
@@ -14,7 +14,7 @@ export function assertValidate(userCreateNew: any, toThrow: number = 400) {
     }
 }
 
-export function fromAny(userCreateNew: any): IUserCreateNew {
+export function userCreateNewFromRequest(userCreateNew: any): IUserCreateNew {
     const {username, role, password} = userCreateNew;
 
     return {

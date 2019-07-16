@@ -1,5 +1,5 @@
 import {Schema, model, Document} from 'mongoose';
-import {IUserRefreshTokenInfo} from "./user-refresh-token-info";
+import {IUserRefreshTokenInfo} from "../dto/user-refresh-token-info";
 
 const userRefreshTokenSchema = new Schema({
     username: {
