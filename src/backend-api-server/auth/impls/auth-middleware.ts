@@ -84,7 +84,8 @@ function extractJwt(ctx: Context): string | null {
  */
 export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ctx, next) {
     const jwt = extractJwt(ctx);
-    debugger;
+
+    // TODO remove container - we have to use class to inject dependencies with @inject()
     const userContextFactory: IUserContextFactory = container.get(TYPES.UserContextFactory);
     const tokenOptions = container.get<ITokenOptions>(TYPES.JwtTokenOptions);
 

@@ -1,108 +1,127 @@
 import Router = require('koa-router');
 import {ICredentials} from "../../auth/dto/credentials";
 import jsonwebtoken from 'jsonwebtoken';
-import {Context} from "koa";
+import {Context, Middleware} from "koa";
 import {ITokenResponse} from '../dto/token-response';
 import {routesMap} from "./token-routes-map";
-import {container} from "../../ioc/container";
 import {TYPES} from "../../ioc/types";
 import {ITokenOptions} from "../api/token-options";
 import {ITokenService} from "../api/token-service";
-import {joiValidateMiddlewareFactory} from "../../utils/impls/joi-validate-middleware";
 import {credentialsSchema} from "../../auth/dto/credentials.schema";
 import {IUserService} from "../../auth/api/user-service";
+import {IRouteController} from "../../utils/api/route-controller";
+import {IMiddleware} from "koa-router";
+import {inject, injectable} from "inversify";
+import {IJoiValidationMiddlewareFactory} from "../../utils/api/joi-validation-middleware";
 
-const router = new Router({
-    prefix: routesMap.prefix,
-});
+@injectable()
+export class TokenController implements IRouteController {
 
-const tokenOptions = container.get<ITokenOptions>(TYPES.JwtTokenOptions);
-const tokenService = container.get<ITokenService>(TYPES.JwtTokenService);
-const userService = container.get<IUserService>(TYPES.UserService);
+    private readonly router = new Router({
+        prefix: routesMap.prefix,
+    });
 
-function throw401Status(context: Context): Context {
-    throw {
-        statusCode: 401,
-        message: 'Invalid refresh token'
-    };
-}
+    private readonly tokenOptions: ITokenOptions;
+    private readonly tokenService: ITokenService;
+    private readonly userService: IUserService;
 
-router.post(routesMap['token-refresh'], async (context: Context) => {
-    const refreshToken = context.cookies.get(tokenOptions.getRefreshTokenCookieKey());
-
-    if (!refreshToken) {
-        // no refresh token
-        throw401Status(context);
-        return;
+    private throw401Status(message: string = 'Invalid refresh token'): Context {
+        throw {
+            statusCode: 401,
+            message
+        };
     }
 
-    const tokenInfo = await tokenService.findByToken(refreshToken);
-    if (!tokenInfo) {
-        // token not found
-        throw401Status(context);
-        return;
-    }
-    if (tokenInfo.validBefore < new Date()) {
-        // refresh token expired
-        throw401Status(context);
-        return;
-    }
+    private tokenRefresh: Middleware = async ctx => {
+        const refreshToken = ctx.cookies.get(this.tokenOptions.getRefreshTokenCookieKey());
 
-    // refresh token valid
-    const foundUserInfo = await userService.findUserInfoByUsername(tokenInfo.username, {user: context.state.user});
-    if (!foundUserInfo) {
-        // user not found - invalid
-        throw401Status(context);
-        return;
-    }
-
-    const jwt = jsonwebtoken.sign(foundUserInfo, tokenOptions.getSecret(), tokenOptions.getTokenSignOptions());
-    // send new JWT
-    context.body = {
-        message: 'OK',
-        token: jwt,
-    } as ITokenResponse;
-});
-
-router.post(routesMap['token-get'],
-    joiValidateMiddlewareFactory({body: credentialsSchema}),
-    async (context: Context) => {
-        const credentials: ICredentials = context.request.body;
-
-        // if (!(credentials.password && credentials.username)) {
-        //     // bad request
-        //     writeFailResultTo(context, 400);
-        //     return;
-        // }
-
-        const foundUserInfo = await userService.findUserInfoByCredentials(credentials);
-
-        if (!foundUserInfo) {
-            // auth failed
-            throw {
-                statusCode: 401,
-                message: 'Password or username invalid'
-            };
+        if (!refreshToken) {
+            // no refresh token
+            this.throw401Status();
+            return;
         }
 
-        // auth success, create token
-        const jwt = jsonwebtoken.sign(foundUserInfo, tokenOptions.getSecret(), tokenOptions.getTokenSignOptions());
+        const tokenInfo = await this.tokenService.findByToken(refreshToken);
+        if (!tokenInfo) {
+            // token not found
+            this.throw401Status();
+            return;
+        }
+        if (tokenInfo.validBefore < new Date()) {
+            // refresh token expired
+            this.throw401Status();
+            return;
+        }
 
-        const refreshToken = await tokenService.createAndRegisterRefreshToken(foundUserInfo.username);
+        // refresh token valid
+        const foundUserInfo = await this.userService.findUserInfoByUsername(tokenInfo.username, {user: ctx.state.user});
+        if (!foundUserInfo) {
+            // user not found - invalid
+            this.throw401Status();
+            return;
+        }
 
-        context.cookies.set(tokenOptions.getRefreshTokenCookieKey(), refreshToken, {
-            maxAge: tokenOptions.getRefreshTokenExpiresInDays() * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: context.app.env != 'development' && context.app.env != 'test',
-        });
-
-        context.body = {
+        const jwt = jsonwebtoken.sign(foundUserInfo, this.tokenOptions.getSecret(), this.tokenOptions.getTokenSignOptions());
+        // send new JWT
+        ctx.body = {
             message: 'OK',
             token: jwt,
         } as ITokenResponse;
-    });
+    };
 
+    private tokenGet: Middleware = async ctx => {
+        const credentials: ICredentials = ctx.request.body;
+        const foundUserInfo = await this.userService.findUserInfoByCredentials(credentials);
 
-export {
-    router,
-};
+        if (!foundUserInfo) {
+            // auth failed
+            this.throw401Status('Password or username invalid');
+            return;
+        }
+
+        // auth success, create token
+        const jwt = jsonwebtoken.sign(foundUserInfo, this.tokenOptions.getSecret(), this.tokenOptions.getTokenSignOptions());
+
+        const refreshToken = await this.tokenService.createAndRegisterRefreshToken(foundUserInfo.username);
+
+        ctx.cookies.set(this.tokenOptions.getRefreshTokenCookieKey(), refreshToken, {
+            maxAge: this.tokenOptions.getRefreshTokenExpiresInDays() * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: ctx.app.env != 'development' && ctx.app.env != 'test',
+        });
+
+        ctx.body = {
+            message: 'OK',
+            token: jwt,
+        } as ITokenResponse;
+    };
+
+    constructor(
+        @inject(TYPES.JoiValidationMiddlewareFactory) joiValidationMiddlewareFactory: IJoiValidationMiddlewareFactory,
+        @inject(TYPES.JwtTokenOptions) tokenOptions: ITokenOptions,
+        @inject(TYPES.JwtTokenService) tokenService: ITokenService,
+        @inject(TYPES.UserService) userService: IUserService,
+    ) {
+        this.tokenOptions = tokenOptions;
+        this.tokenService = tokenService;
+        this.userService = userService;
+
+        this.router.post(
+            routesMap['token-refresh'],
+            this.tokenRefresh
+        );
+        this.router.post(
+            routesMap['token-get'],
+            joiValidationMiddlewareFactory({body: credentialsSchema}),
+            this.tokenGet
+        );
+    }
+
+    getRouteMiddleware(): IMiddleware {
+        return this.router.routes();
+    }
+
+    getAllowedMethodsMiddleware(options?: Router.IRouterAllowedMethodsOptions | undefined): IMiddleware {
+        return this.router.allowedMethods(options);
+    }
+}

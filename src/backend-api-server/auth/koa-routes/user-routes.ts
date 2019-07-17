@@ -1,38 +1,58 @@
 import Router = require('koa-router');
-import {Context} from "koa";
+import {Middleware} from "koa";
 import {routesMap} from './user-routes-map'
 import {IUserNewPassword} from "../dto/user-new-password";
 import {userNewPasswordSchema} from "../dto/user-new-password.schema";
 import {IUserContext} from "../api/user-context";
 import {IUserService} from "../api/user-service";
 import {TYPES} from "../../ioc/types";
-import {container} from "../../ioc/container";
 import {IJoiValidationMiddlewareFactory} from "../../utils/api/joi-validation-middleware";
+import {IRouteController} from "../../utils/api/route-controller";
+import {inject, injectable} from "inversify";
 
-const router = new Router({
-    prefix: routesMap.prefix,
-});
+@injectable()
+export class UserController implements IRouteController {
 
-const userService: IUserService = container.get<IUserService>(TYPES.UserService);
-const joiValidateMiddlewareFactory = container.get<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFactory);
+    private readonly router = new Router({
+        prefix: routesMap.prefix,
+    });
 
-router.post(routesMap['user-change-password'],
-    joiValidateMiddlewareFactory({body: userNewPasswordSchema}),
-    async (context: Context) => {
-        const userNewPassword: IUserNewPassword = context.request.body;
+    private readonly userService: IUserService;
 
-        (context.state.user as IUserContext).assertAuth([
+    private userChangePassword: Middleware = async ctx => {
+        const userNewPassword: IUserNewPassword = ctx.request.body;
+        const userContext: IUserContext = ctx.state.user;
+
+        userContext.assertAuth([
             {role: ['admin']},
             {username: [userNewPassword.username]}
         ]);
 
-        const result = await userService.changePassword(userNewPassword, {
-            user: context.state.user
+        const result = await this.userService.changePassword(userNewPassword, {
+            user: userContext
         });
-        context.status = result ? 201 : 403;
-    });
 
+        ctx.status = result ? 201 : 403;
+    };
 
-export {
-    router,
-};
+    constructor(
+        @inject(TYPES.JoiValidationMiddlewareFactory) joiValidationMiddlewareFactory: IJoiValidationMiddlewareFactory,
+        @inject(TYPES.UserService) userService: IUserService,
+    ) {
+        this.userService = userService;
+        this.router.post(
+            routesMap['user-change-password'],
+            joiValidationMiddlewareFactory({body: userNewPasswordSchema}),
+            this.userChangePassword
+        );
+    }
+
+    getAllowedMethodsMiddleware(options?: Router.IRouterAllowedMethodsOptions): Middleware {
+        return this.router.allowedMethods(options);
+    }
+
+    getRouteMiddleware(): Middleware {
+        return this.router.routes();
+    }
+}
+

@@ -67,32 +67,29 @@ describe('api/token/refresh', () => {
         expect(response.status).toEqual(404);
     });
 
-    it('POST without refresh token cookie should return 401, response.message, set www-authenticate header', async () => {
+    it('POST without refresh token cookie should return 401, set www-authenticate header', async () => {
         const response = await request(server)
             .post('/api/token/refresh');
         expect(response.status).toEqual(401);
         const wwwAuthHeader = response.get('WWW-Authenticate') || '';
         expect(wwwAuthHeader).toEqual(expect.stringContaining('Bearer'));
-        expect(response.body).toHaveProperty('message');
     });
 
-    it('POST without refresh token cookie should return 401, response.message, set www-authenticate header', async () => {
+    it('POST without refresh token cookie should return 401, set www-authenticate header', async () => {
         const response = await request(server)
             .post('/api/token/refresh');
         expect(response.status).toEqual(401);
         const wwwAuthHeader = response.get('WWW-Authenticate') || '';
         expect(wwwAuthHeader).toEqual(expect.stringContaining('Bearer'));
-        expect(response.body).toHaveProperty('message');
     });
 
-    it('POST with invalid refresh token cookie should return 401, response.message, set www-authenticate header', async () => {
+    it('POST with invalid refresh token cookie should return 401, set www-authenticate header', async () => {
         const response = await request(server)
             .post('/api/token/refresh')
             .set('Cookie', ['jb-rt=INVALID_TOKEN']);
         expect(response.status).toEqual(401);
         const wwwAuthHeader = response.get('WWW-Authenticate') || '';
         expect(wwwAuthHeader).toEqual(expect.stringContaining('Bearer'));
-        expect(response.body).toHaveProperty('message');
     });
 
     it('POST with valid refresh token cookie should return 200, response.token', async () => {

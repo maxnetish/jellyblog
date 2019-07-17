@@ -16,6 +16,10 @@ import {IJoiValidationMiddlewareFactory} from "../utils/api/joi-validation-middl
 import {joiValidateMiddlewareFactory} from "../utils/impls/joi-validate-middleware";
 import {IQueryParseMiddlewareFactory} from "../utils/api/query-parse-middleware";
 import {queryParseMiddlewareFactory} from "../utils/impls/query-parse-middleware";
+import {IRouteController} from "../utils/api/route-controller";
+import {TokenController} from "../token/koa-routes/token-routes";
+import {EchoController} from "../echo/echo";
+import {UserController} from "../auth/koa-routes/user-routes";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -35,3 +39,8 @@ container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userCon
 container.bind<Middleware>(TYPES.AuthMiddleware).toFunction(authJwtMiddleware);
 container.bind<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFactory).toFunction(joiValidateMiddlewareFactory);
 container.bind<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory).toFunction(queryParseMiddlewareFactory);
+
+// route controller
+container.bind<IRouteController>(TYPES.RouteTokenController).to(TokenController);
+container.bind<IRouteController>(TYPES.RouteEchoController).to(EchoController);
+container.bind<IRouteController>(TYPES.RouteUserController).to(UserController);

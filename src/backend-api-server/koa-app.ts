@@ -1,6 +1,3 @@
-import {router as echoRouter} from './echo/echo';
-import {router as tokenRouter} from './token/koa-routes/token-routes';
-import {router as userRouter} from './auth/koa-routes/user-routes';
 import httpStatuses from 'statuses';
 import Router = require('koa-router');
 import morgan from 'koa-morgan';
@@ -13,6 +10,9 @@ import {container} from "./ioc/container";
 import {TYPES} from "./ioc/types";
 import {Middleware} from "koa";
 import {IQueryParseMiddlewareFactory} from "./utils/api/query-parse-middleware";
+import {IRouteController} from "./utils/api/route-controller";
+
+// TODO избавиться от container.get
 
 export function createApp(): Application {
     const app = new Application();
@@ -58,7 +58,7 @@ export function createApp(): Application {
             if (err && err.message === 'FileNotFound') {
                 status = 404;
             }
-            if(status === 401 || status === 403) {
+            if (status === 401 || status === 403) {
                 // Add WWW-Authenticate header - MUST when  request does not include authentication
                 // credentials or does not contain an access token that enables access
                 // to the protected resource.
@@ -123,9 +123,15 @@ export function createApp(): Application {
     // setup routes /api/...
 
     const routesMapPath = process.env.ROUTE_API_PATH || 'api';
-    apiRouter.use(routesMapPath, echoRouter.routes(), echoRouter.allowedMethods());
-    apiRouter.use(routesMapPath, tokenRouter.routes(), tokenRouter.allowedMethods());
-    apiRouter.use(routesMapPath, userRouter.routes(), userRouter.allowedMethods());
+
+    const echoController = container.get<IRouteController>(TYPES.RouteEchoController);
+    apiRouter.use(routesMapPath, echoController.getRouteMiddleware(), echoController.getAllowedMethodsMiddleware());
+
+    const tokenController = container.get<IRouteController>(TYPES.RouteTokenController);
+    apiRouter.use(routesMapPath, tokenController.getRouteMiddleware(), tokenController.getAllowedMethodsMiddleware());
+
+    const userController = container.get<IRouteController>(TYPES.RouteUserController);
+    apiRouter.use(routesMapPath, userController.getRouteMiddleware(), userController.getAllowedMethodsMiddleware());
 
     app.use(apiRouter.routes());
 

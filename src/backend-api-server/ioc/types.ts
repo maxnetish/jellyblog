@@ -7,4 +7,7 @@ export const TYPES = {
     AuthMiddleware: Symbol('authMiddleware'),
     JoiValidationMiddlewareFactory: Symbol('joiValidationMiddlewareFactory'),
     QueryParseMiddlewareFactory: Symbol('queryParseMiddlewareFactory'),
+    RouteTokenController: Symbol('routeTokenController'),
+    RouteEchoController: Symbol('routeEchoController'),
+    RouteUserController: Symbol('routeUserController'),
 };
