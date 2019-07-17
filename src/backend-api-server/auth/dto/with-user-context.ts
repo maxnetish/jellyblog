@@ -1,5 +1,5 @@
-import {UserContext} from "../user-context";
+import {IUserContext} from "../api/user-context";
 
 export interface IWithUserContext {
-    readonly user: UserContext
+    readonly user: IUserContext
 }

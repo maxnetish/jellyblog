@@ -8,11 +8,11 @@ import {IncomingMessage} from "http";
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import Application = require("koa");
-import {queryParseMiddlewareFactory} from "./utils/query-parse-middleware";
-import {authJwtMiddleware} from "./auth/auth-middleware";
 import {ILogService} from "./log/api/log-service";
 import {container} from "./ioc/container";
 import {TYPES} from "./ioc/types";
+import {Middleware} from "koa";
+import {IQueryParseMiddlewareFactory} from "./utils/api/query-parse-middleware";
 
 export function createApp(): Application {
     const app = new Application();
@@ -48,17 +48,25 @@ export function createApp(): Application {
             let status = typeof err === 'number' ?
                 err :
                 (err.isJoi ?
+                    // exception throws by joi validation assert - wrong parameters
                     400 :
                     (err.status || err.statusCode || 500));
             // addEntryFromErrorResponse(req, res, err);
             // if (status === 500) {
             //     debugger;
             // }
-            if (app.env === 'development') {
-                console.error(err.stack);
-            }
             if (err && err.message === 'FileNotFound') {
                 status = 404;
+            }
+            if(status === 401 || status === 403) {
+                // Add WWW-Authenticate header - MUST when  request does not include authentication
+                // credentials or does not contain an access token that enables access
+                // to the protected resource.
+                // See https://tools.ietf.org/html/rfc6750
+                ctx.set('WWW-Authenticate', 'Bearer realm="Protected area"');
+            }
+            if (app.env === 'development') {
+                console.error(err.stack);
             }
             response.status = status;
             response.body = httpStatuses[status] || 'Internal error';
@@ -94,6 +102,7 @@ export function createApp(): Application {
 
     // extended query parsing (koa itself does not support nested query strings)
     // will be ctx.state.query
+    const queryParseMiddlewareFactory = container.get<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory);
     app.use(queryParseMiddlewareFactory({
         depth: 2,
         parameterLimit: 16,
@@ -106,6 +115,7 @@ export function createApp(): Application {
     }));
 
     // add ctx.state.user
+    const authJwtMiddleware: Middleware = container.get<Middleware>(TYPES.AuthMiddleware);
     app.use(authJwtMiddleware);
 
     // disableBodyParser: undefined

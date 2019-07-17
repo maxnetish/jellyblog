@@ -1,10 +1,10 @@
 import {Context, Middleware} from "koa";
 import {verify} from "jsonwebtoken";
-import {UserContext} from "./user-context";
-import {USER_ROLES} from "./dto/user-roles";
-import {container} from "../ioc/container";
-import {TYPES} from "../ioc/types";
-import {ITokenOptions} from "../token/api/token-options";
+import {USER_ROLES} from "../dto/user-roles";
+import {container} from "../../ioc/container";
+import {TYPES} from "../../ioc/types";
+import {ITokenOptions} from "../../token/api/token-options";
+import {IUserContextFactory} from "../api/user-context";
 
 /**
  * See https://tools.ietf.org/html/rfc6750
@@ -13,7 +13,6 @@ import {ITokenOptions} from "../token/api/token-options";
 
 const oneOrMoreSpace = /\s+/;
 const formParameterNameOfToken = 'access_token';
-const tokenOptions = container.get<ITokenOptions>(TYPES.JwtTokenOptions);
 
 function extractJwtFromHeader(ctx: Context): string | null {
     // Use scheme Bearer
@@ -85,10 +84,13 @@ function extractJwt(ctx: Context): string | null {
  */
 export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ctx, next) {
     const jwt = extractJwt(ctx);
+    debugger;
+    const userContextFactory: IUserContextFactory = container.get(TYPES.UserContextFactory);
+    const tokenOptions = container.get<ITokenOptions>(TYPES.JwtTokenOptions);
 
     if (!jwt) {
         // add anonymous context
-        ctx.state.user = new UserContext();
+        ctx.state.user = userContextFactory();
         await next();
         return;
     }
@@ -118,12 +120,12 @@ export const authJwtMiddleware: Middleware = async function authJwtMiddleware(ct
     const verifiedPayload = await promiseVerify as { [key: string]: string };
 
     if (verifiedPayload && verifiedPayload.username && verifiedPayload.role) {
-        ctx.state.user = new UserContext({
+        ctx.state.user = userContextFactory({
             username: verifiedPayload.username,
             role: verifiedPayload.role as USER_ROLES,
         });
     } else {
-        ctx.state.user = new UserContext();
+        ctx.state.user = userContextFactory();
     }
 
     await next();

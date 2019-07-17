@@ -6,11 +6,32 @@ import {ITokenService} from "../token/api/token-service";
 import {TokenService} from "../token/impls/token-service";
 import {ILogService} from "../log/api/log-service";
 import {LogService} from "../log/impls/log-service";
+import {IUserContextFactory} from "../auth/api/user-context";
+import {userContextFactory} from "../auth/impls/user-context";
+import {IUserService} from "../auth/api/user-service";
+import {UserService} from "../auth/impls/user-service";
+import {Middleware} from "koa";
+import {authJwtMiddleware} from "../auth/impls/auth-middleware";
+import {IJoiValidationMiddlewareFactory} from "../utils/api/joi-validation-middleware";
+import {joiValidateMiddlewareFactory} from "../utils/impls/joi-validate-middleware";
+import {IQueryParseMiddlewareFactory} from "../utils/api/query-parse-middleware";
+import {queryParseMiddlewareFactory} from "../utils/impls/query-parse-middleware";
 
 export const container = new Container({
     defaultScope: 'Singleton'
 });
 
+// debugger;
+// services
 container.bind<ITokenOptions>(TYPES.JwtTokenOptions).toConstantValue(new TokenOptions());
 container.bind<ITokenService>(TYPES.JwtTokenService).to(TokenService);
 container.bind<ILogService>(TYPES.LogService).toConstantValue(new LogService());
+container.bind<IUserService>(TYPES.UserService).to(UserService);
+
+// objects with behavior
+container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);
+
+// middleware
+container.bind<Middleware>(TYPES.AuthMiddleware).toFunction(authJwtMiddleware);
+container.bind<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFactory).toFunction(joiValidateMiddlewareFactory);
+container.bind<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory).toFunction(queryParseMiddlewareFactory);

@@ -1,28 +1,36 @@
 import Router = require('koa-router');
-import {changePassword} from "../user-service";
 import {Context} from "koa";
 import {routesMap} from './user-routes-map'
-import {userNewPasswordAssertValidation, IUserNewPassword, userNewPasswordFromRequest} from "../dto/user-new-password";
-import {UserContext} from "../user-context";
+import {IUserNewPassword} from "../dto/user-new-password";
+import {userNewPasswordSchema} from "../dto/user-new-password.schema";
+import {IUserContext} from "../api/user-context";
+import {IUserService} from "../api/user-service";
+import {TYPES} from "../../ioc/types";
+import {container} from "../../ioc/container";
+import {IJoiValidationMiddlewareFactory} from "../../utils/api/joi-validation-middleware";
 
 const router = new Router({
     prefix: routesMap.prefix,
 });
 
-router.post(routesMap['user-change-password'], async (context: Context) => {
-    const userNewPassword: IUserNewPassword = userNewPasswordFromRequest(context.request.body);
+const userService: IUserService = container.get<IUserService>(TYPES.UserService);
+const joiValidateMiddlewareFactory = container.get<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFactory);
 
-    userNewPasswordAssertValidation(userNewPassword);
-    (context.state.user as UserContext).assertAuth([
-        {role: ['admin']},
-        {username: [userNewPassword.username]}
-    ]);
+router.post(routesMap['user-change-password'],
+    joiValidateMiddlewareFactory({body: userNewPasswordSchema}),
+    async (context: Context) => {
+        const userNewPassword: IUserNewPassword = context.request.body;
 
-    const result = await changePassword(userNewPassword, {
-        user: context.state.user
+        (context.state.user as IUserContext).assertAuth([
+            {role: ['admin']},
+            {username: [userNewPassword.username]}
+        ]);
+
+        const result = await userService.changePassword(userNewPassword, {
+            user: context.state.user
+        });
+        context.status = result ? 201 : 403;
     });
-    context.status = result ? 201 : 403;
-});
 
 
 export {

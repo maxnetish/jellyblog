@@ -1,8 +1,9 @@
-import {IUserInfo} from "./dto/user-info";
-import {USER_ROLES} from "./dto/user-roles";
-import {IAuthorizeParams} from "./dto/authorize-params";
+import {IUserInfo} from "../dto/user-info";
+import {USER_ROLES} from "../dto/user-roles";
+import {IAuthorizeParams} from "../dto/authorize-params";
+import {IUserContext, IUserContextFactory} from "../api/user-context";
 
-export class UserContext implements Readonly<IUserInfo> {
+export class UserContext implements IUserContext {
     public readonly role: USER_ROLES;
     public readonly username: string;
     public readonly authenticated: boolean;
@@ -50,3 +51,7 @@ export class UserContext implements Readonly<IUserInfo> {
         }
     }
 }
+
+export const userContextFactory: IUserContextFactory = function (userInfo) {
+    return new UserContext(userInfo);
+};
