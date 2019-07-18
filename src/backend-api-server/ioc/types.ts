@@ -12,4 +12,7 @@ export const TYPES = {
     RouteEchoController: Symbol('routeEchoController'),
     RouteUserController: Symbol('routeUserController'),
     RouteControllers: Symbol('routeCOntrollers'),
+    ModelUser: Symbol('modelUser'),
+    ModelRefreshToken: Symbol('modelRefreshToken'),
+    ModelLog: Symbol('modelLog'),
 };

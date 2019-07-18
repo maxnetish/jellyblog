@@ -1,5 +1,5 @@
 import {Server} from "http";
-import promiseForAppRun from "../server";
+import {promiseForAppRun} from "../server";
 import {tearDownHttpAndMongoose} from "./utils";
 import request from 'supertest';
 import cookie from 'cookie';

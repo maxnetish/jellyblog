@@ -1,14 +1,12 @@
 import crypto from 'crypto';
-import {
-    IUserRefreshTokenInfo,
-    IUserRefreshTokenModel,
-    UserRefreshTokenModel
-} from "../mongoose-model/user-refresh-token-model";
 import {addDays} from 'date-fns';
 import {ITokenOptions} from "../api/token-options";
 import {TYPES} from "../../ioc/types";
 import {ITokenService} from "../api/token-service";
 import {inject, injectable} from "inversify";
+import {IUserRefreshTokenDocument} from "../api/user-refresh-token-document";
+import {Model} from "mongoose";
+import {IUserRefreshTokenInfo} from "../dto/user-refresh-token-info";
 
 @injectable()
 export class TokenService implements ITokenService {
@@ -16,6 +14,9 @@ export class TokenService implements ITokenService {
 
     @inject(TYPES.JwtTokenOptions)
     private _tokenOptions: ITokenOptions;
+
+    @inject(TYPES.ModelRefreshToken)
+    private UserRefreshTokenModel: Model<IUserRefreshTokenDocument>;
 
     private generateRefreshToken(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
@@ -37,12 +38,12 @@ export class TokenService implements ITokenService {
             username,
             validBefore,
         };
-        await UserRefreshTokenModel.create(userRefreshToken);
+        await this.UserRefreshTokenModel.create(userRefreshToken);
         return refreshToken;
     }
 
     async findByToken(refreshToken: string): Promise<IUserRefreshTokenInfo | null> {
-        const userRefreshToken = await UserRefreshTokenModel.findOne({
+        const userRefreshToken = await this.UserRefreshTokenModel.findOne({
             token: refreshToken
         }).exec();
         if (!userRefreshToken) {

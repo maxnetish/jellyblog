@@ -1,4 +1,3 @@
-import {UserModel, IUserDocument} from "../mongoose-model/user-model";
 import {ICredentials} from "../dto/credentials";
 import crypto from 'crypto';
 import {IUserInfo} from "../dto/user-info";
@@ -8,10 +7,15 @@ import {IUserCreateNew} from "../dto/user-create-new";
 import {IFindUsersCriteria} from "../dto/find-users-criteria";
 import {IResponseWithPagination} from "../../utils/dto/response-with-pagination";
 import {IUserService} from "../api/user-service";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
+import {IUserDocument} from "../api/user-document";
+import {Model} from "mongoose";
+import {TYPES} from "../../ioc/types";
 
 @injectable()
 export class UserService implements IUserService {
+
+    private UserModel: Model<IUserDocument>;
 
     private readonly defaultAdmin: IUserInfo = {
         // default admin account
@@ -29,10 +33,15 @@ export class UserService implements IUserService {
         return hash.digest('hex').toUpperCase();
     };
 
+    constructor(
+        @inject(TYPES.ModelUser) UserModel: Model<IUserDocument>,
+    ) {
+        this.UserModel = UserModel;
+    }
+
     async addUser(userCreateNew: IUserCreateNew, options: IWithUserContext): Promise<IUserInfo> {
         options.user.assertAuth([{role: ['admin']}]);
-
-        const userModel = await UserModel.create({
+        const userModel = await this.UserModel.create({
             username: userCreateNew.username,
             role: userCreateNew.role,
             passowrd: userCreateNew.password,
@@ -54,7 +63,7 @@ export class UserService implements IUserService {
             return false;
         }
 
-        await UserModel.updateOne({
+        await this.UserModel.updateOne({
             username: userNewPassword.username
         }, {
             // username needed if admin change password first time
@@ -73,7 +82,7 @@ export class UserService implements IUserService {
             username: credentials.username
         };
 
-        const foundUser = await UserModel.findOne(condition).exec();
+        const foundUser = await this.UserModel.findOne(condition).exec();
 
         if (!foundUser) {
             if (credentials.username === this.defaultAdmin.username && credentials.password === this.getDefaultAdminPassword()) {
@@ -103,7 +112,7 @@ export class UserService implements IUserService {
             username: name
         };
 
-        const foundUser = await UserModel.findOne(condition).exec();
+        const foundUser = await this.UserModel.findOne(condition).exec();
 
         if (!foundUser) {
             return null;
@@ -133,7 +142,7 @@ export class UserService implements IUserService {
         const skip = itemsPerPage * (page - 1);
         const limit = itemsPerPage + 1;
 
-        const found = await UserModel
+        const found = await this.UserModel
             .find(clearedCriteria, 'username role')
             .skip(skip)
             .limit(limit)
@@ -153,10 +162,12 @@ export class UserService implements IUserService {
             {username: [username]} // or user someself
         ]);
 
-        await UserModel.deleteOne({
+        await this.UserModel.deleteOne({
             username
         })
             .exec();
+
+        // TODO remove tokens of removed user from RefreshToken collection
 
         return true;
     }

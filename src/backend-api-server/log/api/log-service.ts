@@ -1,6 +1,5 @@
-import {TokenIndexer} from "koa-morgan";
-import {IncomingMessage, ServerResponse} from "http";
+import {FormatFn} from "koa-morgan";
 
 export interface ILogService {
-    addEntryFromMorgan(tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse): string
+    addEntryFromMorgan: FormatFn;
 }

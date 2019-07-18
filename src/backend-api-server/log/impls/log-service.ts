@@ -1,16 +1,21 @@
-import {TokenIndexer} from "koa-morgan";
+import {FormatFn, TokenIndexer} from "koa-morgan";
 import {IncomingMessage, ServerResponse} from "http";
-import {LogModel} from '../mongoose-model/log-model';
 import {Request, Response} from "express";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 import {ILogService} from "../api/log-service";
+import {ILogEntryDocument} from "../api/log-entry-document";
+import {Model} from "mongoose";
+import {TYPES} from "../../ioc/types";
 
 @injectable()
-export class LogService implements ILogService{
-    addEntryFromMorgan(tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse): string {
+export class LogService implements ILogService {
+
+    @inject(TYPES.ModelLog)
+    private LogModel: Model<ILogEntryDocument>;
+
+    addEntryFromMorgan: FormatFn = (tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse) => {
         const reqAsRequest = req as Request;
         const resAsResponse = res as Response;
-
         const row = {
             requestUrl: tokens.url(reqAsRequest, resAsResponse),
             requestMethod: tokens.method(reqAsRequest, resAsResponse),
@@ -24,8 +29,8 @@ export class LogService implements ILogService{
             date: tokens['date'](reqAsRequest, resAsResponse, 'iso')
         };
 
-        LogModel.create(row);
+        this.LogModel.create(row);
 
         return '';
-    }
+    };
 }

@@ -1,52 +1,33 @@
 import 'reflect-metadata';
-import mongoose = require('mongoose');
 import dotenv from 'dotenv';
-import {getDbConfig} from "./db-config";
 import {Server} from "http";
-import {IAppBuilder} from "../app-builder";
+import {IAppBuilder} from "./app-builder";
 import {container} from "./ioc/container";
 import {TYPES} from "./ioc/types";
 
-// read .env file
-const dotenvResult = dotenv.config();
+async function runServer(): Promise<Server> {
 
-async function setupMongo() {
-    const dbConfig = getDbConfig();
-    try {
-        // use new createIndex instead of ensureIndex
-        mongoose.set('useCreateIndex', true);
-        const connectionResult = await mongoose.connect(dbConfig.connectionUri, dbConfig.connectionOptions);
-        console.info(`Connected to database ${dbConfig.connectionUri}`);
-        // TODO rewrite migrations
-        // const migrationResult = await applyDataMigrations({migrations});
-        // console.info(migrationResult);
-        return connectionResult;
-    } catch (err) {
-        console.error(`Cannot connect to database ${dbConfig.connectionUri}, ${err}`);
-        throw err;
-    }
-}
+    // read .env file
+    const dotenvResult = dotenv.config();
 
-const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
+    const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
+    const appBuilder = container.get<IAppBuilder>(TYPES.AppBuilder);
+    const app = await appBuilder.createApp();
 
-// Wait for mongoose connection ready...
-const promiseForAppRun: Promise<Server> = setupMongo()
-    .then(mongoConnectionResult => {
-        const appBuilder = container.get<IAppBuilder>(TYPES.AppBuilder);
-        const app = appBuilder.createApp();
-        return new Promise((resolve, reject) => {
-            const httpServer = app.listen(portToListen, () => {
-                console.info(`Started and listening on port ${portToListen}. app.env: ${app.env}`);
-                resolve(httpServer);
-            });
+    return new Promise((resolve, reject) => {
+        const httpServer = app.listen(portToListen, () => {
+            console.info(`Started and listening on port ${portToListen}. app.env: ${app.env}`);
+            resolve(httpServer);
         });
     })
-    .then(null, err => {
-        console.error('Failed start server.', err);
-        throw err;
-    });
+        .then(null, err => {
+            console.error('Failed start server.', err);
+            throw err;
+        });
+}
 
-export default promiseForAppRun;
+// We have to resolve Server because Server use in integral testing
+export const promiseForAppRun: Promise<Server> = runServer();
 
 /**
  * config parameters moved from json to environment

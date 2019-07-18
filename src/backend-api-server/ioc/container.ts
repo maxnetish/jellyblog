@@ -20,8 +20,15 @@ import {EchoController} from "../echo/echo";
 import {UserController} from "../auth/koa-routes/user-routes";
 import {IAuthenticatedUserFromJwtResolver} from "../auth/api/authenticated-user-from-jwt-resolver";
 import {AuthenticatedUserFromJwtResolver} from "../auth/impls/authenticated-user-from-jwt-resolver";
-import {IAppBuilder} from "../../app-builder";
+import {IAppBuilder} from "../app-builder";
 import {AppBuilder} from "../koa-app";
+import {Model} from "mongoose";
+import {IUserDocument} from "../auth/api/user-document";
+import {UserModel} from "../auth/impls/user-model";
+import {IUserRefreshTokenDocument} from "../token/api/user-refresh-token-document";
+import {UserRefreshTokenModel} from "../token/impls/user-refresh-token-model";
+import {ILogEntryDocument} from "../log/api/log-entry-document";
+import {LogModel} from "../log/impls/log-model";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -34,11 +41,16 @@ container.bind<IAppBuilder>(TYPES.AppBuilder).to(AppBuilder);
 // services
 container.bind<ITokenOptions>(TYPES.JwtTokenOptions).toConstantValue(new TokenOptions());
 container.bind<ITokenService>(TYPES.JwtTokenService).to(TokenService);
-container.bind<ILogService>(TYPES.LogService).toConstantValue(new LogService());
+container.bind<ILogService>(TYPES.LogService).to(LogService);
 container.bind<IUserService>(TYPES.UserService).to(UserService);
 
 // objects with behavior
 container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);
+
+// models
+container.bind<Model<IUserDocument>>(TYPES.ModelUser).toConstantValue(UserModel);
+container.bind<Model<IUserRefreshTokenDocument>>(TYPES.ModelRefreshToken).toConstantValue(UserRefreshTokenModel);
+container.bind<Model<ILogEntryDocument>>(TYPES.ModelLog).toConstantValue(LogModel);
 
 // middleware
 container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);

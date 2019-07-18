@@ -1,5 +1,5 @@
-import {Schema, model, Document} from 'mongoose';
-import {IUserRefreshTokenInfo} from "../dto/user-refresh-token-info";
+import {Schema, model} from 'mongoose';
+import {IUserRefreshTokenDocument} from "../api/user-refresh-token-document";
 
 const userRefreshTokenSchema = new Schema({
     username: {
@@ -22,12 +22,9 @@ const userRefreshTokenSchema = new Schema({
     },
 });
 
-type IUserRefreshTokenModel = Document & IUserRefreshTokenInfo;
 
-const UserRefreshTokenModel = model<IUserRefreshTokenModel>('UserRefreshToken', userRefreshTokenSchema);
+const UserRefreshTokenModel = model<IUserRefreshTokenDocument>('UserRefreshToken', userRefreshTokenSchema);
 
 export {
-    UserRefreshTokenModel,
-    IUserRefreshTokenModel,
-    IUserRefreshTokenInfo,
+    UserRefreshTokenModel
 }

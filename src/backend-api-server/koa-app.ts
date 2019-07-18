@@ -12,7 +12,8 @@ import {IQueryParseMiddlewareFactory} from "./utils/api/query-parse-middleware";
 import {IRouteController} from "./utils/api/route-controller";
 import {IAuthenticatedUserFromJwtResolver} from "./auth/api/authenticated-user-from-jwt-resolver";
 import {inject, injectable} from "inversify";
-import {IAppBuilder} from "../app-builder";
+import {IAppBuilder} from "./app-builder";
+import mongoose = require('mongoose');
 
 @injectable()
 export class AppBuilder implements IAppBuilder {
@@ -99,8 +100,41 @@ export class AppBuilder implements IAppBuilder {
         return apiRouter;
     }
 
-    createApp(): Application {
+    private async initMongooseConnection(){
+        const dbConfig = {
+            connectionUri: process.env.DB_CONNECTION_URI || 'mongodb://localhost/jellyblog',
+            connectionOptions: {
+                config: {
+                    autoIndex: true,
+                },
+                promiseLibrary: Promise,
+                useNewUrlParser: true,
+            },
+            paginationDefaultLimit: parseInt(process.env.DB_DEFAULT_PAGINATION || '10', 10),
+            commandDump: process.env.DB_CMD_DUMP || 'mongodump -d jellyblog --quiet --gzip --archive',
+            dumpFilename: process.env.DB_DUMP_FILENAME || 'blog.archive.gz',
+            commandRestore: process.env.DB_CMD_RESTORE || 'mongorestore --nsFrom jellyblog.* --nsTo jellyblog-check-restore.* --gzip',
+        };
+        try {
+            // use new createIndex instead of ensureIndex
+            mongoose.set('useCreateIndex', true);
+            const connectionResult = await mongoose.connect(dbConfig.connectionUri, dbConfig.connectionOptions);
+            console.info(`Connected to database ${dbConfig.connectionUri}`);
+            // TODO rewrite migrations
+            // const migrationResult = await applyDataMigrations({migrations});
+            // console.info(migrationResult);
+            return connectionResult;
+        } catch (err) {
+            console.error(`Cannot connect to database ${dbConfig.connectionUri}, ${err}`);
+            throw err;
+        }
+    }
+
+    async createApp(): Promise<Application> {
         const app = new Application();
+
+        // setup mongoose connection
+        await this.initMongooseConnection();
 
         // to properly work behind nginx
         app.proxy = true;
