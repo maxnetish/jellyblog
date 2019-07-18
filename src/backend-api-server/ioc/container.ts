@@ -10,8 +10,6 @@ import {IUserContextFactory} from "../auth/api/user-context";
 import {userContextFactory} from "../auth/impls/user-context";
 import {IUserService} from "../auth/api/user-service";
 import {UserService} from "../auth/impls/user-service";
-import {Middleware} from "koa";
-import {authJwtMiddleware} from "../auth/impls/auth-middleware";
 import {IJoiValidationMiddlewareFactory} from "../utils/api/joi-validation-middleware";
 import {joiValidateMiddlewareFactory} from "../utils/impls/joi-validate-middleware";
 import {IQueryParseMiddlewareFactory} from "../utils/api/query-parse-middleware";
@@ -20,10 +18,17 @@ import {IRouteController} from "../utils/api/route-controller";
 import {TokenController} from "../token/koa-routes/token-routes";
 import {EchoController} from "../echo/echo";
 import {UserController} from "../auth/koa-routes/user-routes";
+import {IAuthenticatedUserFromJwtResolver} from "../auth/api/authenticated-user-from-jwt-resolver";
+import {AuthenticatedUserFromJwtResolver} from "../auth/impls/authenticated-user-from-jwt-resolver";
+import {IAppBuilder} from "../../app-builder";
+import {AppBuilder} from "../koa-app";
 
 export const container = new Container({
     defaultScope: 'Singleton'
 });
+
+// application
+container.bind<IAppBuilder>(TYPES.AppBuilder).to(AppBuilder);
 
 // debugger;
 // services
@@ -36,7 +41,7 @@ container.bind<IUserService>(TYPES.UserService).to(UserService);
 container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);
 
 // middleware
-container.bind<Middleware>(TYPES.AuthMiddleware).toFunction(authJwtMiddleware);
+container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);
 container.bind<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFactory).toFunction(joiValidateMiddlewareFactory);
 container.bind<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory).toFunction(queryParseMiddlewareFactory);
 
@@ -44,3 +49,10 @@ container.bind<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory).
 container.bind<IRouteController>(TYPES.RouteTokenController).to(TokenController);
 container.bind<IRouteController>(TYPES.RouteEchoController).to(EchoController);
 container.bind<IRouteController>(TYPES.RouteUserController).to(UserController);
+container.bind<IRouteController[]>(TYPES.RouteControllers).toDynamicValue(context => {
+    return [
+        context.container.get<IRouteController>(TYPES.RouteUserController),
+        context.container.get<IRouteController>(TYPES.RouteTokenController),
+        context.container.get<IRouteController>(TYPES.RouteEchoController),
+    ];
+});

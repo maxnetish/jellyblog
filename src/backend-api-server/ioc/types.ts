@@ -1,4 +1,5 @@
 export const TYPES = {
+    AppBuilder: Symbol('appBuilder'),
     JwtTokenOptions: Symbol('tokenOptions'),
     JwtTokenService: Symbol('tokenService'),
     LogService: Symbol('logService'),
@@ -10,4 +11,5 @@ export const TYPES = {
     RouteTokenController: Symbol('routeTokenController'),
     RouteEchoController: Symbol('routeEchoController'),
     RouteUserController: Symbol('routeUserController'),
+    RouteControllers: Symbol('routeCOntrollers'),
 };

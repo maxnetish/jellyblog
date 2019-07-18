@@ -1,9 +1,11 @@
 import 'reflect-metadata';
 import mongoose = require('mongoose');
-import {createApp} from "./koa-app";
 import dotenv from 'dotenv';
 import {getDbConfig} from "./db-config";
 import {Server} from "http";
+import {IAppBuilder} from "../app-builder";
+import {container} from "./ioc/container";
+import {TYPES} from "./ioc/types";
 
 // read .env file
 const dotenvResult = dotenv.config();
@@ -30,7 +32,8 @@ const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
 // Wait for mongoose connection ready...
 const promiseForAppRun: Promise<Server> = setupMongo()
     .then(mongoConnectionResult => {
-        const app = createApp();
+        const appBuilder = container.get<IAppBuilder>(TYPES.AppBuilder);
+        const app = appBuilder.createApp();
         return new Promise((resolve, reject) => {
             const httpServer = app.listen(portToListen, () => {
                 console.info(`Started and listening on port ${portToListen}. app.env: ${app.env}`);
