@@ -141,7 +141,8 @@ export class AppBuilder implements IAppBuilder {
 
         // error response - override default response
         app.use(this.errorResponseMiddlewareFactory({
-            includeStack: app.env === 'development' || app.env === 'test',
+            // includeStack: app.env === 'development' || app.env === 'test',
+            includeStack: app.env === 'development',
         }));
 
         // setup logging: to console and to logService

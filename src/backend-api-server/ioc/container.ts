@@ -29,6 +29,8 @@ import {IUserRefreshTokenDocument} from "../token/api/user-refresh-token-documen
 import {UserRefreshTokenModel} from "../token/impls/user-refresh-token-model";
 import {ILogEntryDocument} from "../log/api/log-entry-document";
 import {LogModel} from "../log/impls/log-model";
+import {IUserAuthorizeMiddlewareFactory} from "../auth/api/user-authorize-middleware-factory";
+import {userAuthorizeMiddlewareFactory} from "../auth/impls/user-authorize-middleware";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -56,6 +58,7 @@ container.bind<Model<ILogEntryDocument>>(TYPES.ModelLog).toConstantValue(LogMode
 container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);
 container.bind<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFactory).toFunction(joiValidateMiddlewareFactory);
 container.bind<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory).toFunction(queryParseMiddlewareFactory);
+container.bind<IUserAuthorizeMiddlewareFactory>(TYPES.UserAuthorizeMiddlewareFactory).toFunction(userAuthorizeMiddlewareFactory);
 
 // route controller
 container.bind<IRouteController>(TYPES.RouteTokenController).to(TokenController);

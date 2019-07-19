@@ -11,11 +11,16 @@ import {inject, injectable} from "inversify";
 import {IUserDocument} from "../api/user-document";
 import {Model} from "mongoose";
 import {TYPES} from "../../ioc/types";
+import {IUserRefreshTokenDocument} from "../../token/api/user-refresh-token-document";
 
 @injectable()
 export class UserService implements IUserService {
 
+    @inject(TYPES.ModelUser)
     private UserModel: Model<IUserDocument>;
+
+    @inject(TYPES.ModelRefreshToken)
+    private RefreshTokenModel: Model<IUserRefreshTokenDocument>;
 
     private readonly defaultAdmin: IUserInfo = {
         // default admin account
@@ -33,18 +38,12 @@ export class UserService implements IUserService {
         return hash.digest('hex').toUpperCase();
     };
 
-    constructor(
-        @inject(TYPES.ModelUser) UserModel: Model<IUserDocument>,
-    ) {
-        this.UserModel = UserModel;
-    }
-
     async addUser(userCreateNew: IUserCreateNew, options: IWithUserContext): Promise<IUserInfo> {
         options.user.assertAuth([{role: ['admin']}]);
         const userModel = await this.UserModel.create({
             username: userCreateNew.username,
             role: userCreateNew.role,
-            passowrd: userCreateNew.password,
+            password: this.textToHash(userCreateNew.password),
         });
 
         return {
@@ -167,7 +166,11 @@ export class UserService implements IUserService {
         })
             .exec();
 
-        // TODO remove tokens of removed user from RefreshToken collection
+        // also remove refresh tokens of removed user else user can get access_token by refresh token
+        // if removed user have valid access_token, access_token will be valid until expires time pass (default 2h)
+        await this.RefreshTokenModel.deleteMany({
+            username
+        });
 
         return true;
     }
