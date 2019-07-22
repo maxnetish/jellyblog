@@ -16,4 +16,9 @@ export const TYPES = {
     ModelUser: Symbol('modelUser'),
     ModelRefreshToken: Symbol('modelRefreshToken'),
     ModelLog: Symbol('modelLog'),
+    FileService: Symbol('fileService'),
+    PaginationUtils: Symbol('paginationUtils'),
+    ModelFile: Symbol('modelFile'),
+    ModelFileData: Symbol('modelFileData'),
+    FilestoreController: Symbol('filestoreController'),
 };

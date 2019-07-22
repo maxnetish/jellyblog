@@ -31,6 +31,14 @@ import {ILogEntryDocument} from "../log/api/log-entry-document";
 import {LogModel} from "../log/impls/log-model";
 import {IUserAuthorizeMiddlewareFactory} from "../auth/api/user-authorize-middleware-factory";
 import {userAuthorizeMiddlewareFactory} from "../auth/impls/user-authorize-middleware";
+import {IFileService} from "../filestore/api/file-service";
+import {FileService} from "../filestore/impls/file-service";
+import {IPaginationUtils} from "../utils/api/pagination-utils";
+import {PaginationUtils} from "../utils/impls/pagination-utils";
+import {IFileMulterGridFsDocument} from "../filestore/dto/file-multer-gridfs-document";
+import {FileModel} from "../filestore/impls/file-model";
+import {FileDataModel} from "../filestore/impls/file-data-model";
+import {FileStoreController} from "../filestore/koa-routes/filestore-routes";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -39,12 +47,13 @@ export const container = new Container({
 // application
 container.bind<IAppBuilder>(TYPES.AppBuilder).to(AppBuilder);
 
-// debugger;
-// services
+// services and utils
 container.bind<ITokenOptions>(TYPES.JwtTokenOptions).toConstantValue(new TokenOptions());
 container.bind<ITokenService>(TYPES.JwtTokenService).to(TokenService);
 container.bind<ILogService>(TYPES.LogService).to(LogService);
 container.bind<IUserService>(TYPES.UserService).to(UserService);
+container.bind<IFileService>(TYPES.FileService).to(FileService);
+container.bind<IPaginationUtils>(TYPES.PaginationUtils).to(PaginationUtils);
 
 // objects with behavior
 container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);
@@ -53,6 +62,8 @@ container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userCon
 container.bind<Model<IUserDocument>>(TYPES.ModelUser).toConstantValue(UserModel);
 container.bind<Model<IUserRefreshTokenDocument>>(TYPES.ModelRefreshToken).toConstantValue(UserRefreshTokenModel);
 container.bind<Model<ILogEntryDocument>>(TYPES.ModelLog).toConstantValue(LogModel);
+container.bind<Model<IFileMulterGridFsDocument>>(TYPES.ModelFile).toConstantValue(FileModel);
+container.bind<Model<any>>(TYPES.ModelFileData).toConstantValue(FileDataModel);
 
 // middleware
 container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);
@@ -64,10 +75,12 @@ container.bind<IUserAuthorizeMiddlewareFactory>(TYPES.UserAuthorizeMiddlewareFac
 container.bind<IRouteController>(TYPES.RouteTokenController).to(TokenController);
 container.bind<IRouteController>(TYPES.RouteEchoController).to(EchoController);
 container.bind<IRouteController>(TYPES.RouteUserController).to(UserController);
+container.bind<IRouteController>(TYPES.FilestoreController).to(FileStoreController);
 container.bind<IRouteController[]>(TYPES.RouteControllers).toDynamicValue(context => {
     return [
         context.container.get<IRouteController>(TYPES.RouteUserController),
         context.container.get<IRouteController>(TYPES.RouteTokenController),
         context.container.get<IRouteController>(TYPES.RouteEchoController),
+        context.container.get<IRouteController>(TYPES.FilestoreController),
     ];
 });

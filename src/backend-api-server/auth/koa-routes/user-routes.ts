@@ -16,6 +16,8 @@ import {IUserRemove} from "../dto/user-remove";
 import {userRemoveSchema} from "../dto/user-remove.schema";
 import {IFindUsersCriteria} from "../dto/find-users-criteria";
 import {findUsersCriteriaSchema} from "../dto/find-users-criteria.schema";
+import {IUserChangeRole} from "../dto/user-change-role";
+import {userChangeRoleSchema} from "../dto/user-change-role.schema";
 
 @injectable()
 export class UserController implements IRouteController {
@@ -30,14 +32,28 @@ export class UserController implements IRouteController {
         const userNewPassword: IUserNewPassword = ctx.request.body;
         const userContext: IUserContext = ctx.state.user;
 
+        // user authorizes also in service: authorize duplicates
+        // I think that it isn't bad.
         userContext.assertAuth([
-            {role: ['admin']},
             {username: [userNewPassword.username]}
         ]);
 
         const result = await this.userService.changePassword(userNewPassword, {
             user: userContext
         });
+
+        ctx.status = result ? 201 : 403;
+    };
+
+    private userChangeRole: Middleware = async ctx => {
+        const userChangeRiole: IUserChangeRole = ctx.request.body;
+        const userContext: IUserContext = ctx.state.user;
+
+        userContext.assertAuth(([
+            {role: ['admin']}
+        ]));
+
+        const result = await this.userService.changeRole(userChangeRiole, {user: userContext});
 
         ctx.status = result ? 201 : 403;
     };
@@ -53,6 +69,11 @@ export class UserController implements IRouteController {
     private userRemove: Middleware = async ctx => {
         const userRemove: IUserRemove = ctx.request.body;
         const userContext: IUserContext = ctx.state.user;
+
+        userContext.assertAuth([
+            {role: ['admin']},
+            {username: [userRemove.username]}
+        ]);
 
         const result = await this.userService.removeUser(userRemove.username, {user: userContext});
         ctx.status = result ? 204 : 403;
@@ -75,8 +96,14 @@ export class UserController implements IRouteController {
         this.router.post(
             routesMap['user-change-password'],
             joiValidationMiddlewareFactory({body: userNewPasswordSchema}),
-            userAuthorizeMiddleware('ANY'), // admin or user someself - check in service
+            userAuthorizeMiddleware('ANY'), // only user someself - check in route and service
             this.userChangePassword,
+        );
+        this.router.post(
+            routesMap["user-change-role"],
+            joiValidationMiddlewareFactory({body: userChangeRoleSchema}),
+            userAuthorizeMiddleware([{role: ['admin']}]),
+            this.userChangeRole
         );
         this.router.post(
             routesMap['user-add'],
@@ -95,7 +122,7 @@ export class UserController implements IRouteController {
             joiValidationMiddlewareFactory({query: findUsersCriteriaSchema}),
             userAuthorizeMiddleware([{role: ['admin']}]),
             this.usersList,
-        )
+        );
     }
 
     getAllowedMethodsMiddleware(options?: Router.IRouterAllowedMethodsOptions): Middleware {

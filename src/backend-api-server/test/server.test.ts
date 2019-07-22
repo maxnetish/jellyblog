@@ -311,6 +311,146 @@ describe('api/user/list', () => {
     });
 });
 
+describe('api/user/changerole', () => {
+    it('POST with invalid paramater should produce status 400', async () => {
+        const response = await request(server)
+            .post('/api/user/changerole')
+            .send({
+                username: 'notexistent',
+                invalidOptions: 'foo'
+            });
+        expect(response.status).toEqual(400);
+    });
+
+    it('POST without authentication should produce status 403', async () => {
+        const response = await request(server)
+            .post('/api/user/changerole')
+            .send({
+                username: 'bla',
+                role: 'foo',
+            });
+        expect(response.status).toEqual(403);
+    });
+
+    it('POST without admin rights should produce status 401', async () => {
+        const readerTokenRespone = await request(server)
+            .post('/api/token')
+            .send({username: readerUser.username, password: readerUser.password});
+        const accessToken = readerTokenRespone.body.token;
+
+        const response = await request(server)
+            .post('/api/user/changerole')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                username: readerUser.username,
+                role: 'admin'
+            });
+        expect(response.status).toEqual(401);
+    });
+
+    it('POST with admin rights should produce status 201', async () => {
+        const adminTokenRespone = await request(server)
+            .post('/api/token')
+            .send({username: adminUser.username, password: adminUser.password});
+        const accessToken = adminTokenRespone.body.token;
+
+        const response = await request(server)
+            .post('/api/user/changerole')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                username: readerUser.username,
+                role: 'admin'
+            });
+
+        const checkRespone = await request(server)
+            .get('/api/user/list')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .query({username: readerUser.username});
+        expect(checkRespone.body.items[0].role).toEqual('admin');
+
+        // and restore role
+        await request(server)
+            .post('/api/user/changerole')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({
+                username: readerUser.username,
+                role: 'reader'
+            });
+    });
+});
+
+describe('api/fs', () => {
+    it('GET without authentication should produce state 403', async () => {
+        const response = await request(server)
+            .get('/api/fs');
+
+        expect(response.status).toEqual(403);
+    });
+
+    it('GET without admin rights should produce status 401', async () => {
+        const responseReaderToken = await request(server)
+            .post('/api/token')
+            .send({username: readerUser.username, password: readerUser.password});
+        const accessToken = responseReaderToken.body.token;
+
+        const response = await request(server)
+            .get('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`);
+
+        expect(response.status).toEqual(401);
+    });
+
+    it('GET with admin rights and invalid parameters should produce status 400', async () => {
+        const responseAdminToken = await request(server)
+            .post('/api/token')
+            .send({username: adminUser.username, password: adminUser.password});
+        const accessToken = responseAdminToken.body.token;
+
+        let response = await request(server)
+            .get('/api/fs')
+            .query({badParameter: 'foo'})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(400);
+
+        response = await request(server)
+            .get('/api/fs')
+            .query({dateTo: 'bad-date'})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(400);
+
+        response = await request(server)
+            .get('/api/fs')
+            .query({page: '-1'})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(400);
+    });
+
+    it('GET with admin rights and valid parameters should produce status 200', async () => {
+        const responseAdminToken = await request(server)
+            .post('/api/token')
+            .send({username: adminUser.username, password: adminUser.password});
+        const accessToken = responseAdminToken.body.token;
+
+        let response = await request(server)
+            .get('/api/fs')
+            .query({dateTo: '12/01/2019'})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(200);
+
+        response = await request(server)
+            .get('/api/fs')
+            .query({dateTo: '12-01-2019'})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(200);
+
+        response = await request(server)
+            .get('/api/fs')
+            .query({page: '1'})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(200);
+    });
+});
+
 describe('api/user/changepassword', () => {
     it('GET should produce status 404', async () => {
         const response = await request(server)

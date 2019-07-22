@@ -12,6 +12,8 @@ import {IUserDocument} from "../api/user-document";
 import {Model} from "mongoose";
 import {TYPES} from "../../ioc/types";
 import {IUserRefreshTokenDocument} from "../../token/api/user-refresh-token-document";
+import {IUserChangeRole} from "../dto/user-change-role";
+import {IPaginationUtils} from "../../utils/api/pagination-utils";
 
 @injectable()
 export class UserService implements IUserService {
@@ -21,6 +23,9 @@ export class UserService implements IUserService {
 
     @inject(TYPES.ModelRefreshToken)
     private RefreshTokenModel: Model<IUserRefreshTokenDocument>;
+
+    @inject(TYPES.PaginationUtils)
+    private paginationUtils: IPaginationUtils;
 
     private readonly defaultAdmin: IUserInfo = {
         // default admin account
@@ -53,8 +58,8 @@ export class UserService implements IUserService {
     }
 
     async changePassword(userNewPassword: IUserNewPassword, options: IWithUserContext): Promise<boolean> {
-        // require any authenticated user
-        options.user.assertAuth('ANY');
+        // require user someself
+        options.user.assertAuth([{username: [userNewPassword.username]}]);
 
         const userInfo = await this.findUserInfoByCredentials(userNewPassword);
 
@@ -62,17 +67,27 @@ export class UserService implements IUserService {
             return false;
         }
 
-        await this.UserModel.updateOne({
+        const findDoc: Partial<ICredentials> = {
             username: userNewPassword.username
-        }, {
-            // username needed if admin change password first time
-            // we have to create new doc for admin
-            username: userNewPassword.username,
+        };
+
+        const updateDoc: Partial<IUserInfo & ICredentials> = {
             password: this.textToHash(userNewPassword.newPassword)
-        }, {
+        };
+
+        // special for admin
+        // to force admin role and creating new admin account if
+        if (userNewPassword.username === this.defaultAdmin.username) {
+            updateDoc.username = this.defaultAdmin.username;
+            updateDoc.role = this.defaultAdmin.role;
+        }
+
+        const updateOpts = {
             // need if admin change password first time
             upsert: true
-        }).exec();
+        };
+
+        await this.UserModel.updateOne(findDoc, updateDoc, updateOpts).exec();
         return true;
     }
 
@@ -135,22 +150,18 @@ export class UserService implements IUserService {
             clearedCriteria.role = findUsersCriteria.role;
         }
 
-        const itemsPerPage = parseInt(process.env.DB_DEFAULT_PAGINATION || '10', 10) || 10;
-        let {page} = findUsersCriteria;
-        page = page || 1;
-        const skip = itemsPerPage * (page - 1);
-        const limit = itemsPerPage + 1;
+        const {skip, limit, page} = this.paginationUtils.skipLimitFromPaginationRequest(findUsersCriteria);
 
         const found = await this.UserModel
             .find(clearedCriteria, 'username role')
             .skip(skip)
-            .limit(limit)
+            .limit(limit + 1)
             .exec();
 
         return {
-            hasMore: found.length > itemsPerPage,
-            items: found.slice(0, itemsPerPage),
-            itemsPerPage,
+            hasMore: found.length > limit,
+            items: found.slice(0, limit),
+            itemsPerPage: limit,
             page,
         };
     }
@@ -172,6 +183,35 @@ export class UserService implements IUserService {
             username
         });
 
+        return true;
+    }
+
+    async changeRole(userChangeRole: IUserChangeRole, options: IWithUserContext): Promise<boolean> {
+        options.user.assertAuth([
+            {role: ['admin']}
+        ]);
+
+        const findDoc: Partial<ICredentials> = {
+            username: userChangeRole.username
+        };
+
+        const updateDoc: Partial<IUserInfo & ICredentials> = {
+            role: userChangeRole.role
+        };
+
+        // special for admin
+        // to force admin role
+        if (userChangeRole.username === this.defaultAdmin.username) {
+            updateDoc.username = this.defaultAdmin.username;
+            updateDoc.role = this.defaultAdmin.role;
+        }
+
+        const updateOpts = {
+            // need if admin change password first time
+            upsert: true
+        };
+
+        await this.UserModel.updateOne(findDoc, updateDoc, updateOpts).exec();
         return true;
     }
 }

@@ -4,4 +4,5 @@ export const routesMap = {
     'user-add': '/',
     'user-remove': '/',
     'users-find': '/list',
+    'user-change-role': '/changerole'
 };

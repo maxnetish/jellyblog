@@ -48,4 +48,5 @@ export const promiseForAppRun: Promise<Server> = runServer();
  JWT_REFRESH_TOKEN_COOKIE=jb-refresh-token
  DEFAULT_ADMIN_PASSWORD=changeimmediately
  ROUTE_API_PATH=api
+ JB_GRIDFS_BASEURL=/file
  */
