@@ -33,7 +33,7 @@ export class FileStoreController implements IRouteController {
         const fileRemoveRequest: IFileRemoveRequest = ctx.request.body;
         const userContext: IUserContext = ctx.state.user;
         const result = await this.fileService.remove(fileRemoveRequest, {user: userContext});
-        ctx.status = result ? 204 : 403;
+        ctx.body = result;
     };
 
     constructor(

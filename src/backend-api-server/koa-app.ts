@@ -7,7 +7,7 @@ import cors from '@koa/cors';
 import Application = require("koa");
 import {ILogService} from "./log/api/log-service";
 import {TYPES} from "./ioc/types";
-import {Context, Middleware} from "koa";
+import {Middleware} from "koa";
 import {IQueryParseMiddlewareFactory} from "./utils/api/query-parse-middleware";
 import {IRouteController} from "./utils/api/route-controller";
 import {IAuthenticatedUserFromJwtResolver} from "./auth/api/authenticated-user-from-jwt-resolver";
@@ -100,7 +100,7 @@ export class AppBuilder implements IAppBuilder {
         return apiRouter;
     }
 
-    private async initMongooseConnection(){
+    private async initMongooseConnection() {
         const dbConfig = {
             connectionUri: process.env.DB_CONNECTION_URI || 'mongodb://localhost/jellyblog',
             connectionOptions: {
@@ -147,8 +147,14 @@ export class AppBuilder implements IAppBuilder {
 
         // setup logging: to console and to logService
         const koaMorgan = this.initMorganLogger();
-        app.use(koaMorgan('combined'));
-        app.use(koaMorgan(this.logService.addEntryFromMorgan));
+        if (app.env === 'development') {
+            // to not spamming in test and prod console
+            app.use(koaMorgan('combined'));
+        }
+        if (app.env !== 'test') {
+            // to not store log in test mode
+            app.use(koaMorgan(this.logService.addEntryFromMorgan));
+        }
 
         // to allow CORS (or not)
         if (process.env.CORS_ORIGIN) {

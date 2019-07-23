@@ -1,3 +1,3 @@
 export interface IFileRemoveRequest {
-    id: number[];
+    id: string[] | string;
 }

@@ -68,21 +68,21 @@ export class FileService implements IFileService {
         };
     }
 
-    async remove(fileRemoveRequest: IFileRemoveRequest, options: IWithUserContext): Promise<boolean> {
+    async remove(fileRemoveRequest: IFileRemoveRequest, options: IWithUserContext): Promise<number> {
         options.user.assertAuth([
             {role: ['admin']}
         ]);
-
+        const ids = Array.isArray(fileRemoveRequest.id) ? fileRemoveRequest.id : [fileRemoveRequest.id];
         // remove both metadata and chunks
         const result = await Promise.all([
-            this.FileModel.remove({
-                _id: {$in: fileRemoveRequest.id}
+            this.FileModel.deleteMany({
+                _id: {$in: ids}
             }),
-            this.FileDataModel.remove({
-                files_id: {$in: fileRemoveRequest.id}
+            this.FileDataModel.deleteMany({
+                files_id: {$in: ids}
             }),
         ]);
-        return true;
+        return result[0].n || 0;
     }
 
 }

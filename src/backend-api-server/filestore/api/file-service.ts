@@ -6,5 +6,5 @@ import {IWithUserContext} from "../../auth/dto/with-user-context";
 
 export interface IFileService {
     find(criteria: IFileFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IFileMulterGridfsInfo>>;
-    remove(fileRemoveRequest: IFileRemoveRequest, options: IWithUserContext): Promise<boolean>;
+    remove(fileRemoveRequest: IFileRemoveRequest, options: IWithUserContext): Promise<number>;
 }

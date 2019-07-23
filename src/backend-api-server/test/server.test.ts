@@ -449,6 +449,89 @@ describe('api/fs', () => {
             .set('Authorization', `Bearer ${accessToken}`);
         expect(response.status).toEqual(200);
     });
+
+    it('GET with admin rights and valid parameters should produce pagination result', async () => {
+        const responseAdminToken = await request(server)
+            .post('/api/token')
+            .send({username: adminUser.username, password: adminUser.password});
+        const accessToken = responseAdminToken.body.token;
+
+        let response = await request(server)
+            .get('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.body.page).toEqual(1);
+        expect(response.body.items).toBeInstanceOf(Array);
+    });
+
+    it('DELETE without authentication should produce state 403', async () => {
+        const response = await request(server)
+            .delete('/api/fs')
+            .send({id: '0c9dd15c6a259b3818fd3e33'}); // criteria required!
+
+        expect(response.status).toEqual(403);
+    });
+
+    it('DELETE without admin rights should produce status 401', async () => {
+        const responseReaderToken = await request(server)
+            .post('/api/token')
+            .send({username: readerUser.username, password: readerUser.password});
+        const accessToken = responseReaderToken.body.token;
+
+        const response = await request(server)
+            .delete('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({id: '0c9dd15c6a259b3818fd3e33'}); // criteria required!
+
+        expect(response.status).toEqual(401);
+    });
+
+    it('DELETE with admin rights and invalid parameters should produce status 400', async () => {
+        const responseAdminToken = await request(server)
+            .post('/api/token')
+            .send({username: adminUser.username, password: adminUser.password});
+        const accessToken = responseAdminToken.body.token;
+
+        let response = await request(server)
+            .delete('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .query({badParameter: 'foo'});
+        expect(response.status).toEqual(400);
+
+        response = await request(server)
+            .delete('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({id: 'bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid-bad-objectid'});
+        expect(response.status).toEqual(400);
+
+        response = await request(server)
+            .delete('/api/fs')
+            .send({notexpected: 1, id: ['0c9dd15c6a259b3818fd3e33', '1c9dd15c6a259b3818fd3e33']})
+            .set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toEqual(400);
+    });
+
+    it('DELETE with admin rights and valid parameters should produce status 200', async () => {
+        const responseAdminToken = await request(server)
+            .post('/api/token')
+            .send({username: adminUser.username, password: adminUser.password});
+        const accessToken = responseAdminToken.body.token;
+
+        let response = await request(server)
+            .delete('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({id: '0c9dd15c6a259b3818fd3e33'});
+        expect(response.status).toEqual(200);
+        // there are no file with passed id, so expect 0 actually deleted items
+        expect(response.body).toEqual(0);
+
+        response = await request(server)
+            .delete('/api/fs')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({id: ['0c9dd15c6a259b3818fd3e33', '1c9dd15c6a259b3818fd3e33', '2c9dd15c6a259b3818fd3e33']});
+        expect(response.status).toEqual(200);
+        // there are no file with passed id, so expect 0 actually deleted items
+        expect(response.body).toEqual(0);
+    });
 });
 
 describe('api/user/changepassword', () => {
