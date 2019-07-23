@@ -3,6 +3,7 @@ export const TYPES = {
     JwtTokenOptions: Symbol('tokenOptions'),
     JwtTokenService: Symbol('tokenService'),
     LogService: Symbol('logService'),
+    LogController: Symbol('logController'),
     UserContextFactory: Symbol('userContextFactory'),
     UserService: Symbol('userService'),
     AuthMiddleware: Symbol('authMiddleware'),
@@ -21,4 +22,7 @@ export const TYPES = {
     ModelFile: Symbol('modelFile'),
     ModelFileData: Symbol('modelFileData'),
     FilestoreController: Symbol('filestoreController'),
+    ModelOptions: Symbol('modelOptions'),
+    OptionsService: Symbol('optionsService'),
+    OptionsController: Symbol('optionsController'),
 };

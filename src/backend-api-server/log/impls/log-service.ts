@@ -3,15 +3,23 @@ import {IncomingMessage, ServerResponse} from "http";
 import {Request, Response} from "express";
 import {inject, injectable} from "inversify";
 import {ILogService} from "../api/log-service";
-import {ILogEntryDocument} from "../api/log-entry-document";
+import {ILogEntryDocument} from "../dto/log-entry-document";
 import {Model} from "mongoose";
 import {TYPES} from "../../ioc/types";
+import {ILogFindEntriesCriteria} from "../dto/log-find-entries-criteria";
+import {IResponseWithPagination} from "../../utils/dto/response-with-pagination";
+import {ILogEntry} from "../dto/log-entry";
+import {IWithUserContext} from "../../auth/dto/with-user-context";
+import {IPaginationUtils} from "../../utils/api/pagination-utils";
 
 @injectable()
 export class LogService implements ILogService {
 
     @inject(TYPES.ModelLog)
     private LogModel: Model<ILogEntryDocument>;
+
+    @inject(TYPES.PaginationUtils)
+    private paginationUtils: IPaginationUtils;
 
     addEntryFromMorgan: FormatFn = (tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse) => {
         const reqAsRequest = req as Request;
@@ -33,4 +41,47 @@ export class LogService implements ILogService {
 
         return '';
     };
+
+    async findEntries(criteria: ILogFindEntriesCriteria, options: IWithUserContext): Promise<IResponseWithPagination<ILogEntry>> {
+        options.user.assertAuth([
+            {role: ['admin']}
+        ]);
+
+        const conditions: any = {};
+
+        if (criteria.err === true) {
+            conditions.error = {$exists: true};
+        } else if (criteria.err === false) {
+            conditions.error = {$exists: false}
+        }
+
+        if (criteria.dateTo) {
+            conditions.date = {$lte: criteria.dateTo};
+        }
+
+        if (criteria.dateFrom) {
+            conditions.date = conditions.date || {};
+            conditions.date.$gte = criteria.dateFrom
+        }
+
+        // opts:
+        const {skip, limit, page} = this.paginationUtils.skipLimitFromPaginationRequest(criteria);
+
+        const foundDocuments = await this.LogModel
+            .find(conditions)
+            .lean(true)
+            .limit(limit + 1)
+            .skip(skip)
+            .sort('-_id')
+            .exec();
+
+        return {
+            hasMore: foundDocuments.length > limit,
+            items: foundDocuments.slice(0, limit),
+            itemsPerPage: limit,
+            page
+        };
+    }
+
+
 }

@@ -1,5 +1,5 @@
 import {Schema, model, Document} from 'mongoose';
-import {ILogEntryDocument} from "../api/log-entry-document";
+import {ILogEntryDocument} from "../dto/log-entry-document";
 
 const logSchema = new Schema({
         requestUrl: {

@@ -1,4 +1,5 @@
 export interface ILogEntry {
+    id?: any;
     requestUrl?: string;
     requestMethod?: string;
     responseTime: number;

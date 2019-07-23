@@ -150,7 +150,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "test": "jest --config jest.backend-api-server.config.js ./src/backend-api-server",
+    "test": "jest --runInBand --config jest.backend-api-server.config.js ./src/backend-api-server",
     "test-debug": "node --inspect node_modules/jest/bin/jest.js --runInBand --watch --config jest.backend-api-server.config.js ./src/backend-api-server",
     "build-dev": "webpack --progress --config webpack-config/webpack.config.dev.js",
     "build-dev-server": "webpack --progress --config webpack-config/webpack.config.dev.js --config-name server",

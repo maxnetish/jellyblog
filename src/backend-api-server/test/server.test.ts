@@ -1,19 +1,12 @@
 import {Server} from "http";
 import {promiseForAppRun} from "../server";
-import {tearDownHttpAndMongoose} from "./utils";
+import {tearDownHttpAndMongoose, textToHash} from "./utils";
 import request from 'supertest';
 import cookie from 'cookie';
 import {IUserDocument} from "../auth/api/user-document";
 import {Model} from "mongoose";
 import {container} from "../ioc/container";
 import {TYPES} from "../ioc/types";
-import crypto from "crypto";
-
-const textToHash = (inp: string) => {
-    const hash = crypto.createHash('sha256');
-    hash.update(inp);
-    return hash.digest('hex').toUpperCase();
-};
 
 let server: Server;
 let UserModel: Model<IUserDocument>;
@@ -32,7 +25,12 @@ const readerUser = {
 };
 
 beforeAll(async () => {
-    server = await promiseForAppRun;
+    try {
+        server = await promiseForAppRun;
+    } catch (err) {
+        debugger;
+        console.log('Could not start http server: ', err);
+    }
     UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
 
     await UserModel.create([
