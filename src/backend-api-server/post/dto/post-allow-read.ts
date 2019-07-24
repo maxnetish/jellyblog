@@ -1,0 +1,1 @@
+export type POST_ALLOW_READ = 'FOR_ALL' | 'FOR_REGISTERED' | 'FOR_ME';

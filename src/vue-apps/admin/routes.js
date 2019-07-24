@@ -30,8 +30,8 @@ const routes = [
                     component: PostsPage
                 },
                 {
-                    path: 'post',
-                    name: 'post',
+                    path: 'post-details.ts',
+                    name: 'post-details.ts',
                     component: PostPage
                 },
                 {

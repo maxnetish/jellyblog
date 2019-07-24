@@ -12,7 +12,7 @@ import {store as moduleStore, mutationTypes} from './store';
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import {getDefaultFiller} from "../../../../utils/async-store-filler";
 
-const storeNamespace = 'post';
+const storeNamespace = 'post-details.ts';
 const contentModeOptions = ['EDIT', 'PREVIEW'];
 
 function mapStoreNamespace(n) {
@@ -20,7 +20,7 @@ function mapStoreNamespace(n) {
 }
 
 export default {
-    name: 'post',
+    name: 'post-details.ts',
     mixins: [DialogAlertMixin, DialogConfirmMixin, DialogUploadFileMixin],
     data() {
         return {
@@ -33,7 +33,7 @@ export default {
     },
     computed: {
         ...mapState(storeNamespace, [
-            'post',
+            'post-details.ts',
             'errorState',
             'titleImagesFromServer',
             'titleImagesJustAdded',

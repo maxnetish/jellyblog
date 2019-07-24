@@ -58,17 +58,17 @@
                 th {{'Status' | get-text}}
                 th {{'Actions' | get-text}}
         tbody
-            tr(v-for="(post, postIndex) in posts", :key="post._id")
+            tr(v-for="(post, postIndex) in posts", :key="post-details.ts._id")
                 td
-                    checkbox.without-label(:value="post.checked", @input="onPostCheckedChange({index: postIndex, checked: $event})", type="primary")
+                    checkbox.without-label(:value="post-details.ts.checked", @input="onPostCheckedChange({index: postIndex, checked: $event})", type="primary")
                 td
                     router-link(:to="{name: 'post', query: {id: post._id}}") {{post.title}}
                 td
                     display-date(:value="new Date(post.createDate)")
                 td
-                    post-status-label(:value="post.status")
+                    post-status-label(:value="post-details.ts.status")
                 td
-                    dropdown(:type="post.status==='DRAFT' ? 'info' : 'danger'")
+                    dropdown(:type="post-details.ts.status==='DRAFT' ? 'info' : 'danger'")
                         router-link.btn(:class="{'btn-info': post.status==='DRAFT', 'btn-danger': post.status==='PUB'}", :to="{name: 'post', query: {id: post._id}}", slot="before", type="button")
                             i.fa.fa-pencil-square-o.fa-fw
                             span._margin-5._left {{'Edit post' | get-text}}
@@ -77,7 +77,7 @@
                                 i.fa.fa-plug.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Post preview' | get-text}}
                         li
-                            a(href="javascript:void 0;", :disabled="post.statusUpdating", @click="onToggleStatusButtonClick(post)")
+                            a(href="javascript:void 0;", :disabled="post-details.ts.statusUpdating", @click="onToggleStatusButtonClick(post)")
                                 i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
                                 span._margin-5._left {{(post.status==='DRAFT' ? 'Publish' : 'Make draft') | get-text}}
                         li

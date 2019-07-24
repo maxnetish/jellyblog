@@ -6,52 +6,52 @@ div
                     label.col-sm-2.control-label {{'Status' | get-text}}
                     .col-sm-10
                         .form-control-static
-                            post-status-label(:value="post.status")
+                            post-status-label(:value="post-details.ts.status")
                 .form-group
                     label.col-sm-2.control-label {{'Who can read' | get-text}}
                     .col-sm-10
                         label.radio(v-for="allowReadOption in allowReadOptions", :key="allowReadOption", :class="{'text-muted': post.allowRead!==allowReadOption}")
-                            input(type="radio", :value="allowReadOption", :checked="post.allowRead === allowReadOption", @change="onAllowReadChange($event.target)", name="postAllowRead")
+                            input(type="radio", :value="allowReadOption", :checked="post-details.ts.allowRead === allowReadOption", @change="onAllowReadChange($event.target)", name="postAllowRead")
                             .
                                 {{allowReadOption | get-text}}
                 .form-group
                     label.col-sm-2.control-label {{'Create date' | get-text}}
                     .col-sm-10
                         .form-control-static
-                            display-date(:value="post.createDate")
+                            display-date(:value="post-details.ts.createDate")
                 .form-group
                     label.col-sm-2.control-label {{'Update date' | get-text}}
                     .col-sm-10
                         .form-control-static
-                            display-date(:value="post.updateDate")
+                            display-date(:value="post-details.ts.updateDate")
                 .form-group
                     label.col-sm-2.control-label {{'Publication date' | get-text}}
                     .col-sm-10
                         .form-control-static
-                            display-date(:value="post.pubDate")
+                            display-date(:value="post-details.ts.pubDate")
                 .form-group
                     label.col-sm-2.control-label {{'URL' | get-text}}
                     .col-sm-10
-                        input.form-control(type="text", :placeholder="post._id", :value="post.hru", @input="onHruInput($event.target)")
+                        input.form-control(type="text", :placeholder="post-details.ts._id", :value="post-details.ts.hru", @input="onHruInput($event.target)")
                 .form-group
                     label.col-sm-2.control-label {{'Title' | get-text}}
                     .col-sm-10
-                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", :value="post.title", @input="onTitleInput($event.target)")
+                        input.form-control(type="text", required, :placeholder="'Enter post title' | get-text", :value="post-details.ts.title", @input="onTitleInput($event.target)")
                 .form-group
                     label.col-sm-2.control-label {{'Title image' | get-text}}
                     .col-sm-10(:class="{'util-zindex-100': titleImageSelectOpen}")
-                        .selected-avatar-ct(v-if="post.titleImg")
-                            img.selected-avatar(:src="post.titleImg.url", :alt="post.titleImg.metadata.originalName")
+                        .selected-avatar-ct(v-if="post-details.ts.titleImg")
+                            img.selected-avatar(:src="post-details.ts.titleImg.url", :alt="post-details.ts.titleImg.metadata.originalName")
                             .selected-avatar-desc.word-break-all
                                 .selected-avatar-title {{ post.titleImg.metadata.originalName }}
-                                display-date(:value="post.titleImg.uploadDate")
+                                display-date(:value="post-details.ts.titleImg.uploadDate")
                                 div
                                     small {{ post.titleImg.metadata.description }}
                             .selected-avatar-buttons
                                 button.btn.btn-xs.btn-default(type="button", @click="onClearTitleImageClick", :title="'Clear' | get-text")
                                     i.fa.fa-times.fa-fw(aria="hidden")
                         multiselect.multiselect-avatar(
-                        :value="post.titleImg",
+                        :value="post-details.ts.titleImg",
                         :placeholder="'Select title image' | get-text",
                         label="filename",
                         track-by="_id",
@@ -87,7 +87,7 @@ div
                     label.col-sm-2.control-label {{'Tags' | get-text}}
                     .col-sm-10(:class="{'util-zindex-100': tagSelectOpen}")
                         multiselect(
-                        :value="post.tags",
+                        :value="post-details.ts.tags",
                         :tag-placeholder="'Add as new tag' | get-text",
                         :placeholder="'Select or add tags' | get-text",
                         :options="availableTags",
@@ -125,13 +125,13 @@ div
                     label.col-sm-2.control-label {{'Post content type' | get-text}}
                     .col-sm-10
                         label.radio-inline(v-for="contentTypeOption in contentTypeOptions", :key="contentTypeOption", :class="{'text-muted': post.contentType!==contentTypeOption}")
-                            input(type="radio", :value="contentTypeOption", :checked="post.contentType===contentTypeOption", @change="onContentTypeChange($event.target)", name="postContentType")
+                            input(type="radio", :value="contentTypeOption", :checked="post-details.ts.contentType===contentTypeOption", @change="onContentTypeChange($event.target)", name="postContentType")
                             .
                                 {{contentTypeOption | get-text}}
                 .form-group
                     label.col-sm-2.control-label {{'Post brief' | get-text}}
                     .col-sm-10
-                        ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value="post.brief", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostBriefInput")
+                        ace-editor.form-control.jb-ace-editor-brief(id="jb-post-brief-ace-editor", :value="post-details.ts.brief", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostBriefInput")
                 .form-group
                     label.col-sm-2.control-label {{'Post content' | get-text}}
                     .col-sm-10
@@ -140,23 +140,23 @@ div
                                 input(type="radio", :value="contentModeOption", :checked="contentMode===contentModeOption", @change="onContentModeChanged($event.target)", name="contentMode")
                                 .
                                     {{contentModeOption | get-text}}
-                        a._margin-5._right(v-if="post.contentType==='MD'", href="https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax", target="_blank")
+                        a._margin-5._right(v-if="post-details.ts.contentType==='MD'", href="https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax", target="_blank")
                             span Markdown docs
                             i.fa.fa-external-link._margin-5._left
                         span Link to internal urls like: <code>&lt;a jb-route&gt;&lt;/a&gt;</code>
-                        ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value="post.content", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostContentInput")
-                        markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post.content")
-                        .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post.content")
+                        ace-editor.form-control.jb-ace-editor-content(v-if="contentMode==='EDIT'", id="jb-post-content-ace-editor", :value="post-details.ts.content", :config="{mode: post.contentType, theme: 'Chrome'}", @input="onPostContentInput")
+                        markdown-preview.form-control(v-if="contentMode==='PREVIEW' && post.contentType==='MD'", :markdown="post-details.ts.content")
+                        .form-control.jb-content-preview(v-if="contentMode==='PREVIEW' && post.contentType==='HTML'", v-html="post-details.ts.content")
                 .form-group
                     .col-sm-12.text-right
                         .btn-group(role="group")
-                            a.btn.btn-primary(:disabled="!post._id", :href="post._id ? routesMap.post + '/' + post._id : 'javascript:void 0'", target="_blank")
+                            a.btn.btn-primary(:disabled="!post._id", :href="post-details.ts._id ? routesMap.post + '/' + post._id : 'javascript:void 0'", target="_blank")
                                 i.fa.fa-plug.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Post preview' | get-text}}
                             button.btn(type="button", :disabled="!post._id || statusUpdating", :class="{'btn-danger': post.status==='DRAFT', 'btn-info': post.status==='PUB'}", @click="onToggleStatusButtonClick")
                                 i.fa.fa-fw(aria-hidden="true", :class="{'fa-eye': post.status==='DRAFT','fa-eye-slash': post.status==='PUB'}")
-                                span._margin-5._left(v-if="post.status==='DRAFT'") {{'Publish' | get-text}}
-                                span._margin-5._left(v-if="post.status==='PUB'") {{'Make draft' | get-text}}
+                                span._margin-5._left(v-if="post-details.ts.status==='DRAFT'") {{'Publish' | get-text}}
+                                span._margin-5._left(v-if="post-details.ts.status==='PUB'") {{'Make draft' | get-text}}
                             button.btn(type="submit", :disabled="!dirty || statusUpdating", :class="{'btn-primary': dirty, 'btn-default': !dirty}")
                                 i.fa.fa-upload.fa-fw(aria="hidden")
                                 span._margin-5._left {{'Save' | get-text}}

@@ -25,4 +25,6 @@ export const TYPES = {
     ModelOptions: Symbol('modelOptions'),
     OptionsService: Symbol('optionsService'),
     OptionsController: Symbol('optionsController'),
+    ModelPost: Symbol('modelPost'),
+    PostController: Symbol('postController'),
 };

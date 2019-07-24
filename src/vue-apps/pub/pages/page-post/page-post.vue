@@ -19,7 +19,7 @@
         },
         computed: {
             ...mapState(storeNamespace, [
-                'post',
+                'post-details.ts',
                 'errState'
             ]),
             ...mapGetters(storeNamespace, [

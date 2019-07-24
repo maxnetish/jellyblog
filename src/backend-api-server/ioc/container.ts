@@ -45,6 +45,9 @@ import {IOptionsService} from "../options/api/options-service";
 import {OptionsService} from "../options/impls/options-service";
 import {OptionsController} from "../options/koa-routes/options-routes";
 import {LogController} from "../log/koa-routes/log-routes";
+import {IPostAllDetailsDocument} from "../post/dto/post-all-details-document";
+import {PostModel} from "../post/impls/post-model";
+import {PostController} from "../post/koa-routes/post-routes";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -72,6 +75,7 @@ container.bind<Model<ILogEntryDocument>>(TYPES.ModelLog).toConstantValue(LogMode
 container.bind<Model<IFileMulterGridFsDocument>>(TYPES.ModelFile).toConstantValue(FileModel);
 container.bind<Model<any>>(TYPES.ModelFileData).toConstantValue(FileDataModel);
 container.bind<Model<IOptionsDocument>>(TYPES.ModelOptions).toConstantValue(OptionsModel);
+container.bind<Model<IPostAllDetailsDocument>>(TYPES.ModelPost).toConstantValue(PostModel);
 
 // middleware
 container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);
@@ -86,6 +90,7 @@ container.bind<IRouteController>(TYPES.RouteUserController).to(UserController);
 container.bind<IRouteController>(TYPES.FilestoreController).to(FileStoreController);
 container.bind<IRouteController>(TYPES.OptionsController).to(OptionsController);
 container.bind<IRouteController>(TYPES.LogController).to(LogController);
+container.bind<IRouteController>(TYPES.PostController).to(PostController);
 container.bind<IRouteController[]>(TYPES.RouteControllers).toDynamicValue(context => {
     return [
         context.container.get<IRouteController>(TYPES.RouteUserController),
@@ -94,5 +99,6 @@ container.bind<IRouteController[]>(TYPES.RouteControllers).toDynamicValue(contex
         context.container.get<IRouteController>(TYPES.FilestoreController),
         context.container.get<IRouteController>(TYPES.OptionsController),
         context.container.get<IRouteController>(TYPES.LogController),
+        context.container.get<IRouteController>(TYPES.PostController),
     ];
 });

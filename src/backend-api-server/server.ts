@@ -49,4 +49,5 @@ export const promiseForAppRun: Promise<Server> = runServer();
  DEFAULT_ADMIN_PASSWORD=changeimmediately
  ROUTE_API_PATH=api
  JB_GRIDFS_BASEURL=/file
+ JB_POST_BASEURL=/post
  */

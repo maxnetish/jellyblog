@@ -17,52 +17,52 @@ export default [
     {
         url: '/post/createOrUpdate',
         method: 'POST',
-        rpcPath: 'post.createOrUpdate'
+        rpcPath: 'post-details.ts.createOrUpdate'
     },
     {
         url: '/post/export',
         method: 'POST',
-        rpcPath: 'post.export'
+        rpcPath: 'post-details.ts.export'
     },
     {
         url: '/post/get',
         method: 'GET',
-        rpcPath: 'post.get'
+        rpcPath: 'post-details.ts.get'
     },
     {
         url: '/post/import',
         method: 'GET',
-        rpcPath: 'post.import'
+        rpcPath: 'post-details.ts.import'
     },
     {
         url: '/post/list',
         method: 'GET',
-        rpcPath: 'post.list'
+        rpcPath: 'post-details.ts.list'
     },
     {
         url: '/post/pub-get',
         method: 'GET',
-        rpcPath: 'post.pubGet'
+        rpcPath: 'post-details.ts.pubGet'
     },
     {
         url: '/post/publish',
         method: 'POST',
-        rpcPath: 'post.publish'
+        rpcPath: 'post-details.ts.publish'
     },
     {
         url: '/post/pub-list',
         method: 'GET',
-        rpcPath: 'post.pubList'
+        rpcPath: 'post-details.ts.pubList'
     },
     {
         url: '/post/remove',
         method: 'DELETE',
-        rpcPath: 'post.remove'
+        rpcPath: 'post-details.ts.remove'
     },
     {
         url: '/post/unpublish',
         method: 'POST',
-        rpcPath: 'post.unpublish'
+        rpcPath: 'post-details.ts.unpublish'
     },
     {
         url: '/tag/list',
