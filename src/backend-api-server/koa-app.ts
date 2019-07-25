@@ -79,7 +79,7 @@ export class AppBuilder implements IAppBuilder {
                 }
                 return '';
             })
-            .token('realRemoteAddress', (req: IncomingMessage) => {
+            .token('realRemoteAddress', (req: any) => {
                 let res = req.headers['x-real-ip'] || (req.connection && req.connection.remoteAddress);
                 if (Array.isArray(res)) {
                     res = res.join();
@@ -96,7 +96,6 @@ export class AppBuilder implements IAppBuilder {
         this.routeControllers.forEach(controller => {
             apiRouter.use(routesMapPath, controller.getRouteMiddleware(), controller.getAllowedMethodsMiddleware());
         });
-
         return apiRouter;
     }
 
@@ -174,9 +173,6 @@ export class AppBuilder implements IAppBuilder {
             jsonLimit: '1mb',
             textLimit: '1mb',
             strict: true,
-            detectJSON: undefined,
-            extendTypes: undefined,
-            onerror: undefined
         }));
 
         // extended query parsing (koa itself does not support nested query strings)

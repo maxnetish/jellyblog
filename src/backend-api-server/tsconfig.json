@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "../../dist/backend-api-server",
     "moduleResolution": "node",
-    "types": ["reflect-metadata", "jest"],
+    "types": ["reflect-metadata", "jest", "node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },

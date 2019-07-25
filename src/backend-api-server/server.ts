@@ -9,7 +9,6 @@ async function runServer(): Promise<Server> {
 
     // read .env file
     const dotenvResult = dotenv.config();
-
     const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
     const appBuilder = container.get<IAppBuilder>(TYPES.AppBuilder);
     const app = await appBuilder.createApp();
