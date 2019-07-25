@@ -91,4 +91,11 @@ schema.virtual('url')
         return `${postBasePath}\${urlId}`;
     });
 
+// create text index
+// See http://stackoverflow.com/questions/24714166/full-text-search-with-weight-in-mongoose
+schema.index({title: 'text', brief: 'text', content: 'text'}, {
+    name: 'My text index',
+    weights: {title: 4, brief: 2, content: 1}
+});
+
 export const PostModel = model<IPostAllDetailsDocument>('Post', schema);

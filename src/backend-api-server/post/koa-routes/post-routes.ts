@@ -17,8 +17,13 @@ import {postGetRequestSchema} from "../dto/post-get-request.schema";
 import {IPostGetRequest} from "../dto/post-get-request";
 import {postPermanentSchema} from "../dto/post-permanent.schema";
 import {PostExportRequest} from "../dto/post-export-request";
-import {postImportRequestSchema} from "../dto/post-import-request.schema";
-import {IPostImportRequest} from "../dto/post-import-request";
+import {postGetManyRequestSchema} from "../dto/post-get-many-request.schema";
+import {IPostGetManyRequest} from "../dto/post-get-many-request";
+import {IPostFindResultItem} from "../dto/post-find-result-item";
+import {IPostFindCriteria} from "../dto/post-find-criteria";
+import {postFindCriteriaSchema} from "../dto/post-find-criteria.schema";
+import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
+import {postUpdateStatusRequestSchema} from "../dto/post-update-status-request.schema";
 
 @injectable()
 export class PostController implements IRouteController {
@@ -58,9 +63,30 @@ export class PostController implements IRouteController {
     };
 
     private importPosts: Middleware = async ctx => {
-        const postsImportReqeust: IPostImportRequest = ctx.state.query;
+        const postsImportReqeust: IPostGetManyRequest = ctx.state.query;
         const userContext: IUserContext = ctx.state.user;
         const result = this.postService.importPosts(postsImportReqeust, {user: userContext});
+        ctx.body = result;
+    };
+
+    private findPosts: Middleware = async ctx => {
+        const postFindCriteria: IPostFindCriteria = ctx.state.query;
+        const userContext: IUserContext = ctx.state.user;
+        const result = await this.postService.find(postFindCriteria, {user: userContext});
+        ctx.body = result;
+    };
+
+    private getPostForPublic: Middleware = async ctx => {
+        const postGetCriteria: IPostGetRequest = ctx.state.query;
+        const userContext: IUserContext = ctx.state.user;
+        const result = await this.postService.publicGet(postGetCriteria, {user: userContext});
+        ctx.body = result;
+    };
+
+    private updateStatus: Middleware = async ctx => {
+        const postUpdateStatusRequest: IPostUpdateStatusRequest = ctx.request.body;
+        const userContext: IUserContext = ctx.state.user;
+        const result = await this.postService.updateStatus(postUpdateStatusRequest, {user: userContext});
         ctx.body = result;
     };
 
@@ -95,9 +121,27 @@ export class PostController implements IRouteController {
         );
         this.router.get(
             routesMap.import,
-            joiValidateMiddlewareFactory({query: postImportRequestSchema}),
+            joiValidateMiddlewareFactory({query: postGetManyRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]),
-            this.importPosts
+            this.importPosts,
+        );
+        this.router.get(
+            routesMap.find,
+            joiValidateMiddlewareFactory({query: postFindCriteriaSchema}),
+            userAuthorizeMiddlewareFactory([{role: ['admin']}]),
+            this.findPosts,
+        );
+        this.router.get(
+            routesMap["public-get"],
+            joiValidateMiddlewareFactory({query: postGetRequestSchema}),
+            userAuthorizeMiddlewareFactory('ANY'), // check will be in service, depends on entity
+            this.getPostForPublic
+        );
+        this.router.put(
+            routesMap["update-status"],
+            joiValidateMiddlewareFactory({body: postUpdateStatusRequestSchema}),
+            userAuthorizeMiddlewareFactory([{role: ['admin']}]), // additional check must be in service, depends on entity
+            this.updateStatus,
         );
     }
 

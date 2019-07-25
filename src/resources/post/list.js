@@ -39,7 +39,8 @@ function fetch({from, to, q, page = 1, pages, statuses = ['PUB'], ids} = {}) {
         } else {
             // else return page, specified by paramater page
             page = parseInt(page, 10) || 1;
-            numberOfDocsAtuallyNeeded = mongooseConfig.paginationDefaultLimit;
+            numberOfDocsAtuallyNeeded = mongooseConfig.pag
+            inationDefaultLimit;
             opts.skip = (page - 1) * mongooseConfig.paginationDefaultLimit;
             opts.limit = numberOfDocsAtuallyNeeded + 1;
         }
