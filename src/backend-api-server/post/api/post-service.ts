@@ -11,6 +11,8 @@ import {IResponseWithPagination} from "../../utils/dto/response-with-pagination"
 import {IPostFindResultItem} from "../dto/post-find-result-item";
 import {IPostPublicDetails} from "../dto/post-public-details";
 import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
+import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
+import {IPostPublicBrief} from "../dto/post-public-brief";
 
 export interface IPostService {
     createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetails>;
@@ -20,5 +22,7 @@ export interface IPostService {
     importPosts(postImportRequest: IPostGetManyRequest, options: IWithUserContext): Promise<IPostPermanent[]>;
     find(postFindCriteria: IPostFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostFindResultItem>>;
     publicGet(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostPublicDetails>;
-    updateStatus(postUdateStatusRequest: IPostUpdateStatusRequest, options: IWithUserContext): Promise<boolean>;
+    updateStatus(postUpdateStatusRequest: IPostUpdateStatusRequest, options: IWithUserContext): Promise<boolean>;
+    publicFind(postPublicFindCriteria: IPostPublicFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostPublicBrief>>;
+    remove(postGetManyRequest: IPostGetManyRequest, options: IWithUserContext): Promise<boolean>;
 }

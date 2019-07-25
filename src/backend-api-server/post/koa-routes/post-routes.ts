@@ -15,15 +15,15 @@ import {postUpdateRequestSchema} from "../dto/post-update-request.schema";
 import {postExportRequestSchema} from "../dto/post-export-request.schema";
 import {postGetRequestSchema} from "../dto/post-get-request.schema";
 import {IPostGetRequest} from "../dto/post-get-request";
-import {postPermanentSchema} from "../dto/post-permanent.schema";
 import {PostExportRequest} from "../dto/post-export-request";
 import {postGetManyRequestSchema} from "../dto/post-get-many-request.schema";
 import {IPostGetManyRequest} from "../dto/post-get-many-request";
-import {IPostFindResultItem} from "../dto/post-find-result-item";
 import {IPostFindCriteria} from "../dto/post-find-criteria";
 import {postFindCriteriaSchema} from "../dto/post-find-criteria.schema";
 import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
 import {postUpdateStatusRequestSchema} from "../dto/post-update-status-request.schema";
+import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
+import {postPublicFindCriteriaSchema} from "../dto/post-public-find-crieria.schema";
 
 @injectable()
 export class PostController implements IRouteController {
@@ -90,19 +90,33 @@ export class PostController implements IRouteController {
         ctx.body = result;
     };
 
+    private findPostsForPublic: Middleware = async ctx => {
+        const postPublicFindCriteria: IPostPublicFindCriteria = ctx.state.query;
+        const userContext: IUserContext = ctx.state.user;
+        const result = await this.postService.publicFind(postPublicFindCriteria, {user: userContext});
+        ctx.body = result;
+    };
+
+    private remove: Middleware = async ctx => {
+        const postGetManyRequest: IPostGetManyRequest = ctx.request.body;
+        const userConetxt: IUserContext = ctx.state.user;
+        const result = await this.postService.remove(postGetManyRequest, {user: userConetxt});
+        ctx.body = result;
+    };
+
     constructor(
         // add IPostService inject
         @inject(TYPES.JoiValidationMiddlewareFactory) joiValidateMiddlewareFactory: IJoiValidationMiddlewareFactory,
         @inject(TYPES.UserAuthorizeMiddlewareFactory) userAuthorizeMiddlewareFactory: IUserAuthorizeMiddlewareFactory,
     ) {
         this.router.post(
-            routesMap["post-get-create-or-update"],
+            routesMap["post-get-create-update-remove"],
             joiValidateMiddlewareFactory({body: postCreateRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]),
             this.createPost,
         );
         this.router.put(
-            routesMap["post-get-create-or-update"],
+            routesMap["post-get-create-update-remove"],
             joiValidateMiddlewareFactory({body: postUpdateRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]),
             this.updatePost,
@@ -114,7 +128,7 @@ export class PostController implements IRouteController {
             this.exportPosts,
         );
         this.router.get(
-            routesMap["post-get-create-or-update"],
+            routesMap["post-get-create-update-remove"],
             joiValidateMiddlewareFactory({query: postGetRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]),
             this.getPost,
@@ -134,7 +148,7 @@ export class PostController implements IRouteController {
         this.router.get(
             routesMap["public-get"],
             joiValidateMiddlewareFactory({query: postGetRequestSchema}),
-            userAuthorizeMiddlewareFactory('ANY'), // check will be in service, depends on entity
+            // auth check will be in service, depends on entity
             this.getPostForPublic
         );
         this.router.put(
@@ -142,6 +156,18 @@ export class PostController implements IRouteController {
             joiValidateMiddlewareFactory({body: postUpdateStatusRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]), // additional check must be in service, depends on entity
             this.updateStatus,
+        );
+        this.router.get(
+            routesMap["public-find"],
+            joiValidateMiddlewareFactory({query: postPublicFindCriteriaSchema}),
+            // auth check will be in service, depends on entity
+            this.findPostsForPublic,
+        );
+        this.router.delete(
+            routesMap["post-get-create-update-remove"],
+            joiValidateMiddlewareFactory({body: postGetManyRequestSchema}),
+            userAuthorizeMiddlewareFactory([{role: ['admin']}]), // additional check will be in service, depends on entity
+            this.remove,
         );
     }
 
