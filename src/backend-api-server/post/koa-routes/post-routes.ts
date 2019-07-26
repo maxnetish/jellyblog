@@ -13,8 +13,8 @@ import {IUserContext} from "../../auth/api/user-context";
 import {IPostUpdateRequest} from "../dto/post-update-request";
 import {postUpdateRequestSchema} from "../dto/post-update-request.schema";
 import {postExportRequestSchema} from "../dto/post-export-request.schema";
-import {postGetRequestSchema} from "../dto/post-get-request.schema";
-import {IPostGetRequest} from "../dto/post-get-request";
+import {postGetByObjectidRequestSchema} from "../dto/post-get-by-objectid-request.schema";
+import {IPostGetByObjectidRequest} from "../dto/post-get-by-objectid-request";
 import {PostExportRequest} from "../dto/post-export-request";
 import {postGetManyRequestSchema} from "../dto/post-get-many-request.schema";
 import {IPostGetManyRequest} from "../dto/post-get-many-request";
@@ -24,6 +24,8 @@ import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
 import {postUpdateStatusRequestSchema} from "../dto/post-update-status-request.schema";
 import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
 import {postPublicFindCriteriaSchema} from "../dto/post-public-find-crieria.schema";
+import {postGetRequestSchema} from "../dto/post-get-request.schema";
+import {IPostGetRequest} from "../dto/post-get-request";
 
 @injectable()
 export class PostController implements IRouteController {
@@ -56,7 +58,7 @@ export class PostController implements IRouteController {
     };
 
     private getPost: Middleware = async ctx => {
-        const postGetRequest: IPostGetRequest = ctx.state.query;
+        const postGetRequest: IPostGetByObjectidRequest = ctx.state.query;
         const userContext: IUserContext = ctx.state.user;
         const result = await this.postService.getPost(postGetRequest, {user: userContext});
         ctx.body = result;
@@ -129,7 +131,7 @@ export class PostController implements IRouteController {
         );
         this.router.get(
             routesMap["post-get-create-update-remove"],
-            joiValidateMiddlewareFactory({query: postGetRequestSchema}),
+            joiValidateMiddlewareFactory({query: postGetByObjectidRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]),
             this.getPost,
         );

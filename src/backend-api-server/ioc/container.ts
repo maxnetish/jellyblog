@@ -45,9 +45,11 @@ import {IOptionsService} from "../options/api/options-service";
 import {OptionsService} from "../options/impls/options-service";
 import {OptionsController} from "../options/koa-routes/options-routes";
 import {LogController} from "../log/koa-routes/log-routes";
-import {IPostAllDetailsDocument} from "../post/dto/post-all-details-document";
+import {IPostAllDetailsPopulatedDocument} from "../post/dto/post-all-details-populated-document";
 import {PostModel} from "../post/impls/post-model";
 import {PostController} from "../post/koa-routes/post-routes";
+import {IMarkdownConverter} from "../utils/api/markdown-converter";
+import {ShowdownConverter} from "../utils/impls/showdown-converter";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -64,6 +66,7 @@ container.bind<IUserService>(TYPES.UserService).to(UserService);
 container.bind<IFileService>(TYPES.FileService).to(FileService);
 container.bind<IPaginationUtils>(TYPES.PaginationUtils).to(PaginationUtils);
 container.bind<IOptionsService>(TYPES.OptionsService).to(OptionsService);
+container.bind<IMarkdownConverter>(TYPES.MarkdownConverter).to(ShowdownConverter);
 
 // objects with behavior
 container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);
@@ -75,7 +78,7 @@ container.bind<Model<ILogEntryDocument>>(TYPES.ModelLog).toConstantValue(LogMode
 container.bind<Model<IFileMulterGridFsDocument>>(TYPES.ModelFile).toConstantValue(FileModel);
 container.bind<Model<any>>(TYPES.ModelFileData).toConstantValue(FileDataModel);
 container.bind<Model<IOptionsDocument>>(TYPES.ModelOptions).toConstantValue(OptionsModel);
-container.bind<Model<IPostAllDetailsDocument>>(TYPES.ModelPost).toConstantValue(PostModel);
+container.bind<Model<IPostAllDetailsPopulatedDocument>>(TYPES.ModelPost).toConstantValue(PostModel);
 
 // middleware
 container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);

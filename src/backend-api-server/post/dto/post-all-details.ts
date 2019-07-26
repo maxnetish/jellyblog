@@ -16,8 +16,8 @@ export interface IPostAllDetails {
     brief?: string | null;
     content: string;
     tags: string[];
-    titleImg?: IFileMulterGridfsInfo | null;
-    attachments: IFileMulterGridfsInfo[];
+    titleImg?: string | null;
+    attachments: string[];
     hru?: string | null;
     url: string;
 }

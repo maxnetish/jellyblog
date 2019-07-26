@@ -1,14 +1,16 @@
-import {IFileMulterGridfsInfo} from "../../filestore/dto/file-multer-gridfs-info";
+import {IPostAllDetailsPopulated} from "./post-all-details-populated";
 
-export interface IPostPublicBrief {
-    _id: any;
-    url: string;
-    createDate: Date;
-    updateDate: Date;
-    pubDate?: Date | null;
-    titleImg?: IFileMulterGridfsInfo | null;
-    title: string;
+type OmitForPostPublicBrief =
+    'status'
+    | 'allowRead'
+    | 'author'
+    | 'contentType'
+    | 'brief'
+    | 'content'
+    | 'attachments'
+    | 'hru';
+
+export interface IPostPublicBrief extends Omit<IPostAllDetailsPopulated, OmitForPostPublicBrief> {
     preview: string;
     useCut?: boolean | null;
-    tags: string[];
 }

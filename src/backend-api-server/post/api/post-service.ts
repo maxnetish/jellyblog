@@ -1,8 +1,8 @@
 import {IPostCreateRequest} from "../dto/post-create-request";
-import {IPostAllDetails} from "../dto/post-all-details";
+import {IPostAllDetailsPopulated} from "../dto/post-all-details-populated";
 import {IWithUserContext} from "../../auth/dto/with-user-context";
 import {IPostUpdateRequest} from "../dto/post-update-request";
-import {IPostGetRequest} from "../dto/post-get-request";
+import {IPostGetByObjectidRequest} from "../dto/post-get-by-objectid-request";
 import {IPostGetManyRequest} from "../dto/post-get-many-request";
 import {IPostPermanent} from "../dto/post-permanent";
 import {PostExportRequest} from "../dto/post-export-request";
@@ -13,12 +13,13 @@ import {IPostPublicDetails} from "../dto/post-public-details";
 import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
 import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
 import {IPostPublicBrief} from "../dto/post-public-brief";
+import {IPostGetRequest} from "../dto/post-get-request";
 
 export interface IPostService {
-    createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetails>;
-    updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetails>;
+    createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
+    updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
     exportPosts(postExportRequest: PostExportRequest, options: IWithUserContext): Promise<any>;
-    getPost(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostAllDetails>;
+    getPost(postGetRequest: IPostGetByObjectidRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
     importPosts(postImportRequest: IPostGetManyRequest, options: IWithUserContext): Promise<IPostPermanent[]>;
     find(postFindCriteria: IPostFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostFindResultItem>>;
     publicGet(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostPublicDetails>;

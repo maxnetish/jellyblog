@@ -27,4 +27,5 @@ export const TYPES = {
     OptionsController: Symbol('optionsController'),
     ModelPost: Symbol('modelPost'),
     PostController: Symbol('postController'),
+    MarkdownConverter: Symbol('markdownConverter'),
 };

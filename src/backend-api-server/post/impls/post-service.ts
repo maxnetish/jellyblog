@@ -1,35 +1,50 @@
 import {IPostService} from "../api/post-service";
 import {IPostCreateRequest} from "../dto/post-create-request";
 import {IWithUserContext} from "../../auth/dto/with-user-context";
-import {IPostAllDetails} from "../dto/post-all-details";
+import {IPostAllDetailsPopulated} from "../dto/post-all-details-populated";
 import {IPostPermanent} from "../dto/post-permanent";
 import {IPostFindCriteria} from "../dto/post-find-criteria";
 import {IResponseWithPagination} from "../../utils/dto/response-with-pagination";
 import {IPostFindResultItem} from "../dto/post-find-result-item";
-import {IPostGetRequest} from "../dto/post-get-request";
+import {IPostGetByObjectidRequest} from "../dto/post-get-by-objectid-request";
 import {IPostGetManyRequest} from "../dto/post-get-many-request";
 import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
 import {IPostPublicBrief} from "../dto/post-public-brief";
 import {IPostPublicDetails} from "../dto/post-public-details";
 import {IPostUpdateRequest} from "../dto/post-update-request";
 import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
-import {Model} from "mongoose";
-import {IPostAllDetailsDocument} from "../dto/post-all-details-document";
+import {Model, Types} from "mongoose";
+import {IPostAllDetailsPopulatedDocument} from "../dto/post-all-details-populated-document";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../ioc/types";
 import {IPaginationUtils} from "../../utils/api/pagination-utils";
 import {IUserContext} from "../../auth/api/user-context";
+import {IPostAllDetails} from "../dto/post-all-details";
+import {IMarkdownConverter} from "../../utils/api/markdown-converter";
+import {IPostGetRequest} from "../dto/post-get-request";
+import {IFileMulterGridFsDocument} from "../../filestore/dto/file-multer-gridfs-document";
+
+= module
 
 @injectable()
 export class PostService implements IPostService {
 
     @inject(TYPES.ModelPost)
-    private PostModel: Model<IPostAllDetailsDocument>;
+    private PostModel: Model<IPostAllDetailsPopulatedDocument>;
 
     @inject(TYPES.PaginationUtils)
     private paginationUtils: IPaginationUtils;
 
-    private static postAllDetails2Plain(doc: IPostAllDetailsDocument): IPostAllDetails {
+    @inject(TYPES.MarkdownConverter)
+    private markdownConverter: IMarkdownConverter;
+
+    @inject(TYPES.ModelFile)
+    private FileModel: Model<IFileMulterGridFsDocument>;
+
+    @inject(TYPES.ModelFileData)
+    private FileDataModel: Model<any>;
+
+    private static postAllDetails2Plain(doc: IPostAllDetailsPopulatedDocument): IPostAllDetailsPopulated {
         return {
             _id: doc._id,
             allowRead: doc.allowRead,
@@ -50,7 +65,26 @@ export class PostService implements IPostService {
         };
     }
 
-    private static permissionsForUser(post: IPostAllDetails, user: IUserContext): { allowView: boolean, allowUpdate: boolean } {
+    private static postDetails2PostPermanent(p: IPostAllDetails): IPostPermanent {
+        return {
+            updateDate: p.updateDate,
+            titleImg: p.titleImg,
+            title: p.title,
+            tags: p.tags,
+            status: p.status,
+            pubDate: p.pubDate,
+            hru: p.hru,
+            createDate: p.createDate,
+            contentType: p.contentType,
+            content: p.content,
+            brief: p.brief,
+            attachments: p.attachments,
+            allowRead: p.allowRead,
+            _id: p._id,
+        };
+    }
+
+    private static permissionsForUser(post: IPostAllDetailsPopulated, user: IUserContext): { allowView: boolean, allowUpdate: boolean } {
         let result = {
             allowView: false,
             allowUpdate: false
@@ -86,7 +120,33 @@ export class PostService implements IPostService {
         return result;
     }
 
-    async createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetails> {
+    private static tryValidateObjectId(val: string): Types.ObjectId | null {
+        if (!Types.ObjectId.isValid(val)) {
+            return null;
+        }
+        const objectId = new Types.ObjectId(val);
+        if (objectId.equals(val)) {
+            return objectId;
+        }
+        return null;
+    }
+
+    private async canUpdatePostById(id: string, user: IUserContext): Promise<boolean> {
+        const existentDoc = await this.PostModel
+            .findById(id)
+            .lean(true)
+            .exec();
+
+        if (!existentDoc) {
+            // post not found
+            return true;
+        }
+
+        const permissions = PostService.permissionsForUser(existentDoc, user);
+        return permissions.allowUpdate;
+    }
+
+    async createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated> {
         options.user.assertAuth([{role: ['admin']}]);
 
         const currentDate = new Date();
@@ -108,7 +168,7 @@ export class PostService implements IPostService {
         };
 
         const newDoc = await this.PostModel.create(newDocData);
-        const enrichedNewDoc = await this.PostModel.populate<IPostAllDetailsDocument>(newDoc, {path: 'attachments titleImg'});
+        const enrichedNewDoc = await this.PostModel.populate<IPostAllDetailsPopulatedDocument>(newDoc, {path: 'attachments titleImg'});
         return PostService.postAllDetails2Plain(enrichedNewDoc);
     }
 
@@ -200,7 +260,7 @@ export class PostService implements IPostService {
         };
     }
 
-    async getPost(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostAllDetails> {
+    async getPost(postGetRequest: IPostGetByObjectidRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated> {
         options.user.assertAuth([{role: ['admin']}]);
 
         const foundDoc = await this.PostModel
@@ -218,28 +278,211 @@ export class PostService implements IPostService {
             throw {status: 401};
         }
 
-        const enrichedDoc = await this.PostModel.populate<IPostAllDetailsDocument>(foundDoc, {path: 'attachments titleImg'});
+        const enrichedDoc = await this.PostModel.populate<IPostAllDetailsPopulatedDocument>(foundDoc, {path: 'attachments titleImg'});
 
         return PostService.postAllDetails2Plain(enrichedDoc);
     }
 
-    importPosts(postImportRequest: IPostGetManyRequest, options: IWithUserContext): Promise<IPostPermanent[]> {
-        return undefined;
+    async importPosts(postImportRequest: IPostGetManyRequest, options: IWithUserContext): Promise<IPostPermanent[]> {
+        options.user.assertAuth([{role: ['admin']}]);
+
+        const conditions: any = {
+            _id: {
+                $in: Array.isArray(postImportRequest.id) ? postImportRequest.id : [postImportRequest.id]
+            },
+            // import only posts of current user
+            author: options.user.username
+        };
+
+        const foundDocs = await this.PostModel.find(conditions)
+            .limit(64)
+            .lean(true)
+            .exec();
+
+        // foundDocs is not enriched dtos: IPostAllDetails
+        return foundDocs.map(PostService.postDetails2PostPermanent);
     }
 
-    publicFind(postPublicFindCriteria: IPostPublicFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostPublicBrief>> {
-        return undefined;
+    async publicFind(postPublicFindCriteria: IPostPublicFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostPublicBrief>> {
+        // For all users, but we have permissions in individual entity
+
+        const conditions: any = {
+            // allow only published entity
+            status: 'PUB'
+        };
+
+        if (postPublicFindCriteria.tag) {
+            conditions.tags = postPublicFindCriteria.tag;
+        }
+
+        if (postPublicFindCriteria.from) {
+            conditions.createDate = {
+                $gte: postPublicFindCriteria.from
+            };
+        }
+
+        if (postPublicFindCriteria.to) {
+            conditions.createDate = conditions.createDate || {};
+            conditions.createDate.$lte = postPublicFindCriteria.to;
+        }
+
+        if (postPublicFindCriteria.q) {
+            // full text index search
+            conditions.$text = {
+                $search: postPublicFindCriteria.q,
+                $caseSensitive: false,
+                $diacriticSensitive: false
+            }
+        }
+
+        // to fetch posts that allow only for 'me' and 'any authorized'
+        if (options.user.authenticated) {
+            conditions.$or = [
+                {allowRead: 'FOR_ALL'},
+                {allowRead: 'FOR_REGISTERED'},
+                {allowRead: 'FOR_ME', author: options.user.username},
+            ]
+        } else {
+            conditions.allowRead = 'FOR_ALL'
+        }
+
+        // pagination
+        const {skip, limit, page} = this.paginationUtils.skipLimitFromPaginationRequest(postPublicFindCriteria);
+
+        const projection = '_id contentType createDate updateDate pubDate titleImg title brief content tags hru';
+
+        const foundDocs = await this.PostModel
+            .find(conditions, projection)
+            .sort('-createDate')
+            .skip(skip)
+            .limit(limit + 1)
+            .populate('titleImg')
+            .exec();
+
+        return {
+            page,
+            itemsPerPage: limit,
+            hasMore: foundDocs.length > limit,
+            items: foundDocs.map((p: IPostAllDetailsPopulated): IPostPublicBrief => {
+                return {
+                    _id: p._id,
+                    createDate: p.createDate,
+                    pubDate: p.pubDate,
+                    tags: p.tags,
+                    title: p.title,
+                    titleImg: p.titleImg,
+                    updateDate: p.updateDate,
+                    url: p.url,
+                    preview: p.contentType === 'MD' ?
+                        this.markdownConverter.markdown2Html(p.brief || p.content) :
+                        (p.brief || p.content),
+                    useCut: !!p.brief
+                };
+            })
+        };
     }
 
-    publicGet(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostPublicDetails> {
-        return undefined;
+    async publicGet(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostPublicDetails> {
+        // Allow for all users, additional permissioins in entity
+
+        const conditions: any = {};
+
+        const objectId = PostService.tryValidateObjectId(postGetRequest.id);
+
+        if (objectId) {
+            conditions._id = objectId;
+        } else {
+            conditions.hru = postGetRequest.id;
+        }
+
+        const projection = '_id status createDate pubDate updateDate contentType title brief content tags titleImg hru allowRead author';
+
+        const foundDoc = await this.PostModel
+            .findOne(conditions, projection)
+            .populate('titleImg')
+            .exec();
+
+        if (!foundDoc) {
+            throw {status: 404};
+        }
+
+        if (!PostService.permissionsForUser(foundDoc, options.user).allowView) {
+            // Not enough authority to view
+            throw {status: 401};
+        }
+
+        return {
+            createDate: foundDoc.createDate,
+            _id: foundDoc._id,
+            content: foundDoc.contentType === 'MD' ?
+                this.markdownConverter.markdown2Html(foundDoc.content) :
+                foundDoc.content,
+            pubDate: foundDoc.pubDate,
+            tags: foundDoc.tags,
+            title: foundDoc.title,
+            titleImg: foundDoc.titleImg,
+            updateDate: foundDoc.updateDate,
+            url: foundDoc.url,
+        };
     }
 
-    remove(postGetManyRequest: IPostGetManyRequest, options: IWithUserContext): Promise<boolean> {
-        return undefined;
+    async remove(postGetManyRequest: IPostGetManyRequest, options: IWithUserContext): Promise<boolean> {
+        options.user.assertAuth([{role: ['admin']}]);
+
+        const ids = Array.isArray(postGetManyRequest.id) ? postGetManyRequest.id : [postGetManyRequest.id];
+
+        // array like [true, true, false, true] where false means that we cannot remove corresponding post
+        const canRemove = await Promise.all(ids.map(id => this.canUpdatePostById(id, options.user)));
+
+        // id of posts that we can remove
+        const idsThatCanRemove = ids.filter((val, ind) => canRemove[ind]);
+
+        const removedPostDocs = await Promise.all(
+            idsThatCanRemove.map(id => this.PostModel.findByIdAndRemove(id).lean(true).exec())
+        );
+
+        const resultOfRemovinfFiles = await Promise.all(
+            removedPostDocs.map(removedPost => {
+                if (removedPost) {
+                    const removingAttachmentIds = removedPost.attachments || [];
+                    return Promise.all([
+                        // remove metadata
+                        this.FileModel.remove({_id: {$in: removingAttachmentIds}}).exec(),
+                        // and remove corresponding data chunks
+                        this.FileDataModel.remove({files_id: {$in: removingAttachmentIds}}),
+                    ]);
+                }
+                return {};
+            })
+        );
+
+
+        // const result = await Promise.all(idsThatCanRemove.map(id => {
+        //     return this.PostModel
+        //         .findByIdAndRemove(id)
+        //         .lean(true)
+        //         .exec()
+        //         .then((removedPostDocument: IPostAllDetails) => {
+        //             if (!removedPostDocument) {
+        //                 return {foo: 'bar'};
+        //             }
+        //             // clean attached files
+        //             const removingAttachmentIds = removedPostDocument.attachments || [];
+        //             return Promise.all([
+        //                 // remove metadata
+        //                 this.FileModel.remove({_id: {$in: removingAttachmentIds}}).exec(),
+        //                 // and remove corresponding data chunks
+        //                 this.FileDataModel.remove({files_id: {$in: removingAttachmentIds}}),
+        //             ]);
+        //         });
+        // }));
+
+        // TODO See what we actually get in result. Possibly array of native mongo query results.
+        // May be we should expose result
+        return true;
     }
 
-    updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetails> {
+    updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated> {
         return undefined;
     }
 

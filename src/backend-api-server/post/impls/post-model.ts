@@ -1,5 +1,5 @@
 import {model, Schema} from "mongoose";
-import {IPostAllDetailsDocument} from "../dto/post-all-details-document";
+import {IPostAllDetailsPopulatedDocument} from "../dto/post-all-details-populated-document";
 
 const postBasePath = process.env.JB_POST_BASEURL || '/post';
 
@@ -85,7 +85,7 @@ const schema = new Schema({
 });
 
 schema.virtual('url')
-    .get(function (this: IPostAllDetailsDocument) {
+    .get(function (this: IPostAllDetailsPopulatedDocument) {
         let urlId = this.hru || this._id;
         urlId = encodeURIComponent(urlId);
         return `${postBasePath}\${urlId}`;
@@ -98,4 +98,4 @@ schema.index({title: 'text', brief: 'text', content: 'text'}, {
     weights: {title: 4, brief: 2, content: 1}
 });
 
-export const PostModel = model<IPostAllDetailsDocument>('Post', schema);
+export const PostModel = model<IPostAllDetailsPopulatedDocument>('Post', schema);
