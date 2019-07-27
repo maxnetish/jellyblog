@@ -88,7 +88,7 @@ schema.virtual('url')
     .get(function (this: IPostAllDetailsPopulatedDocument) {
         let urlId = this.hru || this._id;
         urlId = encodeURIComponent(urlId);
-        return `${postBasePath}\${urlId}`;
+        return `${postBasePath}/${urlId}`;
     });
 
 // create text index

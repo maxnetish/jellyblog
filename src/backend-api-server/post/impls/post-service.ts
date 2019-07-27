@@ -22,9 +22,7 @@ import {IUserContext} from "../../auth/api/user-context";
 import {IPostAllDetails} from "../dto/post-all-details";
 import {IMarkdownConverter} from "../../utils/api/markdown-converter";
 import {IPostGetRequest} from "../dto/post-get-request";
-import {IFileMulterGridFsDocument} from "../../filestore/dto/file-multer-gridfs-document";
-
-= module
+import {IFileService} from "../../filestore/api/file-service";
 
 @injectable()
 export class PostService implements IPostService {
@@ -38,11 +36,8 @@ export class PostService implements IPostService {
     @inject(TYPES.MarkdownConverter)
     private markdownConverter: IMarkdownConverter;
 
-    @inject(TYPES.ModelFile)
-    private FileModel: Model<IFileMulterGridFsDocument>;
-
-    @inject(TYPES.ModelFileData)
-    private FileDataModel: Model<any>;
+    @inject(TYPES.FileService)
+    private fileService: IFileService;
 
     private static postAllDetails2Plain(doc: IPostAllDetailsPopulatedDocument): IPostAllDetailsPopulated {
         return {
@@ -84,7 +79,7 @@ export class PostService implements IPostService {
         };
     }
 
-    private static permissionsForUser(post: IPostAllDetailsPopulated, user: IUserContext): { allowView: boolean, allowUpdate: boolean } {
+    private static permissionsForUser(post: Partial<IPostAllDetails>, user: IUserContext): { allowView: boolean, allowUpdate: boolean } {
         let result = {
             allowView: false,
             allowUpdate: false
@@ -133,7 +128,7 @@ export class PostService implements IPostService {
 
     private async canUpdatePostById(id: string, user: IUserContext): Promise<boolean> {
         const existentDoc = await this.PostModel
-            .findById(id)
+            .findById(id, '_id allowRead status author')
             .lean(true)
             .exec();
 
@@ -150,7 +145,7 @@ export class PostService implements IPostService {
         options.user.assertAuth([{role: ['admin']}]);
 
         const currentDate = new Date();
-        const newDocData = {
+        const newDocData: Partial<IPostAllDetails> = {
             status: postCreateRequest.status,
             allowRead: postCreateRequest.allowRead,
             createDate: currentDate,
@@ -432,6 +427,7 @@ export class PostService implements IPostService {
         const ids = Array.isArray(postGetManyRequest.id) ? postGetManyRequest.id : [postGetManyRequest.id];
 
         // array like [true, true, false, true] where false means that we cannot remove corresponding post
+        // we won't throws, we will remove entity that we can remove
         const canRemove = await Promise.all(ids.map(id => this.canUpdatePostById(id, options.user)));
 
         // id of posts that we can remove
@@ -441,52 +437,78 @@ export class PostService implements IPostService {
             idsThatCanRemove.map(id => this.PostModel.findByIdAndRemove(id).lean(true).exec())
         );
 
-        const resultOfRemovinfFiles = await Promise.all(
+        const resultOfRemovingFiles = await Promise.all(
             removedPostDocs.map(removedPost => {
-                if (removedPost) {
-                    const removingAttachmentIds = removedPost.attachments || [];
-                    return Promise.all([
-                        // remove metadata
-                        this.FileModel.remove({_id: {$in: removingAttachmentIds}}).exec(),
-                        // and remove corresponding data chunks
-                        this.FileDataModel.remove({files_id: {$in: removingAttachmentIds}}),
-                    ]);
+                if(removedPost && removedPost.attachments && removedPost.attachments.length) {
+                    return this.fileService.remove({id: removedPost.attachments}, options);
                 }
-                return {};
+                return 0;
             })
         );
-
-
-        // const result = await Promise.all(idsThatCanRemove.map(id => {
-        //     return this.PostModel
-        //         .findByIdAndRemove(id)
-        //         .lean(true)
-        //         .exec()
-        //         .then((removedPostDocument: IPostAllDetails) => {
-        //             if (!removedPostDocument) {
-        //                 return {foo: 'bar'};
-        //             }
-        //             // clean attached files
-        //             const removingAttachmentIds = removedPostDocument.attachments || [];
-        //             return Promise.all([
-        //                 // remove metadata
-        //                 this.FileModel.remove({_id: {$in: removingAttachmentIds}}).exec(),
-        //                 // and remove corresponding data chunks
-        //                 this.FileDataModel.remove({files_id: {$in: removingAttachmentIds}}),
-        //             ]);
-        //         });
-        // }));
 
         // TODO See what we actually get in result. Possibly array of native mongo query results.
         // May be we should expose result
         return true;
     }
 
-    updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated> {
-        return undefined;
+    async updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated> {
+        options.user.assertAuth([{role: ['admin']}]);
+
+        // fetch existent doc to check permissions and to update attachments
+        const existentDoc: Partial<IPostAllDetails> = await this.PostModel
+            .findById(postUpdateRequest._id, '_id attachments allowRead status author')
+            .lean(true)
+            .exec();
+
+        if (!existentDoc) {
+            // post not found
+            throw {status: 400};
+        }
+
+        // check permissions
+        if(!PostService.permissionsForUser(existentDoc, options.user).allowUpdate) {
+            throw {status: 401};
+        }
+
+        // update attachments
+        let removeAttachmentsResult;
+        if(Array.isArray(existentDoc.attachments)) {
+            const fileIdsToRemove = existentDoc.attachments.filter(existentFileId => {
+                return !postUpdateRequest.attachments.includes(existentFileId);
+            });
+            if(fileIdsToRemove.length) {
+                removeAttachmentsResult = await this.fileService.remove({id: fileIdsToRemove}, options);
+            }
+        }
+
+        const postData: Partial<IPostAllDetails> = {
+            updateDate: new Date(),
+            contentType: postUpdateRequest.contentType,
+            title: postUpdateRequest.title,
+            brief: postUpdateRequest.brief,
+            content: postUpdateRequest.content,
+            tags: postUpdateRequest.tags || [],
+            titleImg: postUpdateRequest.titleImg || null,
+            attachments: postUpdateRequest.attachments || [],
+            hru: postUpdateRequest.hru,
+            allowRead: postUpdateRequest.allowRead,
+        };
+
+        const updatedDoc: IPostAllDetailsPopulatedDocument = await this.PostModel
+            .findOneAndUpdate({_id: postUpdateRequest._id}, postData, {
+                'new': true,
+                upsert: false,
+                runValidators: true
+            })
+            .lean(true)
+            .populate('attachments titleImg')
+            .exec();
+
+        return PostService.postAllDetails2Plain(updatedDoc);
     }
 
     updateStatus(postUpdateStatusRequest: IPostUpdateStatusRequest, options: IWithUserContext): Promise<boolean> {
+
         return undefined;
     }
 
