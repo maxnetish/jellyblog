@@ -267,7 +267,11 @@ export class PostService implements IPostService {
             throw {status: 404};
         }
 
-        const postPermissions = PostService.permissionsForUser(foundDoc, options.user);
+        const postPermissions = PostService.permissionsForUser({
+            author: foundDoc.author,
+            allowRead: foundDoc.allowRead,
+            status: foundDoc.status
+        }, options.user);
         if (!postPermissions.allowView) {
             // current user cannot read post - assert 401 status
             throw {status: 401};
@@ -401,7 +405,11 @@ export class PostService implements IPostService {
             throw {status: 404};
         }
 
-        if (!PostService.permissionsForUser(foundDoc, options.user).allowView) {
+        if (!PostService.permissionsForUser({
+            status: foundDoc.status,
+            allowRead: foundDoc.allowRead,
+            author: foundDoc.author
+        }, options.user).allowView) {
             // Not enough authority to view
             throw {status: 401};
         }
@@ -439,7 +447,7 @@ export class PostService implements IPostService {
 
         const resultOfRemovingFiles = await Promise.all(
             removedPostDocs.map(removedPost => {
-                if(removedPost && removedPost.attachments && removedPost.attachments.length) {
+                if (removedPost && removedPost.attachments && removedPost.attachments.length) {
                     return this.fileService.remove({id: removedPost.attachments}, options);
                 }
                 return 0;
@@ -466,17 +474,17 @@ export class PostService implements IPostService {
         }
 
         // check permissions
-        if(!PostService.permissionsForUser(existentDoc, options.user).allowUpdate) {
+        if (!PostService.permissionsForUser(existentDoc, options.user).allowUpdate) {
             throw {status: 401};
         }
 
         // update attachments
         let removeAttachmentsResult;
-        if(Array.isArray(existentDoc.attachments)) {
+        if (Array.isArray(existentDoc.attachments)) {
             const fileIdsToRemove = existentDoc.attachments.filter(existentFileId => {
                 return !postUpdateRequest.attachments.includes(existentFileId);
             });
-            if(fileIdsToRemove.length) {
+            if (fileIdsToRemove.length) {
                 removeAttachmentsResult = await this.fileService.remove({id: fileIdsToRemove}, options);
             }
         }
@@ -507,9 +515,27 @@ export class PostService implements IPostService {
         return PostService.postAllDetails2Plain(updatedDoc);
     }
 
-    updateStatus(postUpdateStatusRequest: IPostUpdateStatusRequest, options: IWithUserContext): Promise<boolean> {
+    async updateStatus(postUpdateStatusRequest: IPostUpdateStatusRequest, options: IWithUserContext): Promise<boolean> {
+        options.user.assertAuth([{role: ['admin']}]);
 
-        return undefined;
+        const ids = Array.isArray(postUpdateStatusRequest.id) ? postUpdateStatusRequest.id : [postUpdateStatusRequest.id];
+        const res = await this.PostModel
+            .find({_id: {$in: ids}})
+            .cursor()
+            .eachAsync(doc => {
+                if (PostService.permissionsForUser({
+                    allowRead: doc.allowRead,
+                    status: doc.status,
+                    author: doc.author
+                }, options.user).allowUpdate && doc.status !== postUpdateStatusRequest.status) {
+                    doc.status = postUpdateStatusRequest.status;
+                    doc.pubDate = postUpdateStatusRequest.status === 'PUB' ? new Date() : null;
+                    return doc.save();
+                }
+                return false;
+            });
+        // TODO check res type
+        return true;
     }
 
 }
