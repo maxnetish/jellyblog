@@ -52,6 +52,9 @@ export class AppBuilder implements IAppBuilder {
                 // if (status === 500) {
                 //     debugger;
                 // }
+                // if (err.isJoi) {
+                //     debugger;
+                // }
                 if (err && err.message === 'FileNotFound') {
                     status = 404;
                 }
@@ -117,6 +120,8 @@ export class AppBuilder implements IAppBuilder {
         try {
             // use new createIndex instead of ensureIndex
             mongoose.set('useCreateIndex', true);
+            // https://mongoosejs.com/docs/deprecations.html#-findandmodify-
+            mongoose.set('useFindAndModify', false);
             const connectionResult = await mongoose.connect(dbConfig.connectionUri, dbConfig.connectionOptions);
             console.info(`Connected to database ${dbConfig.connectionUri}`);
             // TODO rewrite migrations

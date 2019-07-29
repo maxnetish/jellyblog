@@ -9,7 +9,7 @@ import {TYPES} from "../../ioc/types";
 import {postCreateRequestSchema} from "../dto/post-create-request.schema";
 import {IUserAuthorizeMiddlewareFactory} from "../../auth/api/user-authorize-middleware-factory";
 import {IPostCreateRequest} from "../dto/post-create-request";
-import {IUserContext} from "../../auth/api/user-context";
+// import {IUserContext} from "../../auth/api/user-context";
 import {IPostUpdateRequest} from "../dto/post-update-request";
 import {postUpdateRequestSchema} from "../dto/post-update-request.schema";
 import {postExportRequestSchema} from "../dto/post-export-request.schema";
@@ -38,79 +38,81 @@ export class PostController implements IRouteController {
 
     private createPost: Middleware = async ctx => {
         const postCreateRequest: IPostCreateRequest = ctx.request.body;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const postDetails = await this.postService.createPost(postCreateRequest, {user: userContext});
         ctx.body = postDetails;
     };
 
     private updatePost: Middleware = async ctx => {
         const postUpdateRequest: IPostUpdateRequest = ctx.request.body;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const postDetails = await this.postService.updatePost(postUpdateRequest, {user: userContext});
         ctx.body = postDetails;
     };
 
     private exportPosts: Middleware = async ctx => {
         const postExportRequest: PostExportRequest = ctx.request.body;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = await this.postService.exportPosts(postExportRequest, {user: userContext});
         ctx.body = result;
     };
 
     private getPost: Middleware = async ctx => {
         const postGetRequest: IPostGetByObjectidRequest = ctx.state.query;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = await this.postService.getPost(postGetRequest, {user: userContext});
         ctx.body = result;
     };
 
     private importPosts: Middleware = async ctx => {
         const postsImportReqeust: IPostGetManyRequest = ctx.state.query;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = this.postService.importPosts(postsImportReqeust, {user: userContext});
         ctx.body = result;
     };
 
     private findPosts: Middleware = async ctx => {
         const postFindCriteria: IPostFindCriteria = ctx.state.query;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = await this.postService.find(postFindCriteria, {user: userContext});
         ctx.body = result;
     };
 
     private getPostForPublic: Middleware = async ctx => {
         const postGetCriteria: IPostGetRequest = ctx.state.query;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = await this.postService.publicGet(postGetCriteria, {user: userContext});
         ctx.body = result;
     };
 
     private updateStatus: Middleware = async ctx => {
         const postUpdateStatusRequest: IPostUpdateStatusRequest = ctx.request.body;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = await this.postService.updateStatus(postUpdateStatusRequest, {user: userContext});
         ctx.body = result;
     };
 
     private findPostsForPublic: Middleware = async ctx => {
         const postPublicFindCriteria: IPostPublicFindCriteria = ctx.state.query;
-        const userContext: IUserContext = ctx.state.user;
+        const userContext = ctx.state.user;
         const result = await this.postService.publicFind(postPublicFindCriteria, {user: userContext});
         ctx.body = result;
     };
 
     private remove: Middleware = async ctx => {
         const postGetManyRequest: IPostGetManyRequest = ctx.request.body;
-        const userConetxt: IUserContext = ctx.state.user;
+        const userConetxt = ctx.state.user;
         const result = await this.postService.remove(postGetManyRequest, {user: userConetxt});
         ctx.body = result;
     };
 
     constructor(
-        // add IPostService inject
+        @inject(TYPES.PostService) postService: IPostService,
         @inject(TYPES.JoiValidationMiddlewareFactory) joiValidateMiddlewareFactory: IJoiValidationMiddlewareFactory,
         @inject(TYPES.UserAuthorizeMiddlewareFactory) userAuthorizeMiddlewareFactory: IUserAuthorizeMiddlewareFactory,
     ) {
+        this.postService = postService;
+
         this.router.post(
             routesMap["post-get-create-update-remove"],
             joiValidateMiddlewareFactory({body: postCreateRequestSchema}),

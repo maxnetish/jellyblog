@@ -1,6 +1,6 @@
 import {Server} from "http";
 import {promiseForAppRun} from "../server";
-import {tearDownHttpAndMongoose, textToHash} from "./utils";
+import {addTestUsers, clearTestUsers, tearDownHttpAndMongoose, textToHash} from "./utils";
 import request from 'supertest';
 import cookie from 'cookie';
 import {IUserDocument} from "../auth/api/user-document";
@@ -9,7 +9,6 @@ import {container} from "../ioc/container";
 import {TYPES} from "../ioc/types";
 
 let server: Server;
-let UserModel: Model<IUserDocument>;
 
 // accounts for testing
 const adminUser = {
@@ -31,22 +30,11 @@ beforeAll(async () => {
         debugger;
         console.log('Could not start http server: ', err);
     }
-    UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
-
-    await UserModel.create([
-        Object.assign({}, adminUser, {password: textToHash(adminUser.password)}),
-        Object.assign({}, readerUser, {password: textToHash(readerUser.password)}),
-    ]);
+    await addTestUsers();
 });
 
 afterAll(async () => {
-    await UserModel.deleteMany({
-        $or: [
-            {username: adminUser.username},
-            {username: readerUser.username}
-        ]
-    }).exec();
-
+    await clearTestUsers();
     await tearDownHttpAndMongoose(server);
 });
 
@@ -187,6 +175,7 @@ describe('api/echo', () => {
 describe('api/user', () => {
 
     beforeAll(async () => {
+        const UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
         await UserModel.deleteMany({
             $or: [
                 {username: 'addeduser'},
@@ -196,6 +185,7 @@ describe('api/user', () => {
     });
 
     afterAll(async () => {
+        const UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
         await UserModel.deleteMany({
             $or: [
                 {username: 'addeduser'},

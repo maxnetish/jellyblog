@@ -18,7 +18,7 @@ import {IPostGetRequest} from "../dto/post-get-request";
 export interface IPostService {
     createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
     updatePost(postUpdateRequest: IPostUpdateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
-    exportPosts(postExportRequest: PostExportRequest, options: IWithUserContext): Promise<any>;
+    exportPosts(postExportRequest: PostExportRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated[]>;
     getPost(postGetRequest: IPostGetByObjectidRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
     importPosts(postImportRequest: IPostGetManyRequest, options: IWithUserContext): Promise<IPostPermanent[]>;
     find(postFindCriteria: IPostFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostFindResultItem>>;

@@ -1,16 +1,17 @@
 import {Server} from "http";
-import {Model} from "mongoose";
-import {IUserDocument} from "../../auth/api/user-document";
 import {promiseForAppRun} from "../../server";
-import {container} from "../../ioc/container";
-import {TYPES} from "../../ioc/types";
-import {adminUser, readerUser, tearDownHttpAndMongoose, textToHash} from "../../test/utils";
+import {
+    addTestUsers,
+    adminUser,
+    clearTestUsers,
+    readerUser,
+    tearDownHttpAndMongoose,
+} from "../../test/utils";
 import {routesMap} from './koa-routes-map';
 import request from 'supertest';
 import {routesMap as tokenRoutesMap} from "../../token/koa-routes/token-routes-map";
 
 let server: Server;
-let UserModel: Model<IUserDocument>;
 
 beforeAll(async () => {
     try {
@@ -19,22 +20,12 @@ beforeAll(async () => {
         debugger;
         console.log('Could not start http server: ', err);
     }
-    UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
 
-    await UserModel.create([
-        Object.assign({}, adminUser, {password: textToHash(adminUser.password)}),
-        Object.assign({}, readerUser, {password: textToHash(readerUser.password)}),
-    ]);
+    await addTestUsers();
 });
 
 afterAll(async () => {
-    await UserModel.deleteMany({
-        $or: [
-            {username: adminUser.username},
-            {username: readerUser.username}
-        ]
-    }).exec();
-
+    await clearTestUsers();
     await tearDownHttpAndMongoose(server);
 });
 

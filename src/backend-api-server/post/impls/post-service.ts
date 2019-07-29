@@ -142,6 +142,7 @@ export class PostService implements IPostService {
     }
 
     async createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated> {
+
         options.user.assertAuth([{role: ['admin']}]);
 
         const currentDate = new Date();
@@ -167,10 +168,11 @@ export class PostService implements IPostService {
         return PostService.postAllDetails2Plain(enrichedNewDoc);
     }
 
-    async exportPosts(postExportRequest: IPostPermanent[], options: IWithUserContext): Promise<any> {
+    async exportPosts(postExportRequest: IPostPermanent[], options: IWithUserContext): Promise<IPostAllDetailsPopulated[]> {
         options.user.assertAuth([{role: ['admin']}]);
         const newDocsData = postExportRequest.map(pp => {
             return {
+                _id: pp._id,
                 status: pp.status,
                 allowRead: pp.allowRead,
                 createDate: pp.createDate,
@@ -188,7 +190,7 @@ export class PostService implements IPostService {
             };
         });
         const insertResult = await this.PostModel.insertMany(newDocsData);
-        return insertResult;
+        return insertResult.map(PostService.postAllDetails2Plain);
     }
 
     async find(postFindCriteria: IPostFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostFindResultItem>> {
@@ -362,22 +364,24 @@ export class PostService implements IPostService {
             page,
             itemsPerPage: limit,
             hasMore: foundDocs.length > limit,
-            items: foundDocs.map((p: IPostAllDetailsPopulated): IPostPublicBrief => {
-                return {
-                    _id: p._id,
-                    createDate: p.createDate,
-                    pubDate: p.pubDate,
-                    tags: p.tags,
-                    title: p.title,
-                    titleImg: p.titleImg,
-                    updateDate: p.updateDate,
-                    url: p.url,
-                    preview: p.contentType === 'MD' ?
-                        this.markdownConverter.markdown2Html(p.brief || p.content) :
-                        (p.brief || p.content),
-                    useCut: !!p.brief
-                };
-            })
+            items: foundDocs
+                .slice(0, limit)
+                .map((p: IPostAllDetailsPopulated): IPostPublicBrief => {
+                    return {
+                        _id: p._id,
+                        createDate: p.createDate,
+                        pubDate: p.pubDate,
+                        tags: p.tags,
+                        title: p.title,
+                        titleImg: p.titleImg,
+                        updateDate: p.updateDate,
+                        url: p.url,
+                        preview: p.contentType === 'MD' ?
+                            this.markdownConverter.markdown2Html(p.brief || p.content) :
+                            (p.brief || p.content),
+                        useCut: !!p.brief
+                    };
+                })
         };
     }
 
