@@ -1,9 +1,9 @@
 import Joi from '@hapi/joi';
 
 export const postStatusSchema = Joi.string()
-    .allow(
+    .valid(
         'DRAFT',
         'PUB',
-    )
-    .empty('')
-    .default('DRAFT');
+    );
+// .empty('');
+// .default('DRAFT');

@@ -7,5 +7,7 @@ export const postGetManyRequestSchema = Joi.object({
         .items(mongoObjectIdSchema)
         .max(64)
         .min(1)
+        .unique()
         .single(true)
+        .required()
 });

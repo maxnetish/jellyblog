@@ -93,7 +93,7 @@ export class AppBuilder implements IAppBuilder {
     }
 
     private buildRouter(): Router {
-        const routesMapPath = process.env.ROUTE_API_PATH || 'api';
+        const routesMapPath = process.env.ROUTE_API_PATH || '/api';
         const apiRouter = new Router();
 
         this.routeControllers.forEach(controller => {

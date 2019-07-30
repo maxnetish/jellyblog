@@ -71,3 +71,5 @@ export async function clearTestPosts(ids: string[]) {
     const PostModel = container.get<Model<IPostAllDetailsPopulatedDocument>>(TYPES.ModelPost);
     await PostModel.deleteMany({_id: {$in: ids}}).exec();
 }
+
+export const apiRootPath = process.env.ROUTE_API_PATH || '/api';

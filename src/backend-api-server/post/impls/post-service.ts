@@ -299,7 +299,6 @@ export class PostService implements IPostService {
             .limit(64)
             .lean(true)
             .exec();
-
         // foundDocs is not enriched dtos: IPostAllDetails
         return foundDocs.map(PostService.postDetails2PostPermanent);
     }

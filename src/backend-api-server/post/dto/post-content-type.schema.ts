@@ -1,9 +1,9 @@
 import Joi from '@hapi/joi';
 
 export const postContentTypeSchema = Joi.string()
-    .allow(
+    .valid(
         'HTML',
         'MD',
-    )
-    .empty('')
-    .default('HTML');
+    );
+// .empty('')
+// .default('HTML');

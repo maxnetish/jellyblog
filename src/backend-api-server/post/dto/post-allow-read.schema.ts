@@ -1,10 +1,10 @@
 import Joi from '@hapi/joi';
 
 export const postAllowReadSchema = Joi.string()
-    .allow(
+    .valid(
         'FOR_ALL',
         'FOR_REGISTERED',
         'FOR_ME'
-    )
-    .empty('')
-    .default('FOR_ALL');
+    );
+    // .empty('')
+    // .default('FOR_ALL');

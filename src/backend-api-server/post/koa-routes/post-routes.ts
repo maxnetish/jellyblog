@@ -67,7 +67,7 @@ export class PostController implements IRouteController {
     private importPosts: Middleware = async ctx => {
         const postsImportReqeust: IPostGetManyRequest = ctx.state.query;
         const userContext = ctx.state.user;
-        const result = this.postService.importPosts(postsImportReqeust, {user: userContext});
+        const result = await this.postService.importPosts(postsImportReqeust, {user: userContext});
         ctx.body = result;
     };
 
