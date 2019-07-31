@@ -49,4 +49,5 @@ export const promiseForAppRun: Promise<Server> = runServer();
  ROUTE_API_PATH=api
  JB_GRIDFS_BASEURL=/file
  JB_POST_BASEURL=/post
+ JB_TAG_BASEURL=/tag
  */

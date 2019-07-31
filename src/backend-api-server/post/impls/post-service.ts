@@ -24,6 +24,9 @@ import {IMarkdownConverter} from "../../utils/api/markdown-converter";
 import {IPostGetRequest} from "../dto/post-get-request";
 import {IFileService} from "../../filestore/api/file-service";
 import {IAsyncUtils} from "../../utils/api/async-utils";
+import {ITagListRequest} from "../dto/tag-list-request";
+import {ITagInfo} from "../dto/tag-info";
+import {IAggregateCacheService} from "../../utils/api/aggregate-cache-service";
 
 @injectable()
 export class PostService implements IPostService {
@@ -42,6 +45,9 @@ export class PostService implements IPostService {
 
     @inject(TYPES.AsyncUtils)
     private asyncUtils: IAsyncUtils;
+
+    @inject(TYPES.AggregateCacheService)
+    private aggregateCacheService: IAggregateCacheService;
 
     private static postAllDetails2Plain(doc: IPostAllDetailsPopulatedDocument): IPostAllDetailsPopulated {
         return {
@@ -546,6 +552,64 @@ export class PostService implements IPostService {
             });
         // TODO check res type
         return true;
+    }
+
+    async getTags(tagRequest: ITagListRequest, options: IWithUserContext): Promise<ITagInfo[]> {
+
+        if (tagRequest.status.includes('DRAFT') && !options.user.authenticated) {
+            // tags of draft posts only for not anonym users
+            throw {status: 401};
+        }
+
+        return this.aggregateCacheService.applyCaching({
+            key: 'TAGS',
+            ttl: 3600000,
+            aggregateFn: async (tagRequest, options) => {
+                // any user can, but results depends on user context
+                // use aggregates, it much more speedy than mapReduce
+                const tagBaseUrl = process.env.JB_TAG_BASEURL || '/tag';
+
+                const matchOptions: any = {
+                    status: {$in: tagRequest.status}
+                };
+
+                if (options.user.authenticated) {
+                    matchOptions.$or = [
+                        {allowRead: 'FOR_ALL'},
+                        {allowRead: 'FOR_REGISTERED'},
+                        {allowRead: 'FOR_ME', author: options.user.username}
+                    ]
+                } else {
+                    matchOptions.allowRead = 'FOR_ALL';
+                }
+
+                const resultWithoutUrl = await this.PostModel.aggregate([
+                    // find docs corrsponding to matchOptions
+                    {$match: matchOptions},
+                    // get only _id and tags
+                    {$project: {_id: 0, tags: 1}},
+                    // unwind array of tags: for each single tag in tag array get single doc
+                    {$unwind: '$tags'},
+                    // remap: to doc like {tag: 'some_tag'}
+                    {$project: {tag: '$tags'}},
+                    // group by tag and count each inclusion
+                    {$group: {_id: '$tag', count: {$sum: 1}}},
+                    // remap to {tag, count}
+                    {$project: {_id: 0, tag: '$_id', count: 1}},
+                    // and sort by tag alphabetically
+                    {$sort: {tag: 1}}
+                ])
+                    .allowDiskUse(true)
+                    .exec();
+
+                const result = resultWithoutUrl.map((ti: ITagInfo) => {
+                    ti.url = `${tagBaseUrl}/${encodeURIComponent(ti.tag)}`;
+                    return ti;
+                });
+
+                return result;
+            }
+        })(tagRequest, options);
     }
 
 }

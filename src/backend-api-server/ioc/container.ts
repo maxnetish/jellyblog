@@ -54,6 +54,10 @@ import {IPostService} from "../post/api/post-service";
 import {PostService} from "../post/impls/post-service";
 import {IAsyncUtils} from "../utils/api/async-utils";
 import {AsyncUtils} from "../utils/impls/async-utils";
+import {IAggregateCacheRecordDocument} from "../utils/dto/aggregate-cache-record-document";
+import {AggregateCacheModel} from "../utils/impls/aggregate-cache-model";
+import {IAggregateCacheService} from "../utils/api/aggregate-cache-service";
+import {AggregateCacheService} from "../utils/impls/aggregate-cache-service";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -73,6 +77,7 @@ container.bind<IOptionsService>(TYPES.OptionsService).to(OptionsService);
 container.bind<IMarkdownConverter>(TYPES.MarkdownConverter).to(ShowdownConverter);
 container.bind<IPostService>(TYPES.PostService).to(PostService);
 container.bind<IAsyncUtils>(TYPES.AsyncUtils).to(AsyncUtils);
+container.bind<IAggregateCacheService>(TYPES.AggregateCacheService).to(AggregateCacheService);
 
 // objects with behavior
 container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);
@@ -85,6 +90,7 @@ container.bind<Model<IFileMulterGridFsDocument>>(TYPES.ModelFile).toConstantValu
 container.bind<Model<any>>(TYPES.ModelFileData).toConstantValue(FileDataModel);
 container.bind<Model<IOptionsDocument>>(TYPES.ModelOptions).toConstantValue(OptionsModel);
 container.bind<Model<IPostAllDetailsPopulatedDocument>>(TYPES.ModelPost).toConstantValue(PostModel);
+container.bind<Model<IAggregateCacheRecordDocument>>(TYPES.ModelAggregateCache).toConstantValue(AggregateCacheModel);
 
 // middleware
 container.bind<IAuthenticatedUserFromJwtResolver>(TYPES.AuthMiddleware).to(AuthenticatedUserFromJwtResolver);

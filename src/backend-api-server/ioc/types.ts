@@ -30,4 +30,6 @@ export const TYPES = {
     MarkdownConverter: Symbol('markdownConverter'),
     PostService: Symbol('postService'),
     AsyncUtils: Symbol('asyncUtils'),
+    ModelAggregateCache: Symbol('modelAggregateCache'),
+    AggregateCacheService: Symbol('aggregateCacheService'),
 };

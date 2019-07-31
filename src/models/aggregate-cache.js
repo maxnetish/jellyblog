@@ -22,7 +22,8 @@ let aggregateCacheSchema = new mongoose.Schema({
 });
 
 aggregateCacheSchema.static({
-    applyCache: function ({key, ttl = 86400000, aggregateFn} = {}) {
+    applyCache: function ({key, ttl =
+                              , aggregateFn} = {}) {
         let selfModel = this;
 
         return function aggregateFnWithCache(...args) {

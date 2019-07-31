@@ -14,6 +14,8 @@ import {IPostUpdateStatusRequest} from "../dto/post-update-status-request";
 import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
 import {IPostPublicBrief} from "../dto/post-public-brief";
 import {IPostGetRequest} from "../dto/post-get-request";
+import {ITagListRequest} from "../dto/tag-list-request";
+import {ITagInfo} from "../dto/tag-info";
 
 export interface IPostService {
     createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
@@ -26,4 +28,5 @@ export interface IPostService {
     updateStatus(postUpdateStatusRequest: IPostUpdateStatusRequest, options: IWithUserContext): Promise<boolean>;
     publicFind(postPublicFindCriteria: IPostPublicFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostPublicBrief>>;
     remove(postGetManyRequest: IPostGetManyRequest, options: IWithUserContext): Promise<boolean>;
+    getTags(tagRequest: ITagListRequest, options: IWithUserContext): Promise<ITagInfo[]>;
 }
