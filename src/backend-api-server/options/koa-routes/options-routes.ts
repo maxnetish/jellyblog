@@ -8,6 +8,8 @@ import {TYPES} from "../../ioc/types";
 import {IJoiValidationMiddlewareFactory} from "../../utils/api/joi-validation-middleware";
 import {IUserAuthorizeMiddlewareFactory} from "../../auth/api/user-authorize-middleware-factory";
 import {optionsRobotsTxtSchema} from "../dto/options-robots-txt.schema";
+import {ShowdownOptions} from "showdown";
+import {optionsShowdownSchema} from "../dto/options-showdown.schema";
 
 @injectable()
 export class OptionsController implements IRouteController {
@@ -15,7 +17,6 @@ export class OptionsController implements IRouteController {
         prefix: routesMap.prefix
     });
 
-    // TODO add implementation
     private optionsService: IOptionsService;
 
     private getRobotsTxt: Middleware = async ctx => {
@@ -41,6 +42,18 @@ export class OptionsController implements IRouteController {
         ctx.body = result;
     };
 
+    private getShowdownOptions: Middleware = async ctx => {
+        const showdownOptions = await this.optionsService.getShowdownOptions();
+        ctx.body = showdownOptions
+    };
+
+    private updateShowdownOptions: Middleware = async ctx => {
+        const userContext = ctx.state.user;
+        const showdownOptions: ShowdownOptions = ctx.request.body;
+        const result = await this.optionsService.updateShowdownOptions(showdownOptions, {user: userContext});
+
+    };
+
     constructor(
         @inject(TYPES.OptionsService) optionsService: IOptionsService,
         @inject(TYPES.JoiValidationMiddlewareFactory) joiValidationMiddlewareFactory: IJoiValidationMiddlewareFactory,
@@ -61,6 +74,17 @@ export class OptionsController implements IRouteController {
             joiValidationMiddlewareFactory({body: optionsRobotsTxtSchema}),
             userAuthorizeMiddleware([{role: ['admin']}]),
             this.createOrUpdateRobotsTxt,
+        );
+        this.router.get(
+            routesMap["showdown-options"],
+            // TODO write validator if body and query should be empty
+            this.getShowdownOptions,
+        );
+        this.router.put(
+            routesMap["showdown-options"],
+            joiValidationMiddlewareFactory({body: optionsShowdownSchema}),
+            userAuthorizeMiddleware([{role: ['admin']}]),
+            this.updateShowdownOptions,
         );
     }
 

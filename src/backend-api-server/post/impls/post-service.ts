@@ -23,6 +23,7 @@ import {IPostAllDetails} from "../dto/post-all-details";
 import {IMarkdownConverter} from "../../utils/api/markdown-converter";
 import {IPostGetRequest} from "../dto/post-get-request";
 import {IFileService} from "../../filestore/api/file-service";
+import {IAsyncUtils} from "../../utils/api/async-utils";
 
 @injectable()
 export class PostService implements IPostService {
@@ -38,6 +39,9 @@ export class PostService implements IPostService {
 
     @inject(TYPES.FileService)
     private fileService: IFileService;
+
+    @inject(TYPES.AsyncUtils)
+    private asyncUtils: IAsyncUtils;
 
     private static postAllDetails2Plain(doc: IPostAllDetailsPopulatedDocument): IPostAllDetailsPopulated {
         return {
@@ -351,7 +355,7 @@ export class PostService implements IPostService {
 
         const projection = '_id contentType createDate updateDate pubDate titleImg title brief content tags hru';
 
-        const foundDocs = await this.PostModel
+        let foundDocs = await this.PostModel
             .find(conditions, projection)
             .sort('-createDate')
             .skip(skip)
@@ -359,36 +363,39 @@ export class PostService implements IPostService {
             .populate('titleImg')
             .exec();
 
+        const hasMore = foundDocs.length > limit;
+
+        foundDocs = foundDocs.slice(0, limit);
+
+        const items = await this.asyncUtils.asyncMap(foundDocs, async (p): Promise<IPostPublicBrief> => {
+            const preview = p.contentType === 'MD' ?
+                await this.markdownConverter.markdown2Html(p.brief || p.content) :
+                (p.brief || p.content);
+            return {
+                _id: p._id,
+                createDate: p.createDate,
+                pubDate: p.pubDate,
+                tags: p.tags,
+                title: p.title,
+                titleImg: p.titleImg,
+                updateDate: p.updateDate,
+                url: p.url,
+                preview,
+                useCut: !!p.brief
+            }
+        });
+
         return {
             page,
             itemsPerPage: limit,
-            hasMore: foundDocs.length > limit,
-            items: foundDocs
-                .slice(0, limit)
-                .map((p: IPostAllDetailsPopulated): IPostPublicBrief => {
-                    return {
-                        _id: p._id,
-                        createDate: p.createDate,
-                        pubDate: p.pubDate,
-                        tags: p.tags,
-                        title: p.title,
-                        titleImg: p.titleImg,
-                        updateDate: p.updateDate,
-                        url: p.url,
-                        preview: p.contentType === 'MD' ?
-                            this.markdownConverter.markdown2Html(p.brief || p.content) :
-                            (p.brief || p.content),
-                        useCut: !!p.brief
-                    };
-                })
+            hasMore,
+            items,
         };
     }
 
     async publicGet(postGetRequest: IPostGetRequest, options: IWithUserContext): Promise<IPostPublicDetails> {
         // Allow for all users, additional permissioins in entity
-
         const conditions: any = {};
-
         const objectId = PostService.tryValidateObjectId(postGetRequest.id);
 
         if (objectId) {
@@ -421,7 +428,7 @@ export class PostService implements IPostService {
             createDate: foundDoc.createDate,
             _id: foundDoc._id,
             content: foundDoc.contentType === 'MD' ?
-                this.markdownConverter.markdown2Html(foundDoc.content) :
+                await this.markdownConverter.markdown2Html(foundDoc.content) :
                 foundDoc.content,
             pubDate: foundDoc.pubDate,
             tags: foundDoc.tags,

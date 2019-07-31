@@ -52,6 +52,8 @@ import {IMarkdownConverter} from "../utils/api/markdown-converter";
 import {ShowdownConverter} from "../utils/impls/showdown-converter";
 import {IPostService} from "../post/api/post-service";
 import {PostService} from "../post/impls/post-service";
+import {IAsyncUtils} from "../utils/api/async-utils";
+import {AsyncUtils} from "../utils/impls/async-utils";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -70,6 +72,7 @@ container.bind<IPaginationUtils>(TYPES.PaginationUtils).to(PaginationUtils);
 container.bind<IOptionsService>(TYPES.OptionsService).to(OptionsService);
 container.bind<IMarkdownConverter>(TYPES.MarkdownConverter).to(ShowdownConverter);
 container.bind<IPostService>(TYPES.PostService).to(PostService);
+container.bind<IAsyncUtils>(TYPES.AsyncUtils).to(AsyncUtils);
 
 // objects with behavior
 container.bind<IUserContextFactory>(TYPES.UserContextFactory).toFunction(userContextFactory);

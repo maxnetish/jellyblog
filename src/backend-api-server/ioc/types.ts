@@ -29,4 +29,5 @@ export const TYPES = {
     PostController: Symbol('postController'),
     MarkdownConverter: Symbol('markdownConverter'),
     PostService: Symbol('postService'),
+    AsyncUtils: Symbol('asyncUtils'),
 };

@@ -1,3 +1,4 @@
 export interface IMarkdownConverter {
-    markdown2Html(markdown: string): string
+    markdown2Html(markdown: string): Promise<string>;
+    reset(): void;
 }
