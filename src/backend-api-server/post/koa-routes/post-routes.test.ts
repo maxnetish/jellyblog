@@ -22,7 +22,6 @@ beforeAll(async () => {
     try {
         server = await promiseForAppRun;
     } catch (err) {
-        debugger;
         console.log('Could not start http server: ', err);
     }
     await addTestUsers();
@@ -1267,6 +1266,16 @@ describe(`Routes ${apiRootPath}${routesMap.prefix}`, () => {
                 });
             expect(response.status).toEqual(200);
             expect(response.body).toBeTruthy();
+        });
+    });
+
+    describe(`GET ${apiRootPath}${routesMap.prefix}${routesMap.tags}`, () => {
+        it('Should produce ITagInfo list', async () => {
+            let response = await request(server)
+                .get(`${apiRootPath}${routesMap.prefix}${routesMap.tags}`)
+                .query({status: 'PUB'});
+            expect(response.status).toEqual(200);
+            expect(response.body).toHaveProperty('length');
         });
     });
 });

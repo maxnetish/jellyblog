@@ -7,4 +7,5 @@ export const routesMap = {
     'public-get': '/pget',
     'update-status': '/status',
     'public-find': '/pfind',
+    'tags': '/tags'
 };

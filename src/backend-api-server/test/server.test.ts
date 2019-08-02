@@ -8,7 +8,6 @@ beforeAll(async () => {
     try {
         server = await promiseForAppRun;
     } catch (err) {
-        debugger;
         console.log('Could not start http server: ', err);
     }
     await addTestUsers();

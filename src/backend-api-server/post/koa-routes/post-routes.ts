@@ -26,6 +26,8 @@ import {IPostPublicFindCriteria} from "../dto/post-public-find-criteria";
 import {postPublicFindCriteriaSchema} from "../dto/post-public-find-crieria.schema";
 import {postGetRequestSchema} from "../dto/post-get-request.schema";
 import {IPostGetRequest} from "../dto/post-get-request";
+import {ITagListRequest} from "../dto/tag-list-request";
+import {tagListRequestSchema} from "../dto/tag-list-request.schema";
 
 @injectable()
 export class PostController implements IRouteController {
@@ -106,6 +108,13 @@ export class PostController implements IRouteController {
         ctx.body = result;
     };
 
+    private getTags: Middleware = async ctx => {
+        const tagListRequest: ITagListRequest = ctx.state.query;
+        const userContext = ctx.state.user;
+        const result = await this.postService.getTags(tagListRequest, {user: userContext});
+        ctx.body = result;
+    };
+
     constructor(
         @inject(TYPES.PostService) postService: IPostService,
         @inject(TYPES.JoiValidationMiddlewareFactory) joiValidateMiddlewareFactory: IJoiValidationMiddlewareFactory,
@@ -172,6 +181,12 @@ export class PostController implements IRouteController {
             joiValidateMiddlewareFactory({body: postGetManyRequestSchema}),
             userAuthorizeMiddlewareFactory([{role: ['admin']}]), // additional check will be in service, depends on entity
             this.remove,
+        );
+        this.router.get(
+            routesMap.tags,
+            joiValidateMiddlewareFactory({query: tagListRequestSchema}),
+            // any user
+            this.getTags
         );
     }
 
