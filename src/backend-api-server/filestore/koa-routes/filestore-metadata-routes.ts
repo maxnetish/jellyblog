@@ -1,6 +1,6 @@
 import {IRouteController} from "../../utils/api/route-controller";
 import Router = require('koa-router');
-import {routesMap} from "./filestore-routes-map";
+import {routesMap} from "./filestore-metadata-routes-map";
 import {IFileService} from "../api/file-service";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../ioc/types";
@@ -14,7 +14,7 @@ import {IFileRemoveRequest} from "../dto/file-remove-request";
 import {fileRemoveRequestSchema} from "../dto/file-remove-request.schema";
 
 @injectable()
-export class FileStoreController implements IRouteController {
+export class FileStoreMetadataController implements IRouteController {
 
     private readonly router = new Router({
         prefix: routesMap.prefix

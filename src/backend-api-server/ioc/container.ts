@@ -38,7 +38,7 @@ import {PaginationUtils} from "../utils/impls/pagination-utils";
 import {IFileMulterGridFsDocument} from "../filestore/dto/file-multer-gridfs-document";
 import {FileModel} from "../filestore/impls/file-model";
 import {FileDataModel} from "../filestore/impls/file-data-model";
-import {FileStoreController} from "../filestore/koa-routes/filestore-routes";
+import {FileStoreMetadataController} from "../filestore/koa-routes/filestore-metadata-routes";
 import {IOptionsDocument} from "../options/dto/options-document";
 import {OptionsModel} from "../options/impls/options-model";
 import {IOptionsService} from "../options/api/options-service";
@@ -102,7 +102,7 @@ container.bind<IUserAuthorizeMiddlewareFactory>(TYPES.UserAuthorizeMiddlewareFac
 container.bind<IRouteController>(TYPES.RouteTokenController).to(TokenController);
 container.bind<IRouteController>(TYPES.RouteEchoController).to(EchoController);
 container.bind<IRouteController>(TYPES.RouteUserController).to(UserController);
-container.bind<IRouteController>(TYPES.FilestoreController).to(FileStoreController);
+container.bind<IRouteController>(TYPES.FilestoreController).to(FileStoreMetadataController);
 container.bind<IRouteController>(TYPES.OptionsController).to(OptionsController);
 container.bind<IRouteController>(TYPES.LogController).to(LogController);
 container.bind<IRouteController>(TYPES.PostController).to(PostController);

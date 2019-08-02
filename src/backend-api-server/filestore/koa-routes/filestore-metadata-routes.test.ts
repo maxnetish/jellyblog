@@ -9,7 +9,7 @@ import {
     tearDownHttpAndMongoose
 } from "../../test/utils";
 import request from "supertest";
-import {routesMap} from "./filestore-routes-map";
+import {routesMap} from "./filestore-metadata-routes-map";
 import {routesMap as tokenRoutesMap} from "../../token/koa-routes/token-routes-map";
 
 let server: Server;
