@@ -115,6 +115,11 @@ export class PostController implements IRouteController {
         ctx.body = result;
     };
 
+    private getSitemap: Middleware = async ctx => {
+        const result = await this.postService.generateSitemap();
+        ctx.body = result;
+    };
+
     constructor(
         @inject(TYPES.PostService) postService: IPostService,
         @inject(TYPES.JoiValidationMiddlewareFactory) joiValidateMiddlewareFactory: IJoiValidationMiddlewareFactory,
@@ -188,6 +193,10 @@ export class PostController implements IRouteController {
             // any user
             this.getTags
         );
+        this.router.get(
+            routesMap.sitemap,
+            this.getSitemap,
+        )
     }
 
     getAllowedMethodsMiddleware(options?: Router.IRouterAllowedMethodsOptions): Middleware {

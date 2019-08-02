@@ -50,4 +50,5 @@ export const promiseForAppRun: Promise<Server> = runServer();
  JB_GRIDFS_BASEURL=/file
  JB_POST_BASEURL=/post
  JB_TAG_BASEURL=/tag
+ JB_HOST_URL=http://localhost:3000
  */

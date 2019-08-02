@@ -54,20 +54,20 @@ export class OptionsService implements IOptionsService {
             key: this.optionKeys["ROBOTS.TXT"]
         }).exec();
 
-        if(!found) {
+        if (!found) {
             return {
                 allowRobots: false,
                 content: '',
             };
         }
 
-        if(!this.isRobotsTxtOptions(found)) {
+        if (!this.isRobotsTxtOptions(found)) {
             throw 'Options type mismatch';
         }
 
         return {
-          allowRobots: found.value.allowRobots,
-          content: found.value.content,
+            allowRobots: found.value.allowRobots,
+            content: found.value.content,
         };
     }
 
@@ -76,7 +76,7 @@ export class OptionsService implements IOptionsService {
             key: this.optionKeys["ROBOTS.TXT"]
         }).exec();
 
-        if(optionsDocument && this.isRobotsTxtOptions(optionsDocument) && optionsDocument.value.allowRobots) {
+        if (optionsDocument && this.isRobotsTxtOptions(optionsDocument) && optionsDocument.value.allowRobots) {
             return optionsDocument.value.content;
         }
 
@@ -89,7 +89,7 @@ export class OptionsService implements IOptionsService {
             key: this.optionKeys.showdownOptions
         }).exec();
 
-        if(optionsDocument && this.isShowdownOptions(optionsDocument)) {
+        if (optionsDocument && this.isShowdownOptions(optionsDocument)) {
             return optionsDocument.value.options;
         }
 

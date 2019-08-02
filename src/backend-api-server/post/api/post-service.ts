@@ -16,6 +16,7 @@ import {IPostPublicBrief} from "../dto/post-public-brief";
 import {IPostGetRequest} from "../dto/post-get-request";
 import {ITagListRequest} from "../dto/tag-list-request";
 import {ITagInfo} from "../dto/tag-info";
+import {ISitemap} from "../dto/sitemap";
 
 export interface IPostService {
     createPost(postCreateRequest: IPostCreateRequest, options: IWithUserContext): Promise<IPostAllDetailsPopulated>;
@@ -29,4 +30,5 @@ export interface IPostService {
     publicFind(postPublicFindCriteria: IPostPublicFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IPostPublicBrief>>;
     remove(postGetManyRequest: IPostGetManyRequest, options: IWithUserContext): Promise<boolean>;
     getTags(tagRequest: ITagListRequest, options: IWithUserContext): Promise<ITagInfo[]>;
+    generateSitemap(): Promise<ISitemap>;
 }

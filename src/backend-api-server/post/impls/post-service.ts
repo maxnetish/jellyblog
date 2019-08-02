@@ -27,6 +27,8 @@ import {IAsyncUtils} from "../../utils/api/async-utils";
 import {ITagListRequest} from "../dto/tag-list-request";
 import {ITagInfo} from "../dto/tag-info";
 import {IAggregateCacheService} from "../../utils/api/aggregate-cache-service";
+import {ISitemap} from "../dto/sitemap";
+import {createSitemap, EnumChangefreq, SitemapItemOptions} from 'sitemap';
 
 
 @injectable()
@@ -150,6 +152,33 @@ export class PostService implements IPostService {
 
         const permissions = PostService.permissionsForUser(existentDoc, user);
         return permissions.allowUpdate;
+    }
+
+    private async generateSitemapInternal(): Promise<ISitemap> {
+        const conditions: any = {
+            status: 'PUB',
+            allowRead: 'FOR_ALL'
+        };
+        const projection = 'updateDate hru';
+        const sitemapItems: SitemapItemOptions[] = [];
+
+        await this.PostModel.find(conditions, projection)
+            .cursor()
+            .eachAsync(doc => {
+                sitemapItems.push({
+                    url: doc.url,
+                    changefreq: EnumChangefreq.MONTHLY,
+                    lastmodISO: doc.updateDate.toISOString(),
+                });
+            });
+        const sitemap = createSitemap({
+            cacheTime: 600000,
+            hostname: process.env.JB_HOST_URL || 'http://example.com',
+            urls: sitemapItems
+        });
+        return {
+            content: sitemap.toXML() || null
+        };
     }
 
     private async getAggregatedTagsInternal(tagRequest: ITagListRequest, options: IWithUserContext): Promise<ITagInfo[]> {
@@ -609,10 +638,19 @@ export class PostService implements IPostService {
 
         return this.aggregateCacheService.applyCaching({
             key: 'TAGS',
-            ttl: 3600000,
+            ttl: 3600000, // 1 hour
             aggregateFn: this.getAggregatedTagsInternal,
             thisArg: this,
         })(tagRequest, options);
+    }
+
+    generateSitemap(): Promise<ISitemap> {
+        return this.aggregateCacheService.applyCaching({
+            key: 'SITEMAP',
+            ttl: 86400000,  // 1 day
+            thisArg: this,
+            aggregateFn: this.generateSitemapInternal
+        })();
     }
 
 }

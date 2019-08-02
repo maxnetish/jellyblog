@@ -1271,11 +1271,20 @@ describe(`Routes ${apiRootPath}${routesMap.prefix}`, () => {
 
     describe(`GET ${apiRootPath}${routesMap.prefix}${routesMap.tags}`, () => {
         it('Should produce ITagInfo list', async () => {
-            let response = await request(server)
+            const response = await request(server)
                 .get(`${apiRootPath}${routesMap.prefix}${routesMap.tags}`)
                 .query({status: 'PUB'});
             expect(response.status).toEqual(200);
             expect(response.body).toHaveProperty('length');
+        });
+    });
+
+    describe(`GET ${apiRootPath}${routesMap.prefix}${routesMap.sitemap}`, () => {
+        it('Should produce ISitemap structure', async () => {
+            const response = await request(server)
+                .get(`${apiRootPath}${routesMap.prefix}${routesMap.sitemap}`);
+            expect(response.status).toEqual(200);
+            expect(response.body).toHaveProperty('content');
         });
     });
 });
