@@ -1,7 +1,6 @@
 import httpStatuses from 'statuses';
 import Router = require('koa-router');
 import morgan, {KoaMorgan} from 'koa-morgan';
-import {IncomingMessage} from "http";
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import Application = require("koa");
@@ -22,17 +21,20 @@ export class AppBuilder implements IAppBuilder {
     private queryParseMiddlewareFactory: IQueryParseMiddlewareFactory;
     private authJwtResolver: IAuthenticatedUserFromJwtResolver;
     private routeControllers: IRouteController[];
+    private fsControllers: IRouteController[];
 
     constructor(
         @inject(TYPES.LogService) logService: ILogService,
         @inject(TYPES.QueryParseMiddlewareFactory) queryParseMiddlewareFactory: IQueryParseMiddlewareFactory,
         @inject(TYPES.AuthMiddleware) authJwtResolver: IAuthenticatedUserFromJwtResolver,
         @inject(TYPES.RouteControllers) routeControllers: IRouteController[],
+        @inject(TYPES.RouteGridFsController) fsControllers: IRouteController[],
     ) {
         this.logService = logService;
         this.queryParseMiddlewareFactory = queryParseMiddlewareFactory;
         this.authJwtResolver = authJwtResolver;
         this.routeControllers = routeControllers;
+        this.fsControllers = fsControllers;
     }
 
     // error response - override default response
@@ -92,7 +94,7 @@ export class AppBuilder implements IAppBuilder {
             });
     }
 
-    private buildRouter(): Router {
+    private buildApiRouter(): Router {
         const routesMapPath = process.env.ROUTE_API_PATH || '/api';
         const apiRouter = new Router();
 
@@ -100,6 +102,16 @@ export class AppBuilder implements IAppBuilder {
             apiRouter.use(routesMapPath, controller.getRouteMiddleware(), controller.getAllowedMethodsMiddleware());
         });
         return apiRouter;
+    }
+
+    private buildFsRouter(): Router {
+        const fsRoutesPath = process.env.JB_GRIDFS_BASEURL || '/file';
+        const fsRouter = new Router();
+
+        this.fsControllers.forEach(controller => {
+            fsRouter.use(fsRoutesPath, controller.getRouteMiddleware(), controller.getAllowedMethodsMiddleware());
+        });
+        return fsRouter;
     }
 
     private async initMongooseConnection() {
@@ -196,8 +208,11 @@ export class AppBuilder implements IAppBuilder {
         // add ctx.state.user
         app.use(this.authJwtResolver.middleware);
 
+        // add fs routes
+        app.use(this.buildFsRouter().routes());
+
         // and http routes
-        app.use(this.buildRouter().routes());
+        app.use(this.buildApiRouter().routes());
 
         return app;
     }

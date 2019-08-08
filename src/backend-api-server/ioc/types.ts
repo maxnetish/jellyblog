@@ -32,4 +32,6 @@ export const TYPES = {
     AsyncUtils: Symbol('asyncUtils'),
     ModelAggregateCache: Symbol('modelAggregateCache'),
     AggregateCacheService: Symbol('aggregateCacheService'),
+    RouteGridFsDownloadController: Symbol('routeGridFsDownloadController'),
+    RouteGridFsController: Symbol('routeGridFsController'),
 };

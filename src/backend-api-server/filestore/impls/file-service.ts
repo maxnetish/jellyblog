@@ -1,4 +1,3 @@
-import Joi from '@hapi/joi';
 import {IFileService} from "../api/file-service";
 import {IFileFindCriteria} from "../dto/file-find-criteria";
 import {IResponseWithPagination} from "../../utils/dto/response-with-pagination";
@@ -10,6 +9,10 @@ import {IWithUserContext} from "../../auth/dto/with-user-context";
 import {Model, Types} from "mongoose";
 import {IPaginationUtils} from "../../utils/api/pagination-utils";
 import {IFileMulterGridFsDocument} from "../dto/file-multer-gridfs-document";
+import {IFileServeRequest} from "../dto/file-serve-request";
+import {Stream} from "stream";
+import {GridFSBucket, GridFSBucketOptions, GridFSBucketReadStream} from "mongodb";
+import {StreamRange} from "koa-stream";
 
 @injectable()
 export class FileService implements IFileService {
@@ -22,6 +25,22 @@ export class FileService implements IFileService {
 
     @inject(TYPES.PaginationUtils)
     private paginationUtils: IPaginationUtils;
+
+    private buckets = new Map<any, GridFSBucket>();
+    private getGridfsBucket(bucketName?: string): GridFSBucket {
+        let bucket = this.buckets.get(bucketName);
+
+        if(bucket) {
+            return bucket;
+        }
+
+        bucket = new GridFSBucket(this.FileDataModel.collection.conn.db, {
+            bucketName
+        });
+        this.buckets.set(bucketName, bucket);
+
+        return bucket;
+    }
 
     async find(criteria: IFileFindCriteria, options: IWithUserContext): Promise<IResponseWithPagination<IFileMulterGridfsInfo>> {
         options.user.assertAuth([
@@ -83,6 +102,28 @@ export class FileService implements IFileService {
             }),
         ]);
         return result[0].n || 0;
+    }
+
+    async getStatByName(criteria: IFileServeRequest): Promise<IFileMulterGridfsInfo | null> {
+        const conditions: any = {
+            filename: criteria.filename
+        };
+        const foundDoc = await this.FileModel
+            .findOne(conditions)
+            .lean(true)
+            .exec();
+
+        return foundDoc || null;
+    }
+
+    createStreamByName(criteria: IFileServeRequest, range?: StreamRange): GridFSBucketReadStream {
+        const bucket = this.getGridfsBucket(criteria.bucket);
+        const stream = bucket.openDownloadStreamByName(criteria.filename, range ? {
+            revision: -1,
+            start: range.start,
+            end: range.end,
+        }: undefined);
+        return stream;
     }
 
 }

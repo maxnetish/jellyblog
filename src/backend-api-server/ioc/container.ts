@@ -58,6 +58,7 @@ import {IAggregateCacheRecordDocument} from "../utils/dto/aggregate-cache-record
 import {AggregateCacheModel} from "../utils/impls/aggregate-cache-model";
 import {IAggregateCacheService} from "../utils/api/aggregate-cache-service";
 import {AggregateCacheService} from "../utils/impls/aggregate-cache-service";
+import {FileStoreDownloadController} from "../filestore/koa-routes/filestore-download-routes";
 
 export const container = new Container({
     defaultScope: 'Singleton'
@@ -98,7 +99,7 @@ container.bind<IJoiValidationMiddlewareFactory>(TYPES.JoiValidationMiddlewareFac
 container.bind<IQueryParseMiddlewareFactory>(TYPES.QueryParseMiddlewareFactory).toFunction(queryParseMiddlewareFactory);
 container.bind<IUserAuthorizeMiddlewareFactory>(TYPES.UserAuthorizeMiddlewareFactory).toFunction(userAuthorizeMiddlewareFactory);
 
-// route controller
+// route controller (api)
 container.bind<IRouteController>(TYPES.RouteTokenController).to(TokenController);
 container.bind<IRouteController>(TYPES.RouteEchoController).to(EchoController);
 container.bind<IRouteController>(TYPES.RouteUserController).to(UserController);
@@ -117,3 +118,12 @@ container.bind<IRouteController[]>(TYPES.RouteControllers).toDynamicValue(contex
         context.container.get<IRouteController>(TYPES.PostController),
     ];
 });
+
+// route controller (fs)
+container.bind<IRouteController>(TYPES.RouteGridFsDownloadController).to(FileStoreDownloadController);
+container.bind<IRouteController[]>(TYPES.RouteGridFsController).toDynamicValue(context => {
+    return [
+        context.container.get<IRouteController>(TYPES.RouteGridFsDownloadController),
+    ];
+});
+

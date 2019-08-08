@@ -73,3 +73,4 @@ export async function clearTestPosts(ids: string[]) {
 }
 
 export const apiRootPath = process.env.ROUTE_API_PATH || '/api';
+export const fsRootPath = process.env.JB_GRIDFS_BASEURL || '/file';
