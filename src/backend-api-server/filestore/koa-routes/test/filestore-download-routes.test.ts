@@ -8,6 +8,7 @@ import {runServer} from "../../../server-up";
 import {TYPES} from "../../../ioc/types";
 
 let server: Server;
+// inject mock
 rootContainer.rebind(TYPES.FileService).to(FileServiceMock);
 const {
     fsRootPath,
