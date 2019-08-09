@@ -1,12 +1,6 @@
+import 'reflect-metadata';
 import {Server} from "http";
-import {promiseForAppRun} from "../../server";
-import {
-    addTestUsers,
-    adminUser, apiRootPath, clearTestPosts,
-    clearTestUsers,
-    readerUser,
-    tearDownHttpAndMongoose,
-} from "../../test/utils";
+import {TestUtils} from "../../test/utils";
 import {routesMap} from "./post-routes-map";
 import request from 'supertest';
 import {routesMap as tokenRoutesMap} from "../../token/koa-routes/token-routes-map";
@@ -14,13 +8,22 @@ import {container} from "../../ioc/container";
 import {IPostAllDetailsPopulatedDocument} from "../dto/post-all-details-populated-document";
 import {Model} from "mongoose";
 import {TYPES} from "../../ioc/types";
+import {runServer} from "../../server-up";
 
 let server: Server;
 const postIdsToClearAfterTest: string[] = [];
+const {
+    addTestUsers,
+    adminUser, apiRootPath, clearTestPosts,
+    clearTestUsers,
+    readerUser,
+    tearDownHttpAndMongoose,
+} = new TestUtils(container);
+
 
 beforeAll(async () => {
     try {
-        server = await promiseForAppRun;
+        server = await runServer(container);
     } catch (err) {
         console.log('Could not start http server: ', err);
     }

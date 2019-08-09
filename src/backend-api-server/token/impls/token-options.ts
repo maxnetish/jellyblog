@@ -1,4 +1,4 @@
-import {Secret, SignOptions} from "jsonwebtoken";
+import {SignOptions} from "jsonwebtoken";
 import {injectable} from "inversify";
 import {ITokenOptions} from "../api/token-options";
 

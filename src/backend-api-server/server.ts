@@ -1,32 +1,10 @@
 import 'reflect-metadata';
-import dotenv from 'dotenv';
 import {Server} from "http";
-import {IAppBuilder} from "./app-builder";
 import {container} from "./ioc/container";
-import {TYPES} from "./ioc/types";
-
-async function runServer(): Promise<Server> {
-
-    // read .env file
-    const dotenvResult = dotenv.config();
-    const portToListen = parseInt(process.env.PORT || '3000', 10) || 3000;
-    const appBuilder = container.get<IAppBuilder>(TYPES.AppBuilder);
-    const app = await appBuilder.createApp();
-
-    return new Promise((resolve, reject) => {
-        const httpServer = app.listen(portToListen, () => {
-            console.info(`Started and listening on port ${portToListen}. app.env: ${app.env}`);
-            resolve(httpServer);
-        });
-    })
-        .then(null, err => {
-            console.error('Failed start server.', err);
-            throw err;
-        });
-}
+import {runServer} from "./server-up";
 
 // We have to resolve Server because Server use in integral testing
-export const promiseForAppRun: Promise<Server> = runServer();
+export const promiseForAppRun: Promise<Server> = runServer(container);
 
 /**
  * config parameters moved from json to environment

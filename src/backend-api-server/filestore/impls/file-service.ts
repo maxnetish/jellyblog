@@ -116,7 +116,7 @@ export class FileService implements IFileService {
         return foundDoc || null;
     }
 
-    createStreamByName(criteria: IFileServeRequest, range?: StreamRange): GridFSBucketReadStream {
+    createStreamByName(criteria: IFileServeRequest, range?: StreamRange): Stream {
         const bucket = this.getGridfsBucket(criteria.bucket);
         const stream = bucket.openDownloadStreamByName(criteria.filename, range ? {
             revision: -1,

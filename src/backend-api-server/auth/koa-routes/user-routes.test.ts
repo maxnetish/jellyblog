@@ -1,13 +1,6 @@
+import 'reflect-metadata';
 import {Server} from "http";
-import {promiseForAppRun} from "../../server";
-import {
-    addTestUsers,
-    adminUser,
-    apiRootPath,
-    clearTestUsers,
-    readerUser,
-    tearDownHttpAndMongoose
-} from "../../test/utils";
+import {TestUtils} from "../../test/utils";
 import {routesMap} from "./user-routes-map";
 import {container} from "../../ioc/container";
 import {Model} from "mongoose";
@@ -15,12 +8,21 @@ import {IUserDocument} from "../api/user-document";
 import {TYPES} from "../../ioc/types";
 import request from "supertest";
 import {routesMap as tokenRoutesMap} from "../../token/koa-routes/token-routes-map";
+import {runServer} from "../../server-up";
 
 let server: Server;
+const {
+    addTestUsers,
+    clearTestUsers,
+    tearDownHttpAndMongoose,
+    apiRootPath,
+    readerUser,
+    adminUser
+} = new TestUtils(container);
 
 beforeAll(async () => {
     try {
-        server = await promiseForAppRun;
+        server = await runServer(container);
     } catch (err) {
         console.log('Could not start http server: ', err);
     }

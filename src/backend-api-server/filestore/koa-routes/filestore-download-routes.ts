@@ -16,7 +16,6 @@ export class FileStoreDownloadController implements IRouteController {
     private fileService: IFileService;
 
     private resolveStreamMetadata = async (ctx: Context): Promise<StreamAnyMetadata> => {
-        debugger;
         const {filename} = ctx.params;
         const fileMetadata = await this.fileService.getStatByName({filename});
         if (!fileMetadata) {
@@ -32,12 +31,10 @@ export class FileStoreDownloadController implements IRouteController {
     };
 
     private resolveStream = async (ctx: Context, range?: StreamRange) => {
-        debugger;
         const {filename} = ctx.params;
         const stream = await this.fileService.createStreamByName({filename}, range);
         stream.addListener('error', err => {
-            debugger;
-            console.log(err);
+            ctx.throw('Stream produce exception', 500);
         });
         return stream;
     };

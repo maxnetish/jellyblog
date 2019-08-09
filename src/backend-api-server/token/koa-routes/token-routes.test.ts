@@ -1,15 +1,24 @@
-import {promiseForAppRun} from "../../server";
-import {addTestUsers, apiRootPath, clearTestUsers, readerUser, tearDownHttpAndMongoose} from "../../test/utils";
+import 'reflect-metadata';
+import {TestUtils} from "../../test/utils";
 import {Server} from "http";
 import request from "supertest";
 import cookie from "cookie";
 import {routesMap} from "./token-routes-map";
+import {container} from "../../ioc/container";
+import {runServer} from "../../server-up";
 
 let server: Server;
+const {
+    addTestUsers,
+    apiRootPath,
+    clearTestUsers,
+    readerUser,
+    tearDownHttpAndMongoose
+} = new TestUtils(container);
 
 beforeAll(async () => {
     try {
-        server = await promiseForAppRun;
+        server = await runServer(container);
     } catch (err) {
         console.log('Could not start http server: ', err);
     }

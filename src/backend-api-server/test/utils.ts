@@ -1,76 +1,113 @@
 import mongoose = require('mongoose');
 import {Server} from "http";
 import crypto from "crypto";
-import {container} from "../ioc/container";
 import {Model} from "mongoose";
 import {IUserDocument} from "../auth/api/user-document";
 import {TYPES} from "../ioc/types";
 import {IUserRefreshTokenDocument} from "../token/api/user-refresh-token-document";
 import {IPostAllDetailsPopulatedDocument} from "../post/dto/post-all-details-populated-document";
+import {Readable, ReadableOptions} from "stream";
+import {Container} from "inversify";
 
-async function tearDownHttp(server: Server) {
-    return new Promise((resolve, reject) => {
-        server.close((err) => {
-            if (err) {
-                reject(err);
-            }
-            resolve();
-        });
-    });
-}
+export class TestUtils {
 
-export async function tearDownHttpAndMongoose(server: Server) {
-    await mongoose.connection.close();
-    if (server) {
-        await tearDownHttp(server);
+    private UserModel: Model<IUserDocument>;
+    private UserRefreshTokenModel: Model<IUserRefreshTokenDocument>;
+    private PostModel: Model<IPostAllDetailsPopulatedDocument>;
+
+    constructor(container: Container) {
+        this.UserModel = container.get(TYPES.ModelUser);
+        this.UserRefreshTokenModel = container.get(TYPES.ModelRefreshToken);
+        this.PostModel = container.get(TYPES.ModelPost);
+
+        this.tearDownHttpAndMongoose = this.tearDownHttpAndMongoose.bind(this);
+        this.addTestUsers = this.addTestUsers.bind(this);
+        this.clearTestUsers = this.clearTestUsers.bind(this);
+        this.clearTestPosts = this.clearTestPosts.bind(this);
     }
-    return;
+
+    readonly adminUser = {
+        username: 'testadmin',
+        password: 'testsecret',
+        role: 'admin'
+    };
+
+    readonly readerUser = {
+        username: 'testreader',
+        password: 'testsecret2',
+        role: 'reader'
+    };
+
+    readonly apiRootPath = process.env.ROUTE_API_PATH || '/api';
+    readonly fsRootPath = process.env.JB_GRIDFS_BASEURL || '/file';
+
+    tearDownHttp(server: Server) {
+        return new Promise((resolve, reject) => {
+            server.close((err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+        });
+    };
+
+    async tearDownHttpAndMongoose(server: Server) {
+        await mongoose.connection.close();
+        if (server) {
+            await this.tearDownHttp(server);
+        }
+        return;
+    }
+
+    textToHash(inp: string): string {
+        const hash = crypto.createHash('sha256');
+        hash.update(inp);
+        return hash.digest('hex').toUpperCase();
+    }
+
+    async addTestUsers() {
+        await this.UserModel.create([
+            Object.assign({}, this.adminUser, {password: this.textToHash(this.adminUser.password)}),
+            Object.assign({}, this.readerUser, {password: this.textToHash(this.readerUser.password)}),
+        ]);
+    }
+
+    async clearTestUsers() {
+        await this.UserModel.deleteMany({
+            $or: [
+                {username: this.adminUser.username},
+                {username: this.readerUser.username}
+            ]
+        }).exec();
+        await this.UserRefreshTokenModel.deleteMany({
+            username: {$in: [this.adminUser.username, this.readerUser.username]}
+        }).exec();
+    }
+
+    async clearTestPosts(ids: string[]) {
+        await this.PostModel.deleteMany({_id: {$in: ids}}).exec();
+    }
 }
 
-export function textToHash(inp: string): string {
-    const hash = crypto.createHash('sha256');
-    hash.update(inp);
-    return hash.digest('hex').toUpperCase();
+/**
+ * https://github.com/chrisallenlane/streamify-string
+ */
+export class StreamFromString extends Readable {
+    constructor(str: string, opts?: ReadableOptions) {
+        super(opts);
+        this.str = str;
+    }
+
+    str: string;
+
+    _read(size: number): void {
+        const chunk = this.str.slice(0, size);
+        if (chunk) {
+            this.str = this.str.slice(size);
+            this.push(chunk);
+        } else {
+            this.push(null);
+        }
+    }
 }
-
-export const adminUser = {
-    username: 'testadmin',
-    password: 'testsecret',
-    role: 'admin'
-};
-
-export const readerUser = {
-    username: 'testreader',
-    password: 'testsecret2',
-    role: 'reader'
-};
-
-export async function addTestUsers() {
-    const UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
-    await UserModel.create([
-        Object.assign({}, adminUser, {password: textToHash(adminUser.password)}),
-        Object.assign({}, readerUser, {password: textToHash(readerUser.password)}),
-    ]);
-}
-
-export async function clearTestUsers() {
-    const UserModel = container.get<Model<IUserDocument>>(TYPES.ModelUser);
-    const UserRefreshTokenModel = container.get<Model<IUserRefreshTokenDocument>>(TYPES.ModelRefreshToken);
-    await UserModel.deleteMany({
-        $or: [
-            {username: adminUser.username},
-            {username: readerUser.username}
-        ]
-    }).exec();
-    await UserRefreshTokenModel.deleteMany({
-        username: {$in: [adminUser.username, readerUser.username]}
-    }).exec();
-}
-
-export async function clearTestPosts(ids: string[]) {
-    const PostModel = container.get<Model<IPostAllDetailsPopulatedDocument>>(TYPES.ModelPost);
-    await PostModel.deleteMany({_id: {$in: ids}}).exec();
-}
-
-export const apiRootPath = process.env.ROUTE_API_PATH || '/api';
-export const fsRootPath = process.env.JB_GRIDFS_BASEURL || '/file';

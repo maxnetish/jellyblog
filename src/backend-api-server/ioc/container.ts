@@ -68,7 +68,7 @@ export const container = new Container({
 container.bind<IAppBuilder>(TYPES.AppBuilder).to(AppBuilder);
 
 // services and utils
-container.bind<ITokenOptions>(TYPES.JwtTokenOptions).toConstantValue(new TokenOptions());
+container.bind<ITokenOptions>(TYPES.JwtTokenOptions).to(TokenOptions);
 container.bind<ITokenService>(TYPES.JwtTokenService).to(TokenService);
 container.bind<ILogService>(TYPES.LogService).to(LogService);
 container.bind<IUserService>(TYPES.UserService).to(UserService);
