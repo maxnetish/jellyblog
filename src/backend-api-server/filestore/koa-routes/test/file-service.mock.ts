@@ -54,6 +54,7 @@ export class FileServiceMock implements IFileService {
             fieldname: '',
             destination: '',
             buffer: Buffer.from([]),
+            location: '',
         };
     }
 
