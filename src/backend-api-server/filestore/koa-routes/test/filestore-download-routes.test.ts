@@ -36,7 +36,7 @@ afterAll(async () => {
     });
 });
 
-describe(`${fsRootPath} routes`, () => {
+describe(`${fsRootPath} routes - download`, () => {
     it('GET existing file', async () => {
         const response = await request(server)
             .get(`${fsRootPath}/${existingFileName}`);

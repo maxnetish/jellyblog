@@ -14,7 +14,11 @@
     "moduleResolution": "node",
     "types": ["reflect-metadata", "jest", "node"],
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "typeRoots": [
+      "./../../node_modules/@types",
+      "./types/"
+    ]
   },
   "exclude": [
     "node_modules",

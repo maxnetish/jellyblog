@@ -31,7 +31,7 @@ afterAll(async () => {
     await tearDownHttpAndMongoose(server);
 });
 
-describe(`${apiRootPath}${routesMap.prefix} routes`, () => {
+describe(`${apiRootPath}${routesMap.prefix} routes - metadata`, () => {
     it('GET without authentication should produce state 403', async () => {
         const response = await request(server)
             .get(`${apiRootPath}${routesMap.prefix}`);

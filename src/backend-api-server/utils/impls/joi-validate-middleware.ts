@@ -14,9 +14,9 @@ export const joiValidateMiddlewareFactory: IJoiValidationMiddlewareFactory =
             if (query) {
                 ctx.state.query = Joi.attempt<TQuery>(reqQuery, query, message);
             }
-            if(params) {
+            if (params) {
                 ctx.state.params = Joi.attempt<TParams>(reqParams, params, message);
             }
             await next();
-        }
+        };
     };

@@ -43,7 +43,8 @@ export class FileServiceMock implements IFileService {
             encoding: '',
             filename: existingFileName,
             metadata: {
-                context: ''
+                context: '',
+                // originalName: 'test.txt',
             },
             mimetype: 'application/octet-stream',
             id: '',
