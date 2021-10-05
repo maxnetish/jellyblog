@@ -56,7 +56,7 @@
     "superagent": "^3.8.3",
     "uid-safe": "^2.1.5",
     "url-join": "^1.1.0",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.2",
     "url-search-params": "^0.6.1",
     "vue": "^2.6.10",
     "vue-multiselect": "^2.1.6",
