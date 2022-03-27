@@ -34,17 +34,17 @@ const socials = [
         icon: faFacebook,
         url: 'https://www.facebook.com/maksim.gordeev',
         label: 'В фейсбук заглядываю иногда'
-    },
-    {
-        icon: faGooglePlus,
-        url: 'https://plus.google.com/+MaksimGordeev',
-        label: 'Гуглоплюс на любителя'
-    },
-    {
-        icon: faVk,
-        url: 'https://vk.com/id44057134',
-        label: 'Особо популярно в этой стране'
     }
+//    {
+//        icon: faGooglePlus,
+//        url: 'https://plus.google.com/+MaksimGordeev',
+//        label: 'Гуглоплюс на любителя'
+//    },
+//    {
+//        icon: faVk,
+//        url: 'https://vk.com/id44057134',
+//        label: 'Особо популярно в этой стране'
+//    }
 ];
 
 export default {
