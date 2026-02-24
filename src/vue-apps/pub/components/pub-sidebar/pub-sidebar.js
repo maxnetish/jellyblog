@@ -17,24 +17,24 @@ const socials = [
         label: 'Гитхаб с полезным и безполезным кодом',
         component: GithubDetailsComponent,
         accountId: 'maxnetish'
-    },
-    {
-        icon: faLinkedin,
-        url: 'https://ru.linkedin.com/in/maksim-gordeev-8b44a834',
-        label: 'Social network and online platform for professionals'
-    },
-    {
-        icon: faTwitter,
-        url: 'https://twitter.com/maxnetish',
-        label: 'Твиттер, когда не&#769;кому писа&#769;ть',
-        component: TwitterDetailsComponent,
-        accountId: 'maxnetish'
-    },
-    {
-        icon: faFacebook,
-        url: 'https://www.facebook.com/maksim.gordeev',
-        label: 'В фейсбук заглядываю иногда'
     }
+    //{
+    //    icon: faLinkedin,
+    //    url: 'https://ru.linkedin.com/in/maksim-gordeev-8b44a834',
+    //    label: 'Social network and online platform for professionals'
+    //},
+    //{
+    //    icon: faTwitter,
+    //    url: 'https://twitter.com/maxnetish',
+    //    label: 'Твиттер, когда не&#769;кому писа&#769;ть',
+    //    component: TwitterDetailsComponent,
+    //    accountId: 'maxnetish'
+    //},
+    //{
+    //    icon: faFacebook,
+    //    url: 'https://www.facebook.com/maksim.gordeev',
+    //    label: 'В фейсбук заглядываю иногда'
+    //}
 //    {
 //        icon: faGooglePlus,
 //        url: 'https://plus.google.com/+MaksimGordeev',
